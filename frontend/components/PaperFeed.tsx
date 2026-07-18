@@ -378,14 +378,10 @@ const huggingFaceRepo = paper.repositories?.find(
     visibleAuthors.map((a, i) => (
       <span key={a.slug || i}>
         {i > 0 && <span>, </span>}
-        <Link
-          href={`/authors/${a.slug}`}
-          onClick={(e) => e.stopPropagation()}
-          className="hover:text-[#F55036] hover:underline"
-        >
-          {a.name}
-        </Link>
+        <span className="hover:text-[#F55036]">
+        {a.name}
       </span>
+    </span>
     ))
   ) : (
     <span>Unknown Author</span>
@@ -863,9 +859,9 @@ export default function PaperList({
   return (
     <Profiler id="PaperList" onRender={logRender}>
       <div
-        className="pb-12 bg-transparent grid grid-cols-1 md:grid-cols-2 xl:flex xl:flex-col gap-6 xl:gap-0 xl:w-[90%]"
-        data-page={page}
-      >
+  className="pb-12 bg-transparent grid grid-cols-1 md:grid-cols-2 xl:flex xl:flex-col gap-6 xl:gap-0"
+  data-page={page}
+>
         {papers.map((paper) => (
           <div key={paper.slug} ref={observeCard} data-paper-slug={paper.slug}>
             <PaperCard paper={paper} />
