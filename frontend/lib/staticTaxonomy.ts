@@ -267,7 +267,7 @@ export const staticTaxonomy = [
   iconName: "Cpu",
   methods: [
     { id: "motion-planning", name: "Motion Planning", slug: "motion-planning", description: "Planning safe and efficient robot movements in complex environments.", paperCount: 0 },
-    { id: "manipulation", name: "Manipulation", slug: "manipulation", description: "Controlling robotic grasping and object manipulation.", paperCount: 0 },
+    { id: "manipulation", name: "Manipulation", slug: "manipulation", description: "Controlling robotic interaction through grasping and manipulation.", paperCount: 0 },
     { id: "navigation", name: "Navigation", slug: "navigation", description: "Navigating autonomous robots in dynamic environments.", paperCount: 0 },
     { id: "policy-learning", name: "Policy Learning", slug: "policy-learning", description: "Learning robot control policies from experience, demonstrations, or rewards.", paperCount: 0 }
   ]
