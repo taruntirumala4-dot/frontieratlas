@@ -863,9 +863,9 @@ export default function PaperList({
   return (
     <Profiler id="PaperList" onRender={logRender}>
       <div
-        className="pb-12 bg-transparent grid grid-cols-1 md:grid-cols-2 xl:flex xl:flex-col gap-6 xl:gap-0 xl:w-[90%]"
-        data-page={page}
-      >
+  className="pb-12 bg-transparent grid grid-cols-1 md:grid-cols-2 xl:flex xl:flex-col gap-6 xl:gap-0"
+  data-page={page}
+>
         {papers.map((paper) => (
           <div key={paper.slug} ref={observeCard} data-paper-slug={paper.slug}>
             <PaperCard paper={paper} />

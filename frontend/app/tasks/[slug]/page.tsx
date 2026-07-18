@@ -23,21 +23,6 @@ const tasks = [
     stats: {
       benchmarks: 8,
     },
-    sisterTasks: [
-      { name: "Coding Agents", slug: "coding-agents" },
-      { name: "Computer Use Agents", slug: "computer-use-agents" },
-      { name: "Language Modeling", slug: "language-modeling" },
-    ],
-    commonMethods: [
-      { name: "Large Language Model (LLM)", count: -10 },
-      { name: "Mixture-of-Experts(MoE)", count: -5 },
-      { name: "Transformer", count: -4 },
-      { name: "Qwen3", count: -3 },
-      { name: "Post-training", count: -3 },
-      { name: "GRPO", count: -3 },
-      { name: "DeepSeek Sparse Attention", count: -3 },
-      { name: "MCP", count: -3 },
-    ],
   },
   {
     slug: "world-models",
@@ -49,18 +34,6 @@ const tasks = [
     stats: {
       benchmarks: 8,
     },
-    sisterTasks: [],
-    commonMethods: [
-      { name: "Diffusion Transformer (DiT)", count: -6 },
-      { name: "CLIP", count: -5 },
-      { name: "VLA", count: -4 },
-      { name: "Transformer", count: -4 },
-      { name: "Qwen3", count: -3 },
-      { name: "Pre-training", count: -3 },
-      { name: "Diffusion", count: -3 },
-      { name: "Key-value cache", count: -3 },
-      { name: "MODELS", count: -3 },
-    ],
   },
   {
     slug: "anomaly-detection",
@@ -72,17 +45,6 @@ const tasks = [
     stats: {
       benchmarks: 8,
     },
-    sisterTasks: [],
-    commonMethods: [
-      { name: "Convolution", count: -6 },
-      { name: "Batch Normalization", count: -5 },
-      { name: "Max Pooling", count: -5 },
-      { name: "1x1 Convolution", count: -4 },
-      { name: "Global Average Pooling", count: -4 },
-      { name: "Cosine Annealing", count: -4 },
-      { name: "Embedding", count: -3 },
-      { name: "CutMix", count: -3 },
-    ],
   },
   {
     slug: "autonomous-driving",
@@ -125,14 +87,6 @@ const tasks = [
     stats: {
       benchmarks: 8,
     },
-    sisterTasks: [],
-    commonMethods: [
-      { name: "Self-supervised learning (SSL)", count: -10 },
-      { name: "wav2vec2", count: -5 },
-      { name: "HuBERT", count: -4 },
-      { name: "WavLM", count: -2 },
-      { name: "RAPTOR", count: -7 },
-    ],
   },
   {
     slug: "document-understanding",
@@ -169,19 +123,6 @@ const tasks = [
     stats: {
       benchmarks: 9,
     },
-    sisterTasks: [],
-    commonMethods: [
-      { name: "MTEB", count: -19 },
-      { name: "MMTEB", count: -5 },
-      { name: "Embedding", count: -5 },
-      { name: "CLIP", count: -5 },
-      { name: "Pre-training", count: -5 },
-      { name: "BERT", count: -5 },
-      { name: "Large Language model (LLM)", count: -4 },
-      { name: "Matryoshka representation learning (MRL)", count: -4 },
-      { name: "Qwen3", count: -3 },
-      { name: "Reranker (cross-encoder)", count: -2 },
-    ],
   },
   {
   slug: "large-language-models",
@@ -191,25 +132,9 @@ const tasks = [
 
   description:
     "Large Language Models (LLMs) are AI models trained on massive text datasets to understand and generate human language. They are used for text generation, question answering, summarization, translation, coding assistance, reasoning, and many other natural language processing tasks.",
-
-  
-
   stats: {
     benchmarks: 54, 
   },
-
-  sisterTasks: [],
-
-  commonMethods: [
-    { name: "Large Language Model (LLM)", count: -11 },
-    { name: "Qwen3", count: -8 },
-    { name: "DeepSeek Sparse Attention", count: -4 },
-    { name: "Mixture-of-Experts (MoE)", count: -4 },
-    { name: "Transformer", count: -4 },
-    { name: "GRPO", count: -4 },
-    { name: "On-policy distillation", count: -4 },
-    { name: "Post-training", count: -4 },
-  ],
 },
   {
   slug: "vision-language-models",
@@ -221,17 +146,6 @@ const tasks = [
   stats: {
     benchmarks: 13,
   },
-  sisterTasks: [],
-  commonMethods: [
-    { name: "Attention", count: 48 },
-    { name: "Transformer", count: 42 },
-    { name: "State Space Models", count: 41 },
-    { name: "RLHF (Reinforcement Learning from Human Feedback)", count: 32 },
-    { name: "Retrieval-Augmented Generation (RAG)", count: -28 },
-    { name: "Dense Retrieval", count: 27 },
-    { name: "Embeddings", count: 27 },
-    { name: "Graph Learning", count: 27 },
-  ],
 },
 {
   slug: "multimodal-models",
@@ -243,17 +157,6 @@ const tasks = [
   stats: {
     benchmarks: 26,
   },
-  sisterTasks: [],
-  commonMethods: [
-      { name: "State Space Models", count: 76 },
-      { name: "Attention", count: 54 },
-      { name: "RLHF (Reinforcement Learning from Human Feedback)", count: 48 },
-      { name: "Graph Learning", count: 43 },
-      { name: "State Space Models (Mamba)", count: 42 },
-      { name: "Graph Neural Networks", count: 33 },
-      { name: "Transformer", count: 29 },
-      { name: "Retrieval-Augmented Generation (RAG)",count:29}
-  ],
 },
 {
   slug: "automatic-speech-recognition",
@@ -265,17 +168,6 @@ const tasks = [
   stats: {
     benchmarks: 6,
   },
-  sisterTasks: [],
-  commonMethods: [
-      { name: "Audio & Speech", count: 58 },
-      { name: "Attention", count: 57 },
-      { name: "Transformer", count: 51 },
-      { name: "State Space Models", count: 40 },
-      { name: "Retrieval-Augmented Generation (RAG)", count: 34 },
-      { name: "RLHF (Reinforcement Learning from Human Feedback)", count: 34 },
-      { name: "Language Modeling", count: 34 },
-      { name: "Dense Retrieval", count: 33 },
-  ],
 },
 {
   slug: "image-generation",
@@ -287,16 +179,6 @@ const tasks = [
   stats: {
     benchmarks: 13,
   },
-  sisterTasks: [],
-  commonMethods: [
-      { name: "AISafety", count: -7 },
-      { name: "GRPO", count: -5 },
-      { name: "Vision Transformer", count: -4 },
-      { name: "Fine-tuning", count: -4 },
-      { name: "CLIP", count: -4 },
-      { name: "Post-training", count: -3 },
-      { name: "Transformer", count: -3 },
-  ],
 },
   {
     slug: "ocr",
@@ -308,20 +190,6 @@ const tasks = [
     stats: {
       benchmarks: 7,
     },
-    sisterTasks: [
-      { name: "Document Understanding", slug: "document-understanding" },
-      { name: "Image Understanding", slug: "image-understanding" },
-    ],
-    commonMethods: [
-      { name: "Large Language model (LLM)", count: -7 },
-      { name: "Qwen3", count: -7 },
-      { name: "GRPO", count: -5 },
-      { name: "Vision Transformer", count: -4 },
-      { name: "Fine-tuning", count: -4 },
-      { name: "CLIP", count: -4 },
-      { name: "Post-training", count: -3 },
-      { name: "Transformer", count: -3 },
-    ],
   },
   {
     slug: "omni-models",
@@ -333,16 +201,6 @@ const tasks = [
     stats: {
       benchmarks: 2,
     },
-    sisterTasks: [],
-    commonMethods: [
-      { name: "Attention", count: 30 },
-      { name: "RLHF (Reinforcement Learning from Human Feedback)", count: 27 },
-      { name: "Embeddings", count: 23 },
-      { name: "Transformer", count: 22 },
-      { name: "Dense Retrieval", count: 18 },
-      { name: "DPO (Direct Preference Optimization)", count: 17 },
-      { name: "Retrieval-Augmented Generation (RAG)", count: 16 },
-    ],
   },
   {
     slug: "reasoning",
@@ -354,17 +212,6 @@ const tasks = [
     stats: {
       benchmarks: 21,
     },
-    sisterTasks: [],
-    commonMethods: [
-      { name: "Large Language model (LLM)", count: -9 },
-      { name: "Chain-of-Thought (CoT)", count: -7 },
-      { name: "GRPO", count: -6 },
-      { name: "Transformer", count: -5 },
-      { name: "Reasoning model", count: -5 },
-      { name: "Fine-tuning", count: -5 },
-      { name: "Qwen3", count: -5 },
-      { name: "Mixture-of-Experts (MoE)", count: -4 },
-    ],
   },
   {
     slug: "reinforcement-learning",
@@ -376,17 +223,6 @@ const tasks = [
     stats: {
       benchmarks: 8,
     },
-    sisterTasks: [],
-    commonMethods: [
-      { name: "GRPO", count: -10 },
-      { name: "Fine-tuning", count: -9 },
-      { name: "Qwen3", count: -8 },
-      { name: "Large language model (LLM)", count: -8 },
-      { name: "Post-training", count: -6 },
-      { name: "Direct Preference Optimization (DPO)", count: -4 },
-      { name: "DeepSeek-R1", count: -4 },
-      { name: "On-policy distillation", count: -3 },
-    ],
   },
   {
     slug: "remote-sensing",
@@ -398,17 +234,6 @@ const tasks = [
     stats: {
       benchmarks: null,
     },
-    sisterTasks: [{ name: "Earth Observation", slug: "earth-observation" }],
-    commonMethods: [
-      { name: "Segment Anything (SAR)", count: -5 },
-      { name: "LLaVa", count: -6 },
-      { name: "Fine-tuning", count: -3 },
-      { name: "CLIP", count: -3 },
-      { name: "Vision Transformer", count: -3 },
-      { name: "Convolution", count: -3 },
-      { name: "Batch Normalization", count: -3 },
-      { name: "Self-supervised learning", count: -2 },
-    ],
   },
   {
     slug: "robotics",
@@ -420,18 +245,6 @@ const tasks = [
     stats: {
       benchmarks: 13,
     },
-    sisterTasks: [],
-    commonMethods: [
-      { name: "VLA", count: -5 },
-      { name: "Pre-training", count: -4 },
-      { name: "LLaVa", count: -8 },
-      { name: "Fine-tuning", count: -7 },
-      { name: "ACT", count: -5 },
-      { name: "Diffusion Policy", count: -6 },
-      { name: "PPO", count: -8 },
-      { name: "Post-training", count: -1 },
-      { name: "LingBot-VA", count: -5 },
-    ],
   },
   {
     slug: "scene-text-recognition",
@@ -443,16 +256,6 @@ const tasks = [
     stats: {
       benchmarks: 6,
     },
-    sisterTasks: [],
-    commonMethods: [
-      { name: "Attention", count: 76 },
-      { name: "Graph Neural Networks", count: 47 },
-      { name: "FlashAttention", count: 44 },
-      { name: "FlashAttention-2", count: 41 },
-      { name: "RLHF (Reinforcement Learning from Human Feedback)", count: 41 },
-      { name: "Dense Retrieval", count: 38 },
-      { name: "Embeddings", count: 37 },
-    ],
   },
   {
     slug: "small-language-models",
@@ -464,21 +267,6 @@ const tasks = [
     stats: {
       benchmarks: 8,
     },
-    sisterTasks: [
-      { name: "Coding Agents", slug: "coding-agents" },
-      { name: "Computer Use Agents", slug: "computer-use-agents" },
-      { name: "Language Modeling", slug: "language-modeling" },
-    ],
-    commonMethods: [
-      { name: "Large Language Model (LLM)", count: -10 },
-      { name: "Mixture-of-Experts(MoE)", count: -5 },
-      { name: "Transformer", count: -4 },
-      { name: "Qwen3", count: -3 },
-      { name: "Post-training", count: -3 },
-      { name: "GRPO", count: -3 },
-      { name: "DeepSeek Sparse Attention", count: -3 },
-      { name: "MCP", count: -3 },
-    ],
   },
   {
     slug: "omni-models",
@@ -490,16 +278,6 @@ const tasks = [
     stats: {
       benchmarks: 6,
     },
-    sisterTasks: [],
-    commonMethods: [
-      { name: "Attention", count: 76 },
-      { name: "Graph Neural Networks", count: 47 },
-      { name: "FlashAttention", count: 44 },
-      { name: "FlashAttention-2", count: 41 },
-      { name: "RLHF (Reinforcement Learning from Human Feedback)", count: 41 },
-      { name: "Dense Retrieval", count: 38 },
-      { name: "Embeddings", count: 37 },
-    ],
   },
   {
     slug: "embedding-models",
@@ -511,16 +289,6 @@ const tasks = [
     stats: {
       benchmarks: 16,
     },
-    sisterTasks: [],
-    commonMethods: [
-      { name: "Attention", count: 76 },
-      { name: "Graph Neural Networks", count: 47 },
-      { name: "FlashAttention", count: 44 },
-      { name: "FlashAttention-2", count: 41 },
-      { name: "RLHF (Reinforcement Learning from Human Feedback)", count: 41 },
-      { name: "Dense Retrieval", count: 38 },
-      { name: "Embeddings", count: 37 },
-    ],
   },
   {
     slug: "reasoning-models",
@@ -532,16 +300,6 @@ const tasks = [
     stats: {
       benchmarks: 16,
     },
-    sisterTasks: [],
-    commonMethods: [
-      { name: "Attention", count: 76 },
-      { name: "Graph Neural Networks", count: 47 },
-      { name: "FlashAttention", count: 44 },
-      { name: "FlashAttention-2", count: 41 },
-      { name: "RLHF (Reinforcement Learning from Human Feedback)", count: 41 },
-      { name: "Dense Retrieval", count: 38 },
-      { name: "Embeddings", count: 37 },
-    ],
   },
   {
     slug: "long-context-models",
@@ -553,16 +311,6 @@ const tasks = [
     stats: {
       benchmarks: 6,
     },
-    sisterTasks: [],
-    commonMethods: [
-      { name: "Attention", count: 76 },
-      { name: "Graph Neural Networks", count: 47 },
-      { name: "FlashAttention", count: 44 },
-      { name: "FlashAttention-2", count: 41 },
-      { name: "RLHF (Reinforcement Learning from Human Feedback)", count: 41 },
-      { name: "Dense Retrieval", count: 38 },
-      { name: "Embeddings", count: 37 },
-    ],
   },
   {
     slug: "efficient-training",
@@ -574,16 +322,6 @@ const tasks = [
     stats: {
       benchmarks: 6,
     },
-    sisterTasks: [],
-    commonMethods: [
-      { name: "Attention", count: 76 },
-      { name: "Graph Neural Networks", count: 47 },
-      { name: "FlashAttention", count: 44 },
-      { name: "FlashAttention-2", count: 41 },
-      { name: "RLHF (Reinforcement Learning from Human Feedback)", count: 41 },
-      { name: "Dense Retrieval", count: 38 },
-      { name: "Embeddings", count: 37 },
-    ],
   },
   {
     slug: "model-alignment",
@@ -595,16 +333,102 @@ const tasks = [
     stats: {
       benchmarks: 6,
     },
-    sisterTasks: [],
-    commonMethods: [
-      { name: "Attention", count: 76 },
-      { name: "Graph Neural Networks", count: 47 },
-      { name: "FlashAttention", count: 44 },
-      { name: "FlashAttention-2", count: 41 },
-      { name: "RLHF (Reinforcement Learning from Human Feedback)", count: 41 },
-      { name: "Dense Retrieval", count: 38 },
-      { name: "Embeddings", count: 37 },
-    ],
+  },
+  {
+    slug: "coding-agents",
+    displayName: "Coding Agents",
+    title: "Coding Agents",
+    description:
+      "AI agents specialized in software development, debugging, and code generation. They accelerate programming through intelligent assistance and automation.",
+
+    stats: {
+      benchmarks: 6,
+    },
+  },
+  {
+    slug: "computer-use-agents",
+    displayName: "Computer Use Agents",
+    title: "Computer Use Agents",
+    description:
+      "Agents that interact directly with graphical user interfaces like humans. They automate workflows across desktop applications and operating systems.",
+
+    stats: {
+      benchmarks: 13,
+    },
+  },
+  {
+    slug: "browser-agents",
+    displayName: "Browser Agents",
+    title: "Browser Agents",
+    description:
+      "AI agents that navigate websites, retrieve information, and complete online tasks autonomously. They assist with research, automation, and web-based workflows.",
+    stats: {
+      benchmarks: 13,
+    },
+  },
+  {
+    slug: "research-agents",
+    displayName: "Research Agents",
+    title: "Research Agents",
+    description:
+      "Agents designed to collect, analyze, and summarize information from multiple sources. They accelerate literature reviews and scientific discovery.",
+
+    stats: {
+      benchmarks: 13,
+    },
+  },
+  {
+    slug: "multi-agent-systems",
+    displayName: "Multi-Agent Systems",
+    title: "Multi-Agent Systems",
+    description:
+      "AI systems where multiple agents collaborate to solve complex problems efficiently. They improve scalability, coordination, and distributed decision-making.",
+
+    stats: {
+      benchmarks: 13,
+    },
+  },
+  {
+    slug: "tool-calling",
+    displayName: "Tool Calling",
+    title: "Tool Calling",
+    description:
+      "AI models capable of invoking external APIs, databases, and software tools. They extend model capabilities beyond text generation into real-world actions.",
+
+    stats: {
+      benchmarks: 6,
+    },
+  },
+  {
+    slug: "agent-memory",
+    displayName: "Agent Memory",
+    title: "Agent Memory",
+    description:
+      "Persistent memory systems that enable agents to retain context across interactions. They improve personalization, long-term planning, and consistency.",
+
+    stats: {
+      benchmarks: 9,
+    },
+  },
+  {
+    slug: "agent-planning",
+    displayName: "Agent Planning",
+    title: "Agent Planning",
+    description:
+      "Techniques that allow AI agents to decompose complex goals into executable steps. They enhance reasoning, scheduling, and autonomous task execution.",
+    stats: {
+      benchmarks: 13,
+    },
+  },
+  {
+    slug: "workflow-automation",
+    displayName: "Workflow Automation",
+    title: "Workflow Automation",
+    description:
+      "AI-powered automation of repetitive and multi-step business processes. It improves productivity by reducing manual effort and execution time.",
+    stats: {
+      benchmarks: 13,
+    },
   },
 ];
 
@@ -799,10 +623,10 @@ export default async function TaskPage({ params }: TaskPageProps) {
         </div>
 
         {/* Papers Section */}
-        <div className="w-full max-w-[1600px] mx-auto px-4 md:px-8 xl:px-12 pt-4 pb-12">
-          <div className="flex flex-col xl:flex-row items-start gap-8 xl:gap-10">
+        <div className="w-full px-8 md:px-12 xl:px-16 pt-4 pb-12">
+          <div className="w-full">
             {/* LEFT: Papers Section */}
-            <main className="flex-1 min-w-0 w-full">
+            <main className="w-full max-w-none">
               <PaperTabs />
               <PaperList
                 selectedTag={metadata.displayName}
@@ -810,70 +634,6 @@ export default async function TaskPage({ params }: TaskPageProps) {
                 initialError="Failed to load papers. Please try again later."
               />
             </main>
-
-            {/* RIGHT: Sidebar */}
-            <aside className="w-full xl:w-[380px] flex-shrink-0 space-y-12">
-              {/* 01 / SISTER TASKS - only show if there are any */}
-              {hasSisterTasks && (
-                <div>
-                  <div className="block items-baseline gap-3 mb-4">
-                    <span className="text-[13px] font-mono text-[#7B736A]">
-                      01/
-                    </span>
-                    <h3 className="text-[13px] uppercase py-1 tracking-[0.08em] text-[#000] font-semibold border-b border-1 border-[#D7D2CA]">
-                      SISTER TASKS
-                    </h3>
-                  </div>
-
-                  <div className="space-y-3">
-                    {enrichedSisterTasks.map((item, idx) => (
-                      <Link
-                        key={idx}
-                        href={`/tasks/${item.slug}`}
-                        className="flex justify-between items-center py-1 group cursor-pointer no-underline"
-                      >
-                        <span className="text-[14px] text-[#333] group-hover:text-[#F55036] px-3 py-1 rounded-[10px] transition-all font-semibold">
-                          {item.name}
-                        </span>
-                        <span className="font-medium text-[#8D857B] tabular-nums">
-                          {item.count}
-                        </span>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* 02 / COMMON METHODS - only show if there are any */}
-              {hasCommonMethods && (
-                <div>
-                  <div className="block items-baseline gap-3 mb-4">
-                    <span className="text-[13px] font-mono text-[#7B736A]">
-                      02/
-                    </span>
-                    <h3 className="text-[13px] uppercase py-1 tracking-[0.08em] text-[#000] font-semibold border-b border-1 border-[#D7D2CA]">
-                      COMMON METHODS
-                    </h3>
-                  </div>
-
-                  <div className="space-y-3">
-                    {metadata.commonMethods.map((method, idx) => (
-                      <div
-                        key={idx}
-                        className="flex justify-between items-center py-1 group"
-                      >
-                        <span className="cursor-pointer text-[12px] text-[#333] border border-black border-opacity-30 group-hover:border-opacity-100 bg-white px-3 py-1 rounded-[6px] transition-all hover:bg-transparent hover:border-[#F55036]">
-                          {method.name}
-                        </span>
-                        <span className="font-medium text-[#8D857B] tabular-nums">
-                          {method.count}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </aside>
           </div>
         </div>
       </div>
