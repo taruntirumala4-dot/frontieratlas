@@ -610,9 +610,13 @@ const Icon =
   {method.description}
 </p>
 
-    <div className="mt-auto pt-5 text-[13px] text-[#777] font-medium">
-      {paperCount > 0 ? `${paperCount.toLocaleString()} papers` : null}
-    </div>
+    <div className="mt-auto pt-5">
+  {paperCount > 0 && (
+    <span className="inline-flex items-center rounded-full border border-[#D9D9D9] bg-white px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-[#666666]">
+  {paperCount.toLocaleString()} papers
+</span>
+  )}
+</div>
   </Link>
   
 );
