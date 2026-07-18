@@ -643,18 +643,34 @@ function ModelsContent() {
                             marginBottom: '2px'
                           }}>{cap.name}</h3>
                         </div>
-                        <p style={{
-                          fontFamily: 'inherit',
-                          fontSize: '0.875rem',
-                          fontWeight: '400',
-                          color: '#6b7280',
-                          lineHeight: '1.25rem',
-                          marginTop: '0.375rem',
-                          marginLeft: '2.0rem',
-                          marginRight: '0.5rem'
-                        }}>
-                          Models that understand, generate, and execute specialized tasks across {cap.name}. ({cap.count} Models)
-                        </p>
+                        <p
+  style={{
+    fontFamily: "inherit",
+    fontSize: "0.875rem",
+    fontWeight: "400",
+    color: "#6b7280",
+    lineHeight: "1.25rem",
+    marginTop: "0.375rem",
+    marginLeft: "2.75rem",
+    marginRight: "0.5rem",
+    marginBottom: "0.25rem",
+  }}
+>
+  Explore models for {cap.name.toLowerCase()}.
+</p>
+
+<p
+  style={{
+    fontFamily: "inherit",
+    fontSize: "0.875rem",
+    fontWeight: "600",
+    color: "#575c66",
+    marginLeft: "2.75rem",
+    marginRight: "0.5rem",
+  }}
+>
+  {cap.count} Models
+</p>
                       </div>
                     );
                   })}
@@ -713,10 +729,10 @@ function ModelsContent() {
                           color: '#6b7280',
                           lineHeight: '1.25rem',
                           marginTop: '0.375rem',
-                          marginLeft: '2.0rem',
+                          marginLeft: "2.75rem",
                           marginRight: '0.5rem'
                         }}>
-                          ({fam.count} Models)
+                          {fam.count} Models
                         </p>
                       </div>
                     );
@@ -768,7 +784,7 @@ const vendorLogo = vendorModel?.vendorLogoUrl;
     <img
       src={vendorLogo}
       alt={v.name}
-      className="w-5 h-5 object-contain"
+      className="w-[35px] h-[35px] object-contain"
     />
   ) : (
     <SkeletalIcon size={20} style={{ color: strokeColor }} />
@@ -776,25 +792,41 @@ const vendorLogo = vendorModel?.vendorLogoUrl;
 </div>
                           <h3 style={{
                             fontFamily: 'inherit',
-                            fontSize: '15px',
+                            fontSize: '18px',
                             fontWeight: isActive ? '700' : '500',
                             color: '#1f2937',
                             lineHeight: '1.375',
                             marginBottom: '2px'
                           }}>{v.name}</h3>
                         </div>
-                        <p style={{
-                          fontFamily: 'inherit',
-                          fontSize: '0.875rem',
-                          fontWeight: '400',
-                          color: '#6b7280',
-                          lineHeight: '1.25rem',
-                          marginTop: '0.375rem',
-                          marginLeft: '2.0rem',
-                          marginRight: '0.5rem'
-                        }}>
-                          Explore frontier AI models, weights, and verified APIs published by {v.name}. ({v.count} Models)
-                        </p>
+                        <p
+  style={{
+    fontFamily: "inherit",
+    fontSize: "0.875rem",
+    fontWeight: "400",
+    color: "#6b7280",
+    lineHeight: "1.25rem",
+    marginTop: "0.375rem",
+    marginLeft: "3.25rem",
+    marginRight: "0.5rem",
+    marginBottom: "0.25rem",
+  }}
+>
+  Explore AI models developed by {v.name}.
+</p>
+
+<p
+  style={{
+    fontFamily: "inherit",
+    fontSize: "0.875rem",
+    fontWeight: "600",
+    color: "#575c66",
+    marginLeft: "3.25rem",
+    marginRight: "0.5rem",
+  }}
+>
+  {v.count} Models
+</p>
                       </div>
                     );
                   })}
@@ -846,18 +878,34 @@ const vendorLogo = vendorModel?.vendorLogoUrl;
                             marginBottom: '2px'
                           }}>{d.name}</h3>
                         </div>
-                        <p style={{
-                          fontFamily: 'inherit',
-                          fontSize: '0.875rem',
-                          fontWeight: '400',
-                          color: '#6b7280',
-                          lineHeight: '1.25rem',
-                          marginTop: '0.375rem',
-                          marginLeft: '2.0rem',
-                          marginRight: '0.5rem'
-                        }}>
-                          Leading architectural benchmarks and evaluations. ({d.count} Models)
-                        </p>
+                        <p
+  style={{
+    fontFamily: "inherit",
+    fontSize: "0.875rem",
+    fontWeight: "400",
+    color: "#6b7280",
+    lineHeight: "1.25rem",
+    marginTop: "0.375rem",
+    marginLeft: "2.75rem",
+    marginRight: "0.5rem",
+    marginBottom: "0.25rem",
+  }}
+>
+  Explore models for {d.name.toLowerCase()}.
+</p>
+
+<p
+  style={{
+    fontFamily: "inherit",
+    fontSize: "0.875rem",
+    fontWeight: "600",
+    color: "#575c66",
+    marginLeft: "2.75rem",
+    marginRight: "0.5rem",
+  }}
+>
+  {d.count} Models
+</p>
                       </div>
                     );
                   })}
@@ -915,7 +963,7 @@ const vendorLogo = vendorModel?.vendorLogoUrl;
                             color: '#6b7280',
                             lineHeight: '1.25rem',
                             marginTop: '0.375rem',
-                            marginLeft: '2.0rem',
+                            marginLeft: '2.75rem',
                             marginRight: '0.5rem'
                           }} title={m.description}>{m.description}</p>
                         )}
