@@ -466,7 +466,7 @@ export default async function TaskPage({ params }: TaskPageProps) {
   const metadata = getTaskMetadata(slug);
 
   let initialPapers: GetPapersResult | null = null;
-  let sisterTaskCounts: Record<string, number> = {};
+  const sisterTaskCounts: Record<string, number> = {};
 
   try {
     // Fetch papers for the current task
