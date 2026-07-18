@@ -280,17 +280,6 @@ const tasks = [
     },
   },
   {
-    slug: "embedding-models",
-    displayName: "Embedding Models",
-    title: "Embedding Models",
-    description:
-      "Models that convert data into dense vector representations capturing semantic meaning. They are widely used for semantic search, recommendation, and retrieval systems.",
-
-    stats: {
-      benchmarks: 16,
-    },
-  },
-  {
     slug: "reasoning-models",
     displayName: "Reasoning Models",
     title: "Reasoning Models",
@@ -487,7 +476,7 @@ export default async function TaskPage({ params }: TaskPageProps) {
     });
 
     // Fetch counts for each sister task in parallel
-    const sisterTaskPromises = metadata.sisterTasks.map(async (task) => {
+    /*const sisterTaskPromises = metadata.sisterTasks.map(async (task) => {
       try {
         const result = await getPapers({
           page: 1,
@@ -507,39 +496,22 @@ export default async function TaskPage({ params }: TaskPageProps) {
           count: 0,
         };
       }
-    });
+    });*/
 
-    const sisterResults = await Promise.all(sisterTaskPromises);
+    /*const sisterResults = await Promise.all(sisterTaskPromises);
     sisterTaskCounts = sisterResults.reduce(
       (acc, { slug, count }) => {
         acc[slug] = count;
         return acc;
       },
       {} as Record<string, number>,
-    );
+    );*/
   } catch (err) {
     console.error(`Failed to fetch papers for task "${slug}":`, err);
   }
 
   // Get paper count from backend data
   const paperCount = initialPapers?.total ?? initialPapers?.papers?.length ?? 0;
-
-  // Get methods count from commonMethods length
-  const methodsUsed = getMethodsUsed(metadata.commonMethods);
-
-  // Enrich sister tasks with counts from backend
-  const enrichedSisterTasks = metadata.sisterTasks.map((task) => ({
-    ...task,
-    count: sisterTaskCounts[task.slug] ?? 0,
-  }));
-
-  // Check if there are any valid sister tasks (with non-empty names)
-  const hasSisterTasks = enrichedSisterTasks.some(
-    (task) => task.name && task.name.trim() !== "",
-  );
-
-  // Check if there are any common methods
-  const hasCommonMethods = metadata.commonMethods.length > 0;
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-[#F8F7F2] text-[#111111]">
@@ -589,35 +561,10 @@ export default async function TaskPage({ params }: TaskPageProps) {
                 <div className="flex flex-wrap items-center gap-x-12 gap-y-8">
                   <Stat label="Papers" value={paperCount} />
                   <Stat label="Benchmarks" value={metadata.stats.benchmarks ?? 0} />
-                  <Stat label="Methods Used" value={methodsUsed} />
                 </div>
               </div>
-
-              {/* Divider - only show if there are sister tasks */}
-              {hasSisterTasks && (
-                <div className="border-t border-[#D7D2CA] mt-5" />
-              )}
-
               {/* Sister Tasks - only show if there are any */}
-              {hasSisterTasks && (
-                <div className="mt-4">
-                  <div className="flex items-center flex-wrap gap-x-4 gap-y-3">
-                    <p className="text-[12px] uppercase text-[#7B736A] tracking-[0.10em] font-semibold whitespace-nowrap">
-                      SISTER TASKS
-                    </p>
-                    <div className="flex flex-wrap gap-3">
-                      {enrichedSisterTasks.map((task, idx) => (
-                        <SisterTaskTag
-                          key={idx}
-                          name={task.name}
-                          slug={task.slug}
-                          count={task.count}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
+              
             </div>
           </div>
         </div>
@@ -642,7 +589,6 @@ export default async function TaskPage({ params }: TaskPageProps) {
 }
 
 // ====================== SUB COMPONENTS ======================
-
 function Stat({ label, value }: { label: string; value: string | number }) {
   return (
     <div className="flex items-end gap-2">
@@ -677,3 +623,4 @@ function SisterTaskTag({
     </Link>
   );
 }
+

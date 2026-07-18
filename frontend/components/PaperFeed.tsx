@@ -378,14 +378,10 @@ const huggingFaceRepo = paper.repositories?.find(
     visibleAuthors.map((a, i) => (
       <span key={a.slug || i}>
         {i > 0 && <span>, </span>}
-        <Link
-          href={`/authors/${a.slug}`}
-          onClick={(e) => e.stopPropagation()}
-          className="hover:text-[#F55036] hover:underline"
-        >
-          {a.name}
-        </Link>
+        <span className="hover:text-[#F55036]">
+        {a.name}
       </span>
+    </span>
     ))
   ) : (
     <span>Unknown Author</span>
