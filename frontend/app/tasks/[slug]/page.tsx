@@ -454,6 +454,158 @@ const tasks = [
       { name: "Embeddings", count: 37 },
     ],
   },
+  {
+    slug: "small-language-models",
+    displayName: "Small Language Models",
+    title: "Small Language Models",
+    description:
+      "Small Language Models (SLMs) are compact AI models designed to deliver strong language understanding and generation while using significantly fewer parameters than large language models. They are optimized for faster inference, lower memory usage, and efficient deployment on edge devices, mobile applications, and resource-constrained environments. SLMs enable practical AI solutions for tasks such as text generation, summarization, question answering, and coding assistance with reduced computational cost.",
+
+    stats: {
+      benchmarks: 8,
+    },
+    sisterTasks: [
+      { name: "Coding Agents", slug: "coding-agents" },
+      { name: "Computer Use Agents", slug: "computer-use-agents" },
+      { name: "Language Modeling", slug: "language-modeling" },
+    ],
+    commonMethods: [
+      { name: "Large Language Model (LLM)", count: -10 },
+      { name: "Mixture-of-Experts(MoE)", count: -5 },
+      { name: "Transformer", count: -4 },
+      { name: "Qwen3", count: -3 },
+      { name: "Post-training", count: -3 },
+      { name: "GRPO", count: -3 },
+      { name: "DeepSeek Sparse Attention", count: -3 },
+      { name: "MCP", count: -3 },
+    ],
+  },
+  {
+    slug: "omni-models",
+    displayName: "Omni Models",
+    title: "Omni Models",
+    description:
+      "Unified AI models that accept and generate multiple modalities within a single architecture. They provide seamless interaction across text, vision, audio, and speech.",
+
+    stats: {
+      benchmarks: 6,
+    },
+    sisterTasks: [],
+    commonMethods: [
+      { name: "Attention", count: 76 },
+      { name: "Graph Neural Networks", count: 47 },
+      { name: "FlashAttention", count: 44 },
+      { name: "FlashAttention-2", count: 41 },
+      { name: "RLHF (Reinforcement Learning from Human Feedback)", count: 41 },
+      { name: "Dense Retrieval", count: 38 },
+      { name: "Embeddings", count: 37 },
+    ],
+  },
+  {
+    slug: "embedding-models",
+    displayName: "Embedding Models",
+    title: "Embedding Models",
+    description:
+      "Models that convert data into dense vector representations capturing semantic meaning. They are widely used for semantic search, recommendation, and retrieval systems.",
+
+    stats: {
+      benchmarks: 16,
+    },
+    sisterTasks: [],
+    commonMethods: [
+      { name: "Attention", count: 76 },
+      { name: "Graph Neural Networks", count: 47 },
+      { name: "FlashAttention", count: 44 },
+      { name: "FlashAttention-2", count: 41 },
+      { name: "RLHF (Reinforcement Learning from Human Feedback)", count: 41 },
+      { name: "Dense Retrieval", count: 38 },
+      { name: "Embeddings", count: 37 },
+    ],
+  },
+  {
+    slug: "reasoning-models",
+    displayName: "Reasoning Models",
+    title: "Reasoning Models",
+    description:
+      "AI models specialized in logical reasoning and multi-step problem solving. They improve decision-making accuracy across mathematics, coding, and complex planning tasks.",
+
+    stats: {
+      benchmarks: 16,
+    },
+    sisterTasks: [],
+    commonMethods: [
+      { name: "Attention", count: 76 },
+      { name: "Graph Neural Networks", count: 47 },
+      { name: "FlashAttention", count: 44 },
+      { name: "FlashAttention-2", count: 41 },
+      { name: "RLHF (Reinforcement Learning from Human Feedback)", count: 41 },
+      { name: "Dense Retrieval", count: 38 },
+      { name: "Embeddings", count: 37 },
+    ],
+  },
+  {
+    slug: "long-context-models",
+    displayName: "Long Context Models",
+    title: "Long Context Models",
+    description:
+      "Language models designed to process extremely long documents and conversations efficiently. They maintain context over extended sequences for better comprehension and retrieval.",
+
+    stats: {
+      benchmarks: 6,
+    },
+    sisterTasks: [],
+    commonMethods: [
+      { name: "Attention", count: 76 },
+      { name: "Graph Neural Networks", count: 47 },
+      { name: "FlashAttention", count: 44 },
+      { name: "FlashAttention-2", count: 41 },
+      { name: "RLHF (Reinforcement Learning from Human Feedback)", count: 41 },
+      { name: "Dense Retrieval", count: 38 },
+      { name: "Embeddings", count: 37 },
+    ],
+  },
+  {
+    slug: "efficient-training",
+    displayName: "Efficient Training",
+    title: "Efficient Training",
+    description:
+      "Methods that reduce computational cost while maintaining model performance during training. They include optimization, distributed learning, and parameter-efficient techniques.",
+
+    stats: {
+      benchmarks: 6,
+    },
+    sisterTasks: [],
+    commonMethods: [
+      { name: "Attention", count: 76 },
+      { name: "Graph Neural Networks", count: 47 },
+      { name: "FlashAttention", count: 44 },
+      { name: "FlashAttention-2", count: 41 },
+      { name: "RLHF (Reinforcement Learning from Human Feedback)", count: 41 },
+      { name: "Dense Retrieval", count: 38 },
+      { name: "Embeddings", count: 37 },
+    ],
+  },
+  {
+    slug: "model-alignment",
+    displayName: "Model Alignment",
+    title: "Model Alignment",
+    description:
+      "Techniques that align AI behavior with human intentions, values, and safety objectives. They improve reliability, helpfulness, and responsible AI deployment.",
+
+    stats: {
+      benchmarks: 6,
+    },
+    sisterTasks: [],
+    commonMethods: [
+      { name: "Attention", count: 76 },
+      { name: "Graph Neural Networks", count: 47 },
+      { name: "FlashAttention", count: 44 },
+      { name: "FlashAttention-2", count: 41 },
+      { name: "RLHF (Reinforcement Learning from Human Feedback)", count: 41 },
+      { name: "Dense Retrieval", count: 38 },
+      { name: "Embeddings", count: 37 },
+    ],
+  },
 ];
 
 // ====================== HELPER FUNCTIONS ======================
