@@ -14,7 +14,7 @@ export const staticTaxonomy = [
     { id: "embodied-ai", name: "Embodied AI", slug: "embodied-ai", description: "Intelligent agents learning through real-world interactions.", paperCount: 0 },
     { id: "3d-spatial", name: "3D & Spatial", slug: "3d-spatial", description: "Methods for 3D perception, mapping, and spatial reasoning.", paperCount: 0 },
     { id: "graph-learning", name: "Graph Learning", slug: "graph-learning", description: "Learning from graph-structured data and relationships.", paperCount: 0 },
-    { id: "time-series", name: "Time Series", slug: "time-series", description: "Forecasting and modeling sequential time-based data.", paperCount: 0 },
+    { id: "time-series", name: "Time Series", slug: "time-series", description: "Forecasting and modeling patterns in sequential time-series data.", paperCount: 0 },
     { id: "scientific-ai", name: "Scientific AI", slug: "scientific-ai", description: "AI methods advancing scientific research and discovery.", paperCount: 0 },
   ]
 },
@@ -25,13 +25,13 @@ export const staticTaxonomy = [
     methods: [
       { id: "transformer", name: "Transformer", slug: "transformer", description: "Attention-based neural architecture for sequence modeling and generation.", paperCount: 0 },
       { id: "mamba", name: "Mamba", slug: "mamba", description: "State space architecture designed for efficient long-context sequence modeling.", paperCount: 0 },
-      { id: "state-space-models", name: "State Space Models", slug: "state-space-models", description: "Sequence models using state-space representations for long-range dependencies.", paperCount: 0 },
+      { id: "state-space-models", name: "State Space Models", slug: "state-space-models", description: "State-space models for capturing long-range dependencies.", paperCount: 0 },
       { id: "convolutional-networks", name: "Convolutional Networks", slug: "convolutional-networks", description: "Neural networks specialized for extracting spatial features from data.", paperCount: 0 },
       { id: "recurrent-networks", name: "Recurrent Networks", slug: "recurrent-networks", description: "Neural architectures designed for sequential and time-dependent data.", paperCount: 0 },
       { id: "graph-neural-networks", name: "Graph Neural Networks", slug: "graph-neural-networks", description: "Models that learn representations from graph-structured data.", paperCount: 0 },
       { id: "mixture-of-experts-moe", name: "Mixture of Experts", slug: "mixture-of-experts-moe", description: "Architecture that routes inputs to specialized expert networks.", paperCount: 0 },
       { id: "autoencoders", name: "Autoencoders", slug: "autoencoders", description: "Neural models that learn compact representations by reconstructing inputs.", paperCount: 0 },
-      { id: "generative-adversarial-networks", name: "Generative Adversarial Networks", slug: "generative-adversarial-networks", description: "Generative models trained through competition between generator and discriminator.", paperCount: 0 },
+      { id: "generative-adversarial-networks", name: "Generative Adversarial Networks", slug: "generative-adversarial-networks", description: "Generative models using generator-discriminator competition.", paperCount: 0 },
       { id: "diffusion-architectures", name: "Diffusion Architectures", slug: "diffusion-architectures", description: "Generative architectures that create data through iterative denoising.", paperCount: 0 },
     ]
   },
@@ -41,7 +41,7 @@ export const staticTaxonomy = [
   iconName: "Puzzle",
   methods: [
     { id: "attention", name: "Attention", slug: "attention", description: "Mechanisms that focus on the most relevant parts of input data.", paperCount: 0 },
-    { id: "embeddings", name: "Embeddings", slug: "embeddings", description: "Dense vector representations capturing semantic meaning and relationships.", paperCount: 0 },
+    { id: "embeddings", name: "Embeddings", slug: "embeddings", description: "Dense vector embeddings capturing semantic meaning.", paperCount: 0 },
     { id: "positional-encoding", name: "Positional Encoding", slug: "positional-encoding", description: "Methods that encode sequence order for transformer-based models.", paperCount: 0 },
     { id: "feedforward-networks", name: "Feedforward Networks", slug: "feedforward-networks", description: "Fully connected neural layers for feature transformation and learning.", paperCount: 0 },
     { id: "activation-functions", name: "Activation Functions", slug: "activation-functions", description: "Functions introducing non-linearity to improve model learning capacity.", paperCount: 0 },
@@ -77,9 +77,9 @@ export const staticTaxonomy = [
   iconName: "Shield",
   methods: [
     { id: "rlhf", name: "RLHF", slug: "rlhf", description: "Aligning models with human preferences through reinforcement learning.", paperCount: 0 },
-    { id: "dpo", name: "DPO", slug: "dpo", description: "Direct preference optimization without reinforcement learning training.", paperCount: 0 },
+    { id: "dpo", name: "DPO", slug: "dpo", description: "Preference optimization without reinforcement learning.", paperCount: 0 },
     { id: "preference-optimization", name: "Preference Optimization", slug: "preference-optimization", description: "Optimizing model behavior using human or synthetic preferences.", paperCount: 0 },
-    { id: "reward-modeling", name: "Reward Modeling", slug: "reward-modeling", description: "Learning reward functions to guide model optimization.", paperCount: 0 },
+    { id: "reward-modeling", name: "Reward Modeling", slug: "reward-modeling", description: "Learning reward functions for optimizing machine learning models.", paperCount: 0 },
     { id: "constitutional-ai", name: "Constitutional AI", slug: "constitutional-ai", description: "Aligning AI behavior using predefined principles and rules.", paperCount: 0 },
     { id: "ai-feedback", name: "AI Feedback", slug: "ai-feedback", description: "Improving models using feedback generated by other AI systems.", paperCount: 0 }
   ]
@@ -116,13 +116,13 @@ export const staticTaxonomy = [
   name: "Retrieval",
   iconName: "DatabaseZap",
   methods: [
-    { id: "rag", name: "Retrieval-Augmented Generation", slug: "retrieval-augmented-generation", description: "Combining retrieved knowledge with language generation for better responses.", paperCount: 0 },
+    { id: "rag", name: "Retrieval-Augmented Generation", slug: "retrieval-augmented-generation", description: "Combines retrieval with language generation.", paperCount: 0 },
     { id: "dense-retrieval", name: "Dense Retrieval", slug: "dense-retrieval", description: "Retrieving documents using semantic vector representations.", paperCount: 0 },
     { id: "sparse-retrieval", name: "Sparse Retrieval", slug: "sparse-retrieval", description: "Keyword-based retrieval using sparse text representations.", paperCount: 0 },
     { id: "hybrid-retrieval", name: "Hybrid Retrieval", slug: "hybrid-retrieval", description: "Combining dense and sparse retrieval for improved search quality.", paperCount: 0 },
     { id: "reranking", name: "Reranking", slug: "reranking", description: "Reordering retrieved results based on relevance and quality.", paperCount: 0 },
     { id: "vector-search", name: "Vector Search", slug: "vector-search", description: "Searching data using vector embeddings and similarity matching.", paperCount: 0 },
-    { id: "knowledge-graphs", name: "Knowledge Graphs", slug: "knowledge-graphs", description: "Structured graphs representing entities, relationships, and connected knowledge.", paperCount: 0 }
+    { id: "knowledge-graphs", name: "Knowledge Graphs", slug: "knowledge-graphs", description: "Structured graphs representing entities and relationships.", paperCount: 0 }
   ]
 },
 {
@@ -146,7 +146,7 @@ export const staticTaxonomy = [
     { id: "optimizers", name: "Optimizers", slug: "optimizers", description: "Algorithms that update model parameters for efficient and stable learning.", paperCount: 0 },
     { id: "learning-rate-scheduling", name: "Learning Rate Scheduling", slug: "learning-rate-scheduling", description: "Techniques that adjust learning rates throughout the training process.", paperCount: 0 },
     { id: "initialization", name: "Initialization", slug: "initialization", description: "Methods for setting initial model parameters before training begins.", paperCount: 0 },
-    { id: "gradient-methods", name: "Gradient Methods", slug: "gradient-methods", description: "Optimization techniques based on gradient information for model updates.", paperCount: 0 }
+    { id: "gradient-methods", name: "Gradient Methods", slug: "gradient-methods", description: "Gradient-based optimization for updating machine learning models.", paperCount: 0 }
   ]
 },
 {
@@ -166,8 +166,8 @@ export const staticTaxonomy = [
   iconName: "Zap",
   methods: [
     { id: "quantization", name: "Quantization", slug: "quantization", description: "Reducing numerical precision for faster and more efficient inference.", paperCount: 0 },
-    { id: "pruning", name: "Pruning", slug: "pruning", description: "Removing unnecessary parameters while maintaining model performance.", paperCount: 0 },
-    { id: "sparsity", name: "Sparsity", slug: "sparsity", description: "Using sparse representations to reduce computation and memory usage.", paperCount: 0 },
+    { id: "pruning", name: "Pruning", slug: "pruning", description: "Removes unnecessary parameters while preserving performance.", paperCount: 0 },
+    { id: "sparsity", name: "Sparsity", slug: "sparsity", description: "Using sparse representations to reduce computation.", paperCount: 0 },
     { id: "speculative-decoding", name: "Speculative Decoding", slug: "speculative-decoding", description: "Accelerating text generation through predictive decoding strategies.", paperCount: 0 },
     { id: "kv-cache", name: "KV Cache", slug: "kv-cache", description: "Caching attention states to speed up autoregressive model inference.", paperCount: 0 },
     { id: "pagedattention", name: "PagedAttention", slug: "pagedattention", description: "Memory-efficient attention for serving large language models efficiently.", paperCount: 0 },
@@ -183,9 +183,9 @@ export const staticTaxonomy = [
   methods: [
     { id: "value-based-rl", name: "Value-based RL", slug: "value-based-rl", description: "Learning action values to maximize long-term rewards through experience.", paperCount: 0 },
     { id: "policy-optimization", name: "Policy Optimization", slug: "policy-optimization", description: "Optimizing decision-making policies for reinforcement learning agents.", paperCount: 0 },
-    { id: "model-based-rl", name: "Model-based RL", slug: "model-based-rl", description: "Learning environment dynamics to improve planning and decision-making.", paperCount: 0 },
+    { id: "model-based-rl", name: "Model-based RL", slug: "model-based-rl", description: "Learning environment dynamics for better planning and decisions.", paperCount: 0 },
     { id: "offline-rl", name: "Offline RL", slug: "offline-rl", description: "Training reinforcement learning agents using fixed offline datasets.", paperCount: 0 },
-    { id: "online-rl", name: "Online RL", slug: "online-rl", description: "Learning continuously through real-time interactions with environments.", paperCount: 0 }
+    { id: "online-rl", name: "Online RL", slug: "online-rl", description: "Learning through real-time interactions with environments.", paperCount: 0 }
   ]
 },
 {
@@ -193,9 +193,9 @@ export const staticTaxonomy = [
   name: "Representation Learning",
   iconName: "Share2",
   methods: [
-    { id: "contrastive-learning", name: "Contrastive Learning", slug: "contrastive-learning", description: "Learning meaningful representations by comparing similar and dissimilar samples.", paperCount: 0 },
+    { id: "contrastive-learning", name: "Contrastive Learning", slug: "contrastive-learning", description: "Learning representations by comparing similar and dissimilar samples.", paperCount: 0 },
     { id: "metric-learning", name: "Metric Learning", slug: "metric-learning", description: "Learning distance metrics that capture semantic similarity between samples.", paperCount: 0 },
-    { id: "embedding-learning", name: "Embedding Learning", slug: "embedding-learning", description: "Creating dense feature representations for downstream machine learning tasks.", paperCount: 0 },
+    { id: "embedding-learning", name: "Embedding Learning", slug: "embedding-learning", description: "Creating dense feature representations for downstream tasks.", paperCount: 0 },
     { id: "feature-learning", name: "Feature Learning", slug: "feature-learning", description: "Automatically discovering useful features directly from raw input data.", paperCount: 0 }
   ]
 },
@@ -216,12 +216,12 @@ export const staticTaxonomy = [
   iconName: "Eye",
   methods: [
     { id: "object-detection", name: "Object Detection", slug: "object-detection", description: "Detecting and localizing objects within images and video scenes.", paperCount: 0 },
-    { id: "segmentation", name: "Segmentation", slug: "segmentation", description: "Partitioning images into meaningful regions for detailed visual understanding.", paperCount: 0 },
+    { id: "segmentation", name: "Segmentation", slug: "segmentation", description: "Partitioning images into regions for detailed understanding", paperCount: 0 },
     { id: "image-generation", name: "Image Generation", slug: "image-generation", description: "Generating realistic images from text, noise, or other visual inputs.", paperCount: 0 },
     { id: "image-classification", name: "Image Classification", slug: "image-classification", description: "Classifying images into predefined categories using deep learning models.", paperCount: 0 },
     { id: "pose-estimation", name: "Pose Estimation", slug: "pose-estimation", description: "Estimating human or object poses from images and videos.", paperCount: 0 },
     { id: "tracking", name: "Tracking", slug: "tracking", description: "Following objects consistently across multiple frames in video sequences.", paperCount: 0 },
-    { id: "3d-vision", name: "3D Vision", slug: "3d-vision", description: "Understanding three-dimensional scenes, geometry, and spatial relationships.", paperCount: 0 }
+    { id: "3d-vision", name: "3D Vision", slug: "3d-vision", description: "Understanding 3D scenes, geometry, and spatial relationships.", paperCount: 0 }
   ]
 },
 {
@@ -258,7 +258,7 @@ export const staticTaxonomy = [
     { id: "video-understanding", name: "Video Understanding", slug: "video-understanding", description: "Analyzing video content to recognize events, actions, and scene dynamics.", paperCount: 0 },
     { id: "video-generation", name: "Video Generation", slug: "video-generation", description: "Generating realistic videos from text, images, or learned visual representations.", paperCount: 0 },
     { id: "video-segmentation", name: "Video Segmentation", slug: "video-segmentation", description: "Segmenting objects and regions consistently across video frames.", paperCount: 0 },
-    { id: "video-retrieval", name: "Video Retrieval", slug: "video-retrieval", description: "Finding relevant video content using semantic search and similarity matching.", paperCount: 0 }
+    { id: "video-retrieval", name: "Video Retrieval", slug: "video-retrieval", description: "Finding relevant videos using semantic search and similarity.", paperCount: 0 }
   ]
 },
 {
@@ -267,8 +267,8 @@ export const staticTaxonomy = [
   iconName: "Cpu",
   methods: [
     { id: "motion-planning", name: "Motion Planning", slug: "motion-planning", description: "Planning safe and efficient robot movements in complex environments.", paperCount: 0 },
-    { id: "manipulation", name: "Manipulation", slug: "manipulation", description: "Controlling robotic interaction with objects through grasping and manipulation.", paperCount: 0 },
-    { id: "navigation", name: "Navigation", slug: "navigation", description: "Guiding autonomous robots through dynamic and unfamiliar environments safely.", paperCount: 0 },
+    { id: "manipulation", name: "Manipulation", slug: "manipulation", description: "Controlling robotic grasping and object manipulation.", paperCount: 0 },
+    { id: "navigation", name: "Navigation", slug: "navigation", description: "Navigating autonomous robots in dynamic environments.", paperCount: 0 },
     { id: "policy-learning", name: "Policy Learning", slug: "policy-learning", description: "Learning robot control policies from experience, demonstrations, or rewards.", paperCount: 0 }
   ]
 },
@@ -280,7 +280,7 @@ export const staticTaxonomy = [
     { id: "nerf", name: "NeRF", slug: "nerf", description: "Neural rendering method for reconstructing realistic three-dimensional scenes.", paperCount: 0 },
     { id: "gaussian-splatting", name: "Gaussian Splatting", slug: "gaussian-splatting", description: "Fast technique for high-quality rendering of complex 3D scenes.", paperCount: 0 },
     { id: "slam", name: "SLAM", slug: "slam", description: "Simultaneous localization and mapping for robotic perception and navigation.", paperCount: 0 },
-    { id: "point-clouds", name: "Point Clouds", slug: "point-clouds", description: "Representing three-dimensional environments using collections of spatial points.", paperCount: 0 }
+    { id: "point-clouds", name: "Point Clouds", slug: "point-clouds", description: "Representing 3D environments using spatial point collections.", paperCount: 0 }
   ]
 },
 {
@@ -288,11 +288,11 @@ export const staticTaxonomy = [
   name: "Mathematics",
   iconName: "BarChart2",
   methods: [
-    { id: "optimization-theory", name: "Optimization Theory", slug: "optimization-theory", description: "Mathematical principles for solving optimization problems in machine learning.", paperCount: 0 },
-    { id: "probability", name: "Probability", slug: "probability", description: "Modeling uncertainty and randomness using probabilistic mathematical frameworks.", paperCount: 0 },
+    { id: "optimization-theory", name: "Optimization Theory", slug: "optimization-theory", description: "Mathematical principles for optimization in machine learning.", paperCount: 0 },
+    { id: "probability", name: "Probability", slug: "probability", description: "Modeling uncertainty and randomness with probabilistic frameworks.", paperCount: 0 },
     { id: "statistics", name: "Statistics", slug: "statistics", description: "Analyzing data distributions, patterns, and relationships through statistical methods.", paperCount: 0 },
     { id: "loss-functions", name: "Loss Functions", slug: "loss-functions", description: "Functions that measure prediction errors during model optimization.", paperCount: 0 },
-    { id: "linear-algebra", name: "Linear Algebra", slug: "linear-algebra", description: "Mathematical foundation for vectors, matrices, and neural network computations.", paperCount: 0 }
+    { id: "linear-algebra", name: "Linear Algebra", slug: "linear-algebra", description: "Foundation for vectors, matrices, and neural network computations.", paperCount: 0 }
   ]
 },
 {
@@ -314,7 +314,7 @@ export const staticTaxonomy = [
   methods: [
     { id: "mechanistic-interpretability", name: "Mechanistic Interpretability", slug: "mechanistic-interpretability", description: "Studying internal model mechanisms to understand learned behaviors.", paperCount: 0 },
     { id: "attribution", name: "Attribution", slug: "attribution", description: "Identifying which inputs contribute most to model predictions.", paperCount: 0 },
-    { id: "probing", name: "Probing", slug: "probing", description: "Analyzing learned representations using targeted diagnostic tasks and probes.", paperCount: 0 },
+    { id: "probing", name: "Probing", slug: "probing", description: "Using diagnostic probes to analyze learned representations.", paperCount: 0 },
     { id: "explainability", name: "Explainability", slug: "explainability", description: "Making AI decisions more transparent and understandable for users.", paperCount: 0 }
   ]
 },
@@ -337,7 +337,7 @@ export const staticTaxonomy = [
   iconName: "Server",
   methods: [
     { id: "distributed-training", name: "Distributed Training", slug: "distributed-training", description: "Scaling model training across multiple machines and computing devices.", paperCount: 0 },
-    { id: "parallelism", name: "Parallelism", slug: "parallelism", description: "Executing model computations simultaneously to improve training efficiency.", paperCount: 0 },
+    { id: "parallelism", name: "Parallelism", slug: "parallelism", description: "Executing model computations to improve training efficiency.", paperCount: 0 },
     { id: "serving", name: "Serving", slug: "serving", description: "Deploying AI models for reliable, large-scale production inference.", paperCount: 0 },
     { id: "inference-systems", name: "Inference Systems", slug: "inference-systems", description: "Systems optimized for fast and scalable model inference workloads.", paperCount: 0 },
     { id: "memory-optimization", name: "Memory Optimization", slug: "memory-optimization", description: "Reducing memory usage while maintaining efficient model performance.", paperCount: 0 }
@@ -349,7 +349,7 @@ export const staticTaxonomy = [
   iconName: "HardDrive",
   methods: [
     { id: "gpus", name: "GPUs", slug: "gpus", description: "Graphics processors optimized for large-scale AI training and inference.", paperCount: 0 },
-    { id: "tpus", name: "TPUs", slug: "tpus", description: "Google-designed accelerators built for high-performance machine learning workloads.", paperCount: 0 },
+    { id: "tpus", name: "TPUs", slug: "tpus", description: "Google-designed accelerators for machine learning workloads.", paperCount: 0 },
     { id: "npus", name: "NPUs", slug: "npus", description: "Dedicated neural processors for efficient on-device AI computation.", paperCount: 0 },
     { id: "accelerators", name: "Accelerators", slug: "accelerators", description: "Specialized hardware designed to speed up AI model execution.", paperCount: 0 }
   ]
@@ -362,9 +362,9 @@ export const staticTaxonomy = [
     { id: "scaling-laws", name: "Scaling Laws", slug: "scaling-laws", description: "Studying how model performance improves with increased scale and data.", paperCount: 0 },
     { id: "emergence", name: "Emergence", slug: "emergence", description: "Unexpected capabilities that appear as AI models become larger.", paperCount: 0 },
     { id: "in-context-learning", name: "In-Context Learning", slug: "in-context-learning", description: "Learning new tasks from examples provided directly within prompts.", paperCount: 0 },
-    { id: "test-time-compute", name: "Test-Time Compute", slug: "test-time-compute", description: "Using additional computation during inference to improve model performance.", paperCount: 0 },
+    { id: "test-time-compute", name: "Test-Time Compute", slug: "test-time-compute", description: "Using extra computation during inference to improve performance.", paperCount: 0 },
     { id: "context-engineering", name: "Context Engineering", slug: "context-engineering", description: "Optimizing prompts and context to improve model responses consistently.", paperCount: 0 },
-    { id: "world-models", name: "World Models", slug: "world-models", description: "Learning internal representations of environments for prediction and planning.", paperCount: 0 },
+    { id: "world-models", name: "World Models", slug: "world-models", description: "Learning internal environment representations for planning.", paperCount: 0 },
     { id: "foundation-models", name: "Foundation Models", slug: "foundation-models", description: "Large pre-trained models adaptable to diverse downstream AI applications.", paperCount: 0 }
   ]
 }
