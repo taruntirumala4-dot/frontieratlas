@@ -9,7 +9,7 @@ import HeroSection from "@/components/HeroSection";
 import type { GetPapersResult } from "@/lib/paperApi";
 import { getPapers } from "@/lib/paperApi";
 import { prefetchMethods } from "@/lib/methodCache";
-import { getModels, getModelFacets, getTrendingModels } from "@/lib/models";
+
 export default function HomeContent({
   initialPapers,
   initialError,
@@ -71,12 +71,6 @@ export default function HomeContent({
     });
     // Also prefetch full method detail data for instant /methods/[slug] pages
     prefetchMethods();
-    // Prefetch models for instant /models page load
-    try {
-      getModels();
-      getModelFacets();
-      getTrendingModels(15);
-    } catch {}
   }, []);
 
   const handleSidebarSelect = (label: string) => {
