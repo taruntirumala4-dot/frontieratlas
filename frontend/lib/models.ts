@@ -287,3 +287,22 @@ export async function getModelBySlug(slug: string): Promise<ModelDetail> {
     tasks: data.tasks ?? [],
   };
 }
+
+if (typeof window !== "undefined") {
+  const prefetchModels = async () => {
+    try {
+      await Promise.all([
+        getModels(),
+        getModelFacets(),
+        getTrendingModels(15),
+      ]);
+    } catch (e) {
+      console.warn("Pre-warming models cache failed:", e);
+    }
+  };
+  if ("requestIdleCallback" in window) {
+    (window as any).requestIdleCallback(() => setTimeout(prefetchModels, 1200));
+  } else {
+    setTimeout(prefetchModels, 2000);
+  }
+}
