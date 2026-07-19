@@ -1,3 +1,4 @@
+export const runtime = "edge";
 import MethodDetailClient from "@/components/domain/methods/MethodDetailClient";
 
 type Props = {
