@@ -33,7 +33,7 @@ export function MethodsHero({ taxonomy = [] }: { taxonomy?: any[] }) {
           research, grouped into categories and linked to research papers.
         </p>
 
-        <div className="flex items-center gap-10 mt-4">
+        <div className="flex items-center gap-6 sm:gap-10 mt-6 sm:mt-4">
           <div>
             <div className="text-2xl font-bold">{totalCategories}</div>
             <div className="text-[15px] text-gray-500 mt-1">Categories</div>
