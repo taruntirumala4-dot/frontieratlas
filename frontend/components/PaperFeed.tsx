@@ -573,6 +573,8 @@ interface PaperListProps {
   searchQuery?: string;
   initialPapers?: GetPapersResult | null;
   initialError?: string;
+  isFilterChanging?: boolean;
+  onFilterDone?: () => void;
 }
 
 export default function PaperList({
@@ -582,6 +584,8 @@ export default function PaperList({
   searchQuery,
   initialPapers = null,
   initialError,
+  isFilterChanging,
+  onFilterDone,
 }: PaperListProps) {
   const [papers, setPapers] = useState<Paper[]>(
     () => initialPapers?.papers ?? [],
@@ -590,6 +594,7 @@ export default function PaperList({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(initialError ?? null);
   const [hasMore, setHasMore] = useState(() => initialPapers?.hasMore ?? true);
+  const [displayCount, setDisplayCount] = useState(5);
   const cacheRef = useRef<Map<string, GetPapersResult>>(new Map());
   const inFlightRef = useRef<Map<string, Promise<GetPapersResult>>>(new Map());
   const loadingRef = useRef(false);
@@ -601,6 +606,23 @@ export default function PaperList({
   const nextPageRef = useRef<number>(
     initialPapers?.hasMore ? initialPapers.page + 1 : 0,
   );
+
+  // Progressive rendering: show cards in batches
+  const prevPaperLen = useRef(0);
+  useEffect(() => {
+    if (papers.length > 0 && papers.length !== prevPaperLen.current) {
+      prevPaperLen.current = papers.length;
+      setDisplayCount(Math.min(5, papers.length));
+    } else if (papers.length === 0) {
+      prevPaperLen.current = 0;
+    }
+  }, [papers.length]);
+  useEffect(() => {
+    if (displayCount < papers.length) {
+      const t = setTimeout(() => setDisplayCount(p => Math.min(p + 5, papers.length)), 80);
+      return () => clearTimeout(t);
+    }
+  }, [displayCount, papers.length]);
 
   // Paper detail prefetching via IntersectionObserver
   const prefetchedRef = useRef(new Set<string>());
@@ -769,6 +791,7 @@ export default function PaperList({
       } finally {
         loadingRef.current = false;
         setLoading(false);
+        onFilterDone?.();
       }
     },
     [
@@ -862,14 +885,14 @@ export default function PaperList({
   className="pb-12 bg-transparent grid grid-cols-1 md:grid-cols-2 xl:flex xl:flex-col gap-6 xl:gap-0"
   data-page={page}
 >
-        {papers.map((paper) => (
+        {papers.slice(0, displayCount).map((paper) => (
           <div key={paper.slug} ref={observeCard} data-paper-slug={paper.slug}>
             <PaperCard paper={paper} />
           </div>
         ))}
 
         {/* Initial load: show skeleton cards instead of spinner */}
-        {loading && papers.length === 0 && (
+        {(loading || isFilterChanging) && papers.length === 0 && (
           <>
             <PaperCardSkeleton />
             <PaperCardSkeleton />
