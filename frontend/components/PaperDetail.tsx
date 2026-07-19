@@ -819,18 +819,7 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
                       {i < (showAllAuthors && paper.authors.length > 3 ? 3 : Math.min(paper.authors.length, 3)) - 1 && <span className="ml-0.5 text-[#171717] font-bold">,</span>}
                     </span>
                   ))}
-                  {(paper.authors || []).length > 3 && (
-                    <span className="inline-flex items-center">
-                      <span className="ml-0.5 text-[#171717] font-bold">,</span>
-                      <button
-                        type="button"
-                        onClick={() => setShowAllAuthors(!showAllAuthors)}
-                        className="text-[13px] font-semibold text-[#4A7AA0] hover:text-[#2c4e69] hover:underline"
-                      >
-                        {showAllAuthors ? "Show less" : `+${(paper.authors || []).length - 3} more`}
-                      </button>
-                    </span>
-                  )}
+                  
                   {showAllAuthors && (paper.authors || []).slice(3).map((pa, i) => (
                     <span key={pa.id} className="inline-flex items-center">
                       <Link href={`/authors/${pa.slug}`} className="text-[14px] font-semibold text-[#444444] no-underline hover:text-[#FF5A1F] hover:underline decoration-2 underline-offset-4 transition-colors">
@@ -839,6 +828,18 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
                       {i < (paper.authors || []).slice(3).length - 1 && <span className="ml-0.5 text-[#171717] font-bold">,</span>}
                     </span>
                   ))}
+                  {(paper.authors || []).length > 3 && (
+                    <span className="inline-flex items-center">
+                      <span className="ml-0.5 text-[#171717] font-bold">,</span>
+                      <button
+                        type="button"
+                        onClick={() => setShowAllAuthors(!showAllAuthors)}
+                        className="ml-1 text-[13px] font-semibold text-[#4A7AA0] hover:text-[#2c4e69] hover:underline"
+                      >
+                        {showAllAuthors ? "Show less" : `+${(paper.authors || []).length - 3} more`}
+                      </button>
+                    </span>
+                  )}
                 </div>
                 {paper.publicationDate && (
                   <div className="flex items-center gap-1.5 text-[14px] text-[#666]">
