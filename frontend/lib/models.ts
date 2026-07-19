@@ -181,11 +181,50 @@ function mapModelItem(m: BackendModelItem): ModelItem {
   };
 }
 
+const modelsCache = new Map<string, any>();
+
+function getCached<T>(key: string): T | null {
+  if (modelsCache.has(key)) return modelsCache.get(key) as T;
+  if (typeof window !== 'undefined') {
+    try {
+      const cached = localStorage.getItem(`atlas_cache_${key}`);
+      if (cached) {
+        const { data, timestamp } = JSON.parse(cached);
+        if (Date.now() - timestamp < 5 * 60 * 1000) { // 5 min TTL
+          modelsCache.set(key, data);
+          return data as T;
+        }
+      }
+    } catch(e) {}
+  }
+  return null;
+}
+
+function setCached(key: string, data: any) {
+  modelsCache.set(key, data);
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem(`atlas_cache_${key}`, JSON.stringify({
+        data,
+        timestamp: Date.now()
+      }));
+    } catch(e) {}
+  }
+}
+
 export async function getModels(params?: string): Promise<ModelItem[]> {
   const query = params ? `?${params}` : '?limit=200';
+  const cacheKey = `models_${query}`;
+  
+  const cached = getCached<ModelItem[]>(cacheKey);
+  if (cached) return cached;
+
   const response = await fetchApi<GetModelsResponse>(`/api/v1/models${query}`);
   const items = Array.isArray(response?.data) ? response.data : [];
-  return items.map(mapModelItem);
+  const result = items.map(mapModelItem);
+  
+  setCached(cacheKey, result);
+  return result;
 }
 
 export async function getTrendingModels(limit = 20): Promise<ModelItem[]> {
@@ -193,7 +232,13 @@ export async function getTrendingModels(limit = 20): Promise<ModelItem[]> {
 }
 
 export async function getModelFacets(): Promise<ModelFacets> {
+  const cacheKey = 'models_facets';
+  
+  const cached = getCached<ModelFacets>(cacheKey);
+  if (cached) return cached;
+
   const response = await fetchApi<GetFacetsResponse>('/api/v1/models/facets');
+  setCached(cacheKey, response.data);
   return response.data;
 }
 
