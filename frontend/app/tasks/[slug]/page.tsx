@@ -3,7 +3,8 @@ import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import PaperList from "@/components/PaperFeed";
 import PaperTabs from "@/components/PaperTabs";
-
+import TaskFilterBar from "@/components/domain/tasks/TaskFilterBar";
+import TaskDetailClient from "@/components/domain/tasks/TaskDetailClient";
 
 type TaskPageProps = {
   params: Promise<{ slug: string }>;
@@ -433,7 +434,6 @@ function getTaskBySlug(slug: string) {
 
 function getTaskMetadata(slug: string) {
   const task = getTaskBySlug(slug);
-
   if (!task) {
     // Fallback for unknown slugs
     const displayName = formatSlug(slug);
@@ -521,11 +521,8 @@ export default async function TaskPage({ params }: TaskPageProps) {
         <div className="w-full px-8 md:px-12 xl:px-16 pt-4 pb-12">
           <div className="w-full">
             <main className="w-full max-w-none">
-              <PaperTabs />
-              <PaperList
-                filterParams={{ task: slug }}
-              />
-            </main>
+    <TaskDetailClient slug={slug} />
+</main>
           </div>
         </div>
       </div>

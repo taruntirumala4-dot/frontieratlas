@@ -13,6 +13,7 @@ export interface TaskItem {
   name: string;
   slug: string;
   color: string | null;
+  paperCount?: number;
 }
 
 export interface TaskPaper {
@@ -55,12 +56,15 @@ interface BackendTaskDetail {
 export async function getTasks(): Promise<TaskItem[]> {
   const response = await fetchApi<GetTasksResponse>('/api/v1/tasks?limit=100');
   const tasks = Array.isArray(response?.data) ? response.data : [];
-  return tasks.map((t) => ({
+  const counts = await getTaskPaperCounts();
+
+return tasks.map((t) => ({
     id: t.id,
     name: t.name,
     slug: t.slug,
     color: t.color,
-  }));
+    paperCount: counts[t.slug] ?? 0,
+}));
 }
 
 export async function getTaskPaperCounts(): Promise<TaskPaperCounts> {

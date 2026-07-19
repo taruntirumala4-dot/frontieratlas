@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Search,
   Activity,
@@ -52,7 +52,7 @@ import Navbar from "@/components/Navbar";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import bgImage from "@/public/bg-image.png";
-
+import { getTaskPaperCounts } from "@/lib/tasks";
 // ----------------------------------------------------------------------
 //  Types
 // ----------------------------------------------------------------------
@@ -65,6 +65,7 @@ interface CapabilityItem {
   title: string;
   desc: string;
   slug: string;
+  paperCount?: number;
 }
 
 interface SectionData {
@@ -96,7 +97,6 @@ const iconColors = [
   "#dc2626",
   "#65a30d",
 ];
-
 // All domain data (kept inside a stable object to avoid re‑renders)
 const sections: SectionsType = {
   "Foundation Models": {
@@ -809,7 +809,12 @@ const FrontierAtlas: React.FC = () => {
   const router = useRouter();
   const [activeDomain, setActiveDomain] = useState<string>("");
   const mainContainerRef = useRef<HTMLDivElement>(null);
-
+  const [paperCounts, setPaperCounts] = useState<Record<string, number>>({});
+  useEffect(() => {
+  getTaskPaperCounts()
+    .then(setPaperCounts)
+    .catch(console.error);
+}, []);
   const handleDomainClick = (domain: string) => {
     setActiveDomain(domain);
     const el = document.getElementById(`section-${domain}`);
@@ -824,28 +829,35 @@ const FrontierAtlas: React.FC = () => {
   const GridItem = ({
     item,
     index,
-  }: {
+    paperCount,
+}: {
     item: CapabilityItem;
     index: number;
-  }) => {
+    paperCount: number;
+}) => {
     const Icon = item.icon;
     const color = iconColors[index % iconColors.length];
     return (
       <div
         onClick={() => handleItemClick(item.slug)}
-        className="bg-white p-5 rounded-sm shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] border border-gray-100 hover:shadow-md transition-shadow group cursor-pointer flex flex-col h-full min-h-[130px]"
+        className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group cursor-pointer flex flex-col justify-between h-[205px]"
       >
         <div className="flex items-start gap-2.5 mb-2">
           <div className="flex-shrink-0 p-1.5 rounded-lg group-hover:scale-110 transition-transform">
             <Icon size={20} style={{ color }} />
           </div>
-          <h3 className="font-semibold text-gray-800 text-[15px] leading-snug pt-0.5">
+          <h3 className="font-semibold text-gray-900 text-[17px] leading-6 pt-0.5">
             {item.title}
           </h3>
         </div>
-        <p className="text-sm text-gray-500 ml-[2.375rem] line-clamp-2 flex-1">
+        <p className="mt-3 text-[15px] leading-6 text-gray-500 line-clamp-3 flex-1">
           {item.desc}
         </p>
+        <div className="mt-3">
+    <span className="inline-flex items-center rounded-full border border-gray-300 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-gray-600">
+        {paperCount.toLocaleString()} PAPERS
+    </span>
+</div>
       </div>
     );
   };
@@ -864,9 +876,14 @@ const FrontierAtlas: React.FC = () => {
           <h2 className="text-[30px] font-bold text-gray-800">{title}</h2>
         </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-stretch">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-stretch">
         {section.data.map((item, idx) => (
-          <GridItem key={item.title} item={item} index={idx} />
+          <GridItem
+    key={item.title}
+    item={item}
+    index={idx}
+    paperCount={paperCounts[item.slug] ?? 0}
+/>
         ))}
       </div>
     </section>
@@ -883,23 +900,23 @@ const FrontierAtlas: React.FC = () => {
         >
           <div className="max-w-7xl mx-auto px-6 py-8 w-full">
             {/* Hero section - reduced by 25% */}
-            <div className="relative overflow-hidden mb-10 hidden md:flex min-h-[187.5px]">
-              <div className="relative z-10 w-[30%] px-6 md:px-8 py-4 md:py-5">
-                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-2 tracking-tight text-gray-900">
+            <div className="relative overflow-hidden mb-14 hidden md:flex min-h-[240px] items-center rounded-2xl bg-white border border-gray-200 shadow-sm px-8">
+              <div className="relative z-10 max-w-3xl mx-auto flex flex-col items-center text-center py-10">
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 mb-5">
                   All
                   <span className="text-[#e11d48] ml-3">Tasks</span>
                 </h1>
-                <p className="text-gray-600 text-xs md:text-sm mb-4 max-w-md leading-relaxed">
+                <p className="text-gray-600 text-base leading-7 max-w-2xl mb-6">
                   Discover the full landscape of AI research through 105 tasks spanning language, vision, video, audio, robotics, healthcare, and more.
                 </p>
-                <div className="flex items-center gap-4 whitespace-nowrap text-xs md:text-sm">
+                <div className="flex items-center gap-8 text-base">
                   {stats.map((stat, index) => (
                     <div key={stat.label} className="flex items-center gap-4">
                       <div>
-                        <div className="text-lg md:text-xl font-bold text-gray-800">
+                        <div className="text-2xl font-bold text-gray-900">
                           {stat.value}
                         </div>
-                        <div className="text-gray-500 text-[10px] md:text-xs">
+                        <div className="text-xs text-gray-500">
                           {stat.label}
                         </div>
                       </div>
@@ -908,23 +925,15 @@ const FrontierAtlas: React.FC = () => {
                       )}
                     </div>
                   ))}
-                  <div className="flex items-center gap-1.5 border-2 border-gray-200 rounded-full px-2.5 py-1 bg-white/50 backdrop-blur-sm ml-1 cursor-pointer hover:shadow-sm">
-                    <TrendingUp size={10} className="text-emerald-500" />
-                    <span className="text-gray-600 font-medium text-[10px] md:text-xs">
+                  <div className="flex items-center gap-2 border border-gray-300 rounded-full px-5 py-2 bg-white shadow-sm">
+                    <TrendingUp size={16} className="text-emerald-500" />
+                    <span className="text-gray-600 font-medium text-sm">
                       Daily updates
                     </span>
                   </div>
                 </div>
               </div>
-              <div className="relative w-[70%] h-[250px] flex justify-center">
-                {/*<Image
-                  src={bgImage}
-                  alt="AI Research Background"
-                  fill
-                  className="object-contain object-right"
-                  priority
-                />*/}
-              </div>
+              
             </div>
 
             {/* Main layout: sidebar + content */}
@@ -934,24 +943,13 @@ const FrontierAtlas: React.FC = () => {
                 className="w-64 flex-shrink-0 hidden lg:block backdrop-blur-sm"
                 aria-label="Domain navigation"
               >
-                <div className="sticky top-20 flex flex-col h-[calc(100vh-5rem)]">
+                <div className="sticky top-20 flex flex-col">
                   {/* Domain navigation */}
                   <div className="px-4 pt-6 pb-4">
                     <h3 className="text-[15px] font-semibold uppercase text-[#e11d48] mb-3">
-                      Browse Research
+                    Task Domains
                     </h3>
 
-                    {/* Search input */}
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                      <input
-                        type="text"
-                        placeholder="Filter domains..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-9 pr-3 py-2 text-sm rounded-sm border border-gray-200 focus:outline-none focus:border-rose-400 focus:ring-1 focus:ring-rose-400 bg-white/80 transition-colors"
-                      />
-                    </div>
                   </div>
 
                   <nav
@@ -998,26 +996,7 @@ const FrontierAtlas: React.FC = () => {
                   </nav>
 
                   {/* CTA placed directly below the list */}
-                  <div className="px-2 mt-10">
-                    <div className="bg-gradient-to-br from-rose-50 to-white rounded-xl border border-rose-100 p-4 shadow-sm">
-                      <div className="flex items-start gap-3">
-                        <div className="p-2 bg-rose-100 rounded-full text-rose-500 shrink-0">
-                          <MessageSquare size={16} />
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-sm font-medium text-gray-800">
-                            Can’t find what you need?
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            Suggest a new domain to improve our taxonomy.
-                          </p>
-                        </div>
-                      </div>
-                      <button className="mt-3 w-full flex items-center justify-center gap-1.5 bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-lg text-xs font-semibold transition-colors shadow-sm">
-                        <Plus size={14} /> Suggest a Domain
-                      </button>
-                    </div>
-                  </div>
+                  
                 </div>
               </aside>
 
