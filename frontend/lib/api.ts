@@ -5,11 +5,12 @@ export async function fetchApi<T>(endpoint: string, options: RequestInit = {}): 
   const url = `${API_BASE}${path}`;
   const response = await fetch(url, {
     ...options,
+    next: { revalidate: 120 },
     headers: {
       'Content-Type': 'application/json',
       ...options.headers,
     },
-  });
+  } as any);
 
   if (!response.ok) {
     let errorDetail = '';

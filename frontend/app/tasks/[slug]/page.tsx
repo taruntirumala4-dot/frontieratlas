@@ -1,10 +1,8 @@
 export const runtime = "edge";
 import Navbar from "@/components/Navbar";
-import Image from "next/image";
 import Link from "next/link";
 import PaperList from "@/components/PaperFeed";
 import PaperTabs from "@/components/PaperTabs";
-import { getPapers, type GetPapersResult } from "@/lib/paperApi";
 
 
 type TaskPageProps = {
@@ -465,54 +463,6 @@ export default async function TaskPage({ params }: TaskPageProps) {
   const { slug } = await params;
   const metadata = getTaskMetadata(slug);
 
-  let initialPapers: GetPapersResult | null = null;
-  const sisterTaskCounts: Record<string, number> = {};
-
-  try {
-    // Fetch papers for the current task
-    initialPapers = await getPapers({
-      page: 1,
-      task: slug,
-    });
-
-    // Fetch counts for each sister task in parallel
-    /*const sisterTaskPromises = metadata.sisterTasks.map(async (task) => {
-      try {
-        const result = await getPapers({
-          page: 1,
-          task: task.slug,
-        });
-        return {
-          slug: task.slug,
-          count: result?.total ?? result?.papers?.length ?? 0,
-        };
-      } catch (err) {
-        console.error(
-          `Failed to fetch papers for sister task "${task.slug}":`,
-          err,
-        );
-        return {
-          slug: task.slug,
-          count: 0,
-        };
-      }
-    });*/
-
-    /*const sisterResults = await Promise.all(sisterTaskPromises);
-    sisterTaskCounts = sisterResults.reduce(
-      (acc, { slug, count }) => {
-        acc[slug] = count;
-        return acc;
-      },
-      {} as Record<string, number>,
-    );*/
-  } catch (err) {
-    console.error(`Failed to fetch papers for task "${slug}":`, err);
-  }
-
-  // Get paper count from backend data
-  const paperCount = initialPapers?.total ?? initialPapers?.papers?.length ?? 0;
-
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-[#F8F7F2] text-[#111111]">
       <Navbar />
@@ -556,14 +506,12 @@ export default async function TaskPage({ params }: TaskPageProps) {
                 {metadata.description}
               </p>
 
-              {/* Stats - Now using dynamic counts */}
+              {/* Stats */}
               <div className="mt-10">
                 <div className="flex flex-wrap items-center gap-x-12 gap-y-8">
-                  <Stat label="Papers" value={paperCount} />
                   <Stat label="Benchmarks" value={metadata.stats.benchmarks ?? 0} />
                 </div>
               </div>
-              {/* Sister Tasks - only show if there are any */}
               
             </div>
           </div>
@@ -572,13 +520,10 @@ export default async function TaskPage({ params }: TaskPageProps) {
         {/* Papers Section */}
         <div className="w-full px-8 md:px-12 xl:px-16 pt-4 pb-12">
           <div className="w-full">
-            {/* LEFT: Papers Section */}
             <main className="w-full max-w-none">
               <PaperTabs />
               <PaperList
-                selectedTag={metadata.displayName}
-                initialPapers={initialPapers}
-                initialError="Failed to load papers. Please try again later."
+                filterParams={{ task: slug }}
               />
             </main>
           </div>

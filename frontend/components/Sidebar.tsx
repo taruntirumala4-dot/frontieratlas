@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Flame,
   Clock,
@@ -100,10 +101,30 @@ export default function Sidebar({
   initialActive = "Trending Papers",
 }: SidebarProps) {
   const [activeItem, setActiveItem] = useState(initialActive);
+  const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     setActiveItem(initialActive);
   }, [initialActive]);
+
+  // Aggressively prefetch ALL sidebar routes on mount for instant navigation
+  useEffect(() => {
+    const routes = [
+      "/", "/category/latest", "/category/github-stars",
+      // Tasks
+      "/tasks/large-language-models", "/tasks/agents", "/tasks/reasoning",
+      "/tasks/vision-language-models", "/tasks/multimodal-models",
+      "/tasks/world-models", "/tasks/image-generation",
+      "/tasks/automatic-speech-recognition", "/tasks/robotics", "/tasks",
+      // Methods
+      "/methods/transformer", "/methods/diffusion-models",
+      "/methods/mixture-of-experts-moe", "/methods/policy-learning",
+      "/methods/chain-of-thought", "/methods/rag", "/methods/mcp",
+      "/methods/lora", "/methods/rlhf", "/methods",
+    ];
+    routes.forEach((route) => router.prefetch(route));
+  }, [router]);
 
   const handleItemClick = (label: string) => {
     setActiveItem(label);
@@ -171,7 +192,7 @@ const methods = [
                 label={item.label}
                 isActive={activeItem === item.label}
                 onClick={() => handleItemClick(item.label)}
-                href={item.slug === "trending" ? "/" : `/category/${item.slug}`}
+                href={pathname === "/" ? undefined : (item.slug === "trending" ? "/" : `/category/${item.slug}`)}
               />
             ))}
           </div>

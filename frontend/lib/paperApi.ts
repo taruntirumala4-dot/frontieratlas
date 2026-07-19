@@ -151,7 +151,57 @@ function mapBackendPaper(raw: Record<string, unknown>): Paper {
   };
 }
 
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+function getCacheKey(params: GetPapersParams): string {
+  return `papers:${params.page ?? 1}:${params.sort ?? "none"}:${params.period ?? "all"}:${params.task ?? "none"}:${params.method ?? "none"}:${params.model ?? "none"}`;
+}
+
+// In-memory cache — fastest possible, zero deserialization cost
+const memoryCache = new Map<string, { data: any; timestamp: number }>();
+
+function readCache<T>(key: string): { data: T; timestamp: number } | null {
+  // Check in-memory first (instant)
+  const mem = memoryCache.get(key);
+  if (mem && Date.now() - mem.timestamp < CACHE_TTL) {
+    return mem as { data: T; timestamp: number };
+  }
+  // Fallback to localStorage
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { data: T; timestamp: number };
+    // Warm memory cache from localStorage hit
+    if (parsed && Date.now() - parsed.timestamp < CACHE_TTL) {
+      memoryCache.set(key, parsed);
+    }
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function writeCache<T>(key: string, data: T): void {
+  const entry = { data, timestamp: Date.now() };
+  // Write to memory (instant)
+  memoryCache.set(key, entry);
+  // Write to localStorage (persistent across tabs)
+  try {
+    localStorage.setItem(key, JSON.stringify(entry));
+  } catch {
+    // localStorage full or unavailable
+  }
+}
+
 export async function getPapers(params: GetPapersParams = {}): Promise<GetPapersResult> {
+  const cacheKey = getCacheKey(params);
+
+  // Check cache
+  const cached = readCache<GetPapersResult>(cacheKey);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    return cached.data;
+  }
+
   try {
     const start = performance.now();
     if (process.env.NODE_ENV === "development") console.log(`[paperApi] getPapers called with params:`, params);
@@ -177,12 +227,16 @@ export async function getPapers(params: GetPapersParams = {}): Promise<GetPapers
     
     if (process.env.NODE_ENV === "development") console.log(`[paperApi] getPapers complete in ${totalDuration.toFixed(2)}ms (mapping took ${mapDuration.toFixed(2)}ms)`);
 
-    return {
+    const result: GetPapersResult = {
       papers: mappedPapers,
       total: response.data.total,
       page: response.data.page,
       hasMore: response.data.hasMore,
     };
+
+    writeCache(cacheKey, result);
+
+    return result;
   } catch (error) {
     console.error('Failed to fetch research papers:', error);
     throw error;
