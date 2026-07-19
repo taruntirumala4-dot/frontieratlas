@@ -574,6 +574,7 @@ interface PaperListProps {
   initialPapers?: GetPapersResult | null;
   initialError?: string;
   isFilterChanging?: boolean;
+  selectedFilter?: string;
   onFilterDone?: () => void;
 }
 
@@ -584,6 +585,7 @@ export default function PaperList({
   searchQuery,
   initialPapers = null,
   initialError,
+  selectedFilter,
   isFilterChanging,
   onFilterDone,
 }: PaperListProps) {
@@ -602,6 +604,24 @@ export default function PaperList({
     () => searchQuery?.trim().toLowerCase() ?? "",
     [searchQuery],
   );
+  const filteredPapers = useMemo(() => {
+    if (!selectedFilter || selectedFilter === "All") {
+        return papers;
+    }
+
+    return papers.filter((paper) => {
+        const text = [
+            paper.title,
+            paper.description,
+            ...(paper.tags ?? []),
+            ...(paper.additionalTags ?? [])
+        ]
+            .join(" ")
+            .toLowerCase();
+
+        return text.includes(selectedFilter.toLowerCase());
+    });
+}, [papers, selectedFilter]);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const nextPageRef = useRef<number>(
     initialPapers?.hasMore ? initialPapers.page + 1 : 0,
@@ -613,7 +633,7 @@ export default function PaperList({
     if (papers.length > 0 && papers.length !== prevPaperLen.current) {
       prevPaperLen.current = papers.length;
       setDisplayCount(Math.min(5, papers.length));
-    } else if (papers.length === 0) {
+    } else if (filteredPapers.length === 0) {
       prevPaperLen.current = 0;
     }
   }, [papers.length]);
@@ -885,7 +905,9 @@ export default function PaperList({
   className="pb-12 bg-transparent grid grid-cols-1 md:grid-cols-2 xl:flex xl:flex-col gap-6 xl:gap-0"
   data-page={page}
 >
-        {papers.slice(0, displayCount).map((paper) => (
+        {filteredPapers
+    .slice(0, displayCount)
+    .map((paper) => (
           <div key={paper.slug} ref={observeCard} data-paper-slug={paper.slug}>
             <PaperCard paper={paper} />
           </div>
