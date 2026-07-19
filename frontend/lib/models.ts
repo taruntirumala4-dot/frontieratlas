@@ -242,6 +242,19 @@ export async function getModelFacets(): Promise<ModelFacets> {
   return response.data;
 }
 
+export function getCachedModels(params?: string): ModelItem[] | null {
+  const query = params ? `?${params}` : '?limit=200';
+  return getCached<ModelItem[]>(`models_${query}`);
+}
+
+export function getCachedTrendingModels(limit = 20): ModelItem[] | null {
+  return getCached<ModelItem[]>(`models_?sort=trending&limit=${limit}`);
+}
+
+export function getCachedModelFacets(): ModelFacets | null {
+  return getCached<ModelFacets>('models_facets');
+}
+
 export async function getModelBySlug(slug: string): Promise<ModelDetail> {
   const response = await fetchApi<GetModelBySlugResponse>(`/api/v1/models/${encodeURIComponent(slug)}`);
   const data = response.data;

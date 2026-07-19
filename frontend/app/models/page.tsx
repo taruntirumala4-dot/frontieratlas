@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo, Suspense } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Search, Trophy, Cpu, Layers, ExternalLink, Code2, Check, Copy, X, ArrowRight, Zap, Calendar, BookOpen, Building2, Brain, Monitor, Globe, FileText, Link as LinkIcon, Volume2, ImageIcon, Video, Bot, Sparkles, TrendingUp, MessageSquare, Plus, Eye, Puzzle, Network, Database, Shield, Terminal, Activity, GitBranch, BarChart3, Radio, Mic, Share2, ChevronRight } from "lucide-react";
-import { getModels, getTrendingModels, getModelFacets, type ModelItem, type ModelFacets } from "@/lib/models";
+import { getModels, getTrendingModels, getModelFacets, getCachedModels, getCachedTrendingModels, getCachedModelFacets, type ModelItem, type ModelFacets } from "@/lib/models";
 import Navbar from "@/components/Navbar";
 
 // Top models will be loaded from backend
@@ -152,10 +152,21 @@ function getSkeletalIcon(index: number, name: string = "") {
 function ModelsContent() {
   const router = useRouter();
 
-  const [allModels, setAllModels] = useState<ModelItem[]>([]);
-  const [trendingModels, setTrendingModels] = useState<ModelItem[]>([]);
-  const [facets, setFacets] = useState<ModelFacets | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [allModels, setAllModels] = useState<ModelItem[]>(() => {
+    return getCachedModels() || [];
+  });
+  const [trendingModels, setTrendingModels] = useState<ModelItem[]>(() => {
+    return getCachedTrendingModels(15) || [];
+  });
+  const [facets, setFacets] = useState<ModelFacets | null>(() => {
+    return getCachedModelFacets();
+  });
+  const [loading, setLoading] = useState(() => {
+    const cachedM = getCachedModels();
+    const cachedT = getCachedTrendingModels(15);
+    const cachedF = getCachedModelFacets();
+    return !(cachedM && cachedT && cachedF);
+  });
   const [selectedVendor, setSelectedVendor] = useState<string | null>(null);
   const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
   const [selectedCapability, setSelectedCapability] = useState<string | null>(null);
@@ -191,7 +202,7 @@ function ModelsContent() {
       setLoading(false);
     }).catch(err => {
       console.error('Error loading models data:', err);
-      setLoading(false);
+      if (!allModels.length) setLoading(false);
     });
   }, []);
 
