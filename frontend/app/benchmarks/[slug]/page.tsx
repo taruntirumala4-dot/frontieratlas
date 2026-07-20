@@ -10,7 +10,7 @@ import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import Link from "next/link";
 import { getBenchmarkBySlug, type BenchmarkDetail, type BenchmarkDetailRanking } from "@/lib/benchmarks";
-
+import { atlasUiFont } from "@/lib/fonts";
 /* ─────────────────────────────────────────────────────────────────
    HELPERS
 ───────────────────────────────────────────────────────────────── */
@@ -307,7 +307,7 @@ export default function BenchmarkDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col h-screen overflow-hidden bg-[#F8F7F2]">
+      <div className={`${atlasUiFont.className} flex flex-col h-screen overflow-hidden bg-[#F8F7F2] tracking-normal`}>
         <Navbar />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
@@ -321,7 +321,7 @@ export default function BenchmarkDetailPage() {
 
   if (!benchmark) {
     return (
-      <div className="flex flex-col h-screen overflow-hidden bg-[#F8F7F2]">
+      <div className={`${atlasUiFont.className} flex flex-col h-screen overflow-hidden bg-[#F8F7F2] tracking-normal`}>
         <Navbar />
         <div className="flex-1 flex flex-col items-center justify-center gap-4">
           <div className="w-14 h-14 rounded-2xl bg-[#FFF3EE] border border-[#FFD5C5] flex items-center justify-center text-[24px]">🏆</div>
@@ -336,7 +336,7 @@ export default function BenchmarkDetailPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-[#F8F7F2] text-[#111111]">
+    <div className={`${atlasUiFont.className} flex flex-col h-screen overflow-hidden bg-[#F8F7F2] text-[#111111] tracking-normal`}>
       <Navbar />
 
       <div className="flex-1 overflow-y-auto overflow-x-hidden hide-scroll">
