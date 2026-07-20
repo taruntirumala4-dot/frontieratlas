@@ -23,91 +23,6 @@ import { getModels, getTrendingModels, getModelFacets, type ModelItem, type Mode
 
 // Popular collections will be derived from backend data
 
-function getOrgLogo(orgOrLeader: string): string {
-  const lower = (orgOrLeader || "").toLowerCase();
-  if (lower.includes("ibm")) {
-    return "https://upload.wikimedia.org/wikipedia/commons/5/51/IBM_logo.svg";
-  }
-  if (lower.includes("anthropic") || lower.includes("claude opus") || lower.includes("claude sonnet")) {
-    return "https://avatars.githubusercontent.com/u/76263028?v=4";
-  }
-  if (lower.includes("claude")) {
-    return "https://www.google.com/s2/favicons?domain=claude.ai&sz=128";
-  }
-  if (lower.includes("qwen") || lower.includes("ocr")) {
-    return "https://avatars.githubusercontent.com/u/141221163?v=4";
-  }
-  if (lower.includes("alibaba")) {
-    return "https://avatars.githubusercontent.com/u/19519599?v=4";
-  }
-  if (lower.includes("openai") || lower.includes("gpt") || lower.includes("whisper") || lower.includes("sora") || lower.includes("clip")) {
-    return "https://avatars.githubusercontent.com/u/14957082?v=4";
-  }
-  if (lower.includes("gemini") || lower.includes("gemma")) {
-    return "https://www.gstatic.com/lamda/images/gemini_favicon_f069958c85030456e93de685481c559f160ea06b.png";
-  }
-  if (lower.includes("google") || lower.includes("deepmind") || lower.includes("alphafold") || lower.includes("rt-2")) {
-    return "https://www.google.com/s2/favicons?domain=google.com&sz=128";
-  }
-  if (lower.includes("meta") || lower.includes("llama") || lower.includes("sam") || lower.includes("audiocraft") || lower.includes("dlrm")) {
-    return "https://avatars.githubusercontent.com/u/153379578?v=4";
-  }
-  if (lower.includes("deepseek") || lower.includes("janus")) {
-    return "https://avatars.githubusercontent.com/u/148330874?v=4";
-  }
-  if (lower.includes("mistral") || lower.includes("pixtral")) {
-    return "https://avatars.githubusercontent.com/u/132372032?v=4";
-  }
-  if (lower.includes("xai") || lower.includes("grok")) {
-    return "https://avatars.githubusercontent.com/u/130314967?v=4";
-  }
-  if (lower.includes("microsoft") || lower.includes("phi") || lower.includes("med-palm")) {
-    return "https://www.google.com/s2/favicons?domain=microsoft.com&sz=128";
-  }
-  if (lower.includes("moonshot") || lower.includes("kimi")) {
-    return "https://www.google.com/s2/favicons?domain=moonshot.cn&sz=128";
-  }
-  if (lower.includes("zhipu") || lower.includes("glm")) {
-    return "https://www.google.com/s2/favicons?domain=zhipuai.cn&sz=128";
-  }
-  if (lower.includes("allen") || lower.includes("molmo")) {
-    return "https://www.google.com/s2/favicons?domain=allenai.org&sz=128";
-  }
-  if (lower.includes("time series") || lower.includes("timeseries") || lower.includes("chronos") || lower.includes("amazon") || lower.includes("nixtla")) {
-    return "https://www.google.com/s2/favicons?domain=aws.amazon.com&sz=128";
-  }
-  if (lower.includes("nvidia")) {
-    return "https://www.google.com/s2/favicons?domain=nvidia.com&sz=128";
-  }
-  if (lower.includes("hugging") || lower.includes("face")) {
-    return "https://www.google.com/s2/favicons?domain=huggingface.co&sz=128";
-  }
-  if (lower.includes("cohere")) {
-    return "https://www.google.com/s2/favicons?domain=cohere.com&sz=128";
-  }
-  if (lower.includes("apple")) {
-    return "https://www.google.com/s2/favicons?domain=apple.com&sz=128";
-  }
-  if (lower.includes("bytedance") || lower.includes("douyin") || lower.includes("tiktok")) {
-    return "https://www.google.com/s2/favicons?domain=bytedance.com&sz=128";
-  }
-  if (lower.includes("minimax")) {
-    return "https://www.google.com/s2/favicons?domain=minimaxi.com&sz=128";
-  }
-  if (lower.includes("tii") || lower.includes("falcon")) {
-    return "https://www.google.com/s2/favicons?domain=tii.ae&sz=128";
-  }
-  if (lower.includes("shanghai") || lower.includes("internlm")) {
-    return "https://www.google.com/s2/favicons?domain=internlm.intern-ai.org.cn&sz=128";
-  }
-  if (lower.includes("black forest") || lower.includes("flux")) {
-    return "https://www.google.com/s2/favicons?domain=blackforestlabs.ai&sz=128";
-  }
-  if (lower.includes("stability") || lower.includes("stable diffusion")) {
-    return "https://www.google.com/s2/favicons?domain=stability.ai&sz=128";
-  }
-  return "https://www.google.com/s2/favicons?domain=ai.com&sz=128";
-}
 
 function getSkeletalIcon(index: number, name: string = "") {
   const icons = [
@@ -154,7 +69,7 @@ function getSkeletalIcon(index: number, name: string = "") {
  * for every single capability, family, developer, and domain present in the Frontier Atlas models.
  */
 
-export const cardDescriptions: Record<string, string> = {
+const cardDescriptions: Record<string, string> = {
   "hybrid reasoning": "Pioneering systems that merge neural intuition with symbolic logic, enabling instantaneous responses seamlessly paired with rigorous step-by-step verification.",
   "coding agents": "Autonomous programming entities capable of navigating codebases, writing complex functions, and independently debugging errors without human intervention.",
   "tool use": "Models trained to interact dynamically with external environments by interpreting API schemas, executing web searches, and querying live databases.",
@@ -262,9 +177,12 @@ export const cardDescriptions: Record<string, string> = {
   "vision & generation": "Groundbreaking generative frameworks combining deep visual understanding with complex diffusion techniques to synthesize stunning, photorealistic digital media.",
 };
 
-export function getCardDescription(name: string): string {
+function getCardDescription(name: string): string {
   const normalized = (name || "").toLowerCase().trim();
-  return cardDescriptions[normalized] || `Advanced methodologies exploring ${name} to push the boundaries of modern artificial intelligence.`;
+  return (
+    cardDescriptions[normalized] ||
+    `Advanced methodologies exploring ${name} to push the boundaries of modern artificial intelligence.`
+  );
 }
 
 function ModelsContent() {
