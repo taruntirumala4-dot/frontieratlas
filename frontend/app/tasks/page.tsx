@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import Link from "next/link";
 import {
   Search,
   Activity,
@@ -840,21 +841,21 @@ const FrontierAtlas: React.FC = () => {
     return (
       <div
         onClick={() => handleItemClick(item.slug)}
-        className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group cursor-pointer flex flex-col justify-between h-[205px]"
+        className="bg-white rounded-md border border-[#ECECEC] p-5 min-h-[150px] flex flex-col hover:shadow-md transition-shadow duration-200 group cursor-pointer"
       >
         <div className="flex items-start gap-2.5 mb-2">
           <div className="flex-shrink-0 p-1.5 rounded-lg group-hover:scale-110 transition-transform">
             <Icon size={20} style={{ color }} />
           </div>
-          <h3 className="font-semibold text-gray-900 text-[17px] leading-6 pt-0.5">
+          <h3 className="text-[#111111] text-[15px] font-medium leading-5">
             {item.title}
           </h3>
         </div>
-        <p className="mt-3 text-[15px] leading-6 text-gray-500 line-clamp-3 flex-1">
+        <p className="mt-3 text-[13px] leading-5 text-[#666] line-clamp-3">
           {item.desc}
         </p>
-        <div className="mt-3">
-    <span className="inline-flex items-center rounded-full border border-gray-300 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-gray-600">
+        <div className="mt-auto pt-5">
+    <span className="inline-flex items-center rounded-full border border-[#D9D9D9] bg-white px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-[#666666]">
         {paperCount.toLocaleString()} PAPERS
     </span>
 </div>
@@ -862,32 +863,45 @@ const FrontierAtlas: React.FC = () => {
     );
   };
 
-  // Reusable section block
-  const Section = ({
-    title,
-    section,
-  }: {
-    title: string;
-    section: SectionData;
-  }) => (
+
+// Reusable section block
+const Section = ({
+  title,
+  section,
+}: {
+  title: string;
+  section: SectionData;
+}) => {
+  const totalPapers = section.data.reduce(
+    (sum, item) => sum + (paperCounts[item.slug] ?? 0),
+    0
+  );
+
+  return (
     <section id={`section-${title}`} className="mb-12">
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center gap-3">
-          <h2 className="text-[30px] font-bold text-gray-800">{title}</h2>
-        </div>
+      <div className="mb-6">
+        <h2 className="text-[30px] font-bold text-[#111111]">
+          {title}
+        </h2>
+
+        <p className="mt-1 text-[15px] text-[#6B7280]">
+          {section.data.length} tasks · {totalPapers.toLocaleString()} papers
+        </p>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-stretch">
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 items-stretch">
         {section.data.map((item, idx) => (
           <GridItem
-    key={item.title}
-    item={item}
-    index={idx}
-    paperCount={paperCounts[item.slug] ?? 0}
-/>
+            key={item.title}
+            item={item}
+            index={idx}
+            paperCount={paperCounts[item.slug] ?? 0}
+          />
         ))}
       </div>
     </section>
   );
+};
   const [searchQuery, setSearchQuery] = useState("");
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-[#F8F7F2] font-sans text-slate-800">
@@ -898,27 +912,40 @@ const FrontierAtlas: React.FC = () => {
           ref={mainContainerRef}
           className="flex-1 overflow-y-auto overflow-x-hidden hide-scroll"
         >
-          <div className="max-w-7xl mx-auto px-6 py-8 w-full">
-            {/* Hero section - reduced by 25% */}
-            {/* Hero */}
-<div className="mb-12">
-  <div className="max-w-[760px]">
-    <h1 className="text-[44px] font-bold tracking-tight text-[#111111]">
+          <div className="max-w-[1240px] mx-auto px-5 py-6 w-full">
+
+  <nav className="flex items-center gap-2 text-[13px] text-[#8B8B8B] mb-6">
+    <Link
+      href="/"
+      className="hover:text-[#F55036] transition-colors no-underline"
+    >
+      Home
+    </Link>
+
+    <span>/</span>
+
+    <span className="text-[#555555] font-medium">
+      Tasks
+    </span>
+  </nav>
+<div className="mb-6">
+  <div className="max-w-xl">
+    <h1 className="text-[34px] font-extrabold tracking-tight text-[#111827] leading-none">
       All <span className="text-[#F55036]">Tasks</span>
     </h1>
 
-    <p className="mt-4 max-w-[620px] text-[16px] leading-8 text-[#5B6472]">
+    <p className="mt-5 text-[15px] text-gray-600 leading-6">
       Discover the full landscape of AI research through 105 tasks spanning
       language, vision, video, audio, robotics, healthcare, and more.
     </p>
 
-    <div className="flex items-start gap-10 mt-8">
+    <div className="flex items-center gap-6 sm:gap-10 mt-6">
       {stats.map((stat) => (
         <div key={stat.label}>
-          <div className="text-[20px] font-bold text-[#111111]">
+          <div className="text-2xl font-bold">
             {stat.value}
           </div>
-          <div className="mt-1 text-[13px] text-[#6B7280]">
+          <div className="text-[15px] text-gray-500 mt-1">
             {stat.label}
           </div>
         </div>
@@ -927,80 +954,61 @@ const FrontierAtlas: React.FC = () => {
   </div>
 </div>
 
-            {/* Main layout: sidebar + content */}
-            <div className="flex gap-6">
-              {/* Sidebar with domain filters */}
-              <aside
-                className="w-64 flex-shrink-0 hidden lg:block backdrop-blur-sm"
-                aria-label="Domain navigation"
+      {/* Main layout: sidebar + content */}
+<div className="flex gap-8 mt-12">
+  {/* Sidebar with domain filters */}
+  <aside
+    className="hidden lg:block w-[220px] shrink-0 sticky top-24 h-fit border-r border-[#ECECEC] pr-6"
+    aria-label="Domain navigation"
+  >
+    <h3 className="text-[#F55036] font-bold uppercase text-lg mb-4">
+      Task Domains
+    </h3>
+
+    <nav className="overflow-y-auto" aria-label="Domains">
+      <ul className="space-y-3" role="list">
+        {domainList
+          .filter((domain) =>
+            domain.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+          .map((domain) => (
+            <li key={domain}>
+              <button
+                onClick={() => handleDomainClick(domain)}
+                aria-current={
+                  activeDomain === domain ? "true" : undefined
+                }
+                className={`block w-full text-left text-[15px] transition-colors ${
+                  activeDomain === domain
+                    ? "text-[#F55036] font-medium"
+                    : "text-[#555555] hover:text-[#F55036]"
+                }`}
               >
-                <div className="sticky top-20 flex flex-col">
-                  {/* Domain navigation */}
-                  <div className="px-4 pt-6 pb-4">
-                    <h3 className="text-[15px] font-semibold uppercase text-[#e11d48] mb-3">
-                    Task Domains
-                    </h3>
+                {domain}
+              </button>
+            </li>
+          ))}
+      </ul>
 
-                  </div>
-
-                  <nav
-                    className="overflow-y-auto px-2 pb-4"
-                    aria-label="Domains"
-                  >
-                    <ul className="space-y-0.5" role="list">
-                      {domainList
-                        .filter((domain) =>
-                          domain
-                            .toLowerCase()
-                            .includes(searchQuery.toLowerCase()),
-                        )
-                        .map((domain) => (
-                          <li key={domain}>
-                            <button
-                              onClick={() => handleDomainClick(domain)}
-                              aria-current={
-                                activeDomain === domain ? "true" : undefined
-                              }
-                              className={`
-                  w-full text-left px-3 py-2 text-sm rounded-sm transition-all duration-200
-                  ${
-                    activeDomain === domain
-                      ? "bg-gray-900 text-white font-medium shadow-sm"
-                      : "text-gray-600 hover:scale-105"
-                  }
-                `}
-                            >
-                              {domain}
-                            </button>
-                          </li>
-                        ))}
-                    </ul>
-
-                    {/* Show a message if no domains match */}
-                    {domainList.filter((d) =>
-                      d.toLowerCase().includes(searchQuery.toLowerCase()),
-                    ).length === 0 && (
-                      <p className="text-xs text-gray-500 px-3 py-2">
-                        No domains found
-                      </p>
-                    )}
-                  </nav>
-
-                  {/* CTA placed directly below the list */}
-                  
-                </div>
-              </aside>
-
+      {domainList.filter((d) =>
+        d.toLowerCase().includes(searchQuery.toLowerCase())
+      ).length === 0 && (
+        <p className="text-[15px] text-[#555555] py-2">
+          No domains found
+        </p>
+      )}
+    </nav>
+  </aside>
               {/* Sections list */}
-              <div className="flex-1 min-w-0">
-                {domainList.map((domain) => (
-                  <Section
-                    key={domain}
-                    title={domain}
-                    section={sections[domain]}
-                  />
-                ))}
-              </div>
+<div className="flex-1 min-w-0">
+  {domainList.map((domain) => (
+    <Section
+      key={domain}
+      title={domain}
+      section={sections[domain]}
+    />
+  ))}
+</div>
             </div>
           </div>
         </main>

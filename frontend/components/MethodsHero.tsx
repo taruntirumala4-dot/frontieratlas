@@ -22,33 +22,43 @@ export function MethodsHero({ taxonomy = [] }: { taxonomy?: any[] }) {
   );
 
   return (
-    <section className="mb-16">
-      <div className="max-w-xl">
-        <h1 className="text-[34px] font-extrabold tracking-tight text-[#111827] leading-none">
+    <section className="mb-12">
+      <div className="max-w-[560px]">
+        <h1 className="text-[32px] font-bold tracking-tight text-[#111827] leading-none">
           All <span className="text-[#F55036]">Methods</span>
         </h1>
 
-        <p className="mt-5 text-[15px] text-gray-600 leading-2">
+        <p className="mt-4 text-[14px] leading-6 text-[#5B6472]">
           Discover the complete landscape of AI methods powering modern
           research, grouped into categories and linked to research papers.
         </p>
 
-        <div className="flex items-center gap-6 sm:gap-10 mt-6 sm:mt-4">
+        <div className="flex items-start gap-10 mt-5">
           <div>
-            <div className="text-2xl font-bold">{totalCategories}</div>
-            <div className="text-[15px] text-gray-500 mt-1">Categories</div>
+            <div className="text-[20px] font-bold text-[#111111]">
+              {totalCategories}
+            </div>
+            <div className="mt-1 text-[14px] text-[#6B7280]">
+              Categories
+            </div>
           </div>
 
           <div>
-            <div className="text-2xl font-bold">{totalMethods}</div>
-            <div className="text-[15px] text-gray-500 mt-1">Methods</div>
+            <div className="text-[20px] font-bold text-[#111111]">
+              {totalMethods}
+            </div>
+            <div className="mt-1 text-[14px] text-[#6B7280]">
+              Methods
+            </div>
           </div>
 
           <div>
-            <div className="text-2xl font-bold">
+            <div className="text-[20px] font-bold text-[#111111]">
               {totalPapers.toLocaleString()}
             </div>
-            <div className="text-[15px] text-gray-500 mt-1">Papers</div>
+            <div className="mt-1 text-[14px] text-[#6B7280]">
+              Papers
+            </div>
           </div>
         </div>
       </div>
