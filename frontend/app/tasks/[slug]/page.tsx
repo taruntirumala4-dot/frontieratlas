@@ -19,9 +19,7 @@ const tasks = [
     description:
       "AI agents are autonomous software systems that use artificial intelligence to achieve goals and complete tasks on behalf of users, acting independently to perceive their environment, make decisions, and take actions without constant human intervention. They use advanced capabilities like reasoning, memory, planning, and learning, often leveraging large language models (LLMs) and other AI tools to interpret information and perform complex workflows across various industries.",
 
-    stats: {
-      benchmarks: 8,
-    },
+    
   },
   {
     slug: "world-models",
@@ -30,9 +28,7 @@ const tasks = [
     description:
       "World models are AI systems that learn a function from a (current world state, action) pair to the next world state, letting an agent predict how its environment will evolve and simulate the outcomes of actions before taking them. The term spans two paradigms: internal world models that predict the future at a high, semantic level (cognitive sense, in the spirit of LeCun's JEPA family) and external world models that aim to simulate reality at full visual fidelity (e.g. Genie-2, GAIA-1). Both are foundational for embodied AI: agents can plan and act using internal models while learning inside external simulators.",
 
-    stats: {
-      benchmarks: 8,
-    },
+    
   },
   {
     slug: "anomaly-detection",
@@ -41,9 +37,7 @@ const tasks = [
     description:
       "Anomaly and out-of-distribution (OOD) detection identifies unusual, novel, or defective inputs in images, video, and other sensor data.",
     
-    stats: {
-      benchmarks: 8,
-    },
+    
   },
   {
     slug: "autonomous-driving",
@@ -52,9 +46,6 @@ const tasks = [
     description:
       "Autonomous driving research covers perception, planning, and control for self-driving vehicles, including bird's-eye-view (BEV) perception, occupancy prediction, end-to-end driving, and ADAS.",
     
-    stats: {
-      benchmarks: 8,
-    },
     sisterTasks: [
       { name: "Autonomous Driving", slug: "autonomous-driving" },
       { name: "Image Understanding", slug: "image-understanding" },
@@ -83,9 +74,6 @@ const tasks = [
     description:
       "Deepfake detection and media forensics identify synthetic, manipulated, or spoofed visual and audiovisual content, including anti-spoofing and security-oriented authenticity verification.",
     
-    stats: {
-      benchmarks: 8,
-    },
   },
   {
     slug: "document-understanding",
@@ -94,9 +82,6 @@ const tasks = [
     description:
       "Document understanding covers machine learning systems that interpret visually rich documents, including forms, receipts, tables, layout-aware OCR, key information extraction, entity extraction, and entity linking.",
    
-    stats: {
-      benchmarks: 11,
-    },
     sisterTasks: [
       { name: "Image Understanding", slug: "image-understanding" },
       { name: "OCR", slug: "ocr" },
@@ -118,10 +103,7 @@ const tasks = [
     title: "EMBEDDING MODELS",
     description:
       "Embedding models are algorithms that transform complex, high-dimensional data—like words, images, or audio—into dense, low-dimensional numerical vectors. These vectors capture the underlying meaning, context, and relationships within the data, allowing machines to understand and process it more efficiently. By representing data as points in a shared mathematical space, embedding models enable tasks such as semantic search, recommendation systems, and image recognition by placing similar items close together.",
-  
-    stats: {
-      benchmarks: 9,
-    },
+
   },
   {
   slug: "large-language-models",
@@ -131,9 +113,7 @@ const tasks = [
 
   description:
     "Large Language Models (LLMs) are AI models trained on massive text datasets to understand and generate human language. They are used for text generation, question answering, summarization, translation, coding assistance, reasoning, and many other natural language processing tasks.",
-  stats: {
-    benchmarks: 54, 
-  },
+
 },
   {
   slug: "vision-language-models",
@@ -142,9 +122,7 @@ const tasks = [
   description:
     "Vision-Language Models combine visual understanding and natural language processing, enabling AI systems to understand images, answer questions, generate captions, and perform multimodal reasoning.",
   
-  stats: {
-    benchmarks: 13,
-  },
+
 },
 {
   slug: "multimodal-models",
@@ -152,10 +130,7 @@ const tasks = [
   title: "MULTIMODAL MODELS",
   description:
     "Multimodal Models process multiple types of data such as text, images, audio, and video together, allowing richer understanding and generation across different modalities.",
-  
-  stats: {
-    benchmarks: 26,
-  },
+
 },
 {
   slug: "automatic-speech-recognition",
@@ -163,10 +138,7 @@ const tasks = [
   title: "AUTOMATIC SPEECH RECOGNITION",
   description:
     "Speech AI focuses on speech recognition, speech synthesis, speaker identification, speech translation, and spoken language understanding.",
-  
-  stats: {
-    benchmarks: 6,
-  },
+
 },
 {
   slug: "image-generation",
@@ -174,10 +146,7 @@ const tasks = [
   title: "IMAGE GENERATION",
   description:
     "Image Generation focuses on creating realistic or artistic images from text prompts or other inputs using diffusion models and generative AI.",
- 
-  stats: {
-    benchmarks: 13,
-  },
+
 },
   {
     slug: "ocr",
@@ -186,9 +155,6 @@ const tasks = [
     description:
       "OCR, or Optical Character Recognition, is the task of converting an image containing text into machine-readable, editable, and searchable digital text data. This involves converting scanned documents, photos, or image-only PDFs to text from their static visual format, enabling the document to be edited, searched, or used for data entry and other applications.",
 
-    stats: {
-      benchmarks: 7,
-    },
   },
   {
     slug: "omni-models",
@@ -196,10 +162,7 @@ const tasks = [
     title: "OMNI MODELS",
     description:
       "Omni models are AI models that take multiple modalities (language, vision, audio) as input and produce multiple modalities as output. Some examples of the first omni models include Qwen2.5 Omni and BAGEL.",
-    
-    stats: {
-      benchmarks: 2,
-    },
+
   },
   {
     slug: "reasoning",
@@ -207,10 +170,7 @@ const tasks = [
     title: "REASONING",
     description:
       "AI reasoning is the process by which artificial intelligence systems logically derive conclusions and make informed decisions from data, rules, and prior knowledge, enabling them to move beyond simple pattern recognition to solve problems and simulate intelligent behavior. It involves systems that can 'think' by connecting information, applying rules, and performing step-by-step analyses, often using methods like deductive and inductive logic to achieve greater accuracy and adapt to complex, uncertain situations.",
-    
-    stats: {
-      benchmarks: 21,
-    },
+
   },
   {
     slug: "reinforcement-learning",
@@ -218,10 +178,7 @@ const tasks = [
     title: "REINFORCEMENT LEARNING",
     description:
       "Reinforcement learning (RL) is a machine learning technique where an agent learns to make optimal decisions in an environment through trial and error to maximize cumulative rewards. An agent interacts with an environment, taking actions, and receiving rewards or penalties based on those actions. Unlike other ML methods, RL doesn't have an 'answer key'; instead, it learns a strategy, called a policy, to choose actions that lead to the best long-term outcomes.",
-  
-    stats: {
-      benchmarks: 8,
-    },
+
   },
   {
     slug: "remote-sensing",
@@ -230,9 +187,6 @@ const tasks = [
     description:
       "Remote sensing analyzes satellite, aerial, and drone imagery for land cover, environmental monitoring, geospatial understanding, and earth observation.",
     
-    stats: {
-      benchmarks: null,
-    },
   },
   {
     slug: "robotics",
@@ -240,10 +194,7 @@ const tasks = [
     title: "ROBOTICS",
     description:
       "Robotics is an interdisciplinary field of study involving computer science, engineering, and technology to design, construct, operate, and utilize machines known as robots. These programmable machines are built to replicate, substitute, or assist in human actions, performing a vast array of tasks in industries from manufacturing and healthcare to exploration and entertainment.",
-   
-    stats: {
-      benchmarks: 13,
-    },
+
   },
   {
     slug: "scene-text-recognition",
@@ -252,9 +203,6 @@ const tasks = [
     description:
       "Recognize textual content from cropped natural-scene word images. Standard STR benchmarks include regular datasets such as IC13, SVT, and IIIT5K, plus irregular datasets such as IC15, SVTP, and CUTE80.",
 
-    stats: {
-      benchmarks: 6,
-    },
   },
   {
     slug: "small-language-models",
@@ -262,10 +210,6 @@ const tasks = [
     title: "Small Language Models",
     description:
       "Small Language Models (SLMs) are compact AI models designed to deliver strong language understanding and generation while using significantly fewer parameters than large language models. They are optimized for faster inference, lower memory usage, and efficient deployment on edge devices, mobile applications, and resource-constrained environments. SLMs enable practical AI solutions for tasks such as text generation, summarization, question answering, and coding assistance with reduced computational cost.",
-
-    stats: {
-      benchmarks: 8,
-    },
   },
   {
     slug: "omni-models",
@@ -274,9 +218,6 @@ const tasks = [
     description:
       "Unified AI models that accept and generate multiple modalities within a single architecture. They provide seamless interaction across text, vision, audio, and speech.",
 
-    stats: {
-      benchmarks: 6,
-    },
   },
   {
     slug: "reasoning-models",
@@ -285,9 +226,6 @@ const tasks = [
     description:
       "AI models specialized in logical reasoning and multi-step problem solving. They improve decision-making accuracy across mathematics, coding, and complex planning tasks.",
 
-    stats: {
-      benchmarks: 16,
-    },
   },
   {
     slug: "long-context-models",
@@ -296,9 +234,6 @@ const tasks = [
     description:
       "Language models designed to process extremely long documents and conversations efficiently. They maintain context over extended sequences for better comprehension and retrieval.",
 
-    stats: {
-      benchmarks: 6,
-    },
   },
   {
     slug: "efficient-training",
@@ -307,9 +242,6 @@ const tasks = [
     description:
       "Methods that reduce computational cost while maintaining model performance during training. They include optimization, distributed learning, and parameter-efficient techniques.",
 
-    stats: {
-      benchmarks: 6,
-    },
   },
   {
     slug: "model-alignment",
@@ -318,9 +250,6 @@ const tasks = [
     description:
       "Techniques that align AI behavior with human intentions, values, and safety objectives. They improve reliability, helpfulness, and responsible AI deployment.",
 
-    stats: {
-      benchmarks: 6,
-    },
   },
   {
     slug: "coding-agents",
@@ -329,9 +258,6 @@ const tasks = [
     description:
       "AI agents specialized in software development, debugging, and code generation. They accelerate programming through intelligent assistance and automation.",
 
-    stats: {
-      benchmarks: 6,
-    },
   },
   {
     slug: "computer-use-agents",
@@ -340,9 +266,6 @@ const tasks = [
     description:
       "Agents that interact directly with graphical user interfaces like humans. They automate workflows across desktop applications and operating systems.",
 
-    stats: {
-      benchmarks: 13,
-    },
   },
   {
     slug: "browser-agents",
@@ -350,9 +273,7 @@ const tasks = [
     title: "Browser Agents",
     description:
       "AI agents that navigate websites, retrieve information, and complete online tasks autonomously. They assist with research, automation, and web-based workflows.",
-    stats: {
-      benchmarks: 13,
-    },
+
   },
   {
     slug: "research-agents",
@@ -361,9 +282,7 @@ const tasks = [
     description:
       "Agents designed to collect, analyze, and summarize information from multiple sources. They accelerate literature reviews and scientific discovery.",
 
-    stats: {
-      benchmarks: 13,
-    },
+
   },
   {
     slug: "multi-agent-systems",
@@ -372,9 +291,6 @@ const tasks = [
     description:
       "AI systems where multiple agents collaborate to solve complex problems efficiently. They improve scalability, coordination, and distributed decision-making.",
 
-    stats: {
-      benchmarks: 13,
-    },
   },
   {
     slug: "tool-calling",
@@ -383,9 +299,6 @@ const tasks = [
     description:
       "AI models capable of invoking external APIs, databases, and software tools. They extend model capabilities beyond text generation into real-world actions.",
 
-    stats: {
-      benchmarks: 6,
-    },
   },
   {
     slug: "agent-memory",
@@ -394,9 +307,6 @@ const tasks = [
     description:
       "Persistent memory systems that enable agents to retain context across interactions. They improve personalization, long-term planning, and consistency.",
 
-    stats: {
-      benchmarks: 9,
-    },
   },
   {
     slug: "agent-planning",
@@ -404,9 +314,7 @@ const tasks = [
     title: "Agent Planning",
     description:
       "Techniques that allow AI agents to decompose complex goals into executable steps. They enhance reasoning, scheduling, and autonomous task execution.",
-    stats: {
-      benchmarks: 13,
-    },
+
   },
   {
     slug: "workflow-automation",
@@ -414,9 +322,6 @@ const tasks = [
     title: "Workflow Automation",
     description:
       "AI-powered automation of repetitive and multi-step business processes. It improves productivity by reducing manual effort and execution time.",
-    stats: {
-      benchmarks: 13,
-    },
   },
 ];
 
@@ -509,7 +414,6 @@ export default async function TaskPage({ params }: TaskPageProps) {
               {/* Stats */}
               <div className="mt-10">
                 <div className="flex flex-wrap items-center gap-x-12 gap-y-8">
-                  <Stat label="Benchmarks" value={metadata.stats.benchmarks ?? 0} />
                 </div>
               </div>
               
@@ -518,7 +422,7 @@ export default async function TaskPage({ params }: TaskPageProps) {
         </div>
 
         {/* Papers Section */}
-        <div className="w-full px-8 md:px-12 xl:px-16 pt-4 pb-12">
+        <div className="w-full px-8 md:px-12 xl:px-16 pt-0 pb-12">
           <div className="w-full">
             <main className="w-full max-w-none">
     <TaskDetailClient slug={slug} />
