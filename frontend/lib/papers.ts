@@ -113,30 +113,60 @@ interface PaperDetailResponse {
   data: PaperDetail;
 }
 
-const paperCache = new Map<string, { data: PaperDetail; ts: number }>();
-const PAPER_CACHE_TTL = 300_000;
+// --- Two-layer cache: memory (instant) + sessionStorage (persists navigation) ---
+const paperMemCache = new Map<string, { data: PaperDetail; ts: number }>();
+const PAPER_CACHE_TTL = 300_000; // 5 minutes
 const inflightFetches = new Map<string, Promise<PaperDetail>>();
+const SS_PREFIX = "fa:paper:";
+
+function readPaperFromStorage(slug: string): { data: PaperDetail; ts: number } | null {
+  // Memory first — zero cost
+  const mem = paperMemCache.get(slug);
+  if (mem && Date.now() - mem.ts < PAPER_CACHE_TTL) return mem;
+  // sessionStorage fallback (survives SPA navigations)
+  try {
+    const raw = sessionStorage.getItem(SS_PREFIX + slug);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { data: PaperDetail; ts: number };
+    if (Date.now() - parsed.ts < PAPER_CACHE_TTL) {
+      paperMemCache.set(slug, parsed); // warm memory from storage
+      return parsed;
+    }
+    sessionStorage.removeItem(SS_PREFIX + slug);
+  } catch { /* SSR or storage unavailable */ }
+  return null;
+}
+
+function writePaperToCache(slug: string, data: PaperDetail): void {
+  const entry = { data, ts: Date.now() };
+  paperMemCache.set(slug, entry);
+  try {
+    sessionStorage.setItem(SS_PREFIX + slug, JSON.stringify(entry));
+  } catch { /* storage full */ }
+}
+
+/** Synchronous cache read — returns data immediately if available, or null */
+export function getPaperBySlugSync(slug: string): PaperDetail | null {
+  return readPaperFromStorage(slug)?.data ?? null;
+}
 
 export async function getPaperBySlug(slug: string): Promise<PaperDetail> {
-  const cached = paperCache.get(slug);
-  if (cached && Date.now() - cached.ts < PAPER_CACHE_TTL) {
-    return cached.data;
-  }
+  const cached = readPaperFromStorage(slug);
+  if (cached) return cached.data;
 
   const inflight = inflightFetches.get(slug);
   if (inflight) {
     try {
       return await inflight;
     } catch {
-      // Inflight promise rejected (e.g. prefetch failure) — fall through
-      // to make a fresh request instead of propagating the error.
+      // Fall through to fresh request
     }
   }
 
   const promise = fetchApi<PaperDetailResponse>(
     `/api/v1/research-papers/${encodeURIComponent(slug)}`
   ).then((response) => {
-    paperCache.set(slug, { data: response.data, ts: Date.now() });
+    writePaperToCache(slug, response.data);
     return response.data;
   }).finally(() => {
     inflightFetches.delete(slug);

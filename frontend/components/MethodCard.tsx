@@ -89,6 +89,8 @@ import {
   CircleDot,
 } from "lucide-react";
 
+import { fetchMethodCached } from "@/lib/methodCache";
+
 export interface MethodCardData {
   id: string;
   name: string;
@@ -590,6 +592,7 @@ const Icon =
   return (
   <Link
     href={`/methods/${method.slug ?? method.id}`}
+    onMouseEnter={() => fetchMethodCached(method.slug ?? method.id).catch(() => {})}
     className="bg-white rounded-md border border-[#ECECEC] p-5 min-h-[150px] flex flex-col hover:shadow-md transition-shadow duration-200 group no-underline"
   >
     <div className="flex items-start gap-4">
