@@ -4,8 +4,16 @@ import React, { useState, useEffect, useMemo, Suspense } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Search, Trophy, Cpu, Layers, ExternalLink, Code2, Check, Copy, X, ArrowRight, Zap, Calendar, BookOpen, Building2, Brain, Monitor, Globe, FileText, Link as LinkIcon, Volume2, ImageIcon, Video, Bot, Sparkles, TrendingUp, MessageSquare, Plus, Eye, Puzzle, Network, Database, Shield, Terminal, Activity, GitBranch, BarChart3, Radio, Mic, Share2, ChevronRight } from "lucide-react";
-import { getModels, getTrendingModels, getModelFacets, type ModelItem, type ModelFacets } from "@/lib/models";
-import Navbar from "@/components/Navbar";
+import {
+  getModels,
+  getTrendingModels,
+  getModelFacets,
+  getCachedModels,
+  getCachedTrendingModels,
+  getCachedModelFacets,
+  type ModelItem,
+  type ModelFacets
+} from "@/lib/models";import Navbar from "@/components/Navbar";
 
 // Top models will be loaded from backend
 
@@ -185,13 +193,42 @@ function getCardDescription(name: string): string {
   );
 }
 
+function CapabilitySkeleton() {
+  return (
+    <div className="animate-pulse bg-white rounded-[20px] border border-[#ECECEC] p-5 min-h-[150px]">
+      <div className="flex items-center gap-3">
+        <div className="w-9 h-9 rounded-lg bg-gray-200" />
+        <div className="h-5 w-32 rounded bg-gray-200" />
+      </div>
+
+      <div className="mt-4 space-y-2">
+        <div className="h-3 rounded bg-gray-200" />
+        <div className="h-3 w-5/6 rounded bg-gray-200" />
+        <div className="h-3 w-2/3 rounded bg-gray-200" />
+      </div>
+
+      <div className="mt-6">
+        <div className="h-6 w-24 rounded-full bg-gray-200" />
+      </div>
+    </div>
+  );
+}
+
+
 function ModelsContent() {
   const router = useRouter();
 
-  const [allModels, setAllModels] = useState<ModelItem[]>([]);
-  const [trendingModels, setTrendingModels] = useState<ModelItem[]>([]);
-  const [facets, setFacets] = useState<ModelFacets | null>(null);
-  const [loading, setLoading] = useState(true);
+  const cachedModels = getCachedModels();
+const cachedTrending = getCachedTrendingModels(15);
+const cachedFacets = getCachedModelFacets();
+
+const [allModels, setAllModels] = useState<ModelItem[]>(cachedModels ?? []);
+const [trendingModels, setTrendingModels] = useState<ModelItem[]>(cachedTrending ?? []);
+const [facets, setFacets] = useState<ModelFacets | null>(cachedFacets);
+
+const [loading, setLoading] = useState(
+  !(cachedModels && cachedTrending && cachedFacets)
+);
   const [selectedVendor, setSelectedVendor] = useState<string | null>(null);
   const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
   const [selectedCapability, setSelectedCapability] = useState<string | null>(null);
@@ -216,19 +253,20 @@ function ModelsContent() {
   }, []);
 
   useEffect(() => {
-    Promise.all([
-      getModels(),
-      getTrendingModels(15),
-      getModelFacets()
-    ]).then(([modelsData, trendingData, facetsData]) => {
-      setAllModels(modelsData);
-      setTrendingModels(trendingData);
-      setFacets(facetsData);
-      setLoading(false);
-    }).catch(err => {
-      console.error('Error loading models data:', err);
-      setLoading(false);
-    });
+    getModels()
+      .then(setAllModels)
+      .catch(console.error);
+
+    getTrendingModels(15)
+      .then(setTrendingModels)
+      .catch(console.error);
+
+    getModelFacets()
+      .then(setFacets)
+      .catch(console.error)
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
   useEffect(() => {
@@ -468,21 +506,9 @@ function ModelsContent() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex-1 flex flex-col min-h-full bg-[#F8F7F2] font-sans text-slate-800">
-                <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <div className="w-12 h-12 border-4 border-rose-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading models...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div 
+    <div
       className="methods-wrapper min-h-screen bg-[#F8F7F2]"
       style={{
         color: "rgb(23, 23, 23)",
@@ -500,137 +526,146 @@ function ModelsContent() {
           <span>/</span>
           <span className="text-[#555555] font-medium">Models</span>
         </nav>
-          
-          {/* HERO SECTION — Exact Tasks page layout */}
-          <section className="mb-16 hidden md:flex">
-            <div className="max-w-xl">
-              <h1 className="text-[35px] font-extrabold text-[#111827] leading-none">
-                All <span className="text-[#FF5A1F]">Models</span>
-              </h1>
-              <p className="mt-5 text-[15.5px] text-gray-600 leading-2 max-w-md">
-                Discover the full landscape of AI foundation models through {facets?.modelFamilies?.length || 0} model families spanning reasoning, vision, code, audio, robotics, healthcare, and more.
-              </p>
-              <div className="flex items-center gap-10 mt-4 whitespace-nowrap text-xs md:text-sm">
-                <div className="flex items-center gap-4">
-                  <div>
-                    <div className="text-[27px] font-bold text-gray-800">{facets?.capabilities?.length}</div>
-                    <div className="text-[14.5px] text-gray-500 mt-1">Capabilities</div>
-                  </div>
-                  
+
+        {/* HERO SECTION — Exact Tasks page layout */}
+        <section className="mb-16 hidden md:flex">
+          <div className="max-w-xl">
+            <h1 className="text-[35px] font-extrabold text-[#111827] leading-none">
+              All <span className="text-[#FF5A1F]">Models</span>
+            </h1>
+            <p className="mt-5 text-[15.5px] text-gray-600 leading-2 max-w-md">
+              Discover the full landscape of AI foundation models through {facets?.modelFamilies?.length ?? "—"} model families spanning reasoning, vision, code, audio, robotics, healthcare, and more.
+            </p>
+            <div className="flex items-center gap-10 mt-4 whitespace-nowrap text-xs md:text-sm">
+              <div className="flex items-center gap-4">
+                <div>
+                  <div className="text-[27px] font-bold text-gray-800">{loading ? (
+                    <div className="h-8 w-10 rounded bg-gray-200 animate-pulse" />
+                  ) : (
+                    facets?.capabilities?.length
+                  )}</div>
+                  <div className="text-[14.5px] text-gray-500 mt-1">Capabilities</div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <div>
-                    <div className="text-[27px] font-bold text-gray-800">{facets?.modelFamilies?.length}</div>
-                    <div className="text-[14.5px] text-gray-500 mt-1">Model Families</div>
-                  </div>
-                  
+
+              </div>
+              <div className="flex items-center gap-4">
+                <div>
+                  <div className="text-[27px] font-bold text-gray-800">{facets?.modelFamilies?.length ?? "—"}</div>
+                  <div className="text-[14.5px] text-gray-500 mt-1">Model Families</div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <div>
-                    <div className="text-[27px] font-bold text-gray-800">{facets?.totalModels}</div>
-                    <div className="text-[14.5px] text-gray-500 mt-1">Verified Models</div>
-                  </div>
+
+              </div>
+              <div className="flex items-center gap-4">
+                <div>
+                  <div className="text-[27px] font-bold text-gray-800">{facets?.totalModels ?? "—"}</div>
+                  <div className="text-[14.5px] text-gray-500 mt-1">Verified Models</div>
                 </div>
               </div>
             </div>
-          </section>
-          <div className="flex gap-6">
-            
-            {/* LEFT SIDEBAR WITH SEARCH & NAVIGATION OPTIONS EXACT TO reference */}
-            <aside className="w-[240px] shrink-0 sticky top-24 h-fit border-r border-[#ececec] pr-6 hidden lg:block" aria-label="Domain navigation">
-              <div className="sticky top-20 flex flex-col h-[calc(100vh-5rem)] overflow-y-auto">
-                <div className="px-4 pt-6 pb-4">
-                  <h3 className="text-[15px] font-semibold uppercase text-[#FF5A1F] mb-3">Browse Models</h3>
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <input
-                      type="text"
-                      placeholder="Filter models..."
-                      className="w-full pl-9 pr-3 py-2 text-sm rounded-xl border border-gray-200 focus:outline-none focus:border-rose-400 focus:ring-1 focus:ring-rose-400 bg-white/80 transition-colors"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                    {searchQuery && (
-                      <button
-                        onClick={() => setSearchQuery("")}
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                      >
-                        <X className="h-3.5 w-3.5" />
-                      </button>
-                    )}
-                  </div>
-                </div>
+          </div>
+        </section>
+        <div className="flex gap-6">
 
-                <nav className="overflow-y-auto px-2 pb-4" aria-label="Domains">
-                  <ul className="space-y-0.5" role="list">
-                    {[
-                      { id: "section-capability", label: "Browse by Capability" },
-                      { id: "section-family", label: "Browse by Model Family" },
-                      { id: "section-organization", label: "Browse by Organization" },
-                      { id: "section-research", label: "Browse by Research Area" },
-                      { id: "section-trending", label: "Trending Models" },
-                      { id: "section-recently-released", label: "Recently Released" },
-                      { id: "model-directory", label: "Model Directory Table" }
-                    ].map((item) => {
-                      const isActive = activeSection === item.id;
-                      return (
-                        <li key={item.id}>
-                          <button
-                            onClick={() => {
-                              const el = document.getElementById(item.id);
-                              if (el) el.scrollIntoView({ behavior: "smooth" });
-                            }}
-                            className={`block w-full text-left text-[15px] transition-colors mb-3 ${isActive ? 'text-[#FF5A1F] font-bold' : 'text-[#555] hover:text-[#FF5A1F]'}`}
-                          >
-                            {item.label}
-                          </button>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </nav>
-
-                <div className="px-2 mt-10">
-                  <div className="bg-gradient-to-br from-rose-50 to-white rounded-xl border border-rose-100 p-4 shadow-sm">
-                    <div className="flex items-start gap-3">
-                      <div className="p-2 bg-rose-100 rounded-full text-rose-500 shrink-0">
-                        <MessageSquare className="h-4 w-4" />
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium text-gray-800">Can’t find what you need?</p>
-                        <p className="text-xs text-gray-500">Suggest a new domain or model to improve our taxonomy.</p>
-                      </div>
-                    </div>
+          {/* LEFT SIDEBAR WITH SEARCH & NAVIGATION OPTIONS EXACT TO reference */}
+          <aside className="w-[240px] shrink-0 sticky top-24 h-fit border-r border-[#ececec] pr-6 hidden lg:block" aria-label="Domain navigation">
+            <div className="sticky top-20 flex flex-col h-[calc(100vh-5rem)] overflow-y-auto">
+              <div className="px-4 pt-6 pb-4">
+                <h3 className="text-[15px] font-semibold uppercase text-[#FF5A1F] mb-3">Browse Models</h3>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Filter models..."
+                    className="w-full pl-9 pr-3 py-2 text-sm rounded-xl border border-gray-200 focus:outline-none focus:border-rose-400 focus:ring-1 focus:ring-rose-400 bg-white/80 transition-colors"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                  {searchQuery && (
                     <button
-                      onClick={() => alert("Thank you! Suggestion recorded for next taxonomy update.")}
-                      className="mt-3 w-full flex items-center justify-center gap-1.5 bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-lg text-xs font-semibold transition-colors shadow-sm cursor-pointer"
+                      onClick={() => setSearchQuery("")}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                     >
-                      <Plus className="h-3.5 w-3.5" /> Suggest a Domain
+                      <X className="h-3.5 w-3.5" />
                     </button>
-                  </div>
+                  )}
                 </div>
               </div>
-            </aside>
 
-            {/* RIGHT CONTENT AREA CONTAINING ALL SECTIONS & EXACT CARDS */}
-            <div className="flex-1 min-w-0">
-              
-              {/* 2. BROWSE BY CAPABILITY (Exact tasks UI reference cards) */}
-              {filteredCapabilities.length > 0 && (
-              <section id="section-capability" className="mb-12 scroll-mt-24">
-                <div className="flex items-center justify-between mb-6 border-b border-[#ececec] pb-3">
-                  <h2 className="text-[27px] font-bold text-[#111827]">Browse by Capability</h2>
-                  <span className="models-block-count text-[11px] font-normal uppercase tracking-wider text-gray-400">{facets?.capabilities?.length} Tasks &amp; Modalities</span>
+              <nav className="overflow-y-auto px-2 pb-4" aria-label="Domains">
+                <ul className="space-y-0.5" role="list">
+                  {[
+                    { id: "section-capability", label: "Browse by Capability" },
+                    { id: "section-family", label: "Browse by Model Family" },
+                    { id: "section-organization", label: "Browse by Organization" },
+                    { id: "section-research", label: "Browse by Research Area" },
+                    { id: "section-trending", label: "Trending Models" },
+                    { id: "section-recently-released", label: "Recently Released" },
+                    { id: "model-directory", label: "Model Directory Table" }
+                  ].map((item) => {
+                    const isActive = activeSection === item.id;
+                    return (
+                      <li key={item.id}>
+                        <button
+                          onClick={() => {
+                            const el = document.getElementById(item.id);
+                            if (el) el.scrollIntoView({ behavior: "smooth" });
+                          }}
+                          className={`block w-full text-left text-[15px] transition-colors mb-3 ${isActive ? 'text-[#FF5A1F] font-bold' : 'text-[#555] hover:text-[#FF5A1F]'}`}
+                        >
+                          {item.label}
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </nav>
+
+              <div className="px-2 mt-10">
+                <div className="bg-gradient-to-br from-rose-50 to-white rounded-xl border border-rose-100 p-4 shadow-sm">
+                  <div className="flex items-start gap-3">
+                    <div className="p-2 bg-rose-100 rounded-full text-rose-500 shrink-0">
+                      <MessageSquare className="h-4 w-4" />
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-gray-800">Can’t find what you need?</p>
+                      <p className="text-xs text-gray-500">Suggest a new domain or model to improve our taxonomy.</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => alert("Thank you! Suggestion recorded for next taxonomy update.")}
+                    className="mt-3 w-full flex items-center justify-center gap-1.5 bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-lg text-xs font-semibold transition-colors shadow-sm cursor-pointer"
+                  >
+                    <Plus className="h-3.5 w-3.5" /> Suggest a Domain
+                  </button>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-                  {filteredCapabilities.map((cap, idx) => {
+              </div>
+            </div>
+          </aside>
+
+          {/* RIGHT CONTENT AREA CONTAINING ALL SECTIONS & EXACT CARDS */}
+          <div className="flex-1 min-w-0">
+
+            {/* 2. BROWSE BY CAPABILITY (Exact tasks UI reference cards) */}
+            <section id="section-capability" className="mb-12 scroll-mt-24">
+              <div className="flex items-center justify-between mb-6 border-b border-[#ececec] pb-3">
+                <h2 className="text-[27px] font-bold text-[#111827]">Browse by Capability</h2>
+                <span className="models-block-count text-[11px] font-normal uppercase tracking-wider text-gray-400">
+  {loading ? "…" : facets?.capabilities?.length} Tasks &amp; Modalities
+</span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                {loading
+                  ? Array.from({ length: 8 }).map((_, i) => (
+                    <CapabilitySkeleton key={i} />
+                  ))
+                  : filteredCapabilities.map((cap, idx) => {
                     const { Icon: SkeletalIcon, color: strokeColor } = getSkeletalIcon(idx, cap.name);
                     const isActive = selectedCapability === cap.name;
                     return (
                       <div
                         key={cap.name}
                         onClick={() => handleCapabilityClick(cap.name)}
-                        className={`bg-white rounded-[20px] border p-5 min-h-[150px] flex flex-col transition-shadow duration-200 group no-underline cursor-pointer ${isActive ? 'border-[#FF5A1F] shadow-[0_0_0_1px_#FF5A1F] bg-[#FFF6F3]' : 'border-[#ECECEC] hover:shadow-md' }`}
+                        className={`bg-white rounded-[20px] border p-5 min-h-[150px] flex flex-col transition-shadow duration-200 group no-underline cursor-pointer ${isActive ? 'border-[#FF5A1F] shadow-[0_0_0_1px_#FF5A1F] bg-[#FFF6F3]' : 'border-[#ECECEC] hover:shadow-md'}`}
                       >
                         <div className="flex items-center gap-2">
                           <div className="flex-shrink-0 p-2 rounded-lg transition-transform group-hover:scale-150">
@@ -639,35 +674,35 @@ function ModelsContent() {
                           <h3 className="text-[15.5px] font-medium leading-5 text-[#111111]">{cap.name}</h3>
                         </div>
                         <p className="mt-3 text-[13.5px] leading-5 text-[#666] line-clamp-3">
-  {getCardDescription(cap.name)}
-</p>
+                          {getCardDescription(cap.name)}
+                        </p>
 
-<div className="mt-auto pt-5"><span className="inline-flex items-center rounded-full border border-[#D9D9D9] bg-white px-2 py-0.5 text-[11.5px] font-semibold uppercase tracking-[0.06em] text-[#666666]">
-  {cap.count} Models</span></div>
+                        <div className="mt-auto pt-5"><span className="inline-flex items-center rounded-full border border-[#D9D9D9] bg-white px-2 py-0.5 text-[11.5px] font-semibold uppercase tracking-[0.06em] text-[#666666]">
+                          {cap.count} Models</span></div>
                       </div>
                     );
                   })}
-                </div>
-              </section>
-              )}
+              </div>
+            </section>
+              
 
-              {/* 3. BROWSE BY MODEL FAMILY */}
-              {filteredModelFamilies.length > 0 && (
+            {/* 3. BROWSE BY MODEL FAMILY */}
+            {filteredModelFamilies.length > 0 && (
               <section id="section-family" className="mb-12 scroll-mt-24">
                 <div className="flex items-center justify-between mb-6 border-b border-[#ececec] pb-3">
                   <h2 className="text-[27px] font-bold text-[#111827]">Browse by Model Family</h2>
-                  <span className="models-block-count text-[11px] font-normal uppercase tracking-wider text-gray-400">{facets?.modelFamilies?.length} Model Families</span>
+                  <span className="models-block-count text-[11px] font-normal uppercase tracking-wider text-gray-400">{facets?.modelFamilies?.length ?? "—"} Model Families</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                   {filteredModelFamilies.map((fam, idx) => {
                     const { Icon: SkeletalIcon, color: strokeColor } = getSkeletalIcon(idx + 3, fam.name);
                     const isActive = selectedFamily === fam.name;
-                    
+
                     return (
                       <div
                         key={fam.name}
                         onClick={() => handleFamilyClick(fam.name)}
-                        className={`bg-white rounded-[20px] border p-5 min-h-[150px] flex flex-col transition-shadow duration-200 group no-underline cursor-pointer ${isActive ? 'border-[#FF5A1F] shadow-[0_0_0_1px_#FF5A1F] bg-[#FFF6F3]' : 'border-[#ECECEC] hover:shadow-md' }`}
+                        className={`bg-white rounded-[20px] border p-5 min-h-[150px] flex flex-col transition-shadow duration-200 group no-underline cursor-pointer ${isActive ? 'border-[#FF5A1F] shadow-[0_0_0_1px_#FF5A1F] bg-[#FFF6F3]' : 'border-[#ECECEC] hover:shadow-md'}`}
                       >
                         <div className="flex items-center gap-2">
                           <div className="flex-shrink-0 p-2 rounded-lg transition-transform group-hover:scale-110">
@@ -681,10 +716,10 @@ function ModelsContent() {
                   })}
                 </div>
               </section>
-              )}
+            )}
 
-              {/* 4. BROWSE BY ORGANIZATION */}
-              {filteredVendors.length > 0 && (
+            {/* 4. BROWSE BY ORGANIZATION */}
+            {filteredVendors.length > 0 && (
               <section id="section-organization" className="mb-12 scroll-mt-24">
                 <div className="flex items-center justify-between mb-6 border-b border-[#ececec] pb-3">
                   <h2 className="text-[27px] font-bold text-[#111827]">Browse by Organization</h2>
@@ -695,36 +730,35 @@ function ModelsContent() {
                     const { Icon: SkeletalIcon, color: strokeColor } = getSkeletalIcon(idx + 7, v.name);
                     const isActive = selectedVendor === v.name;
                     const vendorModel = allModels.find(
-  (model) => model.vendor.toLowerCase() === v.name.toLowerCase()
-);
+                      (model) => model.vendor.toLowerCase() === v.name.toLowerCase()
+                    );
 
-const vendorLogo = vendorModel?.vendorLogoUrl;
-                    
+                    const vendorLogo = vendorModel?.vendorLogoUrl;
+
                     return (
                       <div
                         key={v.name}
                         onClick={() => handleVendorClick(v.name)}
-                        className={`bg-white rounded-[20px] border p-5 min-h-[150px] flex flex-col transition-shadow duration-200 group no-underline cursor-pointer ${isActive ? 'border-[#FF5A1F] shadow-[0_0_0_1px_#FF5A1F] bg-[#FFF6F3]' : 'border-[#ECECEC] hover:shadow-md' }`}
+                        className={`bg-white rounded-[20px] border p-5 min-h-[150px] flex flex-col transition-shadow duration-200 group no-underline cursor-pointer ${isActive ? 'border-[#FF5A1F] shadow-[0_0_0_1px_#FF5A1F] bg-[#FFF6F3]' : 'border-[#ECECEC] hover:shadow-md'}`}
                       >
                         <div className="flex items-center gap-2">
                           <div className="flex-shrink-0 p-2 rounded-lg transition-transform group-hover:scale-110">
-  {vendorLogo ? (
-    <img
-      src={vendorLogo}
-      alt={v.name}
-      className="w-[30px] h-[30px] object-contain"
-    />
-  ) : (
-    <SkeletalIcon size={20} style={{ color: strokeColor }} />
-  )}
-</div>
+                            {vendorLogo ? (
+                              <img
+                                src={vendorLogo}
+                                alt={v.name}
+                                className="w-[30px] h-[30px] object-contain"
+                              />
+                            ) : (
+                              <SkeletalIcon size={20} style={{ color: strokeColor }} />
+                            )}
+                          </div>
                           <h3
-  className={`text-[15.5px] font-medium leading-5 ${
-    isActive
-      ? "text-[#FF5A1F]"
-      : "text-[#111111]"
-  }`}
->{v.name}</h3>
+                            className={`text-[15.5px] font-medium leading-5 ${isActive
+                                ? "text-[#FF5A1F]"
+                                : "text-[#111111]"
+                              }`}
+                          >{v.name}</h3>
                         </div>
                         <div className="mt-auto pt-5"><span className="inline-flex items-center rounded-full border border-[#D9D9D9] bg-white px-2 py-0.5 text-[11.5px] font-semibold uppercase tracking-[0.06em] text-[#666666]">{v.count} Models</span></div>
                       </div>
@@ -732,10 +766,10 @@ const vendorLogo = vendorModel?.vendorLogoUrl;
                   })}
                 </div>
               </section>
-              )}
+            )}
 
-              {/* 5. BROWSE BY RESEARCH AREA */}
-              {filteredResearchAreas.length > 0 && (
+            {/* 5. BROWSE BY RESEARCH AREA */}
+            {filteredResearchAreas.length > 0 && (
               <section id="section-research" className="mb-12 scroll-mt-24">
                 <div className="flex items-center justify-between mb-6 border-b border-[#ececec] pb-3">
                   <h2 className="text-[27px] font-bold text-[#111827]">Browse by Research Area</h2>
@@ -749,7 +783,7 @@ const vendorLogo = vendorModel?.vendorLogoUrl;
                       <div
                         key={d.name}
                         onClick={() => handleDomainClick(d.name)}
-                        className={`bg-white rounded-[20px] border p-5 min-h-[150px] flex flex-col transition-shadow duration-200 group no-underline cursor-pointer ${isActive ? 'border-[#FF5A1F] shadow-[0_0_0_1px_#FF5A1F] bg-[#FFF6F3]' : 'border-[#ECECEC] hover:shadow-md' }`}
+                        className={`bg-white rounded-[20px] border p-5 min-h-[150px] flex flex-col transition-shadow duration-200 group no-underline cursor-pointer ${isActive ? 'border-[#FF5A1F] shadow-[0_0_0_1px_#FF5A1F] bg-[#FFF6F3]' : 'border-[#ECECEC] hover:shadow-md'}`}
                       >
                         <div className="flex items-center gap-2">
                           <div className="flex-shrink-0 p-2 rounded-lg transition-transform group-hover:scale-150">
@@ -758,20 +792,20 @@ const vendorLogo = vendorModel?.vendorLogoUrl;
                           <h3 className="text-[15.5px] font-medium leading-5 text-[#111111]">{d.name}</h3>
                         </div>
                         <p className="mt-3 text-[13.5px] leading-5 text-[#666] line-clamp-3">
-  {getCardDescription(d.name)}
-</p>
+                          {getCardDescription(d.name)}
+                        </p>
 
-<div className="mt-auto pt-5"><span className="inline-flex items-center rounded-full border border-[#D9D9D9] bg-white px-2 py-0.5 text-[11.5px] font-semibold uppercase tracking-[0.06em] text-[#666666]">
-  {d.count} Models</span></div>
+                        <div className="mt-auto pt-5"><span className="inline-flex items-center rounded-full border border-[#D9D9D9] bg-white px-2 py-0.5 text-[11.5px] font-semibold uppercase tracking-[0.06em] text-[#666666]">
+                          {d.count} Models</span></div>
                       </div>
                     );
                   })}
                 </div>
               </section>
-              )}
+            )}
 
-              {/* 6. TRENDING MODELS */}
-              {filteredTrending.length > 0 && (
+            {/* 6. TRENDING MODELS */}
+            {filteredTrending.length > 0 && (
               <section id="section-trending" className="mb-12 scroll-mt-24">
                 <div className="flex items-center justify-between mb-6 border-b border-[#ececec] pb-3">
                   <h2 className="text-[27px] font-bold text-[#111827]">Trending Models</h2>
@@ -780,7 +814,7 @@ const vendorLogo = vendorModel?.vendorLogoUrl;
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                   {filteredTrending.map((m, idx) => {
                     const { Icon: SkeletalIcon, color: strokeColor } = getSkeletalIcon(idx + 15, m.name);
-                    
+
                     return (
                       <div
                         key={m.id}
@@ -800,9 +834,9 @@ const vendorLogo = vendorModel?.vendorLogoUrl;
                             fontWeight: '400',
                             color: '#6b7280',
                             lineHeight: '1.25rem',
-                          height: '3.75rem',
-                          
-                          overflow: 'hidden',
+                            height: '3.75rem',
+
+                            overflow: 'hidden',
                             marginTop: '0.375rem',
                             marginLeft: '2.75rem',
                             marginRight: '0.5rem'
@@ -813,222 +847,231 @@ const vendorLogo = vendorModel?.vendorLogoUrl;
                   })}
                 </div>
               </section>
-              )}
+            )}
 
-        {/* 7. RECENTLY RELEASED (Page 4) */}
-        {filteredRecentlyReleasedTable.length > 0 && (
-        <section id="section-recently-released" className="mb-12 scroll-mt-24">
-          <div className="flex items-center justify-between mb-6 border-b border-[#ececec] pb-3">
-            <h2 className="text-[27px] font-bold text-[#111827] flex items-center gap-3">
-<Calendar size={22} style={{ color: "#FF5A1F" }} />
-<span>Recently Released</span>
-</h2>
-            <span className="models-block-count text-[11px] font-normal uppercase tracking-wider text-gray-400">Latest Foundation Arrivals</span>
-          </div>
-          <div style={{ background: "#ffffff", border: "1px solid #E5E5E0", borderRadius: "2px", overflow: "hidden", boxShadow: "0 8px 30px rgba(0, 0, 0, 0.04)", padding: "20px 14px" }}>
-            <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", minWidth: "1280px", borderCollapse: "collapse", textAlign: "left", fontFamily: "'Inter', system-ui, sans-serif", tableLayout: "auto" }}>
-                <thead>
-                  <tr style={{ borderBottom: "2px solid #111111" }}>
-                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25", fontFamily: "monospace" }}>#</th>
-                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Model</th>
-                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Organization</th>
-                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Model Family</th>
-                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Category</th>
-                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Parameters</th>
-                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Context Window</th>
-                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>License</th>
-                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Benchmarks</th>
-                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Papers</th>
-                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Release Date</th>
-                    <th style={{ padding: "10px 12px", textAlign: "right", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredRecentlyReleasedTable.map((model, idx) => (
-                    <tr key={model.id} onClick={() => setInspectedModel(model)} style={{ borderBottom: "1px solid #EAE9E4", cursor: "pointer", transition: "background 0.15s ease" }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#FFF8F6"; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}>
-                      <td style={{ padding: "12px 12px", fontFamily: "monospace", fontSize: "11px", fontWeight: 400, color: "#8B8B8B", width: "1%", whiteSpace: "nowrap", verticalAlign: "middle", lineHeight: "1.3", paddingRight: "12px" }}>{(idx + 1).toString().padStart(3, "0")}</td>
-                      <td style={{ padding: "12px 12px", fontWeight: 400, fontSize: "12.5px", color: "#111111", minWidth: "160px", whiteSpace: "nowrap", wordBreak: "normal", verticalAlign: "middle", lineHeight: "1.3", paddingLeft: "12px", paddingRight: "8px" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                          <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#FF5A1F", display: "inline-block", flexShrink: 0 }}></span>
-                          <span>{model.name}</span>
-                        </div>
-                      </td>
-                      <td style={{ padding: "12px 12px", fontWeight: 400, color: "#555555", minWidth: "120px", whiteSpace: "nowrap", wordBreak: "normal", verticalAlign: "middle", lineHeight: "1.3", paddingLeft: "4px", paddingRight: "8px" }}>{model.vendor}</td>
-                      <td style={{ padding: "12px 12px", fontWeight: 400, color: "#111111", whiteSpace: "nowrap", width: "1%", verticalAlign: "middle", lineHeight: "1.3", paddingLeft: "4px", paddingRight: "8px" }}>
-                        {model.modelFamily && (
-                          <span style={{ padding: "3px 8px", background: "#F8F7F2", borderRadius: "2px", border: "1px solid #E5E5E0", fontSize: "11px", whiteSpace: "nowrap", display: "inline-block", fontWeight: 400 }}>{model.modelFamily}</span>
-                        )}
-                      </td>
-                      <td style={{ padding: "12px 12px", color: "#555555", fontWeight: 400, verticalAlign: "middle", lineHeight: "1.3" }}>{model.category}</td>
-                      <td style={{ padding: "12px 12px", fontFamily: "monospace", fontSize: "11px", color: "#333333", fontWeight: 400, verticalAlign: "middle", lineHeight: "1.3" }}>{model.parameterCount}</td>
-                      <td style={{ padding: "12px 12px", fontFamily: "monospace", fontSize: "11px", color: "#111111", fontWeight: 400, verticalAlign: "middle", lineHeight: "1.3" }}>{model.contextWindow}</td>
-                      <td style={{ padding: "12px 12px", color: "#555555", fontSize: "11px", fontWeight: 400, verticalAlign: "middle", lineHeight: "1.3" }}>{model.license}</td>
-                      <td style={{ padding: "12px 12px", textAlign: "left", fontWeight: 400, color: "#FF5A1F", fontFamily: "monospace", fontSize: "11px", verticalAlign: "middle", lineHeight: "1.3" }}>
-                        {model.trendingScore ? `⚡ ${model.trendingScore} Elo` : (model.benchmarkScore && Object.keys(model.benchmarkScore).length > 0 ? `${Object.keys(model.benchmarkScore).length} verified` : '')}
-                      </td>
-                      <td style={{ padding: "12px 12px", color: "#555555", fontWeight: 400, fontSize: "11px", verticalAlign: "middle", lineHeight: "1.3" }}>{model.paperCount} papers</td>
-                      <td style={{ padding: "12px 12px", fontFamily: "monospace", fontSize: "11px", color: "#777777", fontWeight: 400, verticalAlign: "middle", lineHeight: "1.3" }}>{model.releaseDate}</td>
-                      <td style={{ padding: "12px 12px", textAlign: "right", whiteSpace: "nowrap", verticalAlign: "middle", lineHeight: "1.3" }}>
-                        <button style={{ fontSize: "11px", fontWeight: 400, textTransform: "uppercase", letterSpacing: "0.4px", padding: "5px 10px", borderRadius: "2px", background: "#F8F7F2", color: "#111111", border: "1px solid #E5E5E0", transition: "all 0.2s ease", whiteSpace: "nowrap" }}>Inspect &rarr;</button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-        )}
+            {/* 7. RECENTLY RELEASED (Page 4) */}
+            {filteredRecentlyReleasedTable.length > 0 && (
+              <section id="section-recently-released" className="mb-12 scroll-mt-24">
+                <div className="flex items-center justify-between mb-6 border-b border-[#ececec] pb-3">
+                  <h2 className="text-[27px] font-bold text-[#111827] flex items-center gap-3">
+                    <Calendar size={22} style={{ color: "#FF5A1F" }} />
+                    <span>Recently Released</span>
+                  </h2>
+                  <span className="models-block-count text-[11px] font-normal uppercase tracking-wider text-gray-400">Latest Foundation Arrivals</span>
+                </div>
+                <div style={{ background: "#ffffff", border: "1px solid #E5E5E0", borderRadius: "2px", overflow: "hidden", boxShadow: "0 8px 30px rgba(0, 0, 0, 0.04)", padding: "20px 14px" }}>
+                  <div style={{ overflowX: "auto" }}>
+                    <table style={{ width: "100%", minWidth: "1280px", borderCollapse: "collapse", textAlign: "left", fontFamily: "'Inter', system-ui, sans-serif", tableLayout: "auto" }}>
+                      <thead>
+                        <tr style={{ borderBottom: "2px solid #111111" }}>
+                          <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25", fontFamily: "monospace" }}>#</th>
+                          <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Model</th>
+                          <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Organization</th>
+                          <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Model Family</th>
+                          <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Category</th>
+                          <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Parameters</th>
+                          <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Context Window</th>
+                          <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>License</th>
+                          <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Benchmarks</th>
+                          <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Papers</th>
+                          <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Release Date</th>
+                          <th style={{ padding: "10px 12px", textAlign: "right", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredRecentlyReleasedTable.map((model, idx) => (
+                          <tr key={model.id} onClick={() => setInspectedModel(model)} style={{ borderBottom: "1px solid #EAE9E4", cursor: "pointer", transition: "background 0.15s ease" }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#FFF8F6"; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}>
+                            <td style={{ padding: "12px 12px", fontFamily: "monospace", fontSize: "11px", fontWeight: 400, color: "#8B8B8B", width: "1%", whiteSpace: "nowrap", verticalAlign: "middle", lineHeight: "1.3", paddingRight: "12px" }}>{(idx + 1).toString().padStart(3, "0")}</td>
+                            <td style={{ padding: "12px 12px", fontWeight: 400, fontSize: "12.5px", color: "#111111", minWidth: "160px", whiteSpace: "nowrap", wordBreak: "normal", verticalAlign: "middle", lineHeight: "1.3", paddingLeft: "12px", paddingRight: "8px" }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                                <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#FF5A1F", display: "inline-block", flexShrink: 0 }}></span>
+                                <span>{model.name}</span>
+                              </div>
+                            </td>
+                            <td style={{ padding: "12px 12px", fontWeight: 400, color: "#555555", minWidth: "120px", whiteSpace: "nowrap", wordBreak: "normal", verticalAlign: "middle", lineHeight: "1.3", paddingLeft: "4px", paddingRight: "8px" }}>{model.vendor}</td>
+                            <td style={{ padding: "12px 12px", fontWeight: 400, color: "#111111", whiteSpace: "nowrap", width: "1%", verticalAlign: "middle", lineHeight: "1.3", paddingLeft: "4px", paddingRight: "8px" }}>
+                              {model.modelFamily && (
+                                <span style={{ padding: "3px 8px", background: "#F8F7F2", borderRadius: "2px", border: "1px solid #E5E5E0", fontSize: "11px", whiteSpace: "nowrap", display: "inline-block", fontWeight: 400 }}>{model.modelFamily}</span>
+                              )}
+                            </td>
+                            <td style={{ padding: "12px 12px", color: "#555555", fontWeight: 400, verticalAlign: "middle", lineHeight: "1.3" }}>{model.category}</td>
+                            <td style={{ padding: "12px 12px", fontFamily: "monospace", fontSize: "11px", color: "#333333", fontWeight: 400, verticalAlign: "middle", lineHeight: "1.3" }}>{model.parameterCount}</td>
+                            <td style={{ padding: "12px 12px", fontFamily: "monospace", fontSize: "11px", color: "#111111", fontWeight: 400, verticalAlign: "middle", lineHeight: "1.3" }}>{model.contextWindow}</td>
+                            <td style={{ padding: "12px 12px", color: "#555555", fontSize: "11px", fontWeight: 400, verticalAlign: "middle", lineHeight: "1.3" }}>{model.license}</td>
+                            <td style={{ padding: "12px 12px", textAlign: "left", fontWeight: 400, color: "#FF5A1F", fontFamily: "monospace", fontSize: "11px", verticalAlign: "middle", lineHeight: "1.3" }}>
+                              {model.trendingScore ? `⚡ ${model.trendingScore} Elo` : (model.benchmarkScore && Object.keys(model.benchmarkScore).length > 0 ? `${Object.keys(model.benchmarkScore).length} verified` : '')}
+                            </td>
+                            <td style={{ padding: "12px 12px", color: "#555555", fontWeight: 400, fontSize: "11px", verticalAlign: "middle", lineHeight: "1.3" }}>{model.paperCount} papers</td>
+                            <td style={{ padding: "12px 12px", fontFamily: "monospace", fontSize: "11px", color: "#777777", fontWeight: 400, verticalAlign: "middle", lineHeight: "1.3" }}>{model.releaseDate}</td>
+                            <td style={{ padding: "12px 12px", textAlign: "right", whiteSpace: "nowrap", verticalAlign: "middle", lineHeight: "1.3" }}>
+                              <button style={{ fontSize: "11px", fontWeight: 400, textTransform: "uppercase", letterSpacing: "0.4px", padding: "5px 10px", borderRadius: "2px", background: "#F8F7F2", color: "#111111", border: "1px solid #E5E5E0", transition: "all 0.2s ease", whiteSpace: "nowrap" }}>Inspect &rarr;</button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </section>
+            )}
 
 
 
-        {/* Search empty state — shown when no section has matching results */}
-        {searchQuery && !hasSearchResults && (
-          <div style={{ padding: "80px 20px", textAlign: "center", background: "#F8F7F2", borderRadius: "2px", border: "1px dashed #E5E5E0", marginTop: "20px" }}>
-            <p style={{ fontSize: "18px", fontWeight: 600, color: "#333333" }}>No models found</p>
-            <p style={{ fontSize: "14px", fontWeight: 400, color: "#777777", marginTop: "8px" }}>Try a different search term.</p>
-            <button
-              onClick={clearAllFilters}
-              style={{ marginTop: "16px", fontSize: "13px", fontWeight: 400, color: "#FF5A1F", background: "transparent", border: "none", cursor: "pointer", textDecoration: "underline" }}
-            >
-              Reset All Filters &amp; Browse All Foundation Models &rarr;
-            </button>
-          </div>
-        )}
-
-        {/* 9. MODEL DIRECTORY (Page 5 & 6 Table Section) */}
-        {(filteredCatalogModels.length > 0 || !searchQuery) && (
-        <div id="model-directory" style={{ marginTop: "36px", marginBottom: "64px", background: "#ffffff", border: "1px solid #E5E5E0", borderRadius: "2px", padding: "20px 14px", boxShadow: "0 8px 30px rgba(0, 0, 0, 0.04)" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "16px", paddingBottom: "24px", borderBottom: "2px solid #EAE9E4", marginBottom: "24px" }}>
-            <div>
-              <span style={{ fontSize: "11px", fontFamily: "monospace", fontWeight: 400, textTransform: "uppercase", letterSpacing: "1px", color: "#FF5A1F", background: "#FFF6F3", padding: "4px 10px", borderRadius: "2px", border: "1px solid #FFEDD5", display: "inline-block", marginBottom: "6px" }}>
-                {activeFilterLabel ? `Filtered Directory: ${activeFilterLabel}` : "Unfiltered Registry"}
-              </span>
-              <h2 style={{ fontSize: "24px", fontWeight: 400, color: "#111111", letterSpacing: "-0.3px", margin: "4px 0 0 0" }}>Model Directory ({filteredCatalogModels.length} {filteredCatalogModels.length === 1 ? "Model" : "Models"})</h2>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
-              {activeFilterLabel && (
+            {/* Search empty state — shown when no section has matching results */}
+            {searchQuery && !hasSearchResults && (
+              <div style={{ padding: "80px 20px", textAlign: "center", background: "#F8F7F2", borderRadius: "2px", border: "1px dashed #E5E5E0", marginTop: "20px" }}>
+                <p style={{ fontSize: "18px", fontWeight: 600, color: "#333333" }}>No models found</p>
+                <p style={{ fontSize: "14px", fontWeight: 400, color: "#777777", marginTop: "8px" }}>Try a different search term.</p>
                 <button
                   onClick={clearAllFilters}
-                  style={{ padding: "8px 16px", background: "#FFF6F3", color: "#FF5A1F", border: "1px solid #FFEDD5", borderRadius: "2px", fontWeight: 400, fontSize: "12.5px", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}
+                  style={{ marginTop: "16px", fontSize: "13px", fontWeight: 400, color: "#FF5A1F", background: "transparent", border: "none", cursor: "pointer", textDecoration: "underline" }}
                 >
-                  <X size={14} />
-                  <span>Clear Filter ({activeFilterLabel})</span>
+                  Reset All Filters &amp; Browse All Foundation Models &rarr;
                 </button>
-              )}
-              <span style={{ fontSize: "12.5px", fontWeight: 400, color: "#666666" }}>
-                Sorted by SOTA Elo Rank &amp; Release Velocity
-              </span>
-            </div>
-          </div>
-
-          {/* Top model highlighted normally at start of directory when filter is active (styled cleanly without bulky box) */}
-          {activeFilterLabel && topModelForSelection && (
-            <div style={{ marginBottom: "32px", paddingBottom: "24px", borderBottom: "1px solid #E5E5E0", background: "#F8F7F2", padding: "24px", borderRadius: "2px", border: "1px solid #E5E5E0", display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
-              <div>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                  <span style={{ fontSize: "11px", fontFamily: "monospace", textTransform: "uppercase", padding: "3px 8px", background: "#FFF6F3", color: "#FF5A1F", borderRadius: "2px", border: "1px solid #FFEDD5", fontWeight: 400 }}>
-                    ⚡ SOTA Leader &middot; {topModelForSelection.vendor} ({activeFilterLabel})
-                  </span>
-                  <span style={{ fontSize: "12px", fontFamily: "monospace", color: "#666666", fontWeight: 400 }}>
-                    Rank #1 verified benchmark leader
-                  </span>
-                </div>
-                <div style={{ display: "flex", alignItems: "baseline", gap: "14px", flexWrap: "wrap" }}>
-                  <h3 style={{ fontSize: "24px", fontWeight: 400, color: "#111111", letterSpacing: "-0.5px" }}>
-                    {topModelForSelection.name}
-                  </h3>
-                  <span style={{ fontSize: "14.5px", fontWeight: 400, color: "#FF5A1F" }}>
-                    {topModelForSelection.trendingScore ? `Elo: ${topModelForSelection.trendingScore}` : 'Top Rated'}
-                  </span>
-                </div>
-                {topModelForSelection.description && (
-                  <p style={{ fontSize: "14px", color: "#555555", fontWeight: 400, marginTop: "6px", maxWidth: "780px", lineHeight: "1.5" }}>
-                    {topModelForSelection.description}
-                  </p>
-                )}
               </div>
-              <button
-                onClick={() => {
-                  const match = allModels.find(x => x.name.toLowerCase() === topModelForSelection.name.toLowerCase() || x.name.toLowerCase().includes(topModelForSelection.name.toLowerCase()));
-                  if (match) setInspectedModel(match);
-                }}
-                style={{ padding: "10px 20px", background: "#111111", color: "#ffffff", borderRadius: "2px", fontWeight: 400, fontSize: "13px", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px" }}
-              >
-                <span>Inspect Specs</span>
-                <ExternalLink size={14} />
-              </button>
-            </div>
-          )}
+            )}
 
-          {filteredCatalogModels.length === 0 ? (
-            <div style={{ padding: "60px 20px", textAlign: "center", background: "#F8F7F2", borderRadius: "2px", border: "1px dashed #E5E5E0" }}>
-              <p style={{ fontSize: "15px", fontWeight: 400, color: "#555555" }}>No deep evaluation records match your exact filter ({activeFilterLabel || searchQuery}) right now.</p>
-              <button
-                onClick={clearAllFilters}
-                style={{ marginTop: "12px", fontSize: "13px", fontWeight: 400, color: "#FF5A1F", background: "transparent", border: "none", cursor: "pointer", textDecoration: "underline" }}
-              >
-                Reset All Filters &amp; Browse All Foundation Models &rarr;
-              </button>
-            </div>
-          ) : (
-            <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", minWidth: "1280px", borderCollapse: "collapse", textAlign: "left", fontFamily: "'Inter', system-ui, sans-serif", tableLayout: "auto" }}>
-                <thead>
-                  <tr style={{ borderBottom: "2px solid #111111" }}>
-                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25", fontFamily: "monospace" }}>#</th>
-                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Model</th>
-                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Organization</th>
-                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Model Family</th>
-                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Category</th>
-                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Parameters</th>
-                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Context Window</th>
-                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>License</th>
-                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Benchmarks</th>
-                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Papers</th>
-                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Release Date</th>
-                    <th style={{ padding: "10px 12px", textAlign: "right", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredCatalogModels.map((model, idx) => (
-                    <tr key={model.id} onClick={() => setInspectedModel(model)} style={{ borderBottom: "1px solid #EAE9E4", cursor: "pointer", transition: "background 0.15s ease" }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#FFF8F6"; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}>
-                      <td style={{ padding: "12px 12px", fontFamily: "monospace", fontSize: "11px", fontWeight: 400, color: "#8B8B8B", width: "1%", whiteSpace: "nowrap", verticalAlign: "middle", lineHeight: "1.3", paddingRight: "12px" }}>{(idx + 1).toString().padStart(3, "0")}</td>
-                      <td style={{ padding: "12px 12px", fontWeight: 400, fontSize: "12.5px", color: "#111111", minWidth: "160px", whiteSpace: "nowrap", wordBreak: "normal", verticalAlign: "middle", lineHeight: "1.3", paddingLeft: "12px", paddingRight: "8px" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                          <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#FF5A1F", display: "inline-block", flexShrink: 0 }}></span>
-                          <span>{model.name}</span>
-                        </div>
-                      </td>
-                      <td style={{ padding: "12px 12px", fontWeight: 400, color: "#555555", minWidth: "120px", whiteSpace: "nowrap", wordBreak: "normal", verticalAlign: "middle", lineHeight: "1.3", paddingLeft: "4px", paddingRight: "8px" }}>{model.vendor}</td>
-                      <td style={{ padding: "12px 12px", fontWeight: 400, color: "#111111", whiteSpace: "nowrap", width: "1%", verticalAlign: "middle", lineHeight: "1.3", paddingLeft: "4px", paddingRight: "8px" }}>
-                        {model.modelFamily && (
-                          <span style={{ padding: "3px 8px", background: "#F8F7F2", borderRadius: "2px", border: "1px solid #E5E5E0", fontSize: "11px", whiteSpace: "nowrap", display: "inline-block", fontWeight: 400 }}>{model.modelFamily}</span>
-                        )}
-                      </td>
-                      <td style={{ padding: "12px 12px", color: "#555555", fontWeight: 400, verticalAlign: "middle", lineHeight: "1.3" }}>{model.category}</td>
-                      <td style={{ padding: "12px 12px", fontFamily: "monospace", fontSize: "11px", color: "#333333", fontWeight: 400, verticalAlign: "middle", lineHeight: "1.3" }}>{model.parameterCount}</td>
-                      <td style={{ padding: "12px 12px", fontFamily: "monospace", fontSize: "11px", color: "#111111", fontWeight: 400, verticalAlign: "middle", lineHeight: "1.3" }}>{model.contextWindow}</td>
-                      <td style={{ padding: "12px 12px", color: "#555555", fontSize: "11px", fontWeight: 400, verticalAlign: "middle", lineHeight: "1.3" }}>{model.license}</td>
-                      <td style={{ padding: "12px 12px", textAlign: "left", fontWeight: 400, color: "#FF5A1F", fontFamily: "monospace", fontSize: "11px", verticalAlign: "middle", lineHeight: "1.3" }}>
-                        {model.trendingScore ? `⚡ ${model.trendingScore} Elo` : (model.benchmarkScore && Object.keys(model.benchmarkScore).length > 0 ? `${Object.keys(model.benchmarkScore).length} verified` : '')}
-                      </td>
-                      <td style={{ padding: "12px 12px", color: "#555555", fontWeight: 400, fontSize: "11px", verticalAlign: "middle", lineHeight: "1.3" }}>{model.paperCount} papers</td>
-                      <td style={{ padding: "12px 12px", fontFamily: "monospace", fontSize: "11px", color: "#777777", fontWeight: 400, verticalAlign: "middle", lineHeight: "1.3" }}>{model.releaseDate}</td>
-                      <td style={{ padding: "12px 12px", textAlign: "right", whiteSpace: "nowrap", verticalAlign: "middle", lineHeight: "1.3" }}>
-                        <button style={{ fontSize: "11px", fontWeight: 400, textTransform: "uppercase", letterSpacing: "0.4px", padding: "5px 10px", borderRadius: "2px", background: "#F8F7F2", color: "#111111", border: "1px solid #E5E5E0", transition: "all 0.2s ease", whiteSpace: "nowrap" }}>Inspect &rarr;</button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>)}
-            </div>
+            {/* 9. MODEL DIRECTORY (Page 5 & 6 Table Section) */}
+            {(filteredCatalogModels.length > 0 || !searchQuery) && (
+              <div id="model-directory" style={{ marginTop: "36px", marginBottom: "64px", background: "#ffffff", border: "1px solid #E5E5E0", borderRadius: "2px", padding: "20px 14px", boxShadow: "0 8px 30px rgba(0, 0, 0, 0.04)" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "16px", paddingBottom: "24px", borderBottom: "2px solid #EAE9E4", marginBottom: "24px" }}>
+                  <div>
+                    <span style={{ fontSize: "11px", fontFamily: "monospace", fontWeight: 400, textTransform: "uppercase", letterSpacing: "1px", color: "#FF5A1F", background: "#FFF6F3", padding: "4px 10px", borderRadius: "2px", border: "1px solid #FFEDD5", display: "inline-block", marginBottom: "6px" }}>
+                      {activeFilterLabel ? `Filtered Directory: ${activeFilterLabel}` : "Unfiltered Registry"}
+                    </span>
+                    <h2 style={{ fontSize: "24px", fontWeight: 400, color: "#111111", letterSpacing: "-0.3px", margin: "4px 0 0 0" }}>Model Directory ({filteredCatalogModels.length} {filteredCatalogModels.length === 1 ? "Model" : "Models"})</h2>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+                    {activeFilterLabel && (
+                      <button
+                        onClick={clearAllFilters}
+                        style={{ padding: "8px 16px", background: "#FFF6F3", color: "#FF5A1F", border: "1px solid #FFEDD5", borderRadius: "2px", fontWeight: 400, fontSize: "12.5px", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}
+                      >
+                        <X size={14} />
+                        <span>Clear Filter ({activeFilterLabel})</span>
+                      </button>
+                    )}
+                    <span style={{ fontSize: "12.5px", fontWeight: 400, color: "#666666" }}>
+                      Sorted by SOTA Elo Rank &amp; Release Velocity
+                    </span>
+                  </div>
+                </div>
+
+                {/* Top model highlighted normally at start of directory when filter is active (styled cleanly without bulky box) */}
+                {activeFilterLabel && topModelForSelection && (
+                  <div style={{ marginBottom: "32px", paddingBottom: "24px", borderBottom: "1px solid #E5E5E0", background: "#F8F7F2", padding: "24px", borderRadius: "2px", border: "1px solid #E5E5E0", display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
+                    <div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                        <span style={{ fontSize: "11px", fontFamily: "monospace", textTransform: "uppercase", padding: "3px 8px", background: "#FFF6F3", color: "#FF5A1F", borderRadius: "2px", border: "1px solid #FFEDD5", fontWeight: 400 }}>
+                          ⚡ SOTA Leader &middot; {topModelForSelection.vendor} ({activeFilterLabel})
+                        </span>
+                        <span style={{ fontSize: "12px", fontFamily: "monospace", color: "#666666", fontWeight: 400 }}>
+                          Rank #1 verified benchmark leader
+                        </span>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "baseline", gap: "14px", flexWrap: "wrap" }}>
+                        <h3 style={{ fontSize: "24px", fontWeight: 400, color: "#111111", letterSpacing: "-0.5px" }}>
+                          {topModelForSelection.name}
+                        </h3>
+                        <span style={{ fontSize: "14.5px", fontWeight: 400, color: "#FF5A1F" }}>
+                          {topModelForSelection.trendingScore ? `Elo: ${topModelForSelection.trendingScore}` : 'Top Rated'}
+                        </span>
+                      </div>
+                      {topModelForSelection.description && (
+                        <p style={{ fontSize: "14px", color: "#555555", fontWeight: 400, marginTop: "6px", maxWidth: "780px", lineHeight: "1.5" }}>
+                          {topModelForSelection.description}
+                        </p>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => {
+                        const match = allModels.find(x => x.name.toLowerCase() === topModelForSelection.name.toLowerCase() || x.name.toLowerCase().includes(topModelForSelection.name.toLowerCase()));
+                        if (match) setInspectedModel(match);
+                      }}
+                      style={{ padding: "10px 20px", background: "#111111", color: "#ffffff", borderRadius: "2px", fontWeight: 400, fontSize: "13px", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px" }}
+                    >
+                      <span>Inspect Specs</span>
+                      <ExternalLink size={14} />
+                    </button>
+                  </div>
+                )}
+
+                {loading ? (
+                  <div className="space-y-3 py-6">
+                    {Array.from({ length: 8 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="h-14 w-full rounded-md bg-gray-200 animate-pulse"
+                      />
+                    ))}
+                  </div>
+                ) : filteredCatalogModels.length === 0 ? (
+                  <div style={{ padding: "60px 20px", textAlign: "center", background: "#F8F7F2", borderRadius: "2px", border: "1px dashed #E5E5E0" }}>
+                    <p style={{ fontSize: "15px", fontWeight: 400, color: "#555555" }}>No deep evaluation records match your exact filter ({activeFilterLabel || searchQuery}) right now.</p>
+                    <button
+                      onClick={clearAllFilters}
+                      style={{ marginTop: "12px", fontSize: "13px", fontWeight: 400, color: "#FF5A1F", background: "transparent", border: "none", cursor: "pointer", textDecoration: "underline" }}
+                    >
+                      Reset All Filters &amp; Browse All Foundation Models &rarr;
+                    </button>
+                  </div>
+                ) : (
+                  <div style={{ overflowX: "auto" }}>
+                    <table style={{ width: "100%", minWidth: "1280px", borderCollapse: "collapse", textAlign: "left", fontFamily: "'Inter', system-ui, sans-serif", tableLayout: "auto" }}>
+                      <thead>
+                        <tr style={{ borderBottom: "2px solid #111111" }}>
+                          <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25", fontFamily: "monospace" }}>#</th>
+                          <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Model</th>
+                          <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Organization</th>
+                          <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Model Family</th>
+                          <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Category</th>
+                          <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Parameters</th>
+                          <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Context Window</th>
+                          <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>License</th>
+                          <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Benchmarks</th>
+                          <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Papers</th>
+                          <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Release Date</th>
+                          <th style={{ padding: "10px 12px", textAlign: "right", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredCatalogModels.map((model, idx) => (
+                          <tr key={model.id} onClick={() => setInspectedModel(model)} style={{ borderBottom: "1px solid #EAE9E4", cursor: "pointer", transition: "background 0.15s ease" }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#FFF8F6"; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}>
+                            <td style={{ padding: "12px 12px", fontFamily: "monospace", fontSize: "11px", fontWeight: 400, color: "#8B8B8B", width: "1%", whiteSpace: "nowrap", verticalAlign: "middle", lineHeight: "1.3", paddingRight: "12px" }}>{(idx + 1).toString().padStart(3, "0")}</td>
+                            <td style={{ padding: "12px 12px", fontWeight: 400, fontSize: "12.5px", color: "#111111", minWidth: "160px", whiteSpace: "nowrap", wordBreak: "normal", verticalAlign: "middle", lineHeight: "1.3", paddingLeft: "12px", paddingRight: "8px" }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                                <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#FF5A1F", display: "inline-block", flexShrink: 0 }}></span>
+                                <span>{model.name}</span>
+                              </div>
+                            </td>
+                            <td style={{ padding: "12px 12px", fontWeight: 400, color: "#555555", minWidth: "120px", whiteSpace: "nowrap", wordBreak: "normal", verticalAlign: "middle", lineHeight: "1.3", paddingLeft: "4px", paddingRight: "8px" }}>{model.vendor}</td>
+                            <td style={{ padding: "12px 12px", fontWeight: 400, color: "#111111", whiteSpace: "nowrap", width: "1%", verticalAlign: "middle", lineHeight: "1.3", paddingLeft: "4px", paddingRight: "8px" }}>
+                              {model.modelFamily && (
+                                <span style={{ padding: "3px 8px", background: "#F8F7F2", borderRadius: "2px", border: "1px solid #E5E5E0", fontSize: "11px", whiteSpace: "nowrap", display: "inline-block", fontWeight: 400 }}>{model.modelFamily}</span>
+                              )}
+                            </td>
+                            <td style={{ padding: "12px 12px", color: "#555555", fontWeight: 400, verticalAlign: "middle", lineHeight: "1.3" }}>{model.category}</td>
+                            <td style={{ padding: "12px 12px", fontFamily: "monospace", fontSize: "11px", color: "#333333", fontWeight: 400, verticalAlign: "middle", lineHeight: "1.3" }}>{model.parameterCount}</td>
+                            <td style={{ padding: "12px 12px", fontFamily: "monospace", fontSize: "11px", color: "#111111", fontWeight: 400, verticalAlign: "middle", lineHeight: "1.3" }}>{model.contextWindow}</td>
+                            <td style={{ padding: "12px 12px", color: "#555555", fontSize: "11px", fontWeight: 400, verticalAlign: "middle", lineHeight: "1.3" }}>{model.license}</td>
+                            <td style={{ padding: "12px 12px", textAlign: "left", fontWeight: 400, color: "#FF5A1F", fontFamily: "monospace", fontSize: "11px", verticalAlign: "middle", lineHeight: "1.3" }}>
+                              {model.trendingScore ? `⚡ ${model.trendingScore} Elo` : (model.benchmarkScore && Object.keys(model.benchmarkScore).length > 0 ? `${Object.keys(model.benchmarkScore).length} verified` : '')}
+                            </td>
+                            <td style={{ padding: "12px 12px", color: "#555555", fontWeight: 400, fontSize: "11px", verticalAlign: "middle", lineHeight: "1.3" }}>{model.paperCount} papers</td>
+                            <td style={{ padding: "12px 12px", fontFamily: "monospace", fontSize: "11px", color: "#777777", fontWeight: 400, verticalAlign: "middle", lineHeight: "1.3" }}>{model.releaseDate}</td>
+                            <td style={{ padding: "12px 12px", textAlign: "right", whiteSpace: "nowrap", verticalAlign: "middle", lineHeight: "1.3" }}>
+                              <button style={{ fontSize: "11px", fontWeight: 400, textTransform: "uppercase", letterSpacing: "0.4px", padding: "5px 10px", borderRadius: "2px", background: "#F8F7F2", color: "#111111", border: "1px solid #E5E5E0", transition: "all 0.2s ease", whiteSpace: "nowrap" }}>Inspect &rarr;</button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>)}
           </div>
         </div>
+      </div>
 
       {/* INSPECT MODEL SLIDE-OVER MODAL */}
       {inspectedModel && (
