@@ -213,7 +213,7 @@ function setCached(key: string, data: any) {
 }
 
 export async function getModels(params?: string): Promise<ModelItem[]> {
-  const query = params ? `?${params}` : '?limit=200';
+  const query = params ? `?${params}` : '?limit=100';
   const cacheKey = `models_${query}`;
   
   const cached = getCached<ModelItem[]>(cacheKey);
@@ -243,7 +243,7 @@ export async function getModelFacets(): Promise<ModelFacets> {
 }
 
 export function getCachedModels(params?: string): ModelItem[] | null {
-  const query = params ? `?${params}` : '?limit=200';
+  const query = params ? `?${params}` : '?limit=100';
   return getCached<ModelItem[]>(`models_${query}`);
 }
 
