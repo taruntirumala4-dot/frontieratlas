@@ -78,124 +78,54 @@ function getSkeletalIcon(index: number, name: string = "") {
  */
 
 const cardDescriptions: Record<string, string> = {
-  "hybrid reasoning": "Pioneering systems that merge neural intuition with symbolic logic, enabling instantaneous responses seamlessly paired with rigorous step-by-step verification.",
-  "coding agents": "Autonomous programming entities capable of navigating codebases, writing complex functions, and independently debugging errors without human intervention.",
-  "tool use": "Models trained to interact dynamically with external environments by interpreting API schemas, executing web searches, and querying live databases.",
-  "multimodal": "The bleeding edge of AI research focused on unifying text, vision, and audio into single, cohesive neural architectures capable of holistic real-world understanding.",
-  "reasoning": "Advanced cognitive domains focused on developing neural architectures capable of deep logic, step-by-step problem solving, and deductive inference across complex fields.",
-  "realtime audio": "Ultra-low-latency models optimized for instantaneous voice interactions, capable of capturing nuanced tone, emotion, and conversational cadence.",
-  "reinforcement learning": "Algorithms fundamentally trained through trial and error, developing robust decision-making strategies by maximizing rewards in complex simulated environments.",
-  "math": "Precision-driven architectures highly specialized in proving complex mathematical theorems, solving algebraic equations, and executing quantitative reasoning.",
-  "agentic ai": "The pursuit of autonomous, goal-oriented systems capable of breaking free from passive chat interfaces to actively plan and execute tasks across the digital world.",
-  "long context": "Memory-intensive models boasting massive token windows, capable of ingesting entire books, code repositories, or hours of video in a single prompt.",
-  "open weight": "Democratized artificial intelligence systems where the core neural network parameters are made publicly available for the broader community to study and fine-tune.",
-  "language modeling": "The foundational science of predicting the next token in a sequence, driving the core generative capabilities behind modern conversational artificial intelligence.",
-  "distillation": "Efficiency techniques focused on transferring the vast knowledge of massive teacher networks into much smaller, faster, and more cost-effective student models.",
-  "moe": "Mixture-of-Experts routing architectures that selectively activate specific neural pathways based on the prompt, vastly increasing capacity without exploding inference costs.",
-  "math & code": "Dual-specialized models that bridge the gap between logical syntax structuring and abstract mathematical problem-solving for robust STEM applications.",
-  "bilingual": "Systems heavily optimized to process and translate between two distinct languages natively, maintaining deep cultural nuances and idiomatic accuracy.",
-  "realtime search": "Models seamlessly integrated with live global web scraping capabilities to ground their responses in up-to-the-minute news, financial data, and current events.",
-  "large scale": "Massive parameter networks trained on internet-scale clusters, representing the absolute peak of modern computational engineering and raw artificial intelligence.",
-  "robotics": "Models engineered to bridge the digital and physical divide, interpreting sensor data to control robotic actuators in novel, unmapped open-world scenarios.",
-  "embodied ai": "Agents trained to perceive and act within simulated or real physical environments, learning through direct physical interaction rather than static text datasets.",
-  "vla": "Vision-Language-Action frameworks that translate complex multimodal inputs directly into precise physical motor commands for robotic hardware systems.",
-  "swe-bench": "Models specifically benchmarked against real-world software engineering issues, proving their ability to resolve complex GitHub repository bugs autonomously.",
-  "function calling": "Systems highly tuned to generate strictly formatted JSON objects that perfectly match requested software schemas, enabling flawless API integrations.",
-  "multilingual": "Global-scale language models trained across dozens of languages simultaneously to provide culturally aware translation and universal communication.",
-  "code generation": "Generative systems focused on rapidly producing boilerplate code, writing complex unit tests, and structuring entire application architectures from scratch.",
-  "small language model": "Highly efficient, parameter-constrained networks trained on strictly curated, high-quality synthetic datasets to deliver powerful reasoning on local hardware.",
-  "synthetic data": "Models heavily reliant on artificially generated training data—such as textbook logic or verified code traces—to overcome the limits of human-generated web text.",
-  "image generation": "Creative architectures capable of synthesizing photorealistic imagery, highly stylized artwork, and complex visual scenes directly from natural language prompts.",
-  "flow matching": "Next-generation generative mathematical frameworks offering incredibly fast sampling speeds and unprecedented adherence to complex text-to-image prompts.",
-  "diffusion": "Iterative generative models that gradually denoise random pixel patterns into crystal clear, high-fidelity images, audio clips, or continuous video streams.",
-  "computer vision": "State-of-the-art research dedicated to allowing machines to interpret raw visual data, recognize objects, segment complex scenes, and understand spatial relationships.",
-  "video tracking": "Temporal algorithms designed to persistently identify and follow moving objects or specific subjects seamlessly across thousands of consecutive video frames.",
-  "segmentation": "Granular visual models that precisely outline and categorize individual elements within an image down to the exact pixel boundary for precise spatial analysis.",
-  "speech-to-text": "Highly robust transcription models capable of accurately converting spoken language into text across diverse accents, background noises, and multiple languages.",
-  "audio recognition": "Systems trained to identify specific sound events in the environment—from spoken wake words and musical instruments to environmental hazards and alarms.",
-  "efficient attention": "Advanced architectural tweaks designed to drastically reduce the massive memory overhead typically associated with processing ultra-long sequences of text.",
-  "mmdit": "Multimodal diffusion transformers specifically optimized to handle diverse aspect ratios and synthesize high-fidelity textures while accurately rendering typography.",
-  "agentic coding": "Research focused on creating autonomous software engineers capable of navigating entire repositories, writing tests, and independently debugging complex systems.",
-  "stem": "Science, Technology, Engineering, and Mathematics focused networks designed to act as tireless tutors and research assistants for highly technical academic domains.",
-  "chain of thought": "Models that explicitly generate their intermediate reasoning steps before arriving at a final answer, drastically reducing logical errors in complex problem-solving.",
-  "rl": "Reinforcement learning systems that optimize their internal weights by exploring vast solution spaces and maximizing a predefined reward signal over millions of iterations.",
-  "advanced coding": "Elite programming models capable of tackling extremely complex, multi-file software engineering tasks that stump standard generative language models.",
-  "world knowledge": "Models trained on vast repositories of encyclopedic data, history, literature, and science, enabling them to act as comprehensive digital polymaths.",
-  "nuanced reasoning": "Systems highly sensitive to subtleties in human language, capable of parsing complex emotional contexts, sarcasm, and intricate philosophical arguments.",
-  "conversation": "Models primarily fine-tuned for engaging, multi-turn dialogue, capable of maintaining consistent personas and remembering long conversational histories.",
-  "enterprise": "Highly secure, compliant, and reliable models tailored specifically for corporate environments, focusing on data extraction and massive document processing.",
-  "json mode": "Systems strictly constrained to output data exclusively in valid JSON formats, ensuring completely reliable and parseable responses for automated pipelines.",
-  "128k context": "Models capable of retaining and processing up to 128,000 tokens of continuous information, perfect for analyzing dozens of PDFs or massive codebases at once.",
-  "fast": "Extremely low-latency networks optimized for high-throughput inference, delivering near-instantaneous text generation for demanding real-time applications.",
-  "cost effective": "Highly efficient models designed to deliver maximum intelligence per dollar, enabling developers to scale automated workflows without prohibitive compute expenses.",
-  "vision": "Advanced architectures dedicated solely to processing, interpreting, and reasoning over complex visual inputs, from satellite imagery to handwritten documents.",
-  "preview": "Early-access experimental models offering a glimpse into unreleased frontier architectures, testing novel reasoning capabilities before widespread deployment.",
-  "computer use": "Groundbreaking agents trained to directly interface with desktop operating systems, capable of moving cursors, clicking buttons, and navigating standard GUIs.",
-  "coding leader": "The absolute pinnacle of software engineering models, dominating industry benchmarks and defining the state-of-the-art for autonomous programming capabilities.",
-  "high velocity": "Systems engineered specifically for speed, combining specialized hardware optimization with efficient architectures to deliver massive token generation rates.",
-  "sub-second": "Ultra-responsive models designed to react to human input in less than one second, creating seamless, natural, and highly interactive user experiences.",
-  "coding": "Fundamental models focused on understanding programming syntax, offering real-time code completion, syntax highlighting, and general development assistance.",
-  "multimodal reasoning": "Advanced systems that don't just process text and images, but actually perform complex logical deductions based on the intricate relationship between the two.",
-  "1m context": "Massive context models capable of ingesting over one million tokens, allowing for the instantaneous analysis of entire series of books or massive corporate archives.",
-  "flash speed": "Incredibly optimized inference pipelines built to serve responses at blistering speeds, perfectly suited for real-time translation and synchronous agentic loops.",
-  "2m context": "The absolute frontier of memory retention, capable of analyzing over two million tokens of text or several hours of continuous video natively in a single session.",
-  "video understanding": "Temporal models trained to watch and comprehend video files, capable of answering complex questions about plot, character actions, and scene transitions.",
-  "vision-language": "Systems seamlessly bridging the gap between sight and text, allowing users to converse naturally about the precise contents of uploaded images or complex charts.",
-  "document ocr": "Optical character recognition models supercharged by deep learning to accurately extract complex tabular data, handwriting, and layout structures from raw PDFs.",
-  "open weights": "Foundation models released freely to the public, empowering researchers and developers globally to innovate on top of state-of-the-art neural architectures.",
-  "real-time knowledge": "Models that bypass the limitations of static training cutoffs by continuously querying live search engines to augment their answers with current world events.",
-  "mathematics": "Networks dedicated to quantitative logic, capable of writing rigorous proofs, solving calculus problems, and navigating abstract mathematical concepts flawlessly.",
-  "general purpose": "Versatile, well-rounded foundation models designed as the ultimate digital assistants, equally capable of writing poetry, summarizing emails, and drafting code.",
-  "agents": "Systems designed to break free from passive chat interfaces, actively planning and executing multi-step tasks across the internet to achieve user-defined goals.",
-  "video": "Broad architectures focused on the generation, manipulation, and deep temporal understanding of moving visual sequences and continuous digital media.",
-  "open source": "Fully transparent AI ecosystems where not just the weights, but the training data, code, and methodologies are freely shared for unparalleled global collaboration.",
-  "document ai": "Applying advanced computer vision and natural language processing to instantly extract, analyze, and synthesize knowledge from massive volumes of dense paperwork.",
-  "search": "Systems optimized for information retrieval, expertly navigating vast vector databases and traditional indexes to perfectly ground their generative responses.",
-  "instruction following": "Models highly aligned to strictly adhere to complex, multi-constraint user prompts without deviating or hallucinating outside the defined boundaries.",
-  "small language models": "Compact neural networks that punch vastly above their weight class, delivering impressive reasoning capabilities while running smoothly on standard edge devices.",
-  "llama": "Meta's flagship open-weight ecosystem, continuously redefining the boundaries of accessible, high-performance artificial intelligence for developers worldwide.",
-  "gpt": "OpenAI's legendary generative pre-trained transformers, consistently setting the industry standard for general reasoning, creativity, and multimodal capabilities.",
-  "moonshot": "Advanced long-context specialists from Moonshot AI, engineered specifically to process and understand millions of characters of complex documents seamlessly.",
-  "claude": "Anthropic's highly steerable, constitutional AI family, renowned for its unparalleled safety, massive context windows, and exceptional coding proficiency.",
-  "qwen": "The dedicated research division behind Alibaba's flagship open-weight models, rapidly advancing state-of-the-art capabilities in coding, math, and vision.",
-  "gemma": "Google's lightweight, state-of-the-art open models built directly from Gemini research, delivering unmatched single-GPU reasoning and instruction following.",
-  "molmo": "An innovative open-weight vision-language family trained purely on highly curated datasets, matching proprietary leaders on zero-shot visual question answering.",
-  "grok": "xAI's unapologetic, real-time foundation models, deeply integrated with global knowledge streams and designed for high-velocity coding and mathematical logic.",
-  "mistral": "The highly efficient European foundation models, famous for pioneering sparse mixture-of-experts architectures and championing the open-source AI movement.",
-  "gemini": "Google's natively multimodal flagship ecosystem, engineered from the ground up to seamlessly process text, audio, images, and video in real-time.",
-  "glm": "Zhipu AI's powerful bilingual foundation models, bridging the gap between English and Chinese with exceptional logical deduction and deep technical reasoning.",
-  "meta ai": "The research powerhouse behind the Llama ecosystem, actively democratizing access to frontier-level artificial intelligence and driving global open-source innovation.",
-  "stability ai": "Pioneers of the generative media revolution, responsible for breakthrough open-weight diffusion architectures that redefine digital art and image synthesis.",
-  "moonshot ai": "A visionary startup pushing the absolute limits of context windows, specializing in models capable of ingesting and understanding millions of tokens natively.",
-  "alibaba cloud": "The global cloud computing leader driving the Qwen series, delivering massive-scale multilingual and reasoning foundation models to the open-source community.",
-  "allen institute for ai": "A premier non-profit research institute dedicated to building open, highly transparent, and universally beneficial artificial intelligence systems for humanity.",
-  "google deepmind": "The legendary artificial intelligence laboratory responsible for historic breakthroughs in reinforcement learning, protein folding, and the Gemini ecosystem.",
-  "openai": "The pioneering AGI research organization that catalyzed the modern AI era with the GPT series, constantly redefining the absolute frontier of machine intelligence.",
-  "black forest labs": "An elite team of generative media researchers pushing the boundaries of flow matching and diffusion to achieve unprecedented photorealism in image generation.",
-  "mistral ai": "The European powerhouse championing efficient, high-performance open-weight models, leading the industry in mixture-of-experts and sparse architectures.",
-  "microsoft research": "A global titan of computer science, contributing foundational breakthroughs in small language models, synthetic data training, and enterprise-scale deployment.",
-  "xai": "An ambitious research organization driven by the pursuit of maximum truth-seeking models, integrating massive real-time knowledge streams with high-velocity reasoning.",
-  "zhipu ai": "A leading artificial intelligence startup renowned for the GLM series, delivering robust bilingual models that excel at complex logical reasoning and coding.",
-  "deepseek ai": "A trailblazing research organization pushing the limits of open-weight coding and mathematical reasoning, frequently rivaling the most expensive closed systems.",
-  "anthropic": "An AI safety and research company focused on building highly reliable, interpretable, and steerable frontier foundation systems for complex enterprise applications.",
-  "audio & speech": "Research dedicated to breaking the barriers of human-computer interaction through instantaneous, emotionally intelligent, and multilingual voice processing.",
-  "multimodal ai": "Pioneering methodologies that seamlessly blend diverse data streams, empowering models to analyze physical environments and deliver rich multimedia interactions.",
-  "robotics & vla": "The critical intersection of digital intelligence and physical hardware, training models to translate visual inputs into precise robotic motor commands in open worlds.",
-  "large language models": "The foundational science of massive-scale sequence prediction, driving the core generative capabilities and reasoning engines behind modern artificial intelligence.",
-  "vision & generation": "Groundbreaking generative frameworks combining deep visual understanding with complex diffusion techniques to synthesize stunning, photorealistic digital media.",
+  "hybrid reasoning": "Methods for combining neural networks with symbolic logic.",
+  "coding agents": "Autonomous entities designed to navigate and write code.",
+  "tool use": "Models capable of interacting dynamically with external APIs.",
+  "multimodal": "Models combining text, images, audio, and video inputs.",
+  "reasoning": "Advanced architectures built for deep logical deductions.",
+  "realtime audio": "Low-latency models optimized for instantaneous voice interactions.",
+  "agentic ai": "Goal-oriented systems that execute complex digital workflows.",
+  "long context": "Memory-intensive models capable of ingesting massive datasets.",
 };
 
+const templates = [
+  "Advanced methods for {X}.",
+  "Specialized systems leveraging {X} for improved accuracy.",
+  "Techniques utilizing {X} to enhance generative models.",
+  "Optimized implementations of {X} for efficient scaling.",
+  "Core frameworks applying {X}.",
+  "Next-generation ecosystems focused entirely on {X}.",
+  "Breakthrough approaches in {X} for structuring information.",
+  "Innovative algorithms applying {X} to complex reasoning.",
+  "Robust architectures built around {X} capabilities.",
+  "Transformative tools centered on {X} development.",
+  "Deep neural frameworks specialized in {X}.",
+  "Models capitalizing on {X} for faster inference speeds.",
+  "Architectures exploring the limits of {X}.",
+  "Digital pipelines integrating {X} for peak performance.",
+  "Novel approaches advancing {X} and multimodal synthesis."
+];
+
+
 function getCardDescription(name: string): string {
-  const normalized = (name || "").toLowerCase().trim();
-  return (
-    cardDescriptions[normalized] ||
-    `Advanced methodologies exploring ${name} to push the boundaries of modern artificial intelligence.`
-  );
+   const normalized = (name || "").toLowerCase().trim();
+  if (cardDescriptions[normalized]) return cardDescriptions[normalized];
+  
+  let hash = 0;
+  for (let i = 0; i < normalized.length; i++) {
+    hash = normalized.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  
+  const templateIndex = Math.abs(hash) % templates.length;
+  const template = templates[templateIndex];
+  
+  const formattedName = name.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  return template.replace("{X}", formattedName.toLowerCase());
 }
 
 function CapabilitySkeleton() {
   return (
-    <div className="animate-pulse bg-white rounded-[20px] border border-[#ECECEC] p-5 min-h-[150px]">
+    <div className="animate-pulse bg-white rounded-md border border-[#ECECEC] p-3.5 min-h-[75px]">
       <div className="flex items-center gap-3">
         <div className="w-9 h-9 rounded-lg bg-gray-200" />
         <div className="h-5 w-32 rounded bg-gray-200" />
@@ -518,7 +448,7 @@ const [loading, setLoading] = useState(
         lineHeight: "21px",
       }}
     >
-      <div className="w-full max-w-[1600px] mx-auto px-[44px] md:px-[90px] xl:px-[170px] pt-[28px] pb-16">
+      <div className="w-full max-w-[1370px] mx-auto px-5 md:px-10 lg:px-16 xl:px-24 pt-6 pb-12">
         <nav className="flex items-center gap-2 text-[13px] text-[#8B8B8B] mb-6">
           <Link href="/" className="hover:text-[#FF5A1F] transition-colors no-underline">
             Home
@@ -633,7 +563,7 @@ const [loading, setLoading] = useState(
                   </div>
                   <button
                     onClick={() => alert("Thank you! Suggestion recorded for next taxonomy update.")}
-                    className="mt-3 w-full flex items-center justify-center gap-1.5 bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-lg text-xs font-semibold transition-colors shadow-sm cursor-pointer"
+                    className="mt-2 w-full flex items-center justify-center gap-1.5 bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-lg text-xs font-semibold transition-colors shadow-sm cursor-pointer"
                   >
                     <Plus className="h-3.5 w-3.5" /> Suggest a Domain
                   </button>
@@ -653,7 +583,7 @@ const [loading, setLoading] = useState(
   {loading ? "…" : facets?.capabilities?.length} Tasks &amp; Modalities
 </span>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {loading
                   ? Array.from({ length: 8 }).map((_, i) => (
                     <CapabilitySkeleton key={i} />
@@ -665,19 +595,19 @@ const [loading, setLoading] = useState(
                       <div
                         key={cap.name}
                         onClick={() => handleCapabilityClick(cap.name)}
-                        className={`bg-white rounded-[20px] border p-5 min-h-[150px] flex flex-col transition-shadow duration-200 group no-underline cursor-pointer ${isActive ? 'border-[#FF5A1F] shadow-[0_0_0_1px_#FF5A1F] bg-[#FFF6F3]' : 'border-[#ECECEC] hover:shadow-md'}`}
+                        className={`bg-white rounded-md border p-3.5 min-h-[75px] flex flex-col transition-shadow duration-200 group no-underline cursor-pointer ${isActive ? 'border-[#FF5A1F] shadow-[0_0_0_1px_#FF5A1F] bg-[#FFF6F3]' : 'border-[#ECECEC] hover:shadow-md'}`}
                       >
-                        <div className="flex items-center gap-2">
-                          <div className="flex-shrink-0 p-2 rounded-lg transition-transform group-hover:scale-150">
-                            <SkeletalIcon size={20} style={{ color: strokeColor }} />
+                        <div className="flex items-start gap-4">
+                          <div className="flex items-center justify-center transition-transform duration-200 group-hover:scale-125">
+                            <SkeletalIcon size={22} strokeWidth={2.2} style={{ color: strokeColor }} />
                           </div>
-                          <h3 className="text-[15.5px] font-medium leading-5 text-[#111111]">{cap.name}</h3>
+                          <h3 className="text-[#111111] text-[15px] font-medium leading-5">{cap.name}</h3>
                         </div>
-                        <p className="mt-3 text-[13.5px] leading-5 text-[#666] line-clamp-3">
+                        <p className="mt-2 text-[13px] leading-5 text-[#666] line-clamp-3">
                           {getCardDescription(cap.name)}
                         </p>
 
-                        <div className="mt-auto pt-5"><span className="inline-flex items-center rounded-full border border-[#D9D9D9] bg-white px-2 py-0.5 text-[11.5px] font-semibold uppercase tracking-[0.06em] text-[#666666]">
+                        <div className="mt-auto pt-3"><span className="inline-flex items-center rounded-full border border-[#D9D9D9] bg-white px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-[#666666]">
                           {cap.count} Models</span></div>
                       </div>
                     );
@@ -693,7 +623,7 @@ const [loading, setLoading] = useState(
                   <h2 className="text-[27px] font-bold text-[#111827]">Browse by Model Family</h2>
                   <span className="models-block-count text-[11px] font-normal uppercase tracking-wider text-gray-400">{facets?.modelFamilies?.length ?? "—"} Model Families</span>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                   {filteredModelFamilies.map((fam, idx) => {
                     const { Icon: SkeletalIcon, color: strokeColor } = getSkeletalIcon(idx + 3, fam.name);
                     const isActive = selectedFamily === fam.name;
@@ -702,15 +632,15 @@ const [loading, setLoading] = useState(
                       <div
                         key={fam.name}
                         onClick={() => handleFamilyClick(fam.name)}
-                        className={`bg-white rounded-[20px] border p-5 min-h-[150px] flex flex-col transition-shadow duration-200 group no-underline cursor-pointer ${isActive ? 'border-[#FF5A1F] shadow-[0_0_0_1px_#FF5A1F] bg-[#FFF6F3]' : 'border-[#ECECEC] hover:shadow-md'}`}
+                        className={`bg-white rounded-md border p-3.5 min-h-[75px] flex flex-col transition-shadow duration-200 group no-underline cursor-pointer ${isActive ? 'border-[#FF5A1F] shadow-[0_0_0_1px_#FF5A1F] bg-[#FFF6F3]' : 'border-[#ECECEC] hover:shadow-md'}`}
                       >
-                        <div className="flex items-center gap-2">
-                          <div className="flex-shrink-0 p-2 rounded-lg transition-transform group-hover:scale-110">
-                            <SkeletalIcon size={20} style={{ color: strokeColor }} />
+                        <div className="flex items-start gap-4">
+                          <div className="flex items-center justify-center transition-transform duration-200 group-hover:scale-125">
+                            <SkeletalIcon size={22} strokeWidth={2.2} style={{ color: strokeColor }} />
                           </div>
-                          <h3 className="text-[15.5px] font-medium leading-5 text-[#111111]">{fam.name}</h3>
+                          <h3 className="text-[#111111] text-[15px] font-medium leading-5">{fam.name}</h3>
                         </div>
-                        <div className="mt-auto pt-5"><span className="inline-flex items-center rounded-full border border-[#D9D9D9] bg-white px-2 py-0.5 text-[11.5px] font-semibold uppercase tracking-[0.06em] text-[#666666]">{fam.count} Models</span></div>
+                        <div className="mt-auto pt-3"><span className="inline-flex items-center rounded-full border border-[#D9D9D9] bg-white px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-[#666666]">{fam.count} Models</span></div>
                       </div>
                     );
                   })}
@@ -725,7 +655,7 @@ const [loading, setLoading] = useState(
                   <h2 className="text-[27px] font-bold text-[#111827]">Browse by Organization</h2>
                   <span className="models-block-count text-[11px] font-normal uppercase tracking-wider text-gray-400">{facets?.vendors?.length} Leading Labs</span>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                   {filteredVendors.map((v, idx) => {
                     const { Icon: SkeletalIcon, color: strokeColor } = getSkeletalIcon(idx + 7, v.name);
                     const isActive = selectedVendor === v.name;
@@ -739,9 +669,9 @@ const [loading, setLoading] = useState(
                       <div
                         key={v.name}
                         onClick={() => handleVendorClick(v.name)}
-                        className={`bg-white rounded-[20px] border p-5 min-h-[150px] flex flex-col transition-shadow duration-200 group no-underline cursor-pointer ${isActive ? 'border-[#FF5A1F] shadow-[0_0_0_1px_#FF5A1F] bg-[#FFF6F3]' : 'border-[#ECECEC] hover:shadow-md'}`}
+                        className={`bg-white rounded-md border p-3.5 min-h-[75px] flex flex-col transition-shadow duration-200 group no-underline cursor-pointer ${isActive ? 'border-[#FF5A1F] shadow-[0_0_0_1px_#FF5A1F] bg-[#FFF6F3]' : 'border-[#ECECEC] hover:shadow-md'}`}
                       >
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-start gap-4">
                           <div className="flex-shrink-0 p-2 rounded-lg transition-transform group-hover:scale-110">
                             {vendorLogo ? (
                               <img
@@ -750,17 +680,17 @@ const [loading, setLoading] = useState(
                                 className="w-[30px] h-[30px] object-contain"
                               />
                             ) : (
-                              <SkeletalIcon size={20} style={{ color: strokeColor }} />
+                              <SkeletalIcon size={22} strokeWidth={2.2} style={{ color: strokeColor }} />
                             )}
                           </div>
                           <h3
-                            className={`text-[15.5px] font-medium leading-5 ${isActive
+                            className={`mt-3 text-[15px] font-medium leading-5 ${isActive
                                 ? "text-[#FF5A1F]"
                                 : "text-[#111111]"
                               }`}
                           >{v.name}</h3>
                         </div>
-                        <div className="mt-auto pt-5"><span className="inline-flex items-center rounded-full border border-[#D9D9D9] bg-white px-2 py-0.5 text-[11.5px] font-semibold uppercase tracking-[0.06em] text-[#666666]">{v.count} Models</span></div>
+                        <div className="mt-auto pt-3"><span className="inline-flex items-center rounded-full border border-[#D9D9D9] bg-white px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-[#666666]">{v.count} Models</span></div>
                       </div>
                     );
                   })}
@@ -775,7 +705,7 @@ const [loading, setLoading] = useState(
                   <h2 className="text-[27px] font-bold text-[#111827]">Browse by Research Area</h2>
                   <span className="models-block-count text-[11px] font-normal uppercase tracking-wider text-gray-400">{facets?.researchAreas?.length} Modalities &amp; Domains</span>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                   {filteredResearchAreas.map((d, idx) => {
                     const { Icon: SkeletalIcon, color: strokeColor } = getSkeletalIcon(idx + 11, d.name);
                     const isActive = selectedDomain === d.name;
@@ -783,19 +713,19 @@ const [loading, setLoading] = useState(
                       <div
                         key={d.name}
                         onClick={() => handleDomainClick(d.name)}
-                        className={`bg-white rounded-[20px] border p-5 min-h-[150px] flex flex-col transition-shadow duration-200 group no-underline cursor-pointer ${isActive ? 'border-[#FF5A1F] shadow-[0_0_0_1px_#FF5A1F] bg-[#FFF6F3]' : 'border-[#ECECEC] hover:shadow-md'}`}
+                        className={`bg-white rounded-md border p-3.5 min-h-[75px] flex flex-col transition-shadow duration-200 group no-underline cursor-pointer ${isActive ? 'border-[#FF5A1F] shadow-[0_0_0_1px_#FF5A1F] bg-[#FFF6F3]' : 'border-[#ECECEC] hover:shadow-md'}`}
                       >
-                        <div className="flex items-center gap-2">
-                          <div className="flex-shrink-0 p-2 rounded-lg transition-transform group-hover:scale-150">
-                            <SkeletalIcon size={20} style={{ color: strokeColor }} />
+                        <div className="flex items-start gap-4">
+                          <div className="flex items-center justify-center transition-transform duration-200 group-hover:scale-125">
+                            <SkeletalIcon size={22} strokeWidth={2.2} style={{ color: strokeColor }} />
                           </div>
-                          <h3 className="text-[15.5px] font-medium leading-5 text-[#111111]">{d.name}</h3>
+                          <h3 className="text-[#111111] text-[15px] font-medium leading-5">{d.name}</h3>
                         </div>
-                        <p className="mt-3 text-[13.5px] leading-5 text-[#666] line-clamp-3">
+                        <p className="mt-2 text-[13px] leading-5 text-[#666] line-clamp-3">
                           {getCardDescription(d.name)}
                         </p>
 
-                        <div className="mt-auto pt-5"><span className="inline-flex items-center rounded-full border border-[#D9D9D9] bg-white px-2 py-0.5 text-[11.5px] font-semibold uppercase tracking-[0.06em] text-[#666666]">
+                        <div className="mt-auto pt-3"><span className="inline-flex items-center rounded-full border border-[#D9D9D9] bg-white px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-[#666666]">
                           {d.count} Models</span></div>
                       </div>
                     );
@@ -811,7 +741,7 @@ const [loading, setLoading] = useState(
                   <h2 className="text-[27px] font-bold text-[#111827]">Trending Models</h2>
                   <span className="models-block-count text-[11px] font-normal uppercase tracking-wider text-gray-400">Most Active in 2025</span>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                   {filteredTrending.map((m, idx) => {
                     const { Icon: SkeletalIcon, color: strokeColor } = getSkeletalIcon(idx + 15, m.name);
 
@@ -819,28 +749,18 @@ const [loading, setLoading] = useState(
                       <div
                         key={m.id}
                         onClick={() => setInspectedModel(m)}
-                        className="bg-white rounded-[20px] border border-[#ECECEC] p-5 min-h-[150px] flex flex-col hover:shadow-md transition-shadow duration-200 group no-underline"
+                        className="bg-white rounded-md border border-[#ECECEC] p-3.5 min-h-[75px] flex flex-col hover:shadow-md transition-shadow duration-200 group no-underline"
                       >
-                        <div className="flex items-center gap-2">
-                          <div className="flex-shrink-0 p-2 rounded-lg transition-transform group-hover:scale-110">
-                            <SkeletalIcon size={20} style={{ color: strokeColor }} />
+                        <div className="flex items-start gap-4">
+                          <div className="flex items-center justify-center transition-transform duration-200 group-hover:scale-125">
+                            <SkeletalIcon size={22} strokeWidth={2.2} style={{ color: strokeColor }} />
                           </div>
-                          <h3 className="text-[15.5px] font-medium leading-5 text-[#111111]">{m.name}</h3>
+                          <h3 className="text-[#111111] text-[15px] font-medium leading-5">{m.name}</h3>
                         </div>
                         {m.description && (
-                          <p style={{
-                            fontFamily: 'inherit',
-                            fontSize: '0.875rem',
-                            fontWeight: '400',
-                            color: '#6b7280',
-                            lineHeight: '1.25rem',
-                            height: '3.75rem',
-
-                            overflow: 'hidden',
-                            marginTop: '0.375rem',
-                            marginLeft: '2.75rem',
-                            marginRight: '0.5rem'
-                          }} title={m.description}>{m.description}</p>
+                          <p className="mt-2 text-[13px] leading-5 text-[#666] line-clamp-3">
+                            {m.description}
+                          </p>
                         )}
                       </div>
                     );
