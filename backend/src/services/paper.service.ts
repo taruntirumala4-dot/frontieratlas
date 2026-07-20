@@ -320,6 +320,8 @@ export const getPapers = async (
         gte: publicationDate,
       };
     }
+  } else {
+    where.publicationDate = { not: null };
   }
 
   const orderBy =
