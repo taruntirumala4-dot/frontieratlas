@@ -77,7 +77,7 @@ function getSkeletalIcon(index: number, name: string = "") {
  * for every single capability, family, developer, and domain present in the Frontier Atlas models.
  */
 
-export const cardDescriptions: Record<string, string> = {
+const cardDescriptions: Record<string, string> = {
   "hybrid reasoning": "Methods for combining neural networks with symbolic logic.",
   "coding agents": "Autonomous entities designed to navigate and write code.",
   "tool use": "Models capable of interacting dynamically with external APIs.",
