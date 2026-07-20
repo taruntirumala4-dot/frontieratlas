@@ -15803,8 +15803,18 @@ export namespace Prisma {
 
   export type AggregateModel = {
     _count: ModelCountAggregateOutputType | null
+    _avg: ModelAvgAggregateOutputType | null
+    _sum: ModelSumAggregateOutputType | null
     _min: ModelMinAggregateOutputType | null
     _max: ModelMaxAggregateOutputType | null
+  }
+
+  export type ModelAvgAggregateOutputType = {
+    trendingScore: number | null
+  }
+
+  export type ModelSumAggregateOutputType = {
+    trendingScore: number | null
   }
 
   export type ModelMinAggregateOutputType = {
@@ -15842,6 +15852,7 @@ export namespace Prisma {
     repositoryUrl: string | null
     api_url: string | null
     apiUrl: string | null
+    trendingScore: number | null
   }
 
   export type ModelMaxAggregateOutputType = {
@@ -15879,6 +15890,7 @@ export namespace Prisma {
     repositoryUrl: string | null
     api_url: string | null
     apiUrl: string | null
+    trendingScore: number | null
   }
 
   export type ModelCountAggregateOutputType = {
@@ -15923,9 +15935,18 @@ export namespace Prisma {
     repositoryUrl: number
     api_url: number
     apiUrl: number
+    trendingScore: number
     _all: number
   }
 
+
+  export type ModelAvgAggregateInputType = {
+    trendingScore?: true
+  }
+
+  export type ModelSumAggregateInputType = {
+    trendingScore?: true
+  }
 
   export type ModelMinAggregateInputType = {
     id?: true
@@ -15962,6 +15983,7 @@ export namespace Prisma {
     repositoryUrl?: true
     api_url?: true
     apiUrl?: true
+    trendingScore?: true
   }
 
   export type ModelMaxAggregateInputType = {
@@ -15999,6 +16021,7 @@ export namespace Prisma {
     repositoryUrl?: true
     api_url?: true
     apiUrl?: true
+    trendingScore?: true
   }
 
   export type ModelCountAggregateInputType = {
@@ -16043,6 +16066,7 @@ export namespace Prisma {
     repositoryUrl?: true
     api_url?: true
     apiUrl?: true
+    trendingScore?: true
     _all?: true
   }
 
@@ -16084,6 +16108,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: ModelAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ModelSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: ModelMinAggregateInputType
@@ -16114,6 +16150,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: ModelCountAggregateInputType | true
+    _avg?: ModelAvgAggregateInputType
+    _sum?: ModelSumAggregateInputType
     _min?: ModelMinAggregateInputType
     _max?: ModelMaxAggregateInputType
   }
@@ -16160,7 +16198,10 @@ export namespace Prisma {
     repositoryUrl: string | null
     api_url: string | null
     apiUrl: string | null
+    trendingScore: number | null
     _count: ModelCountAggregateOutputType | null
+    _avg: ModelAvgAggregateOutputType | null
+    _sum: ModelSumAggregateOutputType | null
     _min: ModelMinAggregateOutputType | null
     _max: ModelMaxAggregateOutputType | null
   }
@@ -16221,6 +16262,7 @@ export namespace Prisma {
     repositoryUrl?: boolean
     api_url?: boolean
     apiUrl?: boolean
+    trendingScore?: boolean
     papers?: boolean | Model$papersArgs<ExtArgs>
     _count?: boolean | ModelCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["model"]>
@@ -16267,6 +16309,7 @@ export namespace Prisma {
     repositoryUrl?: boolean
     api_url?: boolean
     apiUrl?: boolean
+    trendingScore?: boolean
   }, ExtArgs["result"]["model"]>
 
   export type ModelSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -16311,6 +16354,7 @@ export namespace Prisma {
     repositoryUrl?: boolean
     api_url?: boolean
     apiUrl?: boolean
+    trendingScore?: boolean
   }, ExtArgs["result"]["model"]>
 
   export type ModelSelectScalar = {
@@ -16355,9 +16399,10 @@ export namespace Prisma {
     repositoryUrl?: boolean
     api_url?: boolean
     apiUrl?: boolean
+    trendingScore?: boolean
   }
 
-  export type ModelOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "vendor" | "vendor_logo_url" | "release_date" | "parameter_count" | "modality" | "access_type" | "openness_type" | "description" | "benchmark_score" | "created_at" | "updated_at" | "createdAt" | "updatedAt" | "releaseDate" | "parameterCount" | "accessType" | "opennessType" | "benchmarkScore" | "model_family" | "modelFamily" | "category" | "capabilities" | "research_areas" | "researchAreas" | "architecture" | "context_window" | "contextWindow" | "license" | "model_versions" | "modelVersions" | "release_notes" | "releaseNotes" | "paper_url" | "paperUrl" | "repository_url" | "repositoryUrl" | "api_url" | "apiUrl", ExtArgs["result"]["model"]>
+  export type ModelOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "vendor" | "vendor_logo_url" | "release_date" | "parameter_count" | "modality" | "access_type" | "openness_type" | "description" | "benchmark_score" | "created_at" | "updated_at" | "createdAt" | "updatedAt" | "releaseDate" | "parameterCount" | "accessType" | "opennessType" | "benchmarkScore" | "model_family" | "modelFamily" | "category" | "capabilities" | "research_areas" | "researchAreas" | "architecture" | "context_window" | "contextWindow" | "license" | "model_versions" | "modelVersions" | "release_notes" | "releaseNotes" | "paper_url" | "paperUrl" | "repository_url" | "repositoryUrl" | "api_url" | "apiUrl" | "trendingScore", ExtArgs["result"]["model"]>
   export type ModelInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     papers?: boolean | Model$papersArgs<ExtArgs>
     _count?: boolean | ModelCountOutputTypeDefaultArgs<ExtArgs>
@@ -16412,6 +16457,7 @@ export namespace Prisma {
       repositoryUrl: string | null
       api_url: string | null
       apiUrl: string | null
+      trendingScore: number | null
     }, ExtArgs["result"]["model"]>
     composites: {}
   }
@@ -16877,6 +16923,7 @@ export namespace Prisma {
     readonly repositoryUrl: FieldRef<"Model", 'String'>
     readonly api_url: FieldRef<"Model", 'String'>
     readonly apiUrl: FieldRef<"Model", 'String'>
+    readonly trendingScore: FieldRef<"Model", 'Float'>
   }
     
 
@@ -34866,7 +34913,8 @@ export namespace Prisma {
     repository_url: 'repository_url',
     repositoryUrl: 'repositoryUrl',
     api_url: 'api_url',
-    apiUrl: 'apiUrl'
+    apiUrl: 'apiUrl',
+    trendingScore: 'trendingScore'
   };
 
   export type ModelScalarFieldEnum = (typeof ModelScalarFieldEnum)[keyof typeof ModelScalarFieldEnum]
@@ -36169,6 +36217,7 @@ export namespace Prisma {
     repositoryUrl?: StringNullableFilter<"Model"> | string | null
     api_url?: StringNullableFilter<"Model"> | string | null
     apiUrl?: StringNullableFilter<"Model"> | string | null
+    trendingScore?: FloatNullableFilter<"Model"> | number | null
     papers?: PaperModelListRelationFilter
   }
 
@@ -36214,6 +36263,7 @@ export namespace Prisma {
     repositoryUrl?: SortOrderInput | SortOrder
     api_url?: SortOrderInput | SortOrder
     apiUrl?: SortOrderInput | SortOrder
+    trendingScore?: SortOrderInput | SortOrder
     papers?: PaperModelOrderByRelationAggregateInput
   }
 
@@ -36262,6 +36312,7 @@ export namespace Prisma {
     repositoryUrl?: StringNullableFilter<"Model"> | string | null
     api_url?: StringNullableFilter<"Model"> | string | null
     apiUrl?: StringNullableFilter<"Model"> | string | null
+    trendingScore?: FloatNullableFilter<"Model"> | number | null
     papers?: PaperModelListRelationFilter
   }, "id" | "slug">
 
@@ -36307,9 +36358,12 @@ export namespace Prisma {
     repositoryUrl?: SortOrderInput | SortOrder
     api_url?: SortOrderInput | SortOrder
     apiUrl?: SortOrderInput | SortOrder
+    trendingScore?: SortOrderInput | SortOrder
     _count?: ModelCountOrderByAggregateInput
+    _avg?: ModelAvgOrderByAggregateInput
     _max?: ModelMaxOrderByAggregateInput
     _min?: ModelMinOrderByAggregateInput
+    _sum?: ModelSumOrderByAggregateInput
   }
 
   export type ModelScalarWhereWithAggregatesInput = {
@@ -36357,6 +36411,7 @@ export namespace Prisma {
     repositoryUrl?: StringNullableWithAggregatesFilter<"Model"> | string | null
     api_url?: StringNullableWithAggregatesFilter<"Model"> | string | null
     apiUrl?: StringNullableWithAggregatesFilter<"Model"> | string | null
+    trendingScore?: FloatNullableWithAggregatesFilter<"Model"> | number | null
   }
 
   export type PaperModelWhereInput = {
@@ -38444,6 +38499,7 @@ export namespace Prisma {
     repositoryUrl?: string | null
     api_url?: string | null
     apiUrl?: string | null
+    trendingScore?: number | null
     papers?: PaperModelCreateNestedManyWithoutModelInput
   }
 
@@ -38489,6 +38545,7 @@ export namespace Prisma {
     repositoryUrl?: string | null
     api_url?: string | null
     apiUrl?: string | null
+    trendingScore?: number | null
     papers?: PaperModelUncheckedCreateNestedManyWithoutModelInput
   }
 
@@ -38534,6 +38591,7 @@ export namespace Prisma {
     repositoryUrl?: NullableStringFieldUpdateOperationsInput | string | null
     api_url?: NullableStringFieldUpdateOperationsInput | string | null
     apiUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
     papers?: PaperModelUpdateManyWithoutModelNestedInput
   }
 
@@ -38579,6 +38637,7 @@ export namespace Prisma {
     repositoryUrl?: NullableStringFieldUpdateOperationsInput | string | null
     api_url?: NullableStringFieldUpdateOperationsInput | string | null
     apiUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
     papers?: PaperModelUncheckedUpdateManyWithoutModelNestedInput
   }
 
@@ -38624,6 +38683,7 @@ export namespace Prisma {
     repositoryUrl?: string | null
     api_url?: string | null
     apiUrl?: string | null
+    trendingScore?: number | null
   }
 
   export type ModelUpdateManyMutationInput = {
@@ -38668,6 +38728,7 @@ export namespace Prisma {
     repositoryUrl?: NullableStringFieldUpdateOperationsInput | string | null
     api_url?: NullableStringFieldUpdateOperationsInput | string | null
     apiUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
   }
 
   export type ModelUncheckedUpdateManyInput = {
@@ -38712,6 +38773,7 @@ export namespace Prisma {
     repositoryUrl?: NullableStringFieldUpdateOperationsInput | string | null
     api_url?: NullableStringFieldUpdateOperationsInput | string | null
     apiUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
   }
 
   export type PaperModelCreateInput = {
@@ -40714,6 +40776,11 @@ export namespace Prisma {
     repositoryUrl?: SortOrder
     api_url?: SortOrder
     apiUrl?: SortOrder
+    trendingScore?: SortOrder
+  }
+
+  export type ModelAvgOrderByAggregateInput = {
+    trendingScore?: SortOrder
   }
 
   export type ModelMaxOrderByAggregateInput = {
@@ -40751,6 +40818,7 @@ export namespace Prisma {
     repositoryUrl?: SortOrder
     api_url?: SortOrder
     apiUrl?: SortOrder
+    trendingScore?: SortOrder
   }
 
   export type ModelMinOrderByAggregateInput = {
@@ -40788,6 +40856,11 @@ export namespace Prisma {
     repositoryUrl?: SortOrder
     api_url?: SortOrder
     apiUrl?: SortOrder
+    trendingScore?: SortOrder
+  }
+
+  export type ModelSumOrderByAggregateInput = {
+    trendingScore?: SortOrder
   }
 
   export type ModelScalarRelationFilter = {
@@ -45116,6 +45189,7 @@ export namespace Prisma {
     repositoryUrl?: string | null
     api_url?: string | null
     apiUrl?: string | null
+    trendingScore?: number | null
   }
 
   export type ModelUncheckedCreateWithoutPapersInput = {
@@ -45160,6 +45234,7 @@ export namespace Prisma {
     repositoryUrl?: string | null
     api_url?: string | null
     apiUrl?: string | null
+    trendingScore?: number | null
   }
 
   export type ModelCreateOrConnectWithoutPapersInput = {
@@ -45329,6 +45404,7 @@ export namespace Prisma {
     repositoryUrl?: NullableStringFieldUpdateOperationsInput | string | null
     api_url?: NullableStringFieldUpdateOperationsInput | string | null
     apiUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
   }
 
   export type ModelUncheckedUpdateWithoutPapersInput = {
@@ -45373,6 +45449,7 @@ export namespace Prisma {
     repositoryUrl?: NullableStringFieldUpdateOperationsInput | string | null
     api_url?: NullableStringFieldUpdateOperationsInput | string | null
     apiUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
   }
 
   export type PaperUpsertWithoutModelsInput = {

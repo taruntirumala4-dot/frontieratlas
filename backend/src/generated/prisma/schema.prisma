@@ -250,6 +250,7 @@ model Model {
   repositoryUrl   String?
   api_url         String?
   apiUrl          String?
+  trendingScore   Float?       @map("trending_score")
   papers          PaperModel[]
 
   @@map("models")

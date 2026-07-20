@@ -123,6 +123,48 @@ function getCardDescription(name: string): string {
   return template.replace("{X}", formattedName.toLowerCase());
 }
 
+const familyTemplates = [
+  "A family of foundation models built for {X} workloads.",
+  "State-of-the-art models in the {X} lineage.",
+  "Open-weight models from the {X} series.",
+  "Cutting-edge {X} models for research and production.",
+  "The {X} family of generative AI models.",
+  "Versatile {X} models optimized for diverse tasks.",
+  "High-performance models in the {X} ecosystem.",
+  "Next-generation capabilities through {X} architectures.",
+];
+
+const orgTemplates = [
+  "Leading AI research lab behind cutting-edge foundation models.",
+  "Pioneering organization advancing open-weight AI development.",
+  "Industry leader in large-scale artificial intelligence research.",
+  "Innovative company pushing the boundaries of machine learning.",
+  "Research organization known for breakthrough generative models.",
+  "Key contributor to the open-source AI ecosystem.",
+  "Major force in the development of frontier AI systems.",
+  "Trailblazing organization at the forefront of AI innovation.",
+];
+
+function getFamilyDescription(name: string): string {
+  const normalized = (name || "").toLowerCase().trim();
+  let hash = 0;
+  for (let i = 0; i < normalized.length; i++) {
+    hash = normalized.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const idx = Math.abs(hash) % familyTemplates.length;
+  return familyTemplates[idx].replace("{X}", name);
+}
+
+function getOrgDescription(name: string): string {
+  const normalized = (name || "").toLowerCase().trim();
+  let hash = 0;
+  for (let i = 0; i < normalized.length; i++) {
+    hash = normalized.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const idx = Math.abs(hash) % orgTemplates.length;
+  return orgTemplates[idx];
+}
+
 function CapabilitySkeleton() {
   return (
     <div className="animate-pulse bg-white rounded-md border border-[#ECECEC] p-3.5 min-h-[75px]">
@@ -167,8 +209,6 @@ const [loading, setLoading] = useState(
   const [searchQuery, setSearchQuery] = useState("");
   const [inspectedModel, setInspectedModel] = useState<ModelItem | null>(null);
   const [copied, setCopied] = useState(false);
-  const [activeSection, setActiveSection] = useState<string>("");
-
   useEffect(() => {
     if (typeof window !== "undefined") {
       const sp = new URLSearchParams(window.location.search);
@@ -197,78 +237,6 @@ const [loading, setLoading] = useState(
       .finally(() => {
         setLoading(false);
       });
-  }, []);
-
-  useEffect(() => {
-    const sectionIds = [
-      "section-capability",
-      "section-family",
-      "section-organization",
-      "section-research",
-      "section-trending",
-      "section-recently-released",
-      "model-directory"
-    ];
-
-    let ticking = false;
-
-    const updateActiveSection = () => {
-      let closestId: string | null = null;
-      let closestDistance = Infinity;
-
-      sectionIds.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          const distance = Math.abs(rect.top);
-          if (distance < closestDistance) {
-            closestDistance = distance;
-            closestId = id;
-          }
-        }
-      });
-
-      if (closestId) {
-        setActiveSection(closestId);
-      }
-      ticking = false;
-    };
-
-    const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(updateActiveSection);
-        ticking = true;
-      }
-    };
-
-    // Initial check
-    updateActiveSection();
-
-    // Check on scroll
-    window.addEventListener("scroll", handleScroll);
-
-    // Also use IntersectionObserver for better performance
-    const observer = new IntersectionObserver(
-      () => {
-        updateActiveSection();
-      },
-      {
-        threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5]
-      }
-    );
-
-    sectionIds.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      sectionIds.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) observer.unobserve(el);
-      });
-    };
   }, []);
 
   const clearAllFilters = () => {
@@ -457,39 +425,31 @@ const [loading, setLoading] = useState(
           <span className="text-[#555555] font-medium">Models</span>
         </nav>
 
-        {/* HERO SECTION — Exact Tasks page layout */}
-        <section className="mb-16 hidden md:flex">
-          <div className="max-w-xl">
-            <h1 className="text-[35px] font-extrabold text-[#111827] leading-none">
+        {/* HERO SECTION */}
+        <section className="mb-12">
+          <div className="max-w-[560px]">
+            <h1 className="text-[32px] font-black tracking-tight text-[#111827] leading-none">
               All <span className="text-[#FF5A1F]">Models</span>
             </h1>
-            <p className="mt-5 text-[15.5px] text-gray-600 leading-2 max-w-md">
+            <p className="mt-4 text-[14px] leading-6 text-[#5B6472]">
               Discover the full landscape of AI foundation models through {facets?.modelFamilies?.length ?? "—"} model families spanning reasoning, vision, code, audio, robotics, healthcare, and more.
             </p>
-            <div className="flex items-center gap-10 mt-4 whitespace-nowrap text-xs md:text-sm">
-              <div className="flex items-center gap-4">
-                <div>
-                  <div className="text-[27px] font-bold text-gray-800">{loading ? (
-                    <div className="h-8 w-10 rounded bg-gray-200 animate-pulse" />
-                  ) : (
-                    facets?.capabilities?.length
-                  )}</div>
-                  <div className="text-[14.5px] text-gray-500 mt-1">Capabilities</div>
-                </div>
-
+            <div className="flex items-start gap-10 mt-5">
+              <div>
+                <div className="text-[20px] font-bold text-[#111111]">{loading ? (
+                  <div className="h-6 w-10 rounded bg-gray-200 animate-pulse" />
+                ) : (
+                  facets?.capabilities?.length
+                )}</div>
+                <div className="mt-1 text-[14px] text-[#6B7280]">Capabilities</div>
               </div>
-              <div className="flex items-center gap-4">
-                <div>
-                  <div className="text-[27px] font-bold text-gray-800">{facets?.modelFamilies?.length ?? "—"}</div>
-                  <div className="text-[14.5px] text-gray-500 mt-1">Model Families</div>
-                </div>
-
+              <div>
+                <div className="text-[20px] font-bold text-[#111111]">{facets?.modelFamilies?.length ?? "—"}</div>
+                <div className="mt-1 text-[14px] text-[#6B7280]">Model Families</div>
               </div>
-              <div className="flex items-center gap-4">
-                <div>
-                  <div className="text-[27px] font-bold text-gray-800">{facets?.totalModels ?? "—"}</div>
-                  <div className="text-[14.5px] text-gray-500 mt-1">Verified Models</div>
-                </div>
+              <div>
+                <div className="text-[20px] font-bold text-[#111111]">{facets?.totalModels ?? "—"}</div>
+                <div className="mt-1 text-[14px] text-[#6B7280]">Verified Models</div>
               </div>
             </div>
           </div>
@@ -499,27 +459,9 @@ const [loading, setLoading] = useState(
           {/* LEFT SIDEBAR WITH SEARCH & NAVIGATION OPTIONS EXACT TO reference */}
           <aside className="w-[240px] shrink-0 sticky top-24 h-fit border-r border-[#ececec] pr-6 hidden lg:block" aria-label="Domain navigation">
             <div className="sticky top-20 flex flex-col h-[calc(100vh-5rem)] overflow-y-auto">
-              <div className="px-4 pt-6 pb-4">
-                <h3 className="text-[15px] font-semibold uppercase text-[#FF5A1F] mb-3">Browse Models</h3>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Filter models..."
-                    className="w-full pl-9 pr-3 py-2 text-sm rounded-xl border border-gray-200 focus:outline-none focus:border-rose-400 focus:ring-1 focus:ring-rose-400 bg-white/80 transition-colors"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                  {searchQuery && (
-                    <button
-                      onClick={() => setSearchQuery("")}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                    >
-                      <X className="h-3.5 w-3.5" />
-                    </button>
-                  )}
-                </div>
-              </div>
+              <h3 className="text-[#FF5A1F] font-bold uppercase text-lg mb-4 px-2">
+                Models
+              </h3>
 
               <nav className="overflow-y-auto px-2 pb-4" aria-label="Domains">
                 <ul className="space-y-0.5" role="list">
@@ -532,7 +474,6 @@ const [loading, setLoading] = useState(
                     { id: "section-recently-released", label: "Recently Released" },
                     { id: "model-directory", label: "Model Directory Table" }
                   ].map((item) => {
-                    const isActive = activeSection === item.id;
                     return (
                       <li key={item.id}>
                         <button
@@ -540,7 +481,7 @@ const [loading, setLoading] = useState(
                             const el = document.getElementById(item.id);
                             if (el) el.scrollIntoView({ behavior: "smooth" });
                           }}
-                          className={`block w-full text-left text-[15px] transition-colors mb-3 ${isActive ? 'text-[#FF5A1F] font-bold' : 'text-[#555] hover:text-[#FF5A1F]'}`}
+                          className="block w-full text-left text-[15px] transition-colors mb-3 text-[#555] hover:text-[#FF5A1F]"
                         >
                           {item.label}
                         </button>
@@ -624,23 +565,33 @@ const [loading, setLoading] = useState(
                   <span className="models-block-count text-[11px] font-normal uppercase tracking-wider text-gray-400">{facets?.modelFamilies?.length ?? "—"} Model Families</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                  {filteredModelFamilies.map((fam, idx) => {
-                    const { Icon: SkeletalIcon, color: strokeColor } = getSkeletalIcon(idx + 3, fam.name);
+                  {filteredModelFamilies.map((fam) => {
                     const isActive = selectedFamily === fam.name;
+                    const familyLogo = allModels.find(
+                      (m) => m.modelFamily?.toLowerCase() === fam.name.toLowerCase() && m.vendorLogoUrl
+                    )?.vendorLogoUrl;
 
                     return (
                       <div
                         key={fam.name}
                         onClick={() => handleFamilyClick(fam.name)}
-                        className={`bg-white rounded-md border p-3.5 min-h-[75px] flex flex-col transition-shadow duration-200 group no-underline cursor-pointer ${isActive ? 'border-[#FF5A1F] shadow-[0_0_0_1px_#FF5A1F] bg-[#FFF6F3]' : 'border-[#ECECEC] hover:shadow-md'}`}
+                        className={`bg-white rounded-md border p-3.5 min-h-[155px] flex flex-col transition-shadow duration-200 group no-underline cursor-pointer ${isActive ? 'border-[#FF5A1F] shadow-[0_0_0_1px_#FF5A1F] bg-[#FFF6F3]' : 'border-[#ECECEC] hover:shadow-md'}`}
                       >
                         <div className="flex items-start gap-4">
-                          <div className="flex items-center justify-center transition-transform duration-200 group-hover:scale-125">
-                            <SkeletalIcon size={22} strokeWidth={2.2} style={{ color: strokeColor }} />
+                          <div className="flex items-center justify-center transition-transform duration-200 group-hover:scale-125 w-[30px] h-[30px]">
+                            {familyLogo ? (
+                              <img src={familyLogo} alt={fam.name} className="w-full h-full object-contain" />
+                            ) : (
+                              (() => { const { Icon: SkeletalIcon, color: strokeColor } = getSkeletalIcon((() => { let h = 0; for (let i = 0; i < fam.name.length; i++) { h = ((h << 5) - h) + fam.name.charCodeAt(i); h |= 0; } return Math.abs(h); })(), fam.name); return <SkeletalIcon size={22} strokeWidth={2.2} style={{ color: strokeColor }} />; })()
+                            )}
                           </div>
                           <h3 className="text-[#111111] text-[15px] font-medium leading-5">{fam.name}</h3>
                         </div>
-                        <div className="mt-auto pt-3"><span className="inline-flex items-center rounded-full border border-[#D9D9D9] bg-white px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-[#666666]">{fam.count} Models</span></div>
+                        <p className="mt-2 text-[13px] leading-5 text-[#666] line-clamp-3">
+                          {getFamilyDescription(fam.name)}
+                        </p>
+                        <div className="flex-1" />
+                        <div className="pt-3"><span className="inline-flex items-center rounded-full border border-[#D9D9D9] bg-white px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-[#666666]">{fam.count} Models</span></div>
                       </div>
                     );
                   })}
@@ -669,28 +620,32 @@ const [loading, setLoading] = useState(
                       <div
                         key={v.name}
                         onClick={() => handleVendorClick(v.name)}
-                        className={`bg-white rounded-md border p-3.5 min-h-[75px] flex flex-col transition-shadow duration-200 group no-underline cursor-pointer ${isActive ? 'border-[#FF5A1F] shadow-[0_0_0_1px_#FF5A1F] bg-[#FFF6F3]' : 'border-[#ECECEC] hover:shadow-md'}`}
+                        className={`bg-white rounded-md border p-3.5 min-h-[155px] flex flex-col transition-shadow duration-200 group no-underline cursor-pointer ${isActive ? 'border-[#FF5A1F] shadow-[0_0_0_1px_#FF5A1F] bg-[#FFF6F3]' : 'border-[#ECECEC] hover:shadow-md'}`}
                       >
                         <div className="flex items-start gap-4">
-                          <div className="flex-shrink-0 p-2 rounded-lg transition-transform group-hover:scale-110">
+                          <div className="flex items-center justify-center transition-transform duration-200 group-hover:scale-125 w-[30px] h-[30px]">
                             {vendorLogo ? (
                               <img
                                 src={vendorLogo}
                                 alt={v.name}
-                                className="w-[30px] h-[30px] object-contain"
+                                className="w-full h-full object-contain"
                               />
                             ) : (
                               <SkeletalIcon size={22} strokeWidth={2.2} style={{ color: strokeColor }} />
                             )}
                           </div>
                           <h3
-                            className={`mt-3 text-[15px] font-medium leading-5 ${isActive
+                            className={`text-[15px] font-medium leading-5 ${isActive
                                 ? "text-[#FF5A1F]"
                                 : "text-[#111111]"
                               }`}
                           >{v.name}</h3>
                         </div>
-                        <div className="mt-auto pt-3"><span className="inline-flex items-center rounded-full border border-[#D9D9D9] bg-white px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-[#666666]">{v.count} Models</span></div>
+                        <p className="mt-2 text-[13px] leading-5 text-[#666] line-clamp-3">
+                          {getOrgDescription(v.name)}
+                        </p>
+                        <div className="flex-1" />
+                        <div className="pt-3"><span className="inline-flex items-center rounded-full border border-[#D9D9D9] bg-white px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-[#666666]">{v.count} Models</span></div>
                       </div>
                     );
                   })}
@@ -742,25 +697,29 @@ const [loading, setLoading] = useState(
                   <span className="models-block-count text-[11px] font-normal uppercase tracking-wider text-gray-400">Most Active in 2025</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                  {filteredTrending.map((m, idx) => {
-                    const { Icon: SkeletalIcon, color: strokeColor } = getSkeletalIcon(idx + 15, m.name);
-
+                  {filteredTrending.map((m) => {
                     return (
                       <div
                         key={m.id}
                         onClick={() => setInspectedModel(m)}
-                        className="bg-white rounded-md border border-[#ECECEC] p-3.5 min-h-[75px] flex flex-col hover:shadow-md transition-shadow duration-200 group no-underline"
+                        className="bg-white rounded-md border border-[#ECECEC] p-3.5 min-h-[155px] flex flex-col hover:shadow-md transition-shadow duration-200 group no-underline"
                       >
                         <div className="flex items-start gap-4">
-                          <div className="flex items-center justify-center transition-transform duration-200 group-hover:scale-125">
-                            <SkeletalIcon size={22} strokeWidth={2.2} style={{ color: strokeColor }} />
+                          <div className="flex items-center justify-center transition-transform duration-200 group-hover:scale-125 w-[30px] h-[30px]">
+                            {m.vendorLogoUrl ? (
+                              <img src={m.vendorLogoUrl} alt={m.vendor} className="w-full h-full object-contain" />
+                            ) : (
+                              (() => { const { Icon: SkeletalIcon, color: strokeColor } = getSkeletalIcon((() => { let h = 0; for (let i = 0; i < m.name.length; i++) { h = ((h << 5) - h) + m.name.charCodeAt(i); h |= 0; } return Math.abs(h); })(), m.name); return <SkeletalIcon size={22} strokeWidth={2.2} style={{ color: strokeColor }} />; })()
+                            )}
                           </div>
                           <h3 className="text-[#111111] text-[15px] font-medium leading-5">{m.name}</h3>
                         </div>
-                        {m.description && (
+                        {m.description ? (
                           <p className="mt-2 text-[13px] leading-5 text-[#666] line-clamp-3">
                             {m.description}
                           </p>
+                        ) : (
+                          <div className="flex-1" />
                         )}
                       </div>
                     );
