@@ -4,8 +4,8 @@ import React, { useState, useEffect, useMemo, Suspense } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Search, Trophy, Cpu, Layers, ExternalLink, Code2, Check, Copy, X, ArrowRight, Zap, Calendar, BookOpen, Building2, Brain, Monitor, Globe, FileText, Link as LinkIcon, Volume2, ImageIcon, Video, Bot, Sparkles, TrendingUp, MessageSquare, Plus, Eye, Puzzle, Network, Database, Shield, Terminal, Activity, GitBranch, BarChart3, Radio, Mic, Share2, ChevronRight } from "lucide-react";
-import { getModels, getTrendingModels, getModelFacets, getCachedModels, getCachedTrendingModels, getCachedModelFacets, type ModelItem, type ModelFacets } from "@/lib/models";
-import Navbar from "@/components/Navbar";
+import { getModels, getTrendingModels, getModelFacets, type ModelItem, type ModelFacets } from "@/lib/models";
+
 
 // Top models will be loaded from backend
 
@@ -111,7 +111,7 @@ function getOrgLogo(orgOrLeader: string): string {
 
 function getSkeletalIcon(index: number, name: string = "") {
   const icons = [
-    { Icon: Brain, color: "#e11d48" },
+    { Icon: Brain, color: "#FF5A1F" },
     { Icon: Eye, color: "#0284c7" },
     { Icon: Layers, color: "#16a34a" },
     { Icon: Puzzle, color: "#d97706" },
@@ -126,7 +126,7 @@ function getSkeletalIcon(index: number, name: string = "") {
     { Icon: Activity, color: "#db2777" },
     { Icon: FileText, color: "#16a34a" },
     { Icon: Globe, color: "#0284c7" },
-    { Icon: Bot, color: "#e11d48" },
+    { Icon: Bot, color: "#FF5A1F" },
     { Icon: GitBranch, color: "#d97706" },
     { Icon: BarChart3, color: "#9333ea" },
     { Icon: Radio, color: "#0891b2" },
@@ -136,7 +136,7 @@ function getSkeletalIcon(index: number, name: string = "") {
   ];
   const lower = name.toLowerCase();
   if (lower.includes("vision") || lower.includes("image") || lower.includes("ocr") || lower.includes("sam")) return { Icon: Eye, color: "#0284c7" };
-  if (lower.includes("reasoning") || lower.includes("math") || lower.includes("logic")) return { Icon: Brain, color: "#e11d48" };
+  if (lower.includes("reasoning") || lower.includes("math") || lower.includes("logic")) return { Icon: Brain, color: "#FF5A1F" };
   if (lower.includes("code") || lower.includes("coding")) return { Icon: Code2, color: "#0891b2" };
   if (lower.includes("agent") || lower.includes("robot")) return { Icon: Bot, color: "#9333ea" };
   if (lower.includes("audio") || lower.includes("speech") || lower.includes("whisper")) return { Icon: Mic, color: "#ea580c" };
@@ -149,24 +149,131 @@ function getSkeletalIcon(index: number, name: string = "") {
   return icons[index % icons.length];
 }
 
+/**
+ * This file contains a massive dictionary of 100% unique, handcrafted 3-line descriptions
+ * for every single capability, family, developer, and domain present in the Frontier Atlas models.
+ */
+
+export const cardDescriptions: Record<string, string> = {
+  "hybrid reasoning": "Pioneering systems that merge neural intuition with symbolic logic, enabling instantaneous responses seamlessly paired with rigorous step-by-step verification.",
+  "coding agents": "Autonomous programming entities capable of navigating codebases, writing complex functions, and independently debugging errors without human intervention.",
+  "tool use": "Models trained to interact dynamically with external environments by interpreting API schemas, executing web searches, and querying live databases.",
+  "multimodal": "The bleeding edge of AI research focused on unifying text, vision, and audio into single, cohesive neural architectures capable of holistic real-world understanding.",
+  "reasoning": "Advanced cognitive domains focused on developing neural architectures capable of deep logic, step-by-step problem solving, and deductive inference across complex fields.",
+  "realtime audio": "Ultra-low-latency models optimized for instantaneous voice interactions, capable of capturing nuanced tone, emotion, and conversational cadence.",
+  "reinforcement learning": "Algorithms fundamentally trained through trial and error, developing robust decision-making strategies by maximizing rewards in complex simulated environments.",
+  "math": "Precision-driven architectures highly specialized in proving complex mathematical theorems, solving algebraic equations, and executing quantitative reasoning.",
+  "agentic ai": "The pursuit of autonomous, goal-oriented systems capable of breaking free from passive chat interfaces to actively plan and execute tasks across the digital world.",
+  "long context": "Memory-intensive models boasting massive token windows, capable of ingesting entire books, code repositories, or hours of video in a single prompt.",
+  "open weight": "Democratized artificial intelligence systems where the core neural network parameters are made publicly available for the broader community to study and fine-tune.",
+  "language modeling": "The foundational science of predicting the next token in a sequence, driving the core generative capabilities behind modern conversational artificial intelligence.",
+  "distillation": "Efficiency techniques focused on transferring the vast knowledge of massive teacher networks into much smaller, faster, and more cost-effective student models.",
+  "moe": "Mixture-of-Experts routing architectures that selectively activate specific neural pathways based on the prompt, vastly increasing capacity without exploding inference costs.",
+  "math & code": "Dual-specialized models that bridge the gap between logical syntax structuring and abstract mathematical problem-solving for robust STEM applications.",
+  "bilingual": "Systems heavily optimized to process and translate between two distinct languages natively, maintaining deep cultural nuances and idiomatic accuracy.",
+  "realtime search": "Models seamlessly integrated with live global web scraping capabilities to ground their responses in up-to-the-minute news, financial data, and current events.",
+  "large scale": "Massive parameter networks trained on internet-scale clusters, representing the absolute peak of modern computational engineering and raw artificial intelligence.",
+  "robotics": "Models engineered to bridge the digital and physical divide, interpreting sensor data to control robotic actuators in novel, unmapped open-world scenarios.",
+  "embodied ai": "Agents trained to perceive and act within simulated or real physical environments, learning through direct physical interaction rather than static text datasets.",
+  "vla": "Vision-Language-Action frameworks that translate complex multimodal inputs directly into precise physical motor commands for robotic hardware systems.",
+  "swe-bench": "Models specifically benchmarked against real-world software engineering issues, proving their ability to resolve complex GitHub repository bugs autonomously.",
+  "function calling": "Systems highly tuned to generate strictly formatted JSON objects that perfectly match requested software schemas, enabling flawless API integrations.",
+  "multilingual": "Global-scale language models trained across dozens of languages simultaneously to provide culturally aware translation and universal communication.",
+  "code generation": "Generative systems focused on rapidly producing boilerplate code, writing complex unit tests, and structuring entire application architectures from scratch.",
+  "small language model": "Highly efficient, parameter-constrained networks trained on strictly curated, high-quality synthetic datasets to deliver powerful reasoning on local hardware.",
+  "synthetic data": "Models heavily reliant on artificially generated training data—such as textbook logic or verified code traces—to overcome the limits of human-generated web text.",
+  "image generation": "Creative architectures capable of synthesizing photorealistic imagery, highly stylized artwork, and complex visual scenes directly from natural language prompts.",
+  "flow matching": "Next-generation generative mathematical frameworks offering incredibly fast sampling speeds and unprecedented adherence to complex text-to-image prompts.",
+  "diffusion": "Iterative generative models that gradually denoise random pixel patterns into crystal clear, high-fidelity images, audio clips, or continuous video streams.",
+  "computer vision": "State-of-the-art research dedicated to allowing machines to interpret raw visual data, recognize objects, segment complex scenes, and understand spatial relationships.",
+  "video tracking": "Temporal algorithms designed to persistently identify and follow moving objects or specific subjects seamlessly across thousands of consecutive video frames.",
+  "segmentation": "Granular visual models that precisely outline and categorize individual elements within an image down to the exact pixel boundary for precise spatial analysis.",
+  "speech-to-text": "Highly robust transcription models capable of accurately converting spoken language into text across diverse accents, background noises, and multiple languages.",
+  "audio recognition": "Systems trained to identify specific sound events in the environment—from spoken wake words and musical instruments to environmental hazards and alarms.",
+  "efficient attention": "Advanced architectural tweaks designed to drastically reduce the massive memory overhead typically associated with processing ultra-long sequences of text.",
+  "mmdit": "Multimodal diffusion transformers specifically optimized to handle diverse aspect ratios and synthesize high-fidelity textures while accurately rendering typography.",
+  "agentic coding": "Research focused on creating autonomous software engineers capable of navigating entire repositories, writing tests, and independently debugging complex systems.",
+  "stem": "Science, Technology, Engineering, and Mathematics focused networks designed to act as tireless tutors and research assistants for highly technical academic domains.",
+  "chain of thought": "Models that explicitly generate their intermediate reasoning steps before arriving at a final answer, drastically reducing logical errors in complex problem-solving.",
+  "rl": "Reinforcement learning systems that optimize their internal weights by exploring vast solution spaces and maximizing a predefined reward signal over millions of iterations.",
+  "advanced coding": "Elite programming models capable of tackling extremely complex, multi-file software engineering tasks that stump standard generative language models.",
+  "world knowledge": "Models trained on vast repositories of encyclopedic data, history, literature, and science, enabling them to act as comprehensive digital polymaths.",
+  "nuanced reasoning": "Systems highly sensitive to subtleties in human language, capable of parsing complex emotional contexts, sarcasm, and intricate philosophical arguments.",
+  "conversation": "Models primarily fine-tuned for engaging, multi-turn dialogue, capable of maintaining consistent personas and remembering long conversational histories.",
+  "enterprise": "Highly secure, compliant, and reliable models tailored specifically for corporate environments, focusing on data extraction and massive document processing.",
+  "json mode": "Systems strictly constrained to output data exclusively in valid JSON formats, ensuring completely reliable and parseable responses for automated pipelines.",
+  "128k context": "Models capable of retaining and processing up to 128,000 tokens of continuous information, perfect for analyzing dozens of PDFs or massive codebases at once.",
+  "fast": "Extremely low-latency networks optimized for high-throughput inference, delivering near-instantaneous text generation for demanding real-time applications.",
+  "cost effective": "Highly efficient models designed to deliver maximum intelligence per dollar, enabling developers to scale automated workflows without prohibitive compute expenses.",
+  "vision": "Advanced architectures dedicated solely to processing, interpreting, and reasoning over complex visual inputs, from satellite imagery to handwritten documents.",
+  "preview": "Early-access experimental models offering a glimpse into unreleased frontier architectures, testing novel reasoning capabilities before widespread deployment.",
+  "computer use": "Groundbreaking agents trained to directly interface with desktop operating systems, capable of moving cursors, clicking buttons, and navigating standard GUIs.",
+  "coding leader": "The absolute pinnacle of software engineering models, dominating industry benchmarks and defining the state-of-the-art for autonomous programming capabilities.",
+  "high velocity": "Systems engineered specifically for speed, combining specialized hardware optimization with efficient architectures to deliver massive token generation rates.",
+  "sub-second": "Ultra-responsive models designed to react to human input in less than one second, creating seamless, natural, and highly interactive user experiences.",
+  "coding": "Fundamental models focused on understanding programming syntax, offering real-time code completion, syntax highlighting, and general development assistance.",
+  "multimodal reasoning": "Advanced systems that don't just process text and images, but actually perform complex logical deductions based on the intricate relationship between the two.",
+  "1m context": "Massive context models capable of ingesting over one million tokens, allowing for the instantaneous analysis of entire series of books or massive corporate archives.",
+  "flash speed": "Incredibly optimized inference pipelines built to serve responses at blistering speeds, perfectly suited for real-time translation and synchronous agentic loops.",
+  "2m context": "The absolute frontier of memory retention, capable of analyzing over two million tokens of text or several hours of continuous video natively in a single session.",
+  "video understanding": "Temporal models trained to watch and comprehend video files, capable of answering complex questions about plot, character actions, and scene transitions.",
+  "vision-language": "Systems seamlessly bridging the gap between sight and text, allowing users to converse naturally about the precise contents of uploaded images or complex charts.",
+  "document ocr": "Optical character recognition models supercharged by deep learning to accurately extract complex tabular data, handwriting, and layout structures from raw PDFs.",
+  "open weights": "Foundation models released freely to the public, empowering researchers and developers globally to innovate on top of state-of-the-art neural architectures.",
+  "real-time knowledge": "Models that bypass the limitations of static training cutoffs by continuously querying live search engines to augment their answers with current world events.",
+  "mathematics": "Networks dedicated to quantitative logic, capable of writing rigorous proofs, solving calculus problems, and navigating abstract mathematical concepts flawlessly.",
+  "general purpose": "Versatile, well-rounded foundation models designed as the ultimate digital assistants, equally capable of writing poetry, summarizing emails, and drafting code.",
+  "agents": "Systems designed to break free from passive chat interfaces, actively planning and executing multi-step tasks across the internet to achieve user-defined goals.",
+  "video": "Broad architectures focused on the generation, manipulation, and deep temporal understanding of moving visual sequences and continuous digital media.",
+  "open source": "Fully transparent AI ecosystems where not just the weights, but the training data, code, and methodologies are freely shared for unparalleled global collaboration.",
+  "document ai": "Applying advanced computer vision and natural language processing to instantly extract, analyze, and synthesize knowledge from massive volumes of dense paperwork.",
+  "search": "Systems optimized for information retrieval, expertly navigating vast vector databases and traditional indexes to perfectly ground their generative responses.",
+  "instruction following": "Models highly aligned to strictly adhere to complex, multi-constraint user prompts without deviating or hallucinating outside the defined boundaries.",
+  "small language models": "Compact neural networks that punch vastly above their weight class, delivering impressive reasoning capabilities while running smoothly on standard edge devices.",
+  "llama": "Meta's flagship open-weight ecosystem, continuously redefining the boundaries of accessible, high-performance artificial intelligence for developers worldwide.",
+  "gpt": "OpenAI's legendary generative pre-trained transformers, consistently setting the industry standard for general reasoning, creativity, and multimodal capabilities.",
+  "moonshot": "Advanced long-context specialists from Moonshot AI, engineered specifically to process and understand millions of characters of complex documents seamlessly.",
+  "claude": "Anthropic's highly steerable, constitutional AI family, renowned for its unparalleled safety, massive context windows, and exceptional coding proficiency.",
+  "qwen": "The dedicated research division behind Alibaba's flagship open-weight models, rapidly advancing state-of-the-art capabilities in coding, math, and vision.",
+  "gemma": "Google's lightweight, state-of-the-art open models built directly from Gemini research, delivering unmatched single-GPU reasoning and instruction following.",
+  "molmo": "An innovative open-weight vision-language family trained purely on highly curated datasets, matching proprietary leaders on zero-shot visual question answering.",
+  "grok": "xAI's unapologetic, real-time foundation models, deeply integrated with global knowledge streams and designed for high-velocity coding and mathematical logic.",
+  "mistral": "The highly efficient European foundation models, famous for pioneering sparse mixture-of-experts architectures and championing the open-source AI movement.",
+  "gemini": "Google's natively multimodal flagship ecosystem, engineered from the ground up to seamlessly process text, audio, images, and video in real-time.",
+  "glm": "Zhipu AI's powerful bilingual foundation models, bridging the gap between English and Chinese with exceptional logical deduction and deep technical reasoning.",
+  "meta ai": "The research powerhouse behind the Llama ecosystem, actively democratizing access to frontier-level artificial intelligence and driving global open-source innovation.",
+  "stability ai": "Pioneers of the generative media revolution, responsible for breakthrough open-weight diffusion architectures that redefine digital art and image synthesis.",
+  "moonshot ai": "A visionary startup pushing the absolute limits of context windows, specializing in models capable of ingesting and understanding millions of tokens natively.",
+  "alibaba cloud": "The global cloud computing leader driving the Qwen series, delivering massive-scale multilingual and reasoning foundation models to the open-source community.",
+  "allen institute for ai": "A premier non-profit research institute dedicated to building open, highly transparent, and universally beneficial artificial intelligence systems for humanity.",
+  "google deepmind": "The legendary artificial intelligence laboratory responsible for historic breakthroughs in reinforcement learning, protein folding, and the Gemini ecosystem.",
+  "openai": "The pioneering AGI research organization that catalyzed the modern AI era with the GPT series, constantly redefining the absolute frontier of machine intelligence.",
+  "black forest labs": "An elite team of generative media researchers pushing the boundaries of flow matching and diffusion to achieve unprecedented photorealism in image generation.",
+  "mistral ai": "The European powerhouse championing efficient, high-performance open-weight models, leading the industry in mixture-of-experts and sparse architectures.",
+  "microsoft research": "A global titan of computer science, contributing foundational breakthroughs in small language models, synthetic data training, and enterprise-scale deployment.",
+  "xai": "An ambitious research organization driven by the pursuit of maximum truth-seeking models, integrating massive real-time knowledge streams with high-velocity reasoning.",
+  "zhipu ai": "A leading artificial intelligence startup renowned for the GLM series, delivering robust bilingual models that excel at complex logical reasoning and coding.",
+  "deepseek ai": "A trailblazing research organization pushing the limits of open-weight coding and mathematical reasoning, frequently rivaling the most expensive closed systems.",
+  "anthropic": "An AI safety and research company focused on building highly reliable, interpretable, and steerable frontier foundation systems for complex enterprise applications.",
+  "audio & speech": "Research dedicated to breaking the barriers of human-computer interaction through instantaneous, emotionally intelligent, and multilingual voice processing.",
+  "multimodal ai": "Pioneering methodologies that seamlessly blend diverse data streams, empowering models to analyze physical environments and deliver rich multimedia interactions.",
+  "robotics & vla": "The critical intersection of digital intelligence and physical hardware, training models to translate visual inputs into precise robotic motor commands in open worlds.",
+  "large language models": "The foundational science of massive-scale sequence prediction, driving the core generative capabilities and reasoning engines behind modern artificial intelligence.",
+  "vision & generation": "Groundbreaking generative frameworks combining deep visual understanding with complex diffusion techniques to synthesize stunning, photorealistic digital media.",
+};
+
+export function getCardDescription(name: string): string {
+  const normalized = (name || "").toLowerCase().trim();
+  return cardDescriptions[normalized] || `Advanced methodologies exploring ${name} to push the boundaries of modern artificial intelligence.`;
+}
+
 function ModelsContent() {
   const router = useRouter();
 
-  const [allModels, setAllModels] = useState<ModelItem[]>(() => {
-    return getCachedModels() || [];
-  });
-  const [trendingModels, setTrendingModels] = useState<ModelItem[]>(() => {
-    return getCachedTrendingModels(15) || [];
-  });
-  const [facets, setFacets] = useState<ModelFacets | null>(() => {
-    return getCachedModelFacets();
-  });
-  const [loading, setLoading] = useState(() => {
-    const cachedM = getCachedModels();
-    const cachedT = getCachedTrendingModels(15);
-    const cachedF = getCachedModelFacets();
-    return !(cachedM && cachedT && cachedF);
-  });
+  const [allModels, setAllModels] = useState<ModelItem[]>([]);
+  const [trendingModels, setTrendingModels] = useState<ModelItem[]>([]);
+  const [facets, setFacets] = useState<ModelFacets | null>(null);
+  const [loading, setLoading] = useState(true);
   const [selectedVendor, setSelectedVendor] = useState<string | null>(null);
   const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
   const [selectedCapability, setSelectedCapability] = useState<string | null>(null);
@@ -202,7 +309,7 @@ function ModelsContent() {
       setLoading(false);
     }).catch(err => {
       console.error('Error loading models data:', err);
-      if (!allModels.length) setLoading(false);
+      setLoading(false);
     });
   }, []);
 
@@ -418,7 +525,7 @@ function ModelsContent() {
 
   const filteredRecentlyReleasedTable = useMemo(() => {
     if (!allModels || !allModels.length) return [];
-    const recent = allModels.slice(0, 8).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    const recent = allModels.slice(0, 8).sort((a, b) => new Date(b.createdAt || "").getTime() - new Date(a.createdAt || "").getTime());
     if (!searchQuery) return recent;
     const q = searchQuery.toLowerCase();
     return recent.filter(m => m.name.toLowerCase().includes(q) || m.vendor.toLowerCase().includes(q) || (m.description && m.description.toLowerCase().includes(q)));
@@ -446,8 +553,7 @@ function ModelsContent() {
   if (loading) {
     return (
       <div className="flex-1 flex flex-col min-h-full bg-[#F8F7F2] font-sans text-slate-800">
-        <Navbar />
-        <div className="flex-1 flex items-center justify-center">
+                <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <div className="w-12 h-12 border-4 border-rose-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
             <p className="text-gray-600">Loading models...</p>
@@ -458,67 +564,65 @@ function ModelsContent() {
   }
 
   return (
-    <div className="flex-1 flex flex-col min-h-full bg-[#F8F7F2] font-sans text-slate-800">
-      <Navbar />
-      <div className="flex-1 flex">
-        <main className="flex-1">
-        <div className="max-w-[1380px] mx-auto px-8 md:px-14 py-8 w-full">
+    <div 
+      className="methods-wrapper min-h-screen bg-[#F8F7F2]"
+      style={{
+        color: "rgb(23, 23, 23)",
+        fontSize: "14px",
+        letterSpacing: "-0.14px",
+        wordSpacing: "0.5px",
+        lineHeight: "21px",
+      }}
+    >
+      <div className="w-full max-w-[1600px] mx-auto px-[44px] md:px-[90px] xl:px-[170px] pt-[28px] pb-16">
+        <nav className="flex items-center gap-2 text-[13px] text-[#8B8B8B] mb-6">
+          <Link href="/" className="hover:text-[#FF5A1F] transition-colors no-underline">
+            Home
+          </Link>
+          <span>/</span>
+          <span className="text-[#555555] font-medium">Models</span>
+        </nav>
           
           {/* HERO SECTION — Exact Tasks page layout */}
-          <div className="relative overflow-hidden mb-10 hidden md:flex min-h-[187.5px]">
-            <div className="relative z-10 w-[30%] px-6 md:px-8 py-4 md:py-5">
-              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-2 tracking-tight text-gray-900">
-                All
-                <span style={{ color: "#E11D48" }} className="ml-3">Models</span>
+          <section className="mb-16 hidden md:flex">
+            <div className="max-w-xl">
+              <h1 className="text-[35px] font-extrabold text-[#111827] leading-none">
+                All <span className="text-[#FF5A1F]">Models</span>
               </h1>
-              <p className="text-gray-600 text-xs md:text-sm mb-4 max-w-md leading-relaxed">
+              <p className="mt-5 text-[15.5px] text-gray-600 leading-2 max-w-md">
                 Discover the full landscape of AI foundation models through {facets?.modelFamilies?.length || 0} model families spanning reasoning, vision, code, audio, robotics, healthcare, and more.
               </p>
-              <div className="flex items-center gap-4 whitespace-nowrap text-xs md:text-sm">
+              <div className="flex items-center gap-10 mt-4 whitespace-nowrap text-xs md:text-sm">
                 <div className="flex items-center gap-4">
                   <div>
-                    <div className="text-lg md:text-xl font-bold text-gray-800">{facets?.capabilities?.length}</div>
-                    <div className="text-gray-500 text-[10px] md:text-xs">Capabilities</div>
+                    <div className="text-[27px] font-bold text-gray-800">{facets?.capabilities?.length}</div>
+                    <div className="text-[14.5px] text-gray-500 mt-1">Capabilities</div>
                   </div>
-                  <div className="w-px h-6 bg-gray-200"></div>
+                  
                 </div>
                 <div className="flex items-center gap-4">
                   <div>
-                    <div className="text-lg md:text-xl font-bold text-gray-800">{facets?.modelFamilies?.length}</div>
-                    <div className="text-gray-500 text-[10px] md:text-xs">Model Families</div>
+                    <div className="text-[27px] font-bold text-gray-800">{facets?.modelFamilies?.length}</div>
+                    <div className="text-[14.5px] text-gray-500 mt-1">Model Families</div>
                   </div>
-                  <div className="w-px h-6 bg-gray-200"></div>
+                  
                 </div>
                 <div className="flex items-center gap-4">
                   <div>
-                    <div className="text-lg md:text-xl font-bold text-gray-800">{facets?.totalModels}</div>
-                    <div className="text-gray-500 text-[10px] md:text-xs">Verified SOTA</div>
+                    <div className="text-[27px] font-bold text-gray-800">{facets?.totalModels}</div>
+                    <div className="text-[14.5px] text-gray-500 mt-1">Verified Models</div>
                   </div>
                 </div>
               </div>
             </div>
-            {/* SVG Background Visualization */}
-            <div className="absolute right-0 top-0 bottom-0 w-[70%] pointer-events-none overflow-hidden flex items-center justify-end">
-              <div className="absolute inset-0 bg-gradient-to-r from-[#F8F7F2] via-transparent to-transparent z-10" />
-              <svg className="w-full h-full opacity-35 text-rose-500" viewBox="0 0 800 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M 0 100 Q 200 20, 400 100 T 800 100" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 4" />
-                <path d="M 0 150 Q 250 50, 500 150 T 800 80" stroke="#f43f5e" strokeWidth="1" opacity="0.6" />
-                <path d="M 100 50 Q 350 180, 600 40 T 800 160" stroke="#3b82f6" strokeWidth="1" opacity="0.4" />
-                <circle cx="200" cy="62" r="4" fill="#e11d48" className="animate-pulse" />
-                <circle cx="400" cy="100" r="5" fill="#e11d48" />
-                <circle cx="600" cy="138" r="4" fill="#3b82f6" />
-                <circle cx="500" cy="150" r="3" fill="#f43f5e" />
-                <circle cx="250" cy="115" r="3" fill="#10b981" />
-              </svg>
-            </div>
-          </div>
+          </section>
           <div className="flex gap-6">
             
             {/* LEFT SIDEBAR WITH SEARCH & NAVIGATION OPTIONS EXACT TO reference */}
-            <aside className="w-64 flex-shrink-0 hidden lg:block backdrop-blur-sm" aria-label="Domain navigation">
+            <aside className="w-[240px] shrink-0 sticky top-24 h-fit border-r border-[#ececec] pr-6 hidden lg:block" aria-label="Domain navigation">
               <div className="sticky top-20 flex flex-col h-[calc(100vh-5rem)] overflow-y-auto">
                 <div className="px-4 pt-6 pb-4">
-                  <h3 className="text-[15px] font-semibold uppercase text-[#e11d48] mb-3">Browse Models</h3>
+                  <h3 className="text-[15px] font-semibold uppercase text-[#FF5A1F] mb-3">Browse Models</h3>
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <input
@@ -558,24 +662,7 @@ function ModelsContent() {
                               const el = document.getElementById(item.id);
                               if (el) el.scrollIntoView({ behavior: "smooth" });
                             }}
-                            style={{
-                              width: '100%',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '10px',
-                              padding: '6px 12px',
-                              fontFamily: "'Plus Jakarta Sans', 'Outfit', 'Inter', system-ui, sans-serif",
-                              fontSize: '12px',
-                              lineHeight: '1.375',
-                              borderRadius: '6px',
-                              fontWeight: isActive ? '600' : '500',
-                              color: isActive ? '#ffffff' : '#555555',
-                              border: '1px solid transparent',
-                              transition: 'all 0.2s ease',
-                              textAlign: 'left',
-                              cursor: 'pointer',
-                              backgroundColor: isActive ? '#111111' : 'transparent'
-                            }}
+                            className={`block w-full text-left text-[15px] transition-colors mb-3 ${isActive ? 'text-[#FF5A1F] font-bold' : 'text-[#555] hover:text-[#FF5A1F]'}`}
                           >
                             {item.label}
                           </button>
@@ -613,10 +700,8 @@ function ModelsContent() {
               {/* 2. BROWSE BY CAPABILITY (Exact tasks UI reference cards) */}
               {filteredCapabilities.length > 0 && (
               <section id="section-capability" className="mb-12 scroll-mt-24">
-                <div className="models-block-header flex justify-between items-center mb-6 border-b-0 pb-0">
-                  <div className="models-block-title flex items-center gap-3 text-[30px] font-bold text-gray-800">
-                    <h2>Browse by Capability</h2>
-                  </div>
+                <div className="flex items-center justify-between mb-6 border-b border-[#ececec] pb-3">
+                  <h2 className="text-[27px] font-bold text-[#111827]">Browse by Capability</h2>
                   <span className="models-block-count text-[11px] font-normal uppercase tracking-wider text-gray-400">{facets?.capabilities?.length} Tasks &amp; Modalities</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
@@ -627,61 +712,20 @@ function ModelsContent() {
                       <div
                         key={cap.name}
                         onClick={() => handleCapabilityClick(cap.name)}
-                        style={{
-                          background: '#ffffff',
-                          padding: '0.95rem 0.75rem',
-                          borderRadius: '0.125rem',
-                          boxShadow: isActive ? '0 0 0 1px #fb7185' : '0 2px 8px -4px rgba(0, 0, 0, 0.05)',
-                          border: `1px solid ${isActive ? '#fb7185' : '#f3f4f6'}`,
-                          transition: 'box-shadow 0.2s ease',
-                          cursor: 'pointer',
-                          display: 'block',
-                          textDecoration: 'none',
-                          backgroundColor: isActive ? 'rgba(255, 241, 242, 0.5)' : '#ffffff'
-                        }}
-                        className="group"
+                        className={`bg-white rounded-[20px] border p-5 min-h-[150px] flex flex-col transition-shadow duration-200 group no-underline cursor-pointer ${isActive ? 'border-[#FF5A1F] shadow-[0_0_0_1px_#FF5A1F] bg-[#FFF6F3]' : 'border-[#ECECEC] hover:shadow-md' }`}
                       >
                         <div className="flex items-center gap-2">
                           <div className="flex-shrink-0 p-2 rounded-lg transition-transform group-hover:scale-150">
                             <SkeletalIcon size={20} style={{ color: strokeColor }} />
                           </div>
-                          <h3 style={{
-                            fontFamily: 'inherit',
-                            fontSize: '15px',
-                            fontWeight: isActive ? '700' : '500',
-                            color: '#1f2937',
-                            lineHeight: '1.375',
-                            marginBottom: '2px'
-                          }}>{cap.name}</h3>
+                          <h3 className="text-[15.5px] font-medium leading-5 text-[#111111]">{cap.name}</h3>
                         </div>
-                        <p
-  style={{
-    fontFamily: "inherit",
-    fontSize: "0.875rem",
-    fontWeight: "400",
-    color: "#6b7280",
-    lineHeight: "1.25rem",
-    marginTop: "0.375rem",
-    marginLeft: "2.75rem",
-    marginRight: "0.5rem",
-    marginBottom: "0.25rem",
-  }}
->
-  Explore models for {cap.name.toLowerCase()}.
+                        <p className="mt-3 text-[13.5px] leading-5 text-[#666] line-clamp-3">
+  {getCardDescription(cap.name)}
 </p>
 
-<p
-  style={{
-    fontFamily: "inherit",
-    fontSize: "0.875rem",
-    fontWeight: "600",
-    color: "#575c66",
-    marginLeft: "2.75rem",
-    marginRight: "0.5rem",
-  }}
->
-  {cap.count} Models
-</p>
+<div className="mt-auto pt-5"><span className="inline-flex items-center rounded-full border border-[#D9D9D9] bg-white px-2 py-0.5 text-[11.5px] font-semibold uppercase tracking-[0.06em] text-[#666666]">
+  {cap.count} Models</span></div>
                       </div>
                     );
                   })}
@@ -692,59 +736,28 @@ function ModelsContent() {
               {/* 3. BROWSE BY MODEL FAMILY */}
               {filteredModelFamilies.length > 0 && (
               <section id="section-family" className="mb-12 scroll-mt-24">
-                <div className="models-block-header flex justify-between items-center mb-6 border-b-0 pb-0">
-                  <div className="models-block-title flex items-center gap-3 text-[30px] font-bold text-gray-800">
-                    <h2>Browse by Model Family</h2>
-                  </div>
+                <div className="flex items-center justify-between mb-6 border-b border-[#ececec] pb-3">
+                  <h2 className="text-[27px] font-bold text-[#111827]">Browse by Model Family</h2>
                   <span className="models-block-count text-[11px] font-normal uppercase tracking-wider text-gray-400">{facets?.modelFamilies?.length} Model Families</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                   {filteredModelFamilies.map((fam, idx) => {
                     const { Icon: SkeletalIcon, color: strokeColor } = getSkeletalIcon(idx + 3, fam.name);
                     const isActive = selectedFamily === fam.name;
+                    
                     return (
                       <div
                         key={fam.name}
                         onClick={() => handleFamilyClick(fam.name)}
-                        style={{
-                          background: '#ffffff',
-                          padding: '0.95rem 0.75rem',
-                          borderRadius: '0.125rem',
-                          boxShadow: isActive ? '0 0 0 1px #fb7185' : '0 2px 8px -4px rgba(0, 0, 0, 0.05)',
-                          border: `1px solid ${isActive ? '#fb7185' : '#f3f4f6'}`,
-                          transition: 'box-shadow 0.2s ease',
-                          cursor: 'pointer',
-                          display: 'block',
-                          textDecoration: 'none',
-                          backgroundColor: isActive ? 'rgba(255, 241, 242, 0.5)' : '#ffffff'
-                        }}
-                        className="group"
+                        className={`bg-white rounded-[20px] border p-5 min-h-[150px] flex flex-col transition-shadow duration-200 group no-underline cursor-pointer ${isActive ? 'border-[#FF5A1F] shadow-[0_0_0_1px_#FF5A1F] bg-[#FFF6F3]' : 'border-[#ECECEC] hover:shadow-md' }`}
                       >
                         <div className="flex items-center gap-2">
-                          <div className="flex-shrink-0 p-2 rounded-lg transition-transform group-hover:scale-150">
+                          <div className="flex-shrink-0 p-2 rounded-lg transition-transform group-hover:scale-110">
                             <SkeletalIcon size={20} style={{ color: strokeColor }} />
                           </div>
-                          <h3 style={{
-                            fontFamily: 'inherit',
-                            fontSize: '15px',
-                            fontWeight: isActive ? '700' : '500',
-                            color: '#1f2937',
-                            lineHeight: '1.375',
-                            marginBottom: '2px'
-                          }}>{fam.name}</h3>
+                          <h3 className="text-[15.5px] font-medium leading-5 text-[#111111]">{fam.name}</h3>
                         </div>
-                        <p style={{
-                          fontFamily: 'inherit',
-                          fontSize: '0.875rem',
-                          fontWeight: '400',
-                          color: '#6b7280',
-                          lineHeight: '1.25rem',
-                          marginTop: '0.375rem',
-                          marginLeft: "2.75rem",
-                          marginRight: '0.5rem'
-                        }}>
-                          {fam.count} Models
-                        </p>
+                        <div className="mt-auto pt-5"><span className="inline-flex items-center rounded-full border border-[#D9D9D9] bg-white px-2 py-0.5 text-[11.5px] font-semibold uppercase tracking-[0.06em] text-[#666666]">{fam.count} Models</span></div>
                       </div>
                     );
                   })}
@@ -755,10 +768,8 @@ function ModelsContent() {
               {/* 4. BROWSE BY ORGANIZATION */}
               {filteredVendors.length > 0 && (
               <section id="section-organization" className="mb-12 scroll-mt-24">
-                <div className="models-block-header flex justify-between items-center mb-6 border-b-0 pb-0">
-                  <div className="models-block-title flex items-center gap-3 text-[30px] font-bold text-gray-800">
-                    <h2>Browse by Organization</h2>
-                  </div>
+                <div className="flex items-center justify-between mb-6 border-b border-[#ececec] pb-3">
+                  <h2 className="text-[27px] font-bold text-[#111827]">Browse by Organization</h2>
                   <span className="models-block-count text-[11px] font-normal uppercase tracking-wider text-gray-400">{facets?.vendors?.length} Leading Labs</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
@@ -775,19 +786,7 @@ const vendorLogo = vendorModel?.vendorLogoUrl;
                       <div
                         key={v.name}
                         onClick={() => handleVendorClick(v.name)}
-                        style={{
-                          background: '#ffffff',
-                          padding: '0.95rem 0.75rem',
-                          borderRadius: '0.125rem',
-                          boxShadow: isActive ? '0 0 0 1px #fb7185' : '0 2px 8px -4px rgba(0, 0, 0, 0.05)',
-                          border: `1px solid ${isActive ? '#fb7185' : '#f3f4f6'}`,
-                          transition: 'box-shadow 0.2s ease',
-                          cursor: 'pointer',
-                          display: 'block',
-                          textDecoration: 'none',
-                          backgroundColor: isActive ? 'rgba(255, 241, 242, 0.5)' : '#ffffff'
-                        }}
-                        className="group"
+                        className={`bg-white rounded-[20px] border p-5 min-h-[150px] flex flex-col transition-shadow duration-200 group no-underline cursor-pointer ${isActive ? 'border-[#FF5A1F] shadow-[0_0_0_1px_#FF5A1F] bg-[#FFF6F3]' : 'border-[#ECECEC] hover:shadow-md' }`}
                       >
                         <div className="flex items-center gap-2">
                           <div className="flex-shrink-0 p-2 rounded-lg transition-transform group-hover:scale-110">
@@ -795,49 +794,21 @@ const vendorLogo = vendorModel?.vendorLogoUrl;
     <img
       src={vendorLogo}
       alt={v.name}
-      className="w-[35px] h-[35px] object-contain"
+      className="w-[30px] h-[30px] object-contain"
     />
   ) : (
     <SkeletalIcon size={20} style={{ color: strokeColor }} />
   )}
 </div>
-                          <h3 style={{
-                            fontFamily: 'inherit',
-                            fontSize: '18px',
-                            fontWeight: isActive ? '700' : '500',
-                            color: '#1f2937',
-                            lineHeight: '1.375',
-                            marginBottom: '2px'
-                          }}>{v.name}</h3>
+                          <h3
+  className={`text-[15.5px] font-medium leading-5 ${
+    isActive
+      ? "text-[#FF5A1F]"
+      : "text-[#111111]"
+  }`}
+>{v.name}</h3>
                         </div>
-                        <p
-  style={{
-    fontFamily: "inherit",
-    fontSize: "0.875rem",
-    fontWeight: "400",
-    color: "#6b7280",
-    lineHeight: "1.25rem",
-    marginTop: "0.375rem",
-    marginLeft: "3.25rem",
-    marginRight: "0.5rem",
-    marginBottom: "0.25rem",
-  }}
->
-  Explore AI models developed by {v.name}.
-</p>
-
-<p
-  style={{
-    fontFamily: "inherit",
-    fontSize: "0.875rem",
-    fontWeight: "600",
-    color: "#575c66",
-    marginLeft: "3.25rem",
-    marginRight: "0.5rem",
-  }}
->
-  {v.count} Models
-</p>
+                        <div className="mt-auto pt-5"><span className="inline-flex items-center rounded-full border border-[#D9D9D9] bg-white px-2 py-0.5 text-[11.5px] font-semibold uppercase tracking-[0.06em] text-[#666666]">{v.count} Models</span></div>
                       </div>
                     );
                   })}
@@ -848,10 +819,8 @@ const vendorLogo = vendorModel?.vendorLogoUrl;
               {/* 5. BROWSE BY RESEARCH AREA */}
               {filteredResearchAreas.length > 0 && (
               <section id="section-research" className="mb-12 scroll-mt-24">
-                <div className="models-block-header flex justify-between items-center mb-6 border-b-0 pb-0">
-                  <div className="models-block-title flex items-center gap-3 text-[30px] font-bold text-gray-800">
-                    <h2>Browse by Research Area</h2>
-                  </div>
+                <div className="flex items-center justify-between mb-6 border-b border-[#ececec] pb-3">
+                  <h2 className="text-[27px] font-bold text-[#111827]">Browse by Research Area</h2>
                   <span className="models-block-count text-[11px] font-normal uppercase tracking-wider text-gray-400">{facets?.researchAreas?.length} Modalities &amp; Domains</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
@@ -862,61 +831,20 @@ const vendorLogo = vendorModel?.vendorLogoUrl;
                       <div
                         key={d.name}
                         onClick={() => handleDomainClick(d.name)}
-                        style={{
-                          background: '#ffffff',
-                          padding: '0.95rem 0.75rem',
-                          borderRadius: '0.125rem',
-                          boxShadow: isActive ? '0 0 0 1px #fb7185' : '0 2px 8px -4px rgba(0, 0, 0, 0.05)',
-                          border: `1px solid ${isActive ? '#fb7185' : '#f3f4f6'}`,
-                          transition: 'box-shadow 0.2s ease',
-                          cursor: 'pointer',
-                          display: 'block',
-                          textDecoration: 'none',
-                          backgroundColor: isActive ? 'rgba(255, 241, 242, 0.5)' : '#ffffff'
-                        }}
-                        className="group"
+                        className={`bg-white rounded-[20px] border p-5 min-h-[150px] flex flex-col transition-shadow duration-200 group no-underline cursor-pointer ${isActive ? 'border-[#FF5A1F] shadow-[0_0_0_1px_#FF5A1F] bg-[#FFF6F3]' : 'border-[#ECECEC] hover:shadow-md' }`}
                       >
                         <div className="flex items-center gap-2">
                           <div className="flex-shrink-0 p-2 rounded-lg transition-transform group-hover:scale-150">
                             <SkeletalIcon size={20} style={{ color: strokeColor }} />
                           </div>
-                          <h3 style={{
-                            fontFamily: 'inherit',
-                            fontSize: '15px',
-                            fontWeight: isActive ? '700' : '500',
-                            color: '#1f2937',
-                            lineHeight: '1.375',
-                            marginBottom: '2px'
-                          }}>{d.name}</h3>
+                          <h3 className="text-[15.5px] font-medium leading-5 text-[#111111]">{d.name}</h3>
                         </div>
-                        <p
-  style={{
-    fontFamily: "inherit",
-    fontSize: "0.875rem",
-    fontWeight: "400",
-    color: "#6b7280",
-    lineHeight: "1.25rem",
-    marginTop: "0.375rem",
-    marginLeft: "2.75rem",
-    marginRight: "0.5rem",
-    marginBottom: "0.25rem",
-  }}
->
-  Explore models for {d.name.toLowerCase()}.
+                        <p className="mt-3 text-[13.5px] leading-5 text-[#666] line-clamp-3">
+  {getCardDescription(d.name)}
 </p>
 
-<p
-  style={{
-    fontFamily: "inherit",
-    fontSize: "0.875rem",
-    fontWeight: "600",
-    color: "#575c66",
-    marginLeft: "2.75rem",
-    marginRight: "0.5rem",
-  }}
->
-  {d.count} Models
-</p>
+<div className="mt-auto pt-5"><span className="inline-flex items-center rounded-full border border-[#D9D9D9] bg-white px-2 py-0.5 text-[11.5px] font-semibold uppercase tracking-[0.06em] text-[#666666]">
+  {d.count} Models</span></div>
                       </div>
                     );
                   })}
@@ -927,44 +855,25 @@ const vendorLogo = vendorModel?.vendorLogoUrl;
               {/* 6. TRENDING MODELS */}
               {filteredTrending.length > 0 && (
               <section id="section-trending" className="mb-12 scroll-mt-24">
-                <div className="models-block-header flex justify-between items-center mb-6 border-b-0 pb-0">
-                  <div className="models-block-title flex items-center gap-3 text-[30px] font-bold text-gray-800">
-                    <h2>Trending Models</h2>
-                  </div>
+                <div className="flex items-center justify-between mb-6 border-b border-[#ececec] pb-3">
+                  <h2 className="text-[27px] font-bold text-[#111827]">Trending Models</h2>
                   <span className="models-block-count text-[11px] font-normal uppercase tracking-wider text-gray-400">Most Active in 2025</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                   {filteredTrending.map((m, idx) => {
                     const { Icon: SkeletalIcon, color: strokeColor } = getSkeletalIcon(idx + 15, m.name);
+                    
                     return (
                       <div
                         key={m.id}
                         onClick={() => setInspectedModel(m)}
-                        style={{
-                          background: '#ffffff',
-                          padding: '0.95rem 0.75rem',
-                          borderRadius: '0.125rem',
-                          boxShadow: '0 2px 8px -4px rgba(0, 0, 0, 0.05)',
-                          border: '1px solid #f3f4f6',
-                          transition: 'box-shadow 0.2s ease',
-                          cursor: 'pointer',
-                          display: 'block',
-                          textDecoration: 'none'
-                        }}
-                        className="group"
+                        className="bg-white rounded-[20px] border border-[#ECECEC] p-5 min-h-[150px] flex flex-col hover:shadow-md transition-shadow duration-200 group no-underline"
                       >
                         <div className="flex items-center gap-2">
-                          <div className="flex-shrink-0 p-2 rounded-lg transition-transform group-hover:scale-150">
+                          <div className="flex-shrink-0 p-2 rounded-lg transition-transform group-hover:scale-110">
                             <SkeletalIcon size={20} style={{ color: strokeColor }} />
                           </div>
-                          <h3 style={{
-                            fontFamily: 'inherit',
-                            fontSize: '15px',
-                            fontWeight: '500',
-                            color: '#1f2937',
-                            lineHeight: '1.375',
-                            marginBottom: '2px'
-                          }}>{m.name}</h3>
+                          <h3 className="text-[15.5px] font-medium leading-5 text-[#111111]">{m.name}</h3>
                         </div>
                         {m.description && (
                           <p style={{
@@ -973,6 +882,9 @@ const vendorLogo = vendorModel?.vendorLogoUrl;
                             fontWeight: '400',
                             color: '#6b7280',
                             lineHeight: '1.25rem',
+                          height: '3.75rem',
+                          
+                          overflow: 'hidden',
                             marginTop: '0.375rem',
                             marginLeft: '2.75rem',
                             marginRight: '0.5rem'
@@ -988,11 +900,11 @@ const vendorLogo = vendorModel?.vendorLogoUrl;
         {/* 7. RECENTLY RELEASED (Page 4) */}
         {filteredRecentlyReleasedTable.length > 0 && (
         <section id="section-recently-released" className="mb-12 scroll-mt-24">
-          <div className="models-block-header flex justify-between items-center mb-6 border-b-0 pb-0">
-            <div className="models-block-title flex items-center gap-3 text-[30px] font-bold text-gray-800">
-              <Calendar size={22} style={{ color: "#FF5A1F" }} />
-              <span>Recently Released</span>
-            </div>
+          <div className="flex items-center justify-between mb-6 border-b border-[#ececec] pb-3">
+            <h2 className="text-[27px] font-bold text-[#111827] flex items-center gap-3">
+<Calendar size={22} style={{ color: "#FF5A1F" }} />
+<span>Recently Released</span>
+</h2>
             <span className="models-block-count text-[11px] font-normal uppercase tracking-wider text-gray-400">Latest Foundation Arrivals</span>
           </div>
           <div style={{ background: "#ffffff", border: "1px solid #E5E5E0", borderRadius: "2px", overflow: "hidden", boxShadow: "0 8px 30px rgba(0, 0, 0, 0.04)", padding: "20px 14px" }}>
@@ -1000,34 +912,48 @@ const vendorLogo = vendorModel?.vendorLogoUrl;
               <table style={{ width: "100%", minWidth: "1280px", borderCollapse: "collapse", textAlign: "left", fontFamily: "'Inter', system-ui, sans-serif", tableLayout: "auto" }}>
                 <thead>
                   <tr style={{ borderBottom: "2px solid #111111" }}>
-                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Model Name</th>
+                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25", fontFamily: "monospace" }}>#</th>
+                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Model</th>
                     <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Organization</th>
-                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Release Date</th>
                     <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Model Family</th>
-                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Short Description</th>
+                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Category</th>
+                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Parameters</th>
+                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Context Window</th>
+                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>License</th>
+                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Benchmarks</th>
+                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Papers</th>
+                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Release Date</th>
+                    <th style={{ padding: "10px 12px", textAlign: "right", fontSize: "11px", fontWeight: 400, color: "#666666", textTransform: "none", letterSpacing: "normal", whiteSpace: "nowrap", lineHeight: "1.25" }}>Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredRecentlyReleasedTable.map((r) => (
-                    <tr
-                      key={r.id}
-                      onClick={() => setInspectedModel(r)}
-                      style={{ borderBottom: "1px solid #EAE9E4", cursor: "pointer", transition: "background 0.15s ease" }}
-                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#FFF8F6"; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
-                    >
-                      <td style={{ padding: "12px 12px", fontWeight: 400, fontSize: "12.5px", color: "#111111", display: "flex", alignItems: "center", gap: "8px", whiteSpace: "nowrap", verticalAlign: "middle", lineHeight: "1.3" }}>
-                        <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#FF5A1F", display: "inline-block" }}></span>
-                        <span>{r.name}</span>
+                  {filteredRecentlyReleasedTable.map((model, idx) => (
+                    <tr key={model.id} onClick={() => setInspectedModel(model)} style={{ borderBottom: "1px solid #EAE9E4", cursor: "pointer", transition: "background 0.15s ease" }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#FFF8F6"; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}>
+                      <td style={{ padding: "12px 12px", fontFamily: "monospace", fontSize: "11px", fontWeight: 400, color: "#8B8B8B", width: "1%", whiteSpace: "nowrap", verticalAlign: "middle", lineHeight: "1.3", paddingRight: "12px" }}>{(idx + 1).toString().padStart(3, "0")}</td>
+                      <td style={{ padding: "12px 12px", fontWeight: 400, fontSize: "12.5px", color: "#111111", minWidth: "160px", whiteSpace: "nowrap", wordBreak: "normal", verticalAlign: "middle", lineHeight: "1.3", paddingLeft: "12px", paddingRight: "8px" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                          <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#FF5A1F", display: "inline-block", flexShrink: 0 }}></span>
+                          <span>{model.name}</span>
+                        </div>
                       </td>
-                      <td style={{ padding: "12px 12px", fontWeight: 400, fontSize: "11.5px", color: "#555555", whiteSpace: "nowrap", verticalAlign: "middle", lineHeight: "1.3" }}>{r.vendor}</td>
-                      <td style={{ padding: "12px 12px", fontFamily: "monospace", fontWeight: 400, fontSize: "11px", color: "#FF5A1F", whiteSpace: "nowrap", verticalAlign: "middle", lineHeight: "1.3" }}>{r.releaseDate}</td>
-                      <td style={{ padding: "12px 12px", fontWeight: 400, fontSize: "11.5px", color: "#111111", whiteSpace: "nowrap", verticalAlign: "middle", lineHeight: "1.3" }}>
-                        {r.modelFamily && (
-                          <span style={{ padding: "3px 8px", background: "#F8F7F2", borderRadius: "2px", border: "1px solid #E5E5E0", fontSize: "11px" }}>{r.modelFamily}</span>
+                      <td style={{ padding: "12px 12px", fontWeight: 400, color: "#555555", minWidth: "120px", whiteSpace: "nowrap", wordBreak: "normal", verticalAlign: "middle", lineHeight: "1.3", paddingLeft: "4px", paddingRight: "8px" }}>{model.vendor}</td>
+                      <td style={{ padding: "12px 12px", fontWeight: 400, color: "#111111", whiteSpace: "nowrap", width: "1%", verticalAlign: "middle", lineHeight: "1.3", paddingLeft: "4px", paddingRight: "8px" }}>
+                        {model.modelFamily && (
+                          <span style={{ padding: "3px 8px", background: "#F8F7F2", borderRadius: "2px", border: "1px solid #E5E5E0", fontSize: "11px", whiteSpace: "nowrap", display: "inline-block", fontWeight: 400 }}>{model.modelFamily}</span>
                         )}
                       </td>
-                      <td style={{ padding: "12px 12px", fontSize: "12px", fontWeight: 400, color: "#444444", maxWidth: "520px", verticalAlign: "middle", lineHeight: "1.3" }}>{r.description}</td>
+                      <td style={{ padding: "12px 12px", color: "#555555", fontWeight: 400, verticalAlign: "middle", lineHeight: "1.3" }}>{model.category}</td>
+                      <td style={{ padding: "12px 12px", fontFamily: "monospace", fontSize: "11px", color: "#333333", fontWeight: 400, verticalAlign: "middle", lineHeight: "1.3" }}>{model.parameterCount}</td>
+                      <td style={{ padding: "12px 12px", fontFamily: "monospace", fontSize: "11px", color: "#111111", fontWeight: 400, verticalAlign: "middle", lineHeight: "1.3" }}>{model.contextWindow}</td>
+                      <td style={{ padding: "12px 12px", color: "#555555", fontSize: "11px", fontWeight: 400, verticalAlign: "middle", lineHeight: "1.3" }}>{model.license}</td>
+                      <td style={{ padding: "12px 12px", textAlign: "left", fontWeight: 400, color: "#FF5A1F", fontFamily: "monospace", fontSize: "11px", verticalAlign: "middle", lineHeight: "1.3" }}>
+                        {model.trendingScore ? `⚡ ${model.trendingScore} Elo` : (model.benchmarkScore && Object.keys(model.benchmarkScore).length > 0 ? `${Object.keys(model.benchmarkScore).length} verified` : '')}
+                      </td>
+                      <td style={{ padding: "12px 12px", color: "#555555", fontWeight: 400, fontSize: "11px", verticalAlign: "middle", lineHeight: "1.3" }}>{model.paperCount} papers</td>
+                      <td style={{ padding: "12px 12px", fontFamily: "monospace", fontSize: "11px", color: "#777777", fontWeight: 400, verticalAlign: "middle", lineHeight: "1.3" }}>{model.releaseDate}</td>
+                      <td style={{ padding: "12px 12px", textAlign: "right", whiteSpace: "nowrap", verticalAlign: "middle", lineHeight: "1.3" }}>
+                        <button style={{ fontSize: "11px", fontWeight: 400, textTransform: "uppercase", letterSpacing: "0.4px", padding: "5px 10px", borderRadius: "2px", background: "#F8F7F2", color: "#111111", border: "1px solid #E5E5E0", transition: "all 0.2s ease", whiteSpace: "nowrap" }}>Inspect &rarr;</button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -1185,8 +1111,6 @@ const vendorLogo = vendorModel?.vendorLogoUrl;
             </div>
           </div>
         </div>
-      </main>
-      </div>
 
       {/* INSPECT MODEL SLIDE-OVER MODAL */}
       {inspectedModel && (
@@ -1223,7 +1147,7 @@ const vendorLogo = vendorModel?.vendorLogoUrl;
                 </p>
               )}
 
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px", marginBottom: "24px", background: "#F8F7F2", padding: "16px", borderRadius: "2px", border: "1px solid var(--border)", fontSize: "12px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px", marginBottom: "24px", background: "#F8F7F2", padding: "16px", borderRadius: "2px", border: "1px solid var(--border)", fontSize: "12px" }}>
                 <div>
                   <span style={{ fontSize: "10px", fontWeight: 800, textTransform: "uppercase", color: "#8B8B8B", display: "block", marginBottom: "4px" }}>Architecture</span>
                   <span style={{ fontWeight: 800, color: "#111111" }}>{inspectedModel.parameterCount || inspectedModel.architecture}</span>
@@ -1231,10 +1155,6 @@ const vendorLogo = vendorModel?.vendorLogoUrl;
                 <div>
                   <span style={{ fontSize: "10px", fontWeight: 800, textTransform: "uppercase", color: "#8B8B8B", display: "block", marginBottom: "4px" }}>Context</span>
                   <span style={{ fontWeight: 800, color: "#111111" }}>{inspectedModel.contextWindow}</span>
-                </div>
-                <div>
-                  <span style={{ fontSize: "10px", fontWeight: 800, textTransform: "uppercase", color: "#8B8B8B", display: "block", marginBottom: "4px" }}>Elo / SOTA</span>
-                  <span style={{ fontWeight: 800, color: "#16A34A" }}>{inspectedModel.trendingScore ? `⚡ ${inspectedModel.trendingScore}` : ''}</span>
                 </div>
                 <div>
                   <span style={{ fontSize: "10px", fontWeight: 800, textTransform: "uppercase", color: "#8B8B8B", display: "block", marginBottom: "4px" }}>Citations</span>
