@@ -227,8 +227,10 @@ export async function getPapers(params: GetPapersParams = {}): Promise<GetPapers
     
     if (process.env.NODE_ENV === "development") console.log(`[paperApi] getPapers complete in ${totalDuration.toFixed(2)}ms (mapping took ${mapDuration.toFixed(2)}ms)`);
 
+    const validPapers = mappedPapers.filter(p => p.authors.length > 0 && p.date !== "Unknown Date");
+
     const result: GetPapersResult = {
-      papers: mappedPapers,
+      papers: validPapers,
       total: response.data.total,
       page: response.data.page,
       hasMore: response.data.hasMore,

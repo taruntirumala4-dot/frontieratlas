@@ -630,11 +630,15 @@ export default function PaperList({
   // Progressive rendering: show cards in batches
   const prevPaperLen = useRef(0);
   useEffect(() => {
-    if (papers.length > 0 && papers.length !== prevPaperLen.current) {
+    if (papers.length === 0) {
+      prevPaperLen.current = 0;
+      setDisplayCount(0);
+    } else if (papers.length < prevPaperLen.current || prevPaperLen.current === 0) {
       prevPaperLen.current = papers.length;
       setDisplayCount(Math.min(5, papers.length));
-    } else if (filteredPapers.length === 0) {
-      prevPaperLen.current = 0;
+    } else if (papers.length > prevPaperLen.current) {
+      prevPaperLen.current = papers.length;
+      // Do not reset displayCount on append
     }
   }, [papers.length]);
   useEffect(() => {
@@ -801,7 +805,17 @@ export default function PaperList({
 
         if (result.hasMore) {
           nextPageRef.current = result.page + 1;
-          prefetchPage(result.page + 1);
+          
+          // If all papers were filtered out, automatically load the next page
+          if (visiblePapers.length === 0) {
+            setTimeout(() => {
+              if (nextPageRef.current > 0) {
+                void loadPage(nextPageRef.current, false);
+              }
+            }, 50);
+          } else {
+            prefetchPage(result.page + 1);
+          }
         } else {
           nextPageRef.current = 0;
         }
