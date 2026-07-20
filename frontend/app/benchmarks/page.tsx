@@ -61,6 +61,7 @@ import Image from "next/image";
 import bgImage from "@/public/bg-image.png";
 import { getBenchmarks, type BenchmarkItem } from "@/lib/benchmarks";
 import { useRouter } from "next/navigation";
+import { atlasUiFont } from "@/lib/fonts";
 
 /* ══════════════════════════════════════════════════════════════
    STATUS CONFIG
@@ -460,12 +461,12 @@ export default function BenchmarksPage() {
         className="bg-white border border-gray-100 rounded-sm hover:shadow-md hover:border-gray-200 transition-all cursor-pointer group flex flex-col h-[180px] p-5 w-full"
       >
         <div className="flex items-start gap-2.5 mb-2">
-          <div className="flex-shrink-0 p-1.5 rounded-lg group-hover:scale-110 transition-transform" style={{ background: color + "18" }}>
-            <Icon size={18} style={{ color }} />
+          <div className="flex-shrink-0 group-hover:scale-110 transition-transform">
+            <Icon size={24} style={{ color }} />
           </div>
-          <h3 className="font-semibold text-gray-800 text-[14px] leading-snug pt-0.5 flex-1 min-w-0 line-clamp-1">{b.name}</h3>
+          <h3 className="font-semibold text-gray-800 text-[15px] leading-snug pt-0.5 flex-1 min-w-0 line-clamp-1">{b.name}</h3>
         </div>
-        <div className="text-xs text-gray-500 leading-normal h-[3.375rem] overflow-hidden flex flex-col justify-between">
+        <div className="text-[13px] text-gray-500 leading-normal h-[3.75rem] overflow-hidden flex flex-col justify-between">
           <span className="truncate">Task: {meta.task}</span>
           <span className="truncate">Domain: {meta.category}</span>
           <span className="truncate">Status: {meta.status}</span>
@@ -479,7 +480,7 @@ export default function BenchmarksPage() {
   };
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-[#F8F7F2] font-sans text-slate-800">
+    <div className={`${atlasUiFont.className} flex flex-col h-screen overflow-hidden bg-[#F8F7F2] text-slate-800 tracking-normal`}>
       <Navbar />
 
       <div className="flex-1 flex overflow-hidden">
@@ -599,12 +600,12 @@ export default function BenchmarksPage() {
                         className="bg-white border border-gray-100 rounded-sm p-5 hover:shadow-md hover:border-gray-200 transition-all group text-left flex flex-col h-[180px] w-full cursor-pointer"
                       >
                         <div className="flex items-start gap-2.5 mb-2">
-                          <div className="flex-shrink-0 p-1.5 rounded-lg group-hover:scale-110 transition-transform" style={{ background: color + "18" }}>
-                            <Icon size={18} style={{ color }} />
+                          <div className="flex-shrink-0 group-hover:scale-110 transition-transform">
+                            <Icon size={24} style={{ color }} />
                           </div>
-                          <span className="font-semibold text-gray-800 text-[14px] leading-snug pt-0.5 flex-1 min-w-0 line-clamp-1">{label}</span>
+                          <span className="font-semibold text-gray-800 text-[15px] leading-snug pt-0.5 flex-1 min-w-0 line-clamp-1">{label}</span>
                         </div>
-                        <p className="text-xs text-gray-500 leading-normal overflow-hidden h-[3.375rem]">{desc}</p>
+                        <p className="text-[13px] text-gray-500 leading-normal overflow-hidden h-[3.75rem]">{desc}</p>
                       </button>
                     ))}
                   </div>
@@ -626,12 +627,12 @@ export default function BenchmarksPage() {
                         className="bg-white border border-gray-100 rounded-sm p-5 hover:shadow-md hover:border-gray-200 transition-all group text-left flex flex-col h-[180px] w-full cursor-pointer"
                       >
                         <div className="flex items-start gap-2.5 mb-2">
-                          <div className="flex-shrink-0 p-1.5 rounded-lg group-hover:scale-110 transition-transform" style={{ background: bg }}>
-                            <Icon size={18} style={{ color }} />
+                          <div className="flex-shrink-0 group-hover:scale-110 transition-transform">
+                            <Icon size={24} style={{ color }} />
                           </div>
-                          <span className="font-semibold text-gray-800 text-[14px] leading-snug pt-0.5 flex-1 min-w-0 group-hover:text-[#FF5A1F] transition-colors line-clamp-1">{label}</span>
+                          <span className="font-semibold text-gray-800 text-[15px] leading-snug pt-0.5 flex-1 min-w-0 group-hover:text-[#FF5A1F] transition-colors line-clamp-1">{label}</span>
                         </div>
-                        <p className="text-xs text-gray-500 leading-normal overflow-hidden h-[3.375rem]">{desc}</p>
+                        <p className="text-[13px] text-gray-500 leading-normal overflow-hidden h-[3.75rem]">{desc}</p>
                       </button>
                     ))}
                   </div>
@@ -650,12 +651,12 @@ export default function BenchmarksPage() {
                         className="bg-white border border-gray-100 rounded-sm p-5 hover:shadow-md hover:border-gray-200 transition-all group text-left flex flex-col h-[180px] w-full cursor-pointer"
                       >
                         <div className="flex items-start gap-2.5 mb-2">
-                          <div className="flex-shrink-0 p-1.5 rounded-lg group-hover:scale-110 transition-transform" style={{ background: bg }}>
-                            <Icon size={18} style={{ color }} />
+                          <div className="flex-shrink-0 group-hover:scale-110 transition-transform">
+                            <Icon size={24} style={{ color }} />
                           </div>
-                          <span className="font-semibold text-gray-800 text-[14px] leading-snug pt-0.5 flex-1 min-w-0 line-clamp-1">{label}</span>
+                          <span className="font-semibold text-gray-800 text-[15px] leading-snug pt-0.5 flex-1 min-w-0 line-clamp-1">{label}</span>
                         </div>
-                        <p className="text-xs text-gray-500 leading-normal overflow-hidden h-[3.375rem]">{desc}</p>
+                        <p className="text-[13px] text-gray-500 leading-normal overflow-hidden h-[3.75rem]">{desc}</p>
                       </button>
                     ))}
                   </div>
@@ -711,12 +712,12 @@ export default function BenchmarksPage() {
                             className="bg-white border border-gray-100 rounded-sm p-5 hover:shadow-md cursor-pointer group transition-all flex flex-col h-[180px]"
                           >
                             <div className="flex items-start gap-2.5 mb-2">
-                              <div className="flex-shrink-0 p-1.5 rounded-lg group-hover:scale-110 transition-transform" style={{ background: bg }}>
-                                <Icon size={18} style={{ color }} />
+                              <div className="flex-shrink-0 group-hover:scale-110 transition-transform">
+                                <Icon size={24} style={{ color }} />
                               </div>
-                              <h3 className="font-semibold text-gray-800 text-[14px] leading-snug pt-0.5 flex-1 min-w-0 line-clamp-1">{b.name}</h3>
+                              <h3 className="font-semibold text-gray-800 text-[15px] leading-snug pt-0.5 flex-1 min-w-0 line-clamp-1">{b.name}</h3>
                             </div>
-                            <div className="text-xs text-gray-500 leading-normal h-[3.375rem] overflow-hidden flex flex-col justify-between">
+                            <div className="text-[13px] text-gray-500 leading-normal h-[3.75rem] overflow-hidden flex flex-col justify-between">
                               <span className="truncate">Task: {meta.task}</span>
                               <span className="truncate">Domain: {meta.category}</span>
                               <span className="truncate">Status: {meta.status}</span>
@@ -759,12 +760,12 @@ export default function BenchmarksPage() {
                             className="bg-white border border-gray-100 rounded-sm p-5 hover:shadow-md cursor-pointer group transition-all flex flex-col h-[180px]"
                           >
                             <div className="flex items-start gap-2.5 mb-2">
-                              <div className="flex-shrink-0 p-1.5 rounded-lg group-hover:scale-110 transition-transform" style={{ background: bg }}>
-                                <Icon size={18} style={{ color }} />
+                              <div className="flex-shrink-0 group-hover:scale-110 transition-transform">
+                                <Icon size={24} style={{ color }} />
                               </div>
-                              <h3 className="font-semibold text-gray-800 text-[14px] leading-snug pt-0.5 flex-1 min-w-0 line-clamp-1">{b.name}</h3>
+                              <h3 className="font-semibold text-gray-800 text-[15px] leading-snug pt-0.5 flex-1 min-w-0 line-clamp-1">{b.name}</h3>
                             </div>
-                            <div className="text-xs text-gray-500 leading-normal h-[3.375rem] overflow-hidden flex flex-col justify-between">
+                            <div className="text-[13px] text-gray-500 leading-normal h-[3.75rem] overflow-hidden flex flex-col justify-between">
                               <span className="truncate">Task: {meta.task}</span>
                               <span className="truncate">Domain: {meta.category}</span>
                               <span className="truncate">Status: {meta.status}</span>
