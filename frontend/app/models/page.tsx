@@ -72,6 +72,25 @@ function getSkeletalIcon(index: number, name: string = "") {
   return icons[index % icons.length];
 }
 
+function dedupIcon(baseIndex: number, name: string, prevIcon: any, offset: number = 0) {
+  let icon = getSkeletalIcon(baseIndex + offset, name);
+  let attempt = 0;
+  while (icon.Icon === prevIcon && attempt < 22) {
+    attempt++;
+    icon = getSkeletalIcon(baseIndex + offset + attempt, "");
+  }
+  return icon;
+}
+
+function dedupedIcons(offset: number) {
+  let last: any = null;
+  return (idx: number, name: string) => {
+    const icon = dedupIcon(idx, name, last, offset);
+    last = icon.Icon;
+    return icon;
+  };
+}
+
 /**
  * This file contains a massive dictionary of 100% unique, handcrafted 3-line descriptions
  * for every single capability, family, developer, and domain present in the Frontier Atlas models.
@@ -529,8 +548,8 @@ const [loading, setLoading] = useState(
                   ? Array.from({ length: 8 }).map((_, i) => (
                     <CapabilitySkeleton key={i} />
                   ))
-                  : filteredCapabilities.map((cap, idx) => {
-                    const { Icon: SkeletalIcon, color: strokeColor } = getSkeletalIcon(idx, cap.name);
+                  : (() => { const getIcon = dedupedIcons(0); return filteredCapabilities.map((cap, idx) => {
+                    const { Icon: SkeletalIcon, color: strokeColor } = getIcon(idx, cap.name);
                     const isActive = selectedCapability === cap.name;
                     return (
                       <div
@@ -552,7 +571,7 @@ const [loading, setLoading] = useState(
                           {cap.count} Models</span></div>
                       </div>
                     );
-                  })}
+                  }); })()}
               </div>
             </section>
               
@@ -565,11 +584,12 @@ const [loading, setLoading] = useState(
                   <span className="models-block-count text-[11px] font-normal uppercase tracking-wider text-gray-400">{facets?.modelFamilies?.length ?? "—"} Model Families</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                  {filteredModelFamilies.map((fam) => {
+                  {(() => { const getIcon = dedupedIcons(3); return filteredModelFamilies.map((fam, idx) => {
                     const isActive = selectedFamily === fam.name;
                     const familyLogo = allModels.find(
                       (m) => m.modelFamily?.toLowerCase() === fam.name.toLowerCase() && m.vendorLogoUrl
                     )?.vendorLogoUrl;
+                    const { Icon: SkeletalIcon, color: strokeColor } = getIcon(idx, "");
 
                     return (
                       <div
@@ -582,7 +602,7 @@ const [loading, setLoading] = useState(
                             {familyLogo ? (
                               <img src={familyLogo} alt={fam.name} className="w-full h-full object-contain" />
                             ) : (
-                              (() => { const { Icon: SkeletalIcon, color: strokeColor } = getSkeletalIcon((() => { let h = 0; for (let i = 0; i < fam.name.length; i++) { h = ((h << 5) - h) + fam.name.charCodeAt(i); h |= 0; } return Math.abs(h); })(), fam.name); return <SkeletalIcon size={22} strokeWidth={2.2} style={{ color: strokeColor }} />; })()
+                              <SkeletalIcon size={22} strokeWidth={2.2} style={{ color: strokeColor }} />
                             )}
                           </div>
                           <h3 className="text-[#111111] text-[15px] font-medium leading-5">{fam.name}</h3>
@@ -594,7 +614,7 @@ const [loading, setLoading] = useState(
                         <div className="pt-3"><span className="inline-flex items-center rounded-full border border-[#D9D9D9] bg-white px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-[#666666]">{fam.count} Models</span></div>
                       </div>
                     );
-                  })}
+                  }); })()}
                 </div>
               </section>
             )}
@@ -607,8 +627,8 @@ const [loading, setLoading] = useState(
                   <span className="models-block-count text-[11px] font-normal uppercase tracking-wider text-gray-400">{facets?.vendors?.length} Leading Labs</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                  {filteredVendors.map((v, idx) => {
-                    const { Icon: SkeletalIcon, color: strokeColor } = getSkeletalIcon(idx + 7, v.name);
+                  {(() => { const getIcon = dedupedIcons(7); return filteredVendors.map((v, idx) => {
+                    const { Icon: SkeletalIcon, color: strokeColor } = getIcon(idx, "");
                     const isActive = selectedVendor === v.name;
                     const vendorModel = allModels.find(
                       (model) => model.vendor.toLowerCase() === v.name.toLowerCase()
@@ -648,7 +668,7 @@ const [loading, setLoading] = useState(
                         <div className="pt-3"><span className="inline-flex items-center rounded-full border border-[#D9D9D9] bg-white px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-[#666666]">{v.count} Models</span></div>
                       </div>
                     );
-                  })}
+                  }); })()}
                 </div>
               </section>
             )}
@@ -661,8 +681,8 @@ const [loading, setLoading] = useState(
                   <span className="models-block-count text-[11px] font-normal uppercase tracking-wider text-gray-400">{facets?.researchAreas?.length} Modalities &amp; Domains</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                  {filteredResearchAreas.map((d, idx) => {
-                    const { Icon: SkeletalIcon, color: strokeColor } = getSkeletalIcon(idx + 11, d.name);
+                  {(() => { const getIcon = dedupedIcons(11); return filteredResearchAreas.map((d, idx) => {
+                    const { Icon: SkeletalIcon, color: strokeColor } = getIcon(idx, d.name);
                     const isActive = selectedDomain === d.name;
                     return (
                       <div
@@ -684,7 +704,7 @@ const [loading, setLoading] = useState(
                           {d.count} Models</span></div>
                       </div>
                     );
-                  })}
+                  }); })()}
                 </div>
               </section>
             )}
@@ -697,7 +717,8 @@ const [loading, setLoading] = useState(
                   <span className="models-block-count text-[11px] font-normal uppercase tracking-wider text-gray-400">Most Active in 2025</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                  {filteredTrending.map((m) => {
+                  {(() => { const getIcon = dedupedIcons(15); return filteredTrending.map((m, idx) => {
+                    const { Icon: SkeletalIcon, color: strokeColor } = getIcon(idx, "");
                     return (
                       <div
                         key={m.id}
@@ -709,7 +730,7 @@ const [loading, setLoading] = useState(
                             {m.vendorLogoUrl ? (
                               <img src={m.vendorLogoUrl} alt={m.vendor} className="w-full h-full object-contain" />
                             ) : (
-                              (() => { const { Icon: SkeletalIcon, color: strokeColor } = getSkeletalIcon((() => { let h = 0; for (let i = 0; i < m.name.length; i++) { h = ((h << 5) - h) + m.name.charCodeAt(i); h |= 0; } return Math.abs(h); })(), m.name); return <SkeletalIcon size={22} strokeWidth={2.2} style={{ color: strokeColor }} />; })()
+                              <SkeletalIcon size={22} strokeWidth={2.2} style={{ color: strokeColor }} />
                             )}
                           </div>
                           <h3 className="text-[#111111] text-[15px] font-medium leading-5">{m.name}</h3>
@@ -723,7 +744,7 @@ const [loading, setLoading] = useState(
                         )}
                       </div>
                     );
-                  })}
+                  }); })()}
                 </div>
               </section>
             )}
