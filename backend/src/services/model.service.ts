@@ -141,6 +141,7 @@ export const getModels = async (
         repositoryUrl: true,
         api_url: true,
         apiUrl: true,
+        trendingScore: true,
         createdAt: true,
         _count: {
           select: {
@@ -228,10 +229,10 @@ export const getModels = async (
       repositoryUrl: model.repositoryUrl ?? model.repository_url,
       apiUrl: model.apiUrl ?? model.api_url,
       createdAt: model.createdAt,
+      trendingScore: model.trendingScore,
       paperCount: model._count.papers,
       citationCount: isTrending ? citationCount : undefined,
       githubStars: isTrending ? githubStars : undefined,
-      trendingScore: isTrending ? trendingScore : undefined,
     };
   });
 
@@ -249,7 +250,11 @@ export const getModels = async (
     }
 
     if (sort === "trending") {
-      return (b.trendingScore || 0) - (a.trendingScore || 0);
+      const scoreDiff = (b.trendingScore || 0) - (a.trendingScore || 0);
+      if (scoreDiff !== 0) return scoreDiff;
+      const paperDiff = b.paperCount - a.paperCount;
+      if (paperDiff !== 0) return paperDiff;
+      return a.name.localeCompare(b.name);
     }
 
     if (sort === "papers") {

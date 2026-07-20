@@ -308,7 +308,8 @@ exports.Prisma.ModelScalarFieldEnum = {
   repository_url: 'repository_url',
   repositoryUrl: 'repositoryUrl',
   api_url: 'api_url',
-  apiUrl: 'apiUrl'
+  apiUrl: 'apiUrl',
+  trendingScore: 'trendingScore'
 };
 
 exports.Prisma.PaperModelScalarFieldEnum = {
