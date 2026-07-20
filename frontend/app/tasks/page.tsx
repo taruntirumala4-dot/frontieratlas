@@ -900,41 +900,32 @@ const FrontierAtlas: React.FC = () => {
         >
           <div className="max-w-7xl mx-auto px-6 py-8 w-full">
             {/* Hero section - reduced by 25% */}
-            <div className="relative overflow-hidden mb-14 hidden md:flex min-h-[240px] items-center rounded-2xl bg-white border border-gray-200 shadow-sm px-8">
-              <div className="relative z-10 max-w-3xl mx-auto flex flex-col items-center text-center py-10">
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 mb-5">
-                  All
-                  <span className="text-[#e11d48] ml-3">Tasks</span>
-                </h1>
-                <p className="text-gray-600 text-base leading-7 max-w-2xl mb-6">
-                  Discover the full landscape of AI research through 105 tasks spanning language, vision, video, audio, robotics, healthcare, and more.
-                </p>
-                <div className="flex items-center gap-8 text-base">
-                  {stats.map((stat, index) => (
-                    <div key={stat.label} className="flex items-center gap-4">
-                      <div>
-                        <div className="text-2xl font-bold text-gray-900">
-                          {stat.value}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {stat.label}
-                        </div>
-                      </div>
-                      {index < stats.length - 1 && (
-                        <div className="w-px h-6 bg-gray-200" />
-                      )}
-                    </div>
-                  ))}
-                  <div className="flex items-center gap-2 border border-gray-300 rounded-full px-5 py-2 bg-white shadow-sm">
-                    <TrendingUp size={16} className="text-emerald-500" />
-                    <span className="text-gray-600 font-medium text-sm">
-                      Daily updates
-                    </span>
-                  </div>
-                </div>
-              </div>
-              
-            </div>
+            {/* Hero */}
+<div className="mb-12">
+  <div className="max-w-[760px]">
+    <h1 className="text-[44px] font-bold tracking-tight text-[#111111]">
+      All <span className="text-[#F55036]">Tasks</span>
+    </h1>
+
+    <p className="mt-4 max-w-[620px] text-[16px] leading-8 text-[#5B6472]">
+      Discover the full landscape of AI research through 105 tasks spanning
+      language, vision, video, audio, robotics, healthcare, and more.
+    </p>
+
+    <div className="flex items-start gap-10 mt-8">
+      {stats.map((stat) => (
+        <div key={stat.label}>
+          <div className="text-[20px] font-bold text-[#111111]">
+            {stat.value}
+          </div>
+          <div className="mt-1 text-[13px] text-[#6B7280]">
+            {stat.label}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>
 
             {/* Main layout: sidebar + content */}
             <div className="flex gap-6">
