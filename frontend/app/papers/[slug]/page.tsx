@@ -5,48 +5,71 @@ export const runtime = "edge";
 import { AlertCircle, BookOpen, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useState, useEffect } from "react";
-import { getPaperBySlug } from "@/lib/papers";
+import { useState, useEffect, useLayoutEffect } from "react";
+import { getPaperBySlug, getPaperBySlugSync } from "@/lib/papers";
 import type { PaperDetail as PaperDetailType } from "@/lib/papers";
 import PaperDetail from "@/components/PaperDetail";
 import PaperDetailSkeleton from "@/components/PaperDetailSkeleton";
 import Navbar from "@/components/Navbar";
 
+// Use useLayoutEffect on client, useEffect on server (SSR safety)
+const useIsomorphicLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
+
 export default function PaperPage() {
   const params = useParams();
   const slug = params?.slug as string;
-  const [paper, setPaper] = useState<PaperDetailType | null>(null);
-  const [loading, setLoading] = useState(true);
+
+  // ── Cache-first: read synchronously before first paint ──
+  const [paper, setPaper] = useState<PaperDetailType | null>(() => {
+    if (typeof window === "undefined") return null;
+    return getPaperBySlugSync(slug);
+  });
+  const [loading, setLoading] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return getPaperBySlugSync(slug) === null;
+  });
   const [error, setError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (!slug) return;
 
-    async function loadPaper() {
-      setLoading(true);
-      setError(null);
-      setNotFound(false);
-      try {
-        const data = await getPaperBySlug(slug);
+    // If we already have cached data, skip the loading spinner entirely.
+    // Still re-fetch in background for stale-while-revalidate.
+    const cached = getPaperBySlugSync(slug);
+    if (cached) {
+      setPaper(cached);
+      setLoading(false);
+      // Silently refresh in background — no spinner shown
+      getPaperBySlug(slug).then(setPaper).catch(() => {});
+      return;
+    }
+
+    // No cache → fetch with loading state
+    setLoading(true);
+    setError(null);
+    setNotFound(false);
+
+    getPaperBySlug(slug)
+      .then((data) => {
         setPaper(data);
-      } catch (err: unknown) {
+      })
+      .catch((err: unknown) => {
         if (err instanceof Error && err.message.includes("404")) {
           setNotFound(true);
         } else {
           setError("Failed to load paper. Please try again later.");
         }
-      } finally {
+      })
+      .finally(() => {
         setLoading(false);
-      }
-    }
-
-    loadPaper();
+      });
   }, [slug]);
 
   let content = null;
 
-  if (loading) {
+  if (loading && !paper) {
     content = <PaperDetailSkeleton />;
   } else if (notFound) {
     content = (
@@ -113,3 +136,4 @@ export default function PaperPage() {
     </div>
   );
 }
+

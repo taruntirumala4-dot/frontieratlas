@@ -16,6 +16,7 @@ import {
   FileCode2,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   getPapers,
   type GetPapersParams,
@@ -344,6 +345,7 @@ Metric.displayName = "Metric";
 
 export const PaperCard = memo(({ paper }: { paper: Paper }) => {
   const upvotesNum = parseFloat(paper.upvotes) || 0;
+  const router = useRouter();
 
   const safeAuthors = paper.authors || [];
   const visibleAuthors = safeAuthors.slice(0, 3);
@@ -355,9 +357,20 @@ const huggingFaceRepo = paper.repositories?.find(
   (repo: any) => repo.url?.includes("huggingface.co")
 );
 
+  const handlePrefetch = useCallback(() => {
+    // Prefetch Next.js JS route chunks
+    router.prefetch(`/papers/${paper.slug}`);
+    // Prefetch API data into memory + sessionStorage cache
+    prefetchPaperBySlug(paper.slug);
+  }, [router, paper.slug]);
 
   return (
-    <Link href={`/papers/${paper.slug}`} className="no-underline block">
+    <Link
+      href={`/papers/${paper.slug}`}
+      className="no-underline block"
+      onMouseEnter={handlePrefetch}
+      onTouchStart={handlePrefetch}
+    >
       <div className="group flex flex-col xl:flex-row gap-3 sm:gap-4 xl:gap-5 p-3 sm:p-4 xl:pt-2 xl:pb-2 bg-white xl:bg-transparent border xl:border-x-0 xl:border-t-0 border-[#E5E5E0] rounded-none cursor-pointer hover:shadow-lg xl:hover:bg-white xl:hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all duration-300 ease-out hover:-translate-y-1 relative hover:z-10 active:scale-[0.99]">
         {/* PDF thumbnail */}
         <div className="order-first xl:order-last shrink-0 w-full xl:w-auto mx-auto xl:mx-0 xl:self-stretch border-b xl:border-b-0 border-[#E5E5E0] pb-3 xl:pb-0 mb-1 xl:mb-0">
@@ -648,8 +661,37 @@ export default function PaperList({
     }
   }, [displayCount, papers.length]);
 
-  // Paper detail prefetching via IntersectionObserver
+  // Paper detail prefetching — staggered to avoid connection saturation
   const prefetchedRef = useRef(new Set<string>());
+  const prefetchQueueRef = useRef<string[]>([]);
+  const prefetchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const prefetchCountRef = useRef(0);
+
+  const schedulePrefetch = useCallback((slug: string) => {
+    if (prefetchedRef.current.has(slug)) return;
+    prefetchedRef.current.add(slug);
+
+    // First 3 are immediate, rest are staggered 200ms apart
+    if (prefetchCountRef.current < 3) {
+      prefetchCountRef.current++;
+      prefetchPaperBySlug(slug);
+    } else {
+      prefetchQueueRef.current.push(slug);
+      if (!prefetchTimerRef.current) {
+        const drainQueue = () => {
+          const next = prefetchQueueRef.current.shift();
+          if (next) {
+            prefetchPaperBySlug(next);
+            prefetchTimerRef.current = setTimeout(drainQueue, 200);
+          } else {
+            prefetchTimerRef.current = null;
+          }
+        };
+        prefetchTimerRef.current = setTimeout(drainQueue, 200);
+      }
+    }
+  }, []);
+
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
@@ -658,17 +700,17 @@ export default function PaperList({
         for (const entry of entries) {
           if (entry.isIntersecting) {
             const slug = (entry.target as HTMLElement).getAttribute("data-paper-slug");
-            if (slug && !prefetchedRef.current.has(slug)) {
-              prefetchedRef.current.add(slug);
-              prefetchPaperBySlug(slug);
-            }
+            if (slug) schedulePrefetch(slug);
           }
         }
       },
-      { rootMargin: "100px" }
+      { rootMargin: "400px" }
     );
-    return () => observerRef.current?.disconnect();
-  }, []);
+    return () => {
+      observerRef.current?.disconnect();
+      if (prefetchTimerRef.current) clearTimeout(prefetchTimerRef.current);
+    };
+  }, [schedulePrefetch]);
 
   const observeCard = useCallback((el: HTMLDivElement | null) => {
     if (el) {
