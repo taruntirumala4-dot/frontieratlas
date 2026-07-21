@@ -58,9 +58,16 @@ const SORT_OPTIONS: { label: string; key: SortKey; Icon: React.ComponentType<any
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 function matchesFilter(paper: Paper, key: string, keywords: string[]): boolean {
   if (key === "all") return true;
-  const haystack = `${paper.title ?? ""} ${paper.abstract ?? ""}`.toLowerCase();
+  
+  // Strictly check the title and official task tags, completely ignoring the abstract
+  // to prevent massive false-positives from generic words like "performance" or "language model".
+  const title = (paper.title ?? "").toLowerCase();
   const taskNames = paper.tasks?.map((t) => (t.task?.name ?? '').toLowerCase()).join(" ") ?? "";
-  const combined = `${haystack} ${taskNames}`;
+  const combined = `${title} ${taskNames}`;
+  
+  // For 'evaluation', also strictly check if it has sotaClaims, as that implies evaluation/benchmarking
+  if (key === "evaluation" && (paper as any).sotaClaims?.length > 0) return true;
+
   return keywords.some((kw) => combined.includes(kw.toLowerCase()));
 }
 
@@ -198,6 +205,10 @@ export default function MethodFilteredPapers({ papers, methodName }: Props) {
           {FILTER_CHIPS.map((chip) => {
             const isActive = activeFilter === chip.key;
             const count = chipCounts[chip.key] ?? 0;
+
+            // Hide the chip if it has 0 results (unless it's the 'all' chip)
+            if (count === 0 && chip.key !== "all") return null;
+
             return (
               <button
                 key={chip.key}

@@ -399,9 +399,7 @@ const huggingFaceRepo = paper.repositories?.find(
   ) : (
     <span>Unknown Author</span>
   )}
-
-  {remaining > 0 && <span> et al.</span>}
-
+  {remaining > 0 && <span> +{remaining}</span>}
   <span className="text-[#CCCCCC]">•</span>
 
   <span>{paper.date}</span>
