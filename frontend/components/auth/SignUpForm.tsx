@@ -10,6 +10,8 @@ export default function SignUpForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [github, setGithub] = useState("");
+  const [linkedin, setLinkedin] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -35,7 +37,8 @@ export default function SignUpForm() {
           username, 
           email, 
           password,
-          displayName: name || "New User"
+          displayName: name || "New User",
+          github,
         }),
       });
 
@@ -92,9 +95,12 @@ export default function SignUpForm() {
             <FaGithub className="text-[15px] text-[#555]" />
 
             <input
-              placeholder="username"
-              className="w-full bg-transparent text-[14px] outline-none placeholder:text-[#A79C8A]"
-            />
+  type="text"
+  value={github}
+  onChange={(e) => setGithub(e.target.value)}
+  placeholder="username"
+  className="w-full bg-transparent text-[14px] outline-none placeholder:text-[#A79C8A]"
+/>
           </div>
         </div>
 
@@ -107,9 +113,12 @@ export default function SignUpForm() {
             <FaLinkedin className="text-[15px] text-[#0A66C2]" />
 
             <input
-              placeholder="profile-name"
-              className="w-full bg-transparent text-[14px] outline-none placeholder:text-[#A79C8A]"
-            />
+  type="text"
+  value={linkedin}
+  onChange={(e) => setLinkedin(e.target.value)}
+  placeholder="profile-name"
+  className="w-full bg-transparent text-[14px] outline-none placeholder:text-[#A79C8A]"
+/>
           </div>
         </div>
       </div>

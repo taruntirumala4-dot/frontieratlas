@@ -54,6 +54,8 @@ export default function Navbar({
     };
   }, [isMenuOpen]);
 
+
+
   const closeMenu = () => setIsMenuOpen(false);
 
   return (
