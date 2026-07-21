@@ -42,6 +42,7 @@ model Paper {
   githubUrl        String?           @map("github_url")
   isOfficialCode   Boolean?          @default(false) @map("is_official_code")
   hfUpvotes        Int?              @default(0) @map("hf_upvotes")
+  hfUrl            String?           @map("hf_url")
   trendingScore    Float?            @default(0) @map("trending_score")
   discoverySource  String?           @map("discovery_source")
   importance_score Float?            @default(0.0)
@@ -259,6 +260,7 @@ model Model {
 model PaperModel {
   paper_id String
   model_id String
+  role String? @default("referenced")
   model    Model  @relation(fields: [model_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   paper    Paper  @relation(fields: [paper_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 

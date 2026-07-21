@@ -3784,6 +3784,7 @@ export namespace Prisma {
     githubUrl: string | null
     isOfficialCode: boolean | null
     hfUpvotes: number | null
+    hfUrl: string | null
     trendingScore: number | null
     discoverySource: string | null
     importance_score: number | null
@@ -3825,6 +3826,7 @@ export namespace Prisma {
     githubUrl: string | null
     isOfficialCode: boolean | null
     hfUpvotes: number | null
+    hfUrl: string | null
     trendingScore: number | null
     discoverySource: string | null
     importance_score: number | null
@@ -3866,6 +3868,7 @@ export namespace Prisma {
     githubUrl: number
     isOfficialCode: number
     hfUpvotes: number
+    hfUrl: number
     trendingScore: number
     discoverySource: number
     importance_score: number
@@ -3931,6 +3934,7 @@ export namespace Prisma {
     githubUrl?: true
     isOfficialCode?: true
     hfUpvotes?: true
+    hfUrl?: true
     trendingScore?: true
     discoverySource?: true
     importance_score?: true
@@ -3972,6 +3976,7 @@ export namespace Prisma {
     githubUrl?: true
     isOfficialCode?: true
     hfUpvotes?: true
+    hfUrl?: true
     trendingScore?: true
     discoverySource?: true
     importance_score?: true
@@ -4013,6 +4018,7 @@ export namespace Prisma {
     githubUrl?: true
     isOfficialCode?: true
     hfUpvotes?: true
+    hfUrl?: true
     trendingScore?: true
     discoverySource?: true
     importance_score?: true
@@ -4141,6 +4147,7 @@ export namespace Prisma {
     githubUrl: string | null
     isOfficialCode: boolean | null
     hfUpvotes: number | null
+    hfUrl: string | null
     trendingScore: number | null
     discoverySource: string | null
     importance_score: number | null
@@ -4201,6 +4208,7 @@ export namespace Prisma {
     githubUrl?: boolean
     isOfficialCode?: boolean
     hfUpvotes?: boolean
+    hfUrl?: boolean
     trendingScore?: boolean
     discoverySource?: boolean
     importance_score?: boolean
@@ -4255,6 +4263,7 @@ export namespace Prisma {
     githubUrl?: boolean
     isOfficialCode?: boolean
     hfUpvotes?: boolean
+    hfUrl?: boolean
     trendingScore?: boolean
     discoverySource?: boolean
     importance_score?: boolean
@@ -4296,6 +4305,7 @@ export namespace Prisma {
     githubUrl?: boolean
     isOfficialCode?: boolean
     hfUpvotes?: boolean
+    hfUrl?: boolean
     trendingScore?: boolean
     discoverySource?: boolean
     importance_score?: boolean
@@ -4337,6 +4347,7 @@ export namespace Prisma {
     githubUrl?: boolean
     isOfficialCode?: boolean
     hfUpvotes?: boolean
+    hfUrl?: boolean
     trendingScore?: boolean
     discoverySource?: boolean
     importance_score?: boolean
@@ -4348,7 +4359,7 @@ export namespace Prisma {
     task?: boolean
   }
 
-  export type PaperOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "slug" | "title" | "shortTitle" | "abstract" | "tlDr" | "publicationDate" | "submissionDate" | "arxivId" | "doi" | "paperUrl" | "pdfUrl" | "thumbnailUrl" | "sourceUrl" | "projectUrl" | "citationCount" | "referenceCount" | "pageCount" | "paperType" | "status" | "language" | "license" | "createdAt" | "updatedAt" | "githubForks" | "githubStars" | "githubUrl" | "isOfficialCode" | "hfUpvotes" | "trendingScore" | "discoverySource" | "importance_score" | "venue" | "organization" | "authors" | "huggingface_url" | "domain" | "task", ExtArgs["result"]["paper"]>
+  export type PaperOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "slug" | "title" | "shortTitle" | "abstract" | "tlDr" | "publicationDate" | "submissionDate" | "arxivId" | "doi" | "paperUrl" | "pdfUrl" | "thumbnailUrl" | "sourceUrl" | "projectUrl" | "citationCount" | "referenceCount" | "pageCount" | "paperType" | "status" | "language" | "license" | "createdAt" | "updatedAt" | "githubForks" | "githubStars" | "githubUrl" | "isOfficialCode" | "hfUpvotes" | "hfUrl" | "trendingScore" | "discoverySource" | "importance_score" | "venue" | "organization" | "authors" | "huggingface_url" | "domain" | "task", ExtArgs["result"]["paper"]>
   export type PaperInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     conferences?: boolean | Paper$conferencesArgs<ExtArgs>
     datasets?: boolean | Paper$datasetsArgs<ExtArgs>
@@ -4413,6 +4424,7 @@ export namespace Prisma {
       githubUrl: string | null
       isOfficialCode: boolean | null
       hfUpvotes: number | null
+      hfUrl: string | null
       trendingScore: number | null
       discoverySource: string | null
       importance_score: number | null
@@ -4886,6 +4898,7 @@ export namespace Prisma {
     readonly githubUrl: FieldRef<"Paper", 'String'>
     readonly isOfficialCode: FieldRef<"Paper", 'Boolean'>
     readonly hfUpvotes: FieldRef<"Paper", 'Int'>
+    readonly hfUrl: FieldRef<"Paper", 'String'>
     readonly trendingScore: FieldRef<"Paper", 'Float'>
     readonly discoverySource: FieldRef<"Paper", 'String'>
     readonly importance_score: FieldRef<"Paper", 'Float'>
@@ -17372,16 +17385,19 @@ export namespace Prisma {
   export type PaperModelMinAggregateOutputType = {
     paper_id: string | null
     model_id: string | null
+    role: string | null
   }
 
   export type PaperModelMaxAggregateOutputType = {
     paper_id: string | null
     model_id: string | null
+    role: string | null
   }
 
   export type PaperModelCountAggregateOutputType = {
     paper_id: number
     model_id: number
+    role: number
     _all: number
   }
 
@@ -17389,16 +17405,19 @@ export namespace Prisma {
   export type PaperModelMinAggregateInputType = {
     paper_id?: true
     model_id?: true
+    role?: true
   }
 
   export type PaperModelMaxAggregateInputType = {
     paper_id?: true
     model_id?: true
+    role?: true
   }
 
   export type PaperModelCountAggregateInputType = {
     paper_id?: true
     model_id?: true
+    role?: true
     _all?: true
   }
 
@@ -17477,6 +17496,7 @@ export namespace Prisma {
   export type PaperModelGroupByOutputType = {
     paper_id: string
     model_id: string
+    role: string | null
     _count: PaperModelCountAggregateOutputType | null
     _min: PaperModelMinAggregateOutputType | null
     _max: PaperModelMaxAggregateOutputType | null
@@ -17499,6 +17519,7 @@ export namespace Prisma {
   export type PaperModelSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     paper_id?: boolean
     model_id?: boolean
+    role?: boolean
     model?: boolean | ModelDefaultArgs<ExtArgs>
     paper?: boolean | PaperDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["paperModel"]>
@@ -17506,6 +17527,7 @@ export namespace Prisma {
   export type PaperModelSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     paper_id?: boolean
     model_id?: boolean
+    role?: boolean
     model?: boolean | ModelDefaultArgs<ExtArgs>
     paper?: boolean | PaperDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["paperModel"]>
@@ -17513,6 +17535,7 @@ export namespace Prisma {
   export type PaperModelSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     paper_id?: boolean
     model_id?: boolean
+    role?: boolean
     model?: boolean | ModelDefaultArgs<ExtArgs>
     paper?: boolean | PaperDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["paperModel"]>
@@ -17520,9 +17543,10 @@ export namespace Prisma {
   export type PaperModelSelectScalar = {
     paper_id?: boolean
     model_id?: boolean
+    role?: boolean
   }
 
-  export type PaperModelOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"paper_id" | "model_id", ExtArgs["result"]["paperModel"]>
+  export type PaperModelOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"paper_id" | "model_id" | "role", ExtArgs["result"]["paperModel"]>
   export type PaperModelInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     model?: boolean | ModelDefaultArgs<ExtArgs>
     paper?: boolean | PaperDefaultArgs<ExtArgs>
@@ -17545,6 +17569,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       paper_id: string
       model_id: string
+      role: string | null
     }, ExtArgs["result"]["paperModel"]>
     composites: {}
   }
@@ -17972,6 +17997,7 @@ export namespace Prisma {
   interface PaperModelFieldRefs {
     readonly paper_id: FieldRef<"PaperModel", 'String'>
     readonly model_id: FieldRef<"PaperModel", 'String'>
+    readonly role: FieldRef<"PaperModel", 'String'>
   }
     
 
@@ -34725,6 +34751,7 @@ export namespace Prisma {
     githubUrl: 'githubUrl',
     isOfficialCode: 'isOfficialCode',
     hfUpvotes: 'hfUpvotes',
+    hfUrl: 'hfUrl',
     trendingScore: 'trendingScore',
     discoverySource: 'discoverySource',
     importance_score: 'importance_score',
@@ -34922,7 +34949,8 @@ export namespace Prisma {
 
   export const PaperModelScalarFieldEnum: {
     paper_id: 'paper_id',
-    model_id: 'model_id'
+    model_id: 'model_id',
+    role: 'role'
   };
 
   export type PaperModelScalarFieldEnum = (typeof PaperModelScalarFieldEnum)[keyof typeof PaperModelScalarFieldEnum]
@@ -35263,6 +35291,7 @@ export namespace Prisma {
     githubUrl?: StringNullableFilter<"Paper"> | string | null
     isOfficialCode?: BoolNullableFilter<"Paper"> | boolean | null
     hfUpvotes?: IntNullableFilter<"Paper"> | number | null
+    hfUrl?: StringNullableFilter<"Paper"> | string | null
     trendingScore?: FloatNullableFilter<"Paper"> | number | null
     discoverySource?: StringNullableFilter<"Paper"> | string | null
     importance_score?: FloatNullableFilter<"Paper"> | number | null
@@ -35316,6 +35345,7 @@ export namespace Prisma {
     githubUrl?: SortOrderInput | SortOrder
     isOfficialCode?: SortOrderInput | SortOrder
     hfUpvotes?: SortOrderInput | SortOrder
+    hfUrl?: SortOrderInput | SortOrder
     trendingScore?: SortOrderInput | SortOrder
     discoverySource?: SortOrderInput | SortOrder
     importance_score?: SortOrderInput | SortOrder
@@ -35372,6 +35402,7 @@ export namespace Prisma {
     githubUrl?: StringNullableFilter<"Paper"> | string | null
     isOfficialCode?: BoolNullableFilter<"Paper"> | boolean | null
     hfUpvotes?: IntNullableFilter<"Paper"> | number | null
+    hfUrl?: StringNullableFilter<"Paper"> | string | null
     trendingScore?: FloatNullableFilter<"Paper"> | number | null
     discoverySource?: StringNullableFilter<"Paper"> | string | null
     importance_score?: FloatNullableFilter<"Paper"> | number | null
@@ -35425,6 +35456,7 @@ export namespace Prisma {
     githubUrl?: SortOrderInput | SortOrder
     isOfficialCode?: SortOrderInput | SortOrder
     hfUpvotes?: SortOrderInput | SortOrder
+    hfUrl?: SortOrderInput | SortOrder
     trendingScore?: SortOrderInput | SortOrder
     discoverySource?: SortOrderInput | SortOrder
     importance_score?: SortOrderInput | SortOrder
@@ -35474,6 +35506,7 @@ export namespace Prisma {
     githubUrl?: StringNullableWithAggregatesFilter<"Paper"> | string | null
     isOfficialCode?: BoolNullableWithAggregatesFilter<"Paper"> | boolean | null
     hfUpvotes?: IntNullableWithAggregatesFilter<"Paper"> | number | null
+    hfUrl?: StringNullableWithAggregatesFilter<"Paper"> | string | null
     trendingScore?: FloatNullableWithAggregatesFilter<"Paper"> | number | null
     discoverySource?: StringNullableWithAggregatesFilter<"Paper"> | string | null
     importance_score?: FloatNullableWithAggregatesFilter<"Paper"> | number | null
@@ -36420,6 +36453,7 @@ export namespace Prisma {
     NOT?: PaperModelWhereInput | PaperModelWhereInput[]
     paper_id?: StringFilter<"PaperModel"> | string
     model_id?: StringFilter<"PaperModel"> | string
+    role?: StringNullableFilter<"PaperModel"> | string | null
     model?: XOR<ModelScalarRelationFilter, ModelWhereInput>
     paper?: XOR<PaperScalarRelationFilter, PaperWhereInput>
   }
@@ -36427,6 +36461,7 @@ export namespace Prisma {
   export type PaperModelOrderByWithRelationInput = {
     paper_id?: SortOrder
     model_id?: SortOrder
+    role?: SortOrderInput | SortOrder
     model?: ModelOrderByWithRelationInput
     paper?: PaperOrderByWithRelationInput
   }
@@ -36438,6 +36473,7 @@ export namespace Prisma {
     NOT?: PaperModelWhereInput | PaperModelWhereInput[]
     paper_id?: StringFilter<"PaperModel"> | string
     model_id?: StringFilter<"PaperModel"> | string
+    role?: StringNullableFilter<"PaperModel"> | string | null
     model?: XOR<ModelScalarRelationFilter, ModelWhereInput>
     paper?: XOR<PaperScalarRelationFilter, PaperWhereInput>
   }, "paper_id_model_id">
@@ -36445,6 +36481,7 @@ export namespace Prisma {
   export type PaperModelOrderByWithAggregationInput = {
     paper_id?: SortOrder
     model_id?: SortOrder
+    role?: SortOrderInput | SortOrder
     _count?: PaperModelCountOrderByAggregateInput
     _max?: PaperModelMaxOrderByAggregateInput
     _min?: PaperModelMinOrderByAggregateInput
@@ -36456,6 +36493,7 @@ export namespace Prisma {
     NOT?: PaperModelScalarWhereWithAggregatesInput | PaperModelScalarWhereWithAggregatesInput[]
     paper_id?: StringWithAggregatesFilter<"PaperModel"> | string
     model_id?: StringWithAggregatesFilter<"PaperModel"> | string
+    role?: StringNullableWithAggregatesFilter<"PaperModel"> | string | null
   }
 
   export type DatasetWhereInput = {
@@ -37400,6 +37438,7 @@ export namespace Prisma {
     githubUrl?: string | null
     isOfficialCode?: boolean | null
     hfUpvotes?: number | null
+    hfUrl?: string | null
     trendingScore?: number | null
     discoverySource?: string | null
     importance_score?: number | null
@@ -37453,6 +37492,7 @@ export namespace Prisma {
     githubUrl?: string | null
     isOfficialCode?: boolean | null
     hfUpvotes?: number | null
+    hfUrl?: string | null
     trendingScore?: number | null
     discoverySource?: string | null
     importance_score?: number | null
@@ -37506,6 +37546,7 @@ export namespace Prisma {
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isOfficialCode?: NullableBoolFieldUpdateOperationsInput | boolean | null
     hfUpvotes?: NullableIntFieldUpdateOperationsInput | number | null
+    hfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
     discoverySource?: NullableStringFieldUpdateOperationsInput | string | null
     importance_score?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -37559,6 +37600,7 @@ export namespace Prisma {
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isOfficialCode?: NullableBoolFieldUpdateOperationsInput | boolean | null
     hfUpvotes?: NullableIntFieldUpdateOperationsInput | number | null
+    hfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
     discoverySource?: NullableStringFieldUpdateOperationsInput | string | null
     importance_score?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -37612,6 +37654,7 @@ export namespace Prisma {
     githubUrl?: string | null
     isOfficialCode?: boolean | null
     hfUpvotes?: number | null
+    hfUrl?: string | null
     trendingScore?: number | null
     discoverySource?: string | null
     importance_score?: number | null
@@ -37653,6 +37696,7 @@ export namespace Prisma {
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isOfficialCode?: NullableBoolFieldUpdateOperationsInput | boolean | null
     hfUpvotes?: NullableIntFieldUpdateOperationsInput | number | null
+    hfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
     discoverySource?: NullableStringFieldUpdateOperationsInput | string | null
     importance_score?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -37694,6 +37738,7 @@ export namespace Prisma {
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isOfficialCode?: NullableBoolFieldUpdateOperationsInput | boolean | null
     hfUpvotes?: NullableIntFieldUpdateOperationsInput | number | null
+    hfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
     discoverySource?: NullableStringFieldUpdateOperationsInput | string | null
     importance_score?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -38777,6 +38822,7 @@ export namespace Prisma {
   }
 
   export type PaperModelCreateInput = {
+    role?: string | null
     model: ModelCreateNestedOneWithoutPapersInput
     paper: PaperCreateNestedOneWithoutModelsInput
   }
@@ -38784,9 +38830,11 @@ export namespace Prisma {
   export type PaperModelUncheckedCreateInput = {
     paper_id: string
     model_id: string
+    role?: string | null
   }
 
   export type PaperModelUpdateInput = {
+    role?: NullableStringFieldUpdateOperationsInput | string | null
     model?: ModelUpdateOneRequiredWithoutPapersNestedInput
     paper?: PaperUpdateOneRequiredWithoutModelsNestedInput
   }
@@ -38794,20 +38842,23 @@ export namespace Prisma {
   export type PaperModelUncheckedUpdateInput = {
     paper_id?: StringFieldUpdateOperationsInput | string
     model_id?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type PaperModelCreateManyInput = {
     paper_id: string
     model_id: string
+    role?: string | null
   }
 
   export type PaperModelUpdateManyMutationInput = {
-
+    role?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type PaperModelUncheckedUpdateManyInput = {
     paper_id?: StringFieldUpdateOperationsInput | string
     model_id?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type DatasetCreateInput = {
@@ -39995,6 +40046,7 @@ export namespace Prisma {
     githubUrl?: SortOrder
     isOfficialCode?: SortOrder
     hfUpvotes?: SortOrder
+    hfUrl?: SortOrder
     trendingScore?: SortOrder
     discoverySource?: SortOrder
     importance_score?: SortOrder
@@ -40047,6 +40099,7 @@ export namespace Prisma {
     githubUrl?: SortOrder
     isOfficialCode?: SortOrder
     hfUpvotes?: SortOrder
+    hfUrl?: SortOrder
     trendingScore?: SortOrder
     discoverySource?: SortOrder
     importance_score?: SortOrder
@@ -40088,6 +40141,7 @@ export namespace Prisma {
     githubUrl?: SortOrder
     isOfficialCode?: SortOrder
     hfUpvotes?: SortOrder
+    hfUrl?: SortOrder
     trendingScore?: SortOrder
     discoverySource?: SortOrder
     importance_score?: SortOrder
@@ -40876,16 +40930,19 @@ export namespace Prisma {
   export type PaperModelCountOrderByAggregateInput = {
     paper_id?: SortOrder
     model_id?: SortOrder
+    role?: SortOrder
   }
 
   export type PaperModelMaxOrderByAggregateInput = {
     paper_id?: SortOrder
     model_id?: SortOrder
+    role?: SortOrder
   }
 
   export type PaperModelMinOrderByAggregateInput = {
     paper_id?: SortOrder
     model_id?: SortOrder
+    role?: SortOrder
   }
 
   export type DatasetCountOrderByAggregateInput = {
@@ -43197,11 +43254,13 @@ export namespace Prisma {
   }
 
   export type PaperModelCreateWithoutPaperInput = {
+    role?: string | null
     model: ModelCreateNestedOneWithoutPapersInput
   }
 
   export type PaperModelUncheckedCreateWithoutPaperInput = {
     model_id: string
+    role?: string | null
   }
 
   export type PaperModelCreateOrConnectWithoutPaperInput = {
@@ -43510,6 +43569,7 @@ export namespace Prisma {
     NOT?: PaperModelScalarWhereInput | PaperModelScalarWhereInput[]
     paper_id?: StringFilter<"PaperModel"> | string
     model_id?: StringFilter<"PaperModel"> | string
+    role?: StringNullableFilter<"PaperModel"> | string | null
   }
 
   export type PaperRepositoryUpsertWithWhereUniqueWithoutPaperInput = {
@@ -43743,6 +43803,7 @@ export namespace Prisma {
     githubUrl?: string | null
     isOfficialCode?: boolean | null
     hfUpvotes?: number | null
+    hfUrl?: string | null
     trendingScore?: number | null
     discoverySource?: string | null
     importance_score?: number | null
@@ -43795,6 +43856,7 @@ export namespace Prisma {
     githubUrl?: string | null
     isOfficialCode?: boolean | null
     hfUpvotes?: number | null
+    hfUrl?: string | null
     trendingScore?: number | null
     discoverySource?: string | null
     importance_score?: number | null
@@ -43888,6 +43950,7 @@ export namespace Prisma {
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isOfficialCode?: NullableBoolFieldUpdateOperationsInput | boolean | null
     hfUpvotes?: NullableIntFieldUpdateOperationsInput | number | null
+    hfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
     discoverySource?: NullableStringFieldUpdateOperationsInput | string | null
     importance_score?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -43940,6 +44003,7 @@ export namespace Prisma {
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isOfficialCode?: NullableBoolFieldUpdateOperationsInput | boolean | null
     hfUpvotes?: NullableIntFieldUpdateOperationsInput | number | null
+    hfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
     discoverySource?: NullableStringFieldUpdateOperationsInput | string | null
     importance_score?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -44082,6 +44146,7 @@ export namespace Prisma {
     githubUrl?: string | null
     isOfficialCode?: boolean | null
     hfUpvotes?: number | null
+    hfUrl?: string | null
     trendingScore?: number | null
     discoverySource?: string | null
     importance_score?: number | null
@@ -44134,6 +44199,7 @@ export namespace Prisma {
     githubUrl?: string | null
     isOfficialCode?: boolean | null
     hfUpvotes?: number | null
+    hfUrl?: string | null
     trendingScore?: number | null
     discoverySource?: string | null
     importance_score?: number | null
@@ -44233,6 +44299,7 @@ export namespace Prisma {
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isOfficialCode?: NullableBoolFieldUpdateOperationsInput | boolean | null
     hfUpvotes?: NullableIntFieldUpdateOperationsInput | number | null
+    hfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
     discoverySource?: NullableStringFieldUpdateOperationsInput | string | null
     importance_score?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -44285,6 +44352,7 @@ export namespace Prisma {
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isOfficialCode?: NullableBoolFieldUpdateOperationsInput | boolean | null
     hfUpvotes?: NullableIntFieldUpdateOperationsInput | number | null
+    hfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
     discoverySource?: NullableStringFieldUpdateOperationsInput | string | null
     importance_score?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -44500,6 +44568,7 @@ export namespace Prisma {
     githubUrl?: string | null
     isOfficialCode?: boolean | null
     hfUpvotes?: number | null
+    hfUrl?: string | null
     trendingScore?: number | null
     discoverySource?: string | null
     importance_score?: number | null
@@ -44552,6 +44621,7 @@ export namespace Prisma {
     githubUrl?: string | null
     isOfficialCode?: boolean | null
     hfUpvotes?: number | null
+    hfUrl?: string | null
     trendingScore?: number | null
     discoverySource?: string | null
     importance_score?: number | null
@@ -44687,6 +44757,7 @@ export namespace Prisma {
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isOfficialCode?: NullableBoolFieldUpdateOperationsInput | boolean | null
     hfUpvotes?: NullableIntFieldUpdateOperationsInput | number | null
+    hfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
     discoverySource?: NullableStringFieldUpdateOperationsInput | string | null
     importance_score?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -44739,6 +44810,7 @@ export namespace Prisma {
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isOfficialCode?: NullableBoolFieldUpdateOperationsInput | boolean | null
     hfUpvotes?: NullableIntFieldUpdateOperationsInput | number | null
+    hfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
     discoverySource?: NullableStringFieldUpdateOperationsInput | string | null
     importance_score?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -44852,6 +44924,7 @@ export namespace Prisma {
     githubUrl?: string | null
     isOfficialCode?: boolean | null
     hfUpvotes?: number | null
+    hfUrl?: string | null
     trendingScore?: number | null
     discoverySource?: string | null
     importance_score?: number | null
@@ -44904,6 +44977,7 @@ export namespace Prisma {
     githubUrl?: string | null
     isOfficialCode?: boolean | null
     hfUpvotes?: number | null
+    hfUrl?: string | null
     trendingScore?: number | null
     discoverySource?: string | null
     importance_score?: number | null
@@ -45039,6 +45113,7 @@ export namespace Prisma {
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isOfficialCode?: NullableBoolFieldUpdateOperationsInput | boolean | null
     hfUpvotes?: NullableIntFieldUpdateOperationsInput | number | null
+    hfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
     discoverySource?: NullableStringFieldUpdateOperationsInput | string | null
     importance_score?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -45091,6 +45166,7 @@ export namespace Prisma {
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isOfficialCode?: NullableBoolFieldUpdateOperationsInput | boolean | null
     hfUpvotes?: NullableIntFieldUpdateOperationsInput | number | null
+    hfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
     discoverySource?: NullableStringFieldUpdateOperationsInput | string | null
     importance_score?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -45114,11 +45190,13 @@ export namespace Prisma {
   }
 
   export type PaperModelCreateWithoutModelInput = {
+    role?: string | null
     paper: PaperCreateNestedOneWithoutModelsInput
   }
 
   export type PaperModelUncheckedCreateWithoutModelInput = {
     paper_id: string
+    role?: string | null
   }
 
   export type PaperModelCreateOrConnectWithoutModelInput = {
@@ -45272,6 +45350,7 @@ export namespace Prisma {
     githubUrl?: string | null
     isOfficialCode?: boolean | null
     hfUpvotes?: number | null
+    hfUrl?: string | null
     trendingScore?: number | null
     discoverySource?: string | null
     importance_score?: number | null
@@ -45324,6 +45403,7 @@ export namespace Prisma {
     githubUrl?: string | null
     isOfficialCode?: boolean | null
     hfUpvotes?: number | null
+    hfUrl?: string | null
     trendingScore?: number | null
     discoverySource?: string | null
     importance_score?: number | null
@@ -45493,6 +45573,7 @@ export namespace Prisma {
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isOfficialCode?: NullableBoolFieldUpdateOperationsInput | boolean | null
     hfUpvotes?: NullableIntFieldUpdateOperationsInput | number | null
+    hfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
     discoverySource?: NullableStringFieldUpdateOperationsInput | string | null
     importance_score?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -45545,6 +45626,7 @@ export namespace Prisma {
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isOfficialCode?: NullableBoolFieldUpdateOperationsInput | boolean | null
     hfUpvotes?: NullableIntFieldUpdateOperationsInput | number | null
+    hfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
     discoverySource?: NullableStringFieldUpdateOperationsInput | string | null
     importance_score?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -45656,6 +45738,7 @@ export namespace Prisma {
     githubUrl?: string | null
     isOfficialCode?: boolean | null
     hfUpvotes?: number | null
+    hfUrl?: string | null
     trendingScore?: number | null
     discoverySource?: string | null
     importance_score?: number | null
@@ -45708,6 +45791,7 @@ export namespace Prisma {
     githubUrl?: string | null
     isOfficialCode?: boolean | null
     hfUpvotes?: number | null
+    hfUrl?: string | null
     trendingScore?: number | null
     discoverySource?: string | null
     importance_score?: number | null
@@ -45807,6 +45891,7 @@ export namespace Prisma {
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isOfficialCode?: NullableBoolFieldUpdateOperationsInput | boolean | null
     hfUpvotes?: NullableIntFieldUpdateOperationsInput | number | null
+    hfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
     discoverySource?: NullableStringFieldUpdateOperationsInput | string | null
     importance_score?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -45859,6 +45944,7 @@ export namespace Prisma {
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isOfficialCode?: NullableBoolFieldUpdateOperationsInput | boolean | null
     hfUpvotes?: NullableIntFieldUpdateOperationsInput | number | null
+    hfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
     discoverySource?: NullableStringFieldUpdateOperationsInput | string | null
     importance_score?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -45970,6 +46056,7 @@ export namespace Prisma {
     githubUrl?: string | null
     isOfficialCode?: boolean | null
     hfUpvotes?: number | null
+    hfUrl?: string | null
     trendingScore?: number | null
     discoverySource?: string | null
     importance_score?: number | null
@@ -46022,6 +46109,7 @@ export namespace Prisma {
     githubUrl?: string | null
     isOfficialCode?: boolean | null
     hfUpvotes?: number | null
+    hfUrl?: string | null
     trendingScore?: number | null
     discoverySource?: string | null
     importance_score?: number | null
@@ -46121,6 +46209,7 @@ export namespace Prisma {
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isOfficialCode?: NullableBoolFieldUpdateOperationsInput | boolean | null
     hfUpvotes?: NullableIntFieldUpdateOperationsInput | number | null
+    hfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
     discoverySource?: NullableStringFieldUpdateOperationsInput | string | null
     importance_score?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -46173,6 +46262,7 @@ export namespace Prisma {
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isOfficialCode?: NullableBoolFieldUpdateOperationsInput | boolean | null
     hfUpvotes?: NullableIntFieldUpdateOperationsInput | number | null
+    hfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
     discoverySource?: NullableStringFieldUpdateOperationsInput | string | null
     importance_score?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -46259,6 +46349,7 @@ export namespace Prisma {
     githubUrl?: string | null
     isOfficialCode?: boolean | null
     hfUpvotes?: number | null
+    hfUrl?: string | null
     trendingScore?: number | null
     discoverySource?: string | null
     importance_score?: number | null
@@ -46311,6 +46402,7 @@ export namespace Prisma {
     githubUrl?: string | null
     isOfficialCode?: boolean | null
     hfUpvotes?: number | null
+    hfUrl?: string | null
     trendingScore?: number | null
     discoverySource?: string | null
     importance_score?: number | null
@@ -46404,6 +46496,7 @@ export namespace Prisma {
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isOfficialCode?: NullableBoolFieldUpdateOperationsInput | boolean | null
     hfUpvotes?: NullableIntFieldUpdateOperationsInput | number | null
+    hfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
     discoverySource?: NullableStringFieldUpdateOperationsInput | string | null
     importance_score?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -46456,6 +46549,7 @@ export namespace Prisma {
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isOfficialCode?: NullableBoolFieldUpdateOperationsInput | boolean | null
     hfUpvotes?: NullableIntFieldUpdateOperationsInput | number | null
+    hfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
     discoverySource?: NullableStringFieldUpdateOperationsInput | string | null
     importance_score?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -46598,6 +46692,7 @@ export namespace Prisma {
     githubUrl?: string | null
     isOfficialCode?: boolean | null
     hfUpvotes?: number | null
+    hfUrl?: string | null
     trendingScore?: number | null
     discoverySource?: string | null
     importance_score?: number | null
@@ -46650,6 +46745,7 @@ export namespace Prisma {
     githubUrl?: string | null
     isOfficialCode?: boolean | null
     hfUpvotes?: number | null
+    hfUrl?: string | null
     trendingScore?: number | null
     discoverySource?: string | null
     importance_score?: number | null
@@ -46749,6 +46845,7 @@ export namespace Prisma {
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isOfficialCode?: NullableBoolFieldUpdateOperationsInput | boolean | null
     hfUpvotes?: NullableIntFieldUpdateOperationsInput | number | null
+    hfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
     discoverySource?: NullableStringFieldUpdateOperationsInput | string | null
     importance_score?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -46801,6 +46898,7 @@ export namespace Prisma {
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isOfficialCode?: NullableBoolFieldUpdateOperationsInput | boolean | null
     hfUpvotes?: NullableIntFieldUpdateOperationsInput | number | null
+    hfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
     discoverySource?: NullableStringFieldUpdateOperationsInput | string | null
     importance_score?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -46912,6 +47010,7 @@ export namespace Prisma {
     githubUrl?: string | null
     isOfficialCode?: boolean | null
     hfUpvotes?: number | null
+    hfUrl?: string | null
     trendingScore?: number | null
     discoverySource?: string | null
     importance_score?: number | null
@@ -46964,6 +47063,7 @@ export namespace Prisma {
     githubUrl?: string | null
     isOfficialCode?: boolean | null
     hfUpvotes?: number | null
+    hfUrl?: string | null
     trendingScore?: number | null
     discoverySource?: string | null
     importance_score?: number | null
@@ -47063,6 +47163,7 @@ export namespace Prisma {
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isOfficialCode?: NullableBoolFieldUpdateOperationsInput | boolean | null
     hfUpvotes?: NullableIntFieldUpdateOperationsInput | number | null
+    hfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
     discoverySource?: NullableStringFieldUpdateOperationsInput | string | null
     importance_score?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -47115,6 +47216,7 @@ export namespace Prisma {
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isOfficialCode?: NullableBoolFieldUpdateOperationsInput | boolean | null
     hfUpvotes?: NullableIntFieldUpdateOperationsInput | number | null
+    hfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
     discoverySource?: NullableStringFieldUpdateOperationsInput | string | null
     importance_score?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -47201,6 +47303,7 @@ export namespace Prisma {
     githubUrl?: string | null
     isOfficialCode?: boolean | null
     hfUpvotes?: number | null
+    hfUrl?: string | null
     trendingScore?: number | null
     discoverySource?: string | null
     importance_score?: number | null
@@ -47253,6 +47356,7 @@ export namespace Prisma {
     githubUrl?: string | null
     isOfficialCode?: boolean | null
     hfUpvotes?: number | null
+    hfUrl?: string | null
     trendingScore?: number | null
     discoverySource?: string | null
     importance_score?: number | null
@@ -47348,6 +47452,7 @@ export namespace Prisma {
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isOfficialCode?: NullableBoolFieldUpdateOperationsInput | boolean | null
     hfUpvotes?: NullableIntFieldUpdateOperationsInput | number | null
+    hfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
     discoverySource?: NullableStringFieldUpdateOperationsInput | string | null
     importance_score?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -47400,6 +47505,7 @@ export namespace Prisma {
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isOfficialCode?: NullableBoolFieldUpdateOperationsInput | boolean | null
     hfUpvotes?: NullableIntFieldUpdateOperationsInput | number | null
+    hfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
     discoverySource?: NullableStringFieldUpdateOperationsInput | string | null
     importance_score?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -47684,6 +47790,7 @@ export namespace Prisma {
     githubUrl?: string | null
     isOfficialCode?: boolean | null
     hfUpvotes?: number | null
+    hfUrl?: string | null
     trendingScore?: number | null
     discoverySource?: string | null
     importance_score?: number | null
@@ -47736,6 +47843,7 @@ export namespace Prisma {
     githubUrl?: string | null
     isOfficialCode?: boolean | null
     hfUpvotes?: number | null
+    hfUrl?: string | null
     trendingScore?: number | null
     discoverySource?: string | null
     importance_score?: number | null
@@ -47849,6 +47957,7 @@ export namespace Prisma {
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isOfficialCode?: NullableBoolFieldUpdateOperationsInput | boolean | null
     hfUpvotes?: NullableIntFieldUpdateOperationsInput | number | null
+    hfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
     discoverySource?: NullableStringFieldUpdateOperationsInput | string | null
     importance_score?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -47901,6 +48010,7 @@ export namespace Prisma {
     githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isOfficialCode?: NullableBoolFieldUpdateOperationsInput | boolean | null
     hfUpvotes?: NullableIntFieldUpdateOperationsInput | number | null
+    hfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
     discoverySource?: NullableStringFieldUpdateOperationsInput | string | null
     importance_score?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -47996,6 +48106,7 @@ export namespace Prisma {
 
   export type PaperModelCreateManyPaperInput = {
     model_id: string
+    role?: string | null
   }
 
   export type PaperRepositoryCreateManyPaperInput = {
@@ -48106,15 +48217,18 @@ export namespace Prisma {
   }
 
   export type PaperModelUpdateWithoutPaperInput = {
+    role?: NullableStringFieldUpdateOperationsInput | string | null
     model?: ModelUpdateOneRequiredWithoutPapersNestedInput
   }
 
   export type PaperModelUncheckedUpdateWithoutPaperInput = {
     model_id?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type PaperModelUncheckedUpdateManyWithoutPaperInput = {
     model_id?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type PaperRepositoryUpdateWithoutPaperInput = {
@@ -48392,18 +48506,22 @@ export namespace Prisma {
 
   export type PaperModelCreateManyModelInput = {
     paper_id: string
+    role?: string | null
   }
 
   export type PaperModelUpdateWithoutModelInput = {
+    role?: NullableStringFieldUpdateOperationsInput | string | null
     paper?: PaperUpdateOneRequiredWithoutModelsNestedInput
   }
 
   export type PaperModelUncheckedUpdateWithoutModelInput = {
     paper_id?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type PaperModelUncheckedUpdateManyWithoutModelInput = {
     paper_id?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type PaperDatasetCreateManyDatasetInput = {

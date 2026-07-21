@@ -334,13 +334,16 @@ const [loading, setLoading] = useState(
     return allModels.filter(m => {
       if (searchQuery.trim() !== "") {
         const q = searchQuery.toLowerCase();
-        const matches = m.name.toLowerCase().includes(q) || m.vendor.toLowerCase().includes(q) || (m.description && m.description.toLowerCase().includes(q)) || (m.capabilities && m.capabilities.some(t => t.toLowerCase().includes(q)));
+        const matches = m.name.toLowerCase().includes(q) || (m.vendor ?? "").toLowerCase().includes(q) || (m.description && m.description.toLowerCase().includes(q)) || (m.capabilities && m.capabilities.some(t => t.toLowerCase().includes(q)));
         if (!matches) return false;
       }
       if (selectedVendor) {
-        const vLower = selectedVendor.toLowerCase();
-        if (!m.vendor.toLowerCase().includes(vLower) && !vLower.includes(m.vendor.toLowerCase())) return false;
-      }
+  const vendor = (m.vendor ?? "").toLowerCase();
+
+  if (vendor !== selectedVendor.toLowerCase()) {
+    return false;
+  }
+}
       if (selectedFamily) {
         const fLower = selectedFamily.toLowerCase();
         if (m.modelFamily?.toLowerCase() !== fLower && !m.name.toLowerCase().includes(fLower)) return false;
@@ -393,7 +396,7 @@ const [loading, setLoading] = useState(
   const filteredTrending = useMemo(() => {
     if (!trendingModels) return [];
     const q = searchQuery.toLowerCase();
-    return trendingModels.filter(m => !searchQuery || m.name.toLowerCase().includes(q) || m.vendor.toLowerCase().includes(q));
+    return trendingModels.filter(m => !searchQuery || m.name.toLowerCase().includes(q) || (m.vendor ?? "").toLowerCase().includes(q));
   }, [trendingModels, searchQuery]);
 
   const filteredRecentlyReleasedTable = useMemo(() => {
@@ -401,7 +404,8 @@ const [loading, setLoading] = useState(
     const recent = allModels.slice(0, 8).sort((a, b) => new Date(b.createdAt || "").getTime() - new Date(a.createdAt || "").getTime());
     if (!searchQuery) return recent;
     const q = searchQuery.toLowerCase();
-    return recent.filter(m => m.name.toLowerCase().includes(q) || m.vendor.toLowerCase().includes(q) || (m.description && m.description.toLowerCase().includes(q)));
+    return recent.filter(m => m.name.toLowerCase().includes(q) ||
+(m.vendor ?? "").toLowerCase().includes(q) || (m.description && m.description.toLowerCase().includes(q)));
   }, [allModels, searchQuery]);
 
   const hasSearchResults = useMemo(() => {
@@ -631,8 +635,8 @@ const [loading, setLoading] = useState(
                     const { Icon: SkeletalIcon, color: strokeColor } = getIcon(idx, "");
                     const isActive = selectedVendor === v.name;
                     const vendorModel = allModels.find(
-                      (model) => model.vendor.toLowerCase() === v.name.toLowerCase()
-                    );
+  (model) => model.vendor?.toLowerCase() === v.name.toLowerCase()
+);
 
                     const vendorLogo = vendorModel?.vendorLogoUrl;
 
