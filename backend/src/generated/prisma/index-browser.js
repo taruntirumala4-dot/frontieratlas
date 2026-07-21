@@ -150,6 +150,7 @@ exports.Prisma.PaperScalarFieldEnum = {
   githubUrl: 'githubUrl',
   isOfficialCode: 'isOfficialCode',
   hfUpvotes: 'hfUpvotes',
+  hfUrl: 'hfUrl',
   trendingScore: 'trendingScore',
   discoverySource: 'discoverySource',
   importance_score: 'importance_score',
@@ -314,7 +315,8 @@ exports.Prisma.ModelScalarFieldEnum = {
 
 exports.Prisma.PaperModelScalarFieldEnum = {
   paper_id: 'paper_id',
-  model_id: 'model_id'
+  model_id: 'model_id',
+  role: 'role'
 };
 
 exports.Prisma.DatasetScalarFieldEnum = {

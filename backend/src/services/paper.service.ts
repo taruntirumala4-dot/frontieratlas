@@ -415,14 +415,28 @@ export const getPaperBySlug = async (
           githubForks: true,
           githubStars: true,
           githubUrl: true,
+          hfUrl: true,
           isOfficialCode: true,
           discoverySource: true,
           authors: true,
           models: {
-            select: {
-              model: { select: { id: true, name: true, slug: true } },
-            },
-          },
+  include: {
+    model: {
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        parameterCount: true,
+        architecture: true,
+        vendor: true,
+        vendor_logo_url: true,
+        modelFamily: true,
+        description: true,
+        repositoryUrl: true,
+      },
+    },
+  },
+},
           datasets: {
             select: {
               dataset: { select: { id: true, name: true, slug: true } },
@@ -475,7 +489,10 @@ export const getPaperBySlug = async (
         ...paperData,
         thumbnailUrl,
         authors: parseAuthors(paperData.authors),
-        models: paperData.models.map((r: any) => r.model),
+        models: paperData.models.map((r: any) => ({
+  role: r.role,
+  model: r.model,
+})),
         datasets: paperData.datasets.map((r: any) => r.dataset),
         tasks: paperData.tasks.map((r: any) => r.task),
         methods: paperData.methods.map((r: any) => r.method),
