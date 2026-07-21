@@ -154,8 +154,8 @@ export default function Navbar({
 
         {/* Right (Desktop) */}
         <div className="hidden xl:flex items-center gap-4 border-l border-[#E5E5E0] pl-4 shrink-0">
-          <button
-  onClick={() => router.push("/login")}
+          <Link
+  href="/login"
   aria-label="Sign In"
   className="w-8 h-8 rounded-full bg-[#F55036] flex items-center justify-center cursor-pointer hover:bg-[#E0462D] transition-colors shadow-sm hover:shadow-[0_0_0_3px_rgba(245,80,54,0.20)] hover:-translate-y-px active:scale-95"
 >
@@ -170,13 +170,13 @@ export default function Navbar({
     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
     <circle cx="12" cy="7" r="4" />
   </svg>
-</button>
+</Link>
         </div>
 
         {/* Mobile Right (CTA) */}
         <div className="flex xl:hidden items-center shrink-0">
-          <button
-    onClick={() => router.push("/login")}
+          <Link
+    href="/login"
     aria-label="Sign In"
     className="w-8 h-8 rounded-full bg-[#F55036] flex items-center justify-center cursor-pointer hover:bg-[#E0462D] transition-colors shadow-sm hover:shadow-[0_0_0_3px_rgba(245,80,54,0.20)] hover:-translate-y-px active:scale-95"
   >
@@ -191,7 +191,7 @@ export default function Navbar({
       <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
       <circle cx="12" cy="7" r="4" />
     </svg>
-  </button>
+  </Link>
         </div>
       </nav>
 

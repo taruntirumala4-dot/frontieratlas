@@ -1,22 +1,84 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import AuthInput from "./AuthInput";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 
 export default function SignUpForm() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const defaultApiUrl = "https://frontieratlas-backend.morningsignal-india.workers.dev";
+      const API_BASE = (process.env.NEXT_PUBLIC_API_URL || defaultApiUrl).replace(/\/$/, "");
+
+      // Generate a valid username from email to satisfy backend validation
+      const baseUsername = email.split('@')[0].replace(/[^a-zA-Z0-9_]/g, '_');
+      const username = `${baseUsername}_${Math.floor(Math.random() * 10000)}`;
+
+      const res = await fetch(`${API_BASE}/api/v1/auth/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ 
+          username, 
+          email, 
+          password,
+          displayName: name || "New User"
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || "Signup failed. Please try again.");
+      }
+
+      router.push("/");
+      router.refresh();
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <form className="space-y-2">
+    <form className="space-y-1" onSubmit={handleSubmit}>
+      {error && (
+        <div className="text-[#F55036] text-[13px] font-medium text-center bg-[#F55036]/10 py-1.5 rounded-lg mb-2">
+          {error}
+        </div>
+      )}
+
       <AuthInput
         label="Full name"
         type="text"
         placeholder="Ada Lovelace"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        required
+        disabled={loading}
       />
 
       <AuthInput
         label="Email"
         type="email"
         placeholder="you@university.edu"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+        disabled={loading}
       />
 
       {/* Github + Linkedin */}
@@ -56,14 +118,18 @@ export default function SignUpForm() {
         label="Password"
         type="password"
         placeholder="Enter your password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+        disabled={loading}
       />
 
-    
-
       <button
-        className="mt-1 h-10 w-full rounded-xl bg-[#F05A28] font-semibold text-white transition hover:bg-[#E65220]"
+        type="submit"
+        disabled={loading}
+        className="mt-1 h-10 w-full rounded-xl bg-[#F05A28] font-semibold text-white transition hover:bg-[#E65220] disabled:opacity-50"
       >
-        Create account
+        {loading ? "Creating account..." : "Create account"}
       </button>
 
       {/* Divider */}
@@ -99,6 +165,11 @@ export default function SignUpForm() {
         <button
           type="button"
           className="font-semibold text-[#F05A28] hover:underline"
+          onClick={() => {
+            const tabs = document.querySelectorAll('button');
+            const signinTab = Array.from(tabs).find(t => t.textContent === 'Sign in');
+            if (signinTab) signinTab.click();
+          }}
         >
           Sign in
         </button>

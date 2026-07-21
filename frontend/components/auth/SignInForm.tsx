@@ -1,21 +1,74 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import AuthInput from "./AuthInput";
 import SocialButtons from "./SocialButton";
+import Link from "next/link";
 
 export default function SignInForm() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const defaultApiUrl = "https://frontieratlas-backend.morningsignal-india.workers.dev";
+      const API_BASE = (process.env.NEXT_PUBLIC_API_URL || defaultApiUrl).replace(/\/$/, "");
+
+      const res = await fetch(`${API_BASE}/api/v1/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || "Login failed. Please check your credentials.");
+      }
+
+      router.push("/");
+      router.refresh();
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <form className="space-y-3">
+    <form className="space-y-3" onSubmit={handleSubmit}>
+      {error && (
+        <div className="text-[#F55036] text-[14px] font-medium text-center bg-[#F55036]/10 py-2 rounded-xl">
+          {error}
+        </div>
+      )}
+
       <AuthInput
         label="Email"
         type="email"
         placeholder="you@university.edu"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+        disabled={loading}
       />
 
       <AuthInput
         label="Password"
         type="password"
         placeholder="Enter your password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+        disabled={loading}
       />
 
       <div className="flex items-center justify-between text-[14px]">
@@ -23,6 +76,7 @@ export default function SignInForm() {
           <input
             type="checkbox"
             className="w-4 h-4 rounded border-[#CFC8BC]"
+            disabled={loading}
           />
           Remember me
         </label>
@@ -37,9 +91,10 @@ export default function SignInForm() {
 
       <button
         type="submit"
-        className="w-full h-12 rounded-xl bg-[#F55036] hover:bg-[#E0462D] text-white font-semibold transition-colors"
+        disabled={loading}
+        className="w-full h-12 rounded-xl bg-[#F55036] hover:bg-[#E0462D] text-white font-semibold transition-colors disabled:opacity-50"
       >
-        Sign in
+        {loading ? "Signing in..." : "Sign in"}
       </button>
 
       {/* Divider */}
@@ -65,6 +120,11 @@ export default function SignInForm() {
         <button
           type="button"
           className="text-[#F55036] font-semibold hover:underline"
+          onClick={() => {
+            const tabs = document.querySelectorAll('button');
+            const signupTab = Array.from(tabs).find(t => t.textContent === 'Sign up');
+            if (signupTab) signupTab.click();
+          }}
         >
           Sign up
         </button>
