@@ -28,7 +28,7 @@ export default function AuthCard() {
         className={`w-full rounded-[26px] border border-[#E6E2D8] bg-white shadow-sm ${
           mode === "signin"
             ? "px-8 py-6"
-            : "px-7 py-2"
+            : "px-7 py-4"
         }`}
       >
         <h1

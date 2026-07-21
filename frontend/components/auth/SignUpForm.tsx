@@ -6,7 +6,7 @@ import { FaGithub, FaLinkedin } from "react-icons/fa";
 
 export default function SignUpForm() {
   return (
-    <form className="space-y-1">
+    <form className="space-y-2">
       <AuthInput
         label="Full name"
         type="text"
@@ -58,11 +58,7 @@ export default function SignUpForm() {
         placeholder="Enter your password"
       />
 
-      <AuthInput
-        label="Verify password"
-        type="password"
-        placeholder="Re-enter your password"
-      />
+    
 
       <button
         className="mt-1 h-10 w-full rounded-xl bg-[#F05A28] font-semibold text-white transition hover:bg-[#E65220]"
