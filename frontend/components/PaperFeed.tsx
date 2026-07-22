@@ -508,8 +508,13 @@ const huggingFaceRepo = paper.repositories?.find(
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                if (huggingFaceRepo?.url) {
-                  window.open(huggingFaceRepo.url, "_blank");
+                const hfUrl =
+                  huggingFaceRepo?.url ||
+                  (paper as any).hfUrl ||
+                  (paper as any).huggingface_url ||
+                  (paper.arxivId ? `https://huggingface.co/papers/${paper.arxivId}` : null);
+                if (hfUrl) {
+                  window.open(hfUrl, "_blank");
                 } else {
                   alert("Hugging Face model will be available soon.");
                 }

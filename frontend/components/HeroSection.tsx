@@ -129,7 +129,7 @@ export default function HeroSection({
                     {results.map((paper) => (
                       <Link
                         key={paper.id}
-                        href={`/papers/${paper.slug || paper.id}`}
+                        href={`/papers/${encodeURIComponent(paper.slug || String(paper.id))}`}
                         onClick={() => setShowDropdown(false)}
                         className="px-4 md:px-5 py-3 hover:bg-[#F8F7F2] cursor-pointer transition-colors border-b border-[#E5E5E0] last:border-0 flex flex-col gap-1 text-left"
                       >

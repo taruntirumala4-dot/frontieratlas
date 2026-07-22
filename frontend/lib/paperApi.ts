@@ -21,11 +21,18 @@ export interface Paper {
   citations: number;
   conference?: string;
   githubUrl?: string;
+  hfUrl?: string;
+  huggingface_url?: string;
+  hfUpvotes?: number;
+  arxivId?: string;
+  paperUrl?: string;
+  sourceUrl?: string;
+  projectUrl?: string;
   repositories?: {
-  url: string;
-  owner: string;
-  name: string;
-}[];
+    url: string;
+    owner?: string;
+    name?: string;
+  }[];
 }
 
 export interface PapersResponse {
@@ -148,6 +155,14 @@ function mapBackendPaper(raw: Record<string, unknown>): Paper {
     citations: Number(raw.citationCount || raw.citations || 0),
     conference: String(raw.conference || ""),
     githubUrl: raw.githubUrl ? String(raw.githubUrl) : undefined,
+    hfUrl: raw.hfUrl ? String(raw.hfUrl) : undefined,
+    huggingface_url: raw.huggingface_url ? String(raw.huggingface_url) : undefined,
+    hfUpvotes: raw.hfUpvotes != null ? Number(raw.hfUpvotes) : undefined,
+    arxivId: raw.arxivId ? String(raw.arxivId) : undefined,
+    paperUrl: raw.paperUrl ? String(raw.paperUrl) : undefined,
+    sourceUrl: raw.sourceUrl ? String(raw.sourceUrl) : undefined,
+    projectUrl: (raw.projectUrl || raw.project_url) ? String(raw.projectUrl || raw.project_url) : undefined,
+    repositories: Array.isArray(raw.repositories) ? raw.repositories : undefined,
   };
 }
 

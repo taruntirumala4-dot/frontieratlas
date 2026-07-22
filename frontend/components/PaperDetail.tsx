@@ -95,6 +95,19 @@ function parseGitHubRepo(url: string | null): string | null {
   return null;
 }
 
+function formatExternalUrl(url: string | null | undefined): string | null {
+  if (!url || typeof url !== "string") return null;
+  const trimmed = url.trim();
+  if (!trimmed || trimmed === "null" || trimmed === "undefined" || trimmed === "N/A") return null;
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://") || trimmed.startsWith("//")) {
+    return trimmed;
+  }
+  if (/^[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+/.test(trimmed)) {
+    return `https://${trimmed}`;
+  }
+  return null;
+}
+
 function generateCitation(paper: PaperDetailType, format: CitationFormat): string {
   const year = getCitationYear(paper.publicationDate);
   const authors = (paper.authors || []).map((pa) => pa.name);
@@ -249,6 +262,45 @@ function RepositoryPanel({ paper }: { paper: PaperDetailType }) {
             </a>
           </>
         )}
+      </div>
+    </div>
+  );
+}
+
+function HuggingFacePanel({ paper, hfUrl }: { paper: PaperDetailType; hfUrl: string }) {
+  const hfRepo = paper.repositories?.find((r) => r.url?.includes("huggingface.co"));
+  const repoName = hfRepo?.name || (hfRepo?.owner ? `${hfRepo.owner}/${hfRepo.name}` : null);
+
+  return (
+    <div className="border border-[#EDE8DF] rounded-lg p-6">
+      <div className="flex items-center gap-3 pb-4 border-b border-[#E5E5E0]">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="https://cdn.simpleicons.org/huggingface" alt="Hugging Face" className="w-4 h-4" />
+        <h3 className="text-[12px] font-black uppercase tracking-[0.12em] text-[#171717] m-0">Hugging Face</h3>
+      </div>
+      <div className="pt-5 flex flex-col gap-4">
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0 flex flex-col gap-1.5">
+            <p className="font-mono text-[15px] font-extrabold text-[#171717] m-0 truncate">
+              {repoName || (paper.arxivId ? `hf.co/papers/${paper.arxivId}` : "Hugging Face Model")}
+            </p>
+            {paper.hfUpvotes != null && paper.hfUpvotes > 0 && (
+              <span className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#FF5A1F]">
+                ▲ {formatCompactNumber(paper.hfUpvotes)} upvotes
+              </span>
+            )}
+          </div>
+        </div>
+
+        <a
+          href={hfUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full inline-flex items-center justify-center gap-2 rounded-full border border-[#E0DDD6] bg-transparent px-5 py-3 text-[14px] font-medium text-[#444444] no-underline transition-all hover:bg-[rgba(255,90,31,0.06)] hover:text-[#FF5A1F] hover:border-[rgba(255,90,31,0.3)]"
+        >
+          View on Hugging Face
+          <ExternalLink size={14} />
+        </a>
       </div>
     </div>
   );
@@ -627,8 +679,19 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
 
   const arxivUrl = paper.arxivId ? `https://arxiv.org/abs/${paper.arxivId}` : null;
   const doiUrl = paper.doi ? `https://doi.org/${paper.doi}` : null;
+  const huggingFaceRepo = paper.repositories?.find(
+    (repo: any) => repo.url?.includes("huggingface.co")
+  );
+  const hfResolvedUrl =
+    paper.hfUrl ||
+    paper.huggingface_url ||
+    huggingFaceRepo?.url ||
+    (paper.paperUrl?.includes("huggingface.co") ? paper.paperUrl : null) ||
+    (paper.sourceUrl?.includes("huggingface.co") ? paper.sourceUrl : null) ||
+    (paper.arxivId ? `https://huggingface.co/papers/${paper.arxivId}` : null);
+  const projectPageUrl = formatExternalUrl(paper.projectUrl);
   const previewHref =
-    paper.pdfUrl || paper.paperUrl || arxivUrl || doiUrl || paper.sourceUrl || paper.projectUrl;
+    paper.pdfUrl || paper.paperUrl || arxivUrl || doiUrl || paper.sourceUrl || projectPageUrl || hfResolvedUrl;
 
   const handleShare = useCallback(async () => {
     if (navigator.share) {
@@ -891,18 +954,24 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
                       )}
                     </a>
                   )}
-                  <button
-  type="button"
-  onClick={() => {
-    alert("Hugging Face model will be available soon.");
-  }}
-  className="ds-button-ghost inline-flex items-center justify-center gap-1.5 rounded-full border-[1.5px] border-[#E0DDD6] bg-transparent px-5 py-2 text-[13px] font-medium text-[#444444] transition-all hover:bg-[rgba(255,90,31,0.06)] hover:text-[#FF5A1F] hover:border-[rgba(255,90,31,0.3)]"
->
-   Hugging Face
-</button>
-                  {paper.projectUrl && (
+                  {hfResolvedUrl && (
                     <a
-                      href={paper.projectUrl}
+                      href={hfResolvedUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ds-button-ghost inline-flex items-center justify-center gap-1.5 rounded-full border-[1.5px] border-[#E0DDD6] bg-transparent px-5 py-2 text-[13px] font-medium text-[#444444] no-underline transition-all hover:bg-[rgba(255,90,31,0.06)] hover:text-[#FF5A1F] hover:border-[rgba(255,90,31,0.3)] active:scale-[0.97]"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src="https://cdn.simpleicons.org/huggingface" alt="Hugging Face" className="w-[16px] h-[16px]" />
+                      Hugging Face
+                      {paper.hfUpvotes != null && paper.hfUpvotes > 0 && (
+                        <span className="text-[#8B8B8B] font-bold">{formatCompactNumber(paper.hfUpvotes)}</span>
+                      )}
+                    </a>
+                  )}
+                  {projectPageUrl && (
+                    <a
+                      href={projectPageUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="ds-button-ghost inline-flex items-center justify-center gap-1.5 rounded-full border-[1.5px] border-[#E0DDD6] bg-transparent px-5 py-2 text-[13px] font-medium text-[#444444] no-underline transition-all hover:bg-[rgba(255,90,31,0.06)] hover:text-[#FF5A1F] hover:border-[rgba(255,90,31,0.3)] active:scale-[0.97]"
@@ -1165,6 +1234,7 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
           {deferred ? (
             <aside className="space-y-5 xl:sticky xl:top-6 self-start">
               <RepositoryPanel paper={paper} />
+              {hfResolvedUrl && <HuggingFacePanel paper={paper} hfUrl={hfResolvedUrl} />}
               <CitationPanel
                 paper={paper}
                 selectedFormat={selectedCitationFormat}

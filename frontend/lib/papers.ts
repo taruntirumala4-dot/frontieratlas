@@ -94,6 +94,9 @@ export interface PaperDetail {
   thumbnailUrl: string | null;
   isOfficialCode: boolean | null;
   hfUpvotes: number | null;
+  hfUrl?: string | null;
+  huggingface_url?: string | null;
+  repositories?: { url: string; owner?: string; name?: string }[];
   trendingScore: number | null;
   discoverySource: string | null;
   createdAt: string;
