@@ -23,7 +23,9 @@ export default function SignUpForm() {
 
     try {
       const defaultApiUrl = "https://frontieratlas-backend.morningsignal-india.workers.dev";
-      const API_BASE = (process.env.NEXT_PUBLIC_API_URL || defaultApiUrl).replace(/\/$/, "");
+      const API_BASE = process.env.NODE_ENV === "development"
+        ? ""
+        : (process.env.NEXT_PUBLIC_API_URL || defaultApiUrl).replace(/\/$/, "");
 
       // Generate a valid username from email to satisfy backend validation
       const baseUsername = email.split('@')[0].replace(/[^a-zA-Z0-9_]/g, '_');
@@ -47,6 +49,7 @@ export default function SignUpForm() {
         throw new Error(data.message || "Signup failed. Please try again.");
       }
 
+      window.dispatchEvent(new Event("authchange"));
       router.push("/");
       router.refresh();
     } catch (err: any) {

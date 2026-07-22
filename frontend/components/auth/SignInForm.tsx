@@ -20,7 +20,9 @@ export default function SignInForm() {
 
     try {
       const defaultApiUrl = "https://frontieratlas-backend.morningsignal-india.workers.dev";
-      const API_BASE = (process.env.NEXT_PUBLIC_API_URL || defaultApiUrl).replace(/\/$/, "");
+      const API_BASE = process.env.NODE_ENV === "development"
+        ? ""
+        : (process.env.NEXT_PUBLIC_API_URL || defaultApiUrl).replace(/\/$/, "");
 
       const res = await fetch(`${API_BASE}/api/v1/auth/login`, {
         method: "POST",
@@ -34,6 +36,7 @@ export default function SignInForm() {
         throw new Error(data.message || "Login failed. Please check your credentials.");
       }
 
+      window.dispatchEvent(new Event("authchange"));
       router.push("/");
       router.refresh();
     } catch (err: any) {

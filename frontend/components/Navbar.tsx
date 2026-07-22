@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import SearchBar from "@/components/SearchBar";
@@ -8,7 +8,17 @@ import { usePathname, useRouter } from "next/navigation";
 import { useScrollThreshold } from "@/lib/useScroll";
 import Sidebar from "@/components/Sidebar";
 import { motion, AnimatePresence } from "framer-motion";
-import { LogIn } from "lucide-react";
+
+type CurrentUser = {
+  email: string;
+};
+
+const defaultApiUrl = "https://frontieratlas-backend.morningsignal-india.workers.dev";
+// Use Next's local rewrite so authentication cookies stay on localhost rather
+// than being set by 127.0.0.1, which is a different cookie site.
+const API_BASE = process.env.NODE_ENV === "development"
+  ? ""
+  : (process.env.NEXT_PUBLIC_API_URL || defaultApiUrl).replace(/\/$/, "");
 
 export default function Navbar({
   activeSort,
@@ -18,6 +28,10 @@ export default function Navbar({
   onItemSelect?: (item: string) => void;
 } = {}) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const profileRefs = useRef<Array<HTMLDivElement | null>>([]);
   const isScrolled = useScrollThreshold(50);
   const pathname = usePathname();
   const router = useRouter();
@@ -54,9 +68,110 @@ export default function Navbar({
     };
   }, [isMenuOpen]);
 
+  useEffect(() => {
+    const loadCurrentUser = async () => {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/auth/me`, {
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          setCurrentUser(null);
+          return;
+        }
+
+        const data = await response.json();
+        setCurrentUser(data.user);
+      } catch {
+        // A guest session is expected to have no current user.
+        setCurrentUser(null);
+      }
+    };
+
+    loadCurrentUser();
+
+    window.addEventListener("authchange", loadCurrentUser);
+    return () => window.removeEventListener("authchange", loadCurrentUser);
+  }, []);
+
+  useEffect(() => {
+    const closeProfileOnOutsideClick = (event: MouseEvent) => {
+      if (!profileRefs.current.some((profile) => profile?.contains(event.target as Node))) {
+        setIsProfileOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", closeProfileOnOutsideClick);
+    return () => document.removeEventListener("mousedown", closeProfileOnOutsideClick);
+  }, []);
+
 
 
   const closeMenu = () => setIsMenuOpen(false);
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+
+    try {
+      await fetch(`${API_BASE}/api/v1/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } finally {
+      setCurrentUser(null);
+      setIsProfileOpen(false);
+      setIsLoggingOut(false);
+      window.dispatchEvent(new Event("authchange"));
+      router.push("/");
+      router.refresh();
+    }
+  };
+
+  const profileControl = (index: number) => currentUser ? (
+    <div ref={(element) => { profileRefs.current[index] = element; }} className="relative">
+      <button
+        type="button"
+        onClick={() => setIsProfileOpen((open) => !open)}
+        aria-label="Open profile menu"
+        aria-expanded={isProfileOpen}
+        className="w-8 h-8 rounded-full bg-[#F55036] text-white text-[14px] font-bold flex items-center justify-center cursor-pointer hover:bg-[#E0462D] transition-colors shadow-sm hover:shadow-[0_0_0_3px_rgba(245,80,54,0.20)] hover:-translate-y-px active:scale-95"
+      >
+        {currentUser.email.trim().charAt(0).toUpperCase()}
+      </button>
+
+      {isProfileOpen && (
+        <div className="absolute right-0 top-10 w-64 rounded-xl border border-[#E5E5E0] bg-[#F8F7F2] p-3 shadow-lg">
+          <p className="truncate text-[13px] font-medium text-[#555555]">{currentUser.email}</p>
+          <button
+            type="button"
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+            className="mt-3 w-full rounded-lg bg-[#F55036] px-3 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#E0462D] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isLoggingOut ? "Logging out..." : "Log out"}
+          </button>
+        </div>
+      )}
+    </div>
+  ) : (
+    <Link
+      href="/login"
+      aria-label="Sign In"
+      className="w-8 h-8 rounded-full bg-[#F55036] flex items-center justify-center cursor-pointer hover:bg-[#E0462D] transition-colors shadow-sm hover:shadow-[0_0_0_3px_rgba(245,80,54,0.20)] hover:-translate-y-px active:scale-95"
+    >
+      <svg
+        width="15"
+        height="15"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="white"
+        strokeWidth="2.5"
+      >
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+        <circle cx="12" cy="7" r="4" />
+      </svg>
+    </Link>
+  );
 
   return (
     <>
@@ -156,44 +271,12 @@ export default function Navbar({
 
         {/* Right (Desktop) */}
         <div className="hidden xl:flex items-center gap-4 border-l border-[#E5E5E0] pl-4 shrink-0">
-          <Link
-  href="/login"
-  aria-label="Sign In"
-  className="w-8 h-8 rounded-full bg-[#F55036] flex items-center justify-center cursor-pointer hover:bg-[#E0462D] transition-colors shadow-sm hover:shadow-[0_0_0_3px_rgba(245,80,54,0.20)] hover:-translate-y-px active:scale-95"
->
-  <svg
-    width="15"
-    height="15"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="white"
-    strokeWidth="2.5"
-  >
-    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-    <circle cx="12" cy="7" r="4" />
-  </svg>
-</Link>
+          {profileControl(0)}
         </div>
 
         {/* Mobile Right (CTA) */}
         <div className="flex xl:hidden items-center shrink-0">
-          <Link
-    href="/login"
-    aria-label="Sign In"
-    className="w-8 h-8 rounded-full bg-[#F55036] flex items-center justify-center cursor-pointer hover:bg-[#E0462D] transition-colors shadow-sm hover:shadow-[0_0_0_3px_rgba(245,80,54,0.20)] hover:-translate-y-px active:scale-95"
-  >
-    <svg
-      width="15"
-      height="15"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="white"
-      strokeWidth="2.5"
-    >
-      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-      <circle cx="12" cy="7" r="4" />
-    </svg>
-  </Link>
+          {profileControl(1)}
         </div>
       </nav>
 

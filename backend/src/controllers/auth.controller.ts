@@ -31,12 +31,20 @@ type AuthContext = Context<{
   };
 }>;
 
-const cookieOptions = {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "Lax",
-  path: "/",
-} as const;
+const getCookieOptions = (c: Context) => {
+  // The production frontend and API use different origins. A Lax cookie is
+  // stored on login but is not sent with its subsequent cross-origin fetch to
+  // /auth/me, which leaves every authenticated request looking anonymous.
+  // `SameSite=None` requires `Secure`, so retain Lax for local HTTP development.
+  const secure = new URL(c.req.url).protocol === "https:";
+
+  return {
+    httpOnly: true,
+    secure,
+    sameSite: secure ? "None" : "Lax",
+    path: "/",
+  } as const;
+};
 
 const setAuthCookies = (
   c: Context,
@@ -44,23 +52,23 @@ const setAuthCookies = (
   refreshToken: string
 ) => {
   setCookie(c, ACCESS_TOKEN_COOKIE, accessToken, {
-    ...cookieOptions,
+    ...getCookieOptions(c),
     maxAge: ACCESS_TOKEN_MAX_AGE_SECONDS,
   });
 
   setCookie(c, REFRESH_TOKEN_COOKIE, refreshToken, {
-    ...cookieOptions,
+    ...getCookieOptions(c),
     maxAge: REFRESH_TOKEN_MAX_AGE_SECONDS,
   });
 };
 
 const clearAuthCookies = (c: Context) => {
   deleteCookie(c, ACCESS_TOKEN_COOKIE, {
-    path: "/",
+    ...getCookieOptions(c),
   });
 
   deleteCookie(c, REFRESH_TOKEN_COOKIE, {
-    path: "/",
+    ...getCookieOptions(c),
   });
 };
 
