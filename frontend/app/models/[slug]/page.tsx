@@ -3,9 +3,9 @@
 import React, { useState, useEffect, useMemo, use } from "react";
 import Link from "next/link";
 import { 
-  Cpu, Layers, ExternalLink, Check, Copy, ArrowLeft, 
-  Sparkles, BookOpen, Terminal, Zap, ShieldCheck, 
-  Eye, Activity, Box, Sliders, BarChart3,
+  Cpu, Layers, ExternalLink, Check, ArrowLeft, 
+  Sparkles, BookOpen, Zap, ShieldCheck, 
+  Eye, Activity, Box, BarChart3,
   Brain, Wrench, Link2
 } from "lucide-react";
 import { fetchApi } from "@/lib/api";
@@ -175,17 +175,7 @@ export default function ModelDetailPage({
   const resolvedParams = use(params);
   const [model, setModel] = useState<ModelItem | null>(null);
   const [loading, setLoading] = useState(true);
-  const [copied, setCopied] = useState(false);
   const [logoError, setLogoError] = useState(false);
-
-  // Active Main Tab ("evals" | "workbench" | "architecture" | "literature")
-
-
-  // Workbench Interactive Toggles & State
-  const [sdkLang, setSdkLang] = useState<"python" | "typescript" | "curl" | "ollama">("python");
-  const [enableThinking, setEnableThinking] = useState(true);
-  const [enableTools, setEnableTools] = useState(false);
-  const [enableStreaming, setEnableStreaming] = useState(true);
 
   // Benchmarks Comparison Mode ("standard" | "human")
   const [evalMode, setEvalMode] = useState<"standard" | "human">("standard");
@@ -214,7 +204,7 @@ export default function ModelDetailPage({
   // Find related research papers citing or mentioning this model
   const relatedPapers = useMemo(() => {
     if (!model || !(model as any).papers) return [];
-    return (model as any).papers.map((p: any) => p.paper).filter(Boolean).slice(0, 10);
+    return (model as any).papers.map((p: any) => p.paper).filter(Boolean);
   }, [model]);
   
   const benchmarkArray = useMemo(() => {
@@ -229,70 +219,7 @@ export default function ModelDetailPage({
     });
   }, [model]);
 
-  // Dynamic Interactive Code Generator based on user toggles
-  const generatedCode = useMemo(() => {
-    if (!model) return "";
-    const baseId = model.slug || model.id;
 
-    if (sdkLang === "python") {
-      let code = `import anthropic\n\nclient = anthropic.Anthropic()\n\n`;
-      let paramsList = `  model="${baseId}",\n  max_tokens=${enableThinking ? 16384 : 4096},\n`;
-      
-      if (enableThinking) {
-        paramsList += `  thinking={\n    "type": "enabled",\n    "budget_tokens": 12000\n  },\n`;
-      }
-      if (enableTools) {
-        paramsList += `  tools=[\n    {\n      "name": "execute_code",\n      "description": "Execute Python in sandboxed verification environment",\n      "input_schema": {"type": "object", "properties": {"code": {"type": "string"}}}\n    }\n  ],\n`;
-      }
-      if (enableStreaming) {
-        code += `with client.messages.stream(\n${paramsList}  messages=[{"role": "user", "content": "Analyze and verify frontier model architecture."}]\n) as stream:\n    for text in stream.text_stream:\n        print(text, end="", flush=True)`;
-      } else {
-        code += `response = client.messages.create(\n${paramsList}  messages=[{"role": "user", "content": "Analyze and verify frontier model architecture."}]\n)\nprint(response.content[0].text)`;
-      }
-      return code;
-    }
-
-    if (sdkLang === "typescript") {
-      let code = `import { Anthropic } from '@anthropic-ai/sdk';\n\nconst anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });\n\n`;
-      let paramsList = `  model: '${baseId}',\n  max_tokens: ${enableThinking ? 16384 : 4096},\n`;
-      if (enableThinking) {
-        paramsList += `  thinking: { type: 'enabled', budget_tokens: 12000 },\n`;
-      }
-      if (enableTools) {
-        paramsList += `  tools: [{ name: 'get_benchmark_data', input_schema: { type: 'object' } }],\n`;
-      }
-      if (enableStreaming) {
-        code += `const stream = await anthropic.messages.create({\n${paramsList}  stream: true,\n  messages: [{ role: 'user', content: 'Synthesize architecture benchmarks.' }]\n});\n\nfor await (const chunk of stream) {\n  if (chunk.type === 'content_block_delta') process.stdout.write(chunk.delta.text);\n}`;
-      } else {
-        code += `const msg = await anthropic.messages.create({\n${paramsList}  messages: [{ role: 'user', content: 'Synthesize architecture benchmarks.' }]\n});\nconsole.log(msg.content[0].text);`;
-      }
-      return code;
-    }
-
-    if (sdkLang === "curl") {
-      const body: any = {
-        model: baseId,
-        max_tokens: enableThinking ? 16384 : 4096,
-        messages: [{ role: "user", content: "Explain model scaling laws." }]
-      };
-      if (enableThinking) body.thinking = { type: "enabled", budget_tokens: 12000 };
-      if (enableStreaming) body.stream = true;
-
-      return `curl https://api.anthropic.com/v1/messages \\\n  -H "x-api-key: $ANTHROPIC_API_KEY" \\\n  -H "anthropic-version: 2023-06-01" \\\n  -H "content-type: application/json" \\\n  -d '${JSON.stringify(body, null, 2)}'`;
-    }
-
-    // Ollama
-    return `# Step 1: Pull the open-weight model or configure API bridge in Ollama\nollama pull ${baseId}\n\n# Step 2: Run interactive terminal session with custom flags\nollama run ${baseId} --verbose "${enableThinking ? "Think step-by-step and verify math proofs." : "Provide concise summary."}"`;
-  }, [model, sdkLang, enableThinking, enableTools, enableStreaming]);
-
-  const handleCopyCode = (textToCopy?: string) => {
-    const text = textToCopy || generatedCode;
-    if (text) {
-      navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
 
   if (loading) {
     return (
@@ -549,150 +476,7 @@ export default function ModelDetailPage({
 
         </section>
 
-      {/* ─────────────────────────────────────────────────────────────────────────────
-          TAB 2: INTERACTIVE SDK WORKBENCH & CODE PLAYGROUND
-      ───────────────────────────────────────────────────────────────────────────── */}
-        <section className="max-w-7xl mx-auto px-4 md:px-8 mt-8">
-          
-          <div className="bg-white border border-[#F0F0F0] rounded-[12px] overflow-hidden shadow-sm">
-            
-            {/* Top Workbench Header */}
-            <div className="bg-[#F8F7F2] border-b border-[#EAE9E4] p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-[10px] bg-white border border-[#EAE9E4] text-[#10B981] flex items-center justify-center shadow-sm">
-                  <Terminal size={24} />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold text-[#111111] mb-1 tracking-tight">Interactive SDK Workbench</h2>
-                  <p className="text-[12px] font-bold text-[#8B8B8B] uppercase tracking-wider">Generate live inference code dynamically</p>
-                </div>
-              </div>
 
-              {/* Language Switcher */}
-              <div className="flex items-center bg-[#EAE9E4] p-1 rounded-[8px] overflow-x-auto w-full md:w-auto">
-                {(["python", "typescript", "curl", "ollama"] as const).map((lang) => (
-                  <button
-                    key={lang}
-                    onClick={() => setSdkLang(lang)}
-                    className={`px-3 py-1.5 rounded-[6px] text-[12px] font-bold transition-all ${sdkLang === lang ? "bg-white shadow-sm text-[#111111]" : "text-[#555555] hover:text-[#111111]"}`}
-                  >
-                    {lang === "curl" ? "REST / cURL" : lang === "typescript" ? "TypeScript" : lang}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Interactive Capability Feature Toggles */}
-            <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[#F0F0F0] border-b border-[#F0F0F0]">
-              
-              <label className="flex items-center justify-between p-5 cursor-pointer hover:bg-[#FAFAFA] transition-colors group">
-                <div className="flex gap-3">
-                  <div className="w-8 h-8 rounded-full bg-[#FFF6F3] text-[#FF5A1F] flex items-center justify-center shrink-0 border border-[#FFEDD5]">
-                    <Cpu size={16} />
-                  </div>
-                  <div>
-                    <div className="text-[13px] font-bold text-[#111111] mb-0.5 group-hover:text-[#FF5A1F] transition-colors">Extended CoT Reasoning</div>
-                    <div className="text-[11px] font-medium text-[#8B8B8B]">Allocate 12k thinking tokens</div>
-                  </div>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={enableThinking}
-                  onChange={(e) => setEnableThinking(e.target.checked)}
-                  className="w-4 h-4 rounded border-gray-300 text-[#FF5A1F] focus:ring-[#FF5A1F]"
-                />
-              </label>
-
-              <label className="flex items-center justify-between p-5 cursor-pointer hover:bg-[#FAFAFA] transition-colors group">
-                <div className="flex gap-3">
-                  <div className="w-8 h-8 rounded-full bg-[#EFF6FF] text-[#3B82F6] flex items-center justify-center shrink-0 border border-[#DBEAFE]">
-                    <Sliders size={16} />
-                  </div>
-                  <div>
-                    <div className="text-[13px] font-bold text-[#111111] mb-0.5 group-hover:text-[#3B82F6] transition-colors">Autonomous Tool Calling</div>
-                    <div className="text-[11px] font-medium text-[#8B8B8B]">Attach execute_code sandbox</div>
-                  </div>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={enableTools}
-                  onChange={(e) => setEnableTools(e.target.checked)}
-                  className="w-4 h-4 rounded border-gray-300 text-[#3B82F6] focus:ring-[#3B82F6]"
-                />
-              </label>
-
-              <label className="flex items-center justify-between p-5 cursor-pointer hover:bg-[#FAFAFA] transition-colors group">
-                <div className="flex gap-3">
-                  <div className="w-8 h-8 rounded-full bg-[#F0FDF4] text-[#10B981] flex items-center justify-center shrink-0 border border-[#DCFCE7]">
-                    <Zap size={16} />
-                  </div>
-                  <div>
-                    <div className="text-[13px] font-bold text-[#111111] mb-0.5 group-hover:text-[#10B981] transition-colors">Response Buffer Stream</div>
-                    <div className="text-[11px] font-medium text-[#8B8B8B]">Real-time token delta output</div>
-                  </div>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={enableStreaming}
-                  onChange={(e) => setEnableStreaming(e.target.checked)}
-                  className="w-4 h-4 rounded border-gray-300 text-[#10B981] focus:ring-[#10B981]"
-                />
-              </label>
-
-            </div>
-
-            {/* Code Display Area */}
-            <div className="bg-[#111111] p-5">
-              <div className="flex items-center justify-between mb-4 pb-4 border-b border-[#333333]">
-                <div className="flex items-center gap-2">
-                  <div className="flex gap-1.5">
-                    <span className="w-3 h-3 rounded-full bg-[#FF5F56]" />
-                    <span className="w-3 h-3 rounded-full bg-[#FFBD2E]" />
-                    <span className="w-3 h-3 rounded-full bg-[#27C93F]" />
-                  </div>
-                  <span className="ml-2 text-[12px] font-bold text-[#8B8B8B] tracking-wider">{model.id}.{sdkLang === "python" ? "py" : sdkLang === "typescript" ? "ts" : "sh"}</span>
-                </div>
-                
-                <button
-                  onClick={() => handleCopyCode()}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] bg-[#222222] hover:bg-[#333333] border border-[#333333] transition-colors text-[11px] font-bold text-white uppercase tracking-wider"
-                >
-                  {copied ? (
-                    <>
-                      <Check size={14} className="text-[#10B981]" />
-                      <span className="text-[#10B981]">Copied!</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy size={14} />
-                      <span>Copy Spec</span>
-                    </>
-                  )}
-                </button>
-              </div>
-
-              <pre className="text-[13px] font-mono text-[#E0E0E0] overflow-x-auto whitespace-pre-wrap leading-relaxed">
-                <code>{generatedCode}</code>
-              </pre>
-            </div>
-
-            {/* Bottom API Quick Specs */}
-            <div className="bg-[#1A1A1A] px-5 py-3 flex flex-col md:flex-row md:items-center justify-between gap-3 border-t border-[#333333]">
-              <div className="flex flex-wrap items-center gap-2 md:gap-4 text-[11px] font-bold text-[#8B8B8B] uppercase tracking-wider">
-                <span>API Endpoint: <strong className="text-white">api.anthropic.com/v1/messages</strong></span>
-                <span className="text-[#333333]">•</span>
-                <span>Context Window: <strong className="text-[#FF5A1F]">{(model as any).context || "200k tokens"}</strong></span>
-                <span className="text-[#333333]">•</span>
-                <span>Prompt Caching: <strong className="text-[#10B981]">Enabled (-50% Cost)</strong></span>
-              </div>
-              <a href="https://docs.anthropic.com" target="_blank" rel="noreferrer" className="text-[11px] font-bold text-[#3B82F6] hover:underline uppercase tracking-wider whitespace-nowrap ml-4">
-                View Docs →
-              </a>
-            </div>
-
-          </div>
-
-        </section>
 
       {/* ─────────────────────────────────────────────────────────────────────────────
           TAB 3: ARCHITECTURE & CAPABILITIES DEEP-DIVE
@@ -818,9 +602,6 @@ export default function ModelDetailPage({
               </div>
             </div>
 
-            <span className="px-3 py-1.5 bg-[#F8F7F2] border border-[#EAE9E4] rounded-[8px] text-[12px] font-extrabold uppercase tracking-wider text-[#111111]">
-              {relatedPapers.length} Papers Found
-            </span>
           </div>
 
           {relatedPapers.length === 0 ? (
