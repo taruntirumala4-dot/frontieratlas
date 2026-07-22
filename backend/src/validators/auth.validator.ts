@@ -23,16 +23,20 @@ export const signupSchema = z.object({
     .min(8, "Password must be at least 8 characters")
     .max(128, "Password must be at most 128 characters"),
 
-    displayName: z
-  .string()
-  .trim()
-  .min(1, "Display name is required")
-  .max(80, "Display name must be at most 80 characters"),
+  displayName: z
+    .string()
+    .trim()
+    .min(1, "Display name is required")
+    .max(80, "Display name must be at most 80 characters"),
 
-github: z
-  .string()
-  .trim()
-  .optional(),
+  github: z
+    .string()
+    .trim()
+    .optional(),
+  linkedin: z
+    .string()
+    .trim()
+    .optional(),
 });
 
 export const loginSchema = z.object({
