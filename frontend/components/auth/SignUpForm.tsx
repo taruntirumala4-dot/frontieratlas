@@ -27,9 +27,8 @@ export default function SignUpForm() {
         ? ""
         : (process.env.NEXT_PUBLIC_API_URL || defaultApiUrl).replace(/\/$/, "");
 
-      // Generate a valid username from email to satisfy backend validation
-      const baseUsername = email.split('@')[0].replace(/[^a-zA-Z0-9_]/g, '_');
-      const username = `${baseUsername}_${Math.floor(Math.random() * 10000)}`;
+      // The username explicitly mirrors the email address
+      const username = email;
 
       const res = await fetch(`${API_BASE}/api/v1/auth/signup`, {
         method: "POST",
