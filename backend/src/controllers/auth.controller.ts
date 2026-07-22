@@ -49,16 +49,17 @@ const getCookieOptions = (c: Context) => {
 const setAuthCookies = (
   c: Context,
   accessToken: string,
-  refreshToken: string
+  refreshToken: string,
+  rememberMe: boolean = true
 ) => {
   setCookie(c, ACCESS_TOKEN_COOKIE, accessToken, {
     ...getCookieOptions(c),
-    maxAge: ACCESS_TOKEN_MAX_AGE_SECONDS,
+    ...(rememberMe ? { maxAge: ACCESS_TOKEN_MAX_AGE_SECONDS } : {}),
   });
 
   setCookie(c, REFRESH_TOKEN_COOKIE, refreshToken, {
     ...getCookieOptions(c),
-    maxAge: REFRESH_TOKEN_MAX_AGE_SECONDS,
+    ...(rememberMe ? { maxAge: REFRESH_TOKEN_MAX_AGE_SECONDS } : {}),
   });
 };
 
@@ -177,7 +178,8 @@ export const login = async (
     setAuthCookies(
       c,
       result.accessToken,
-      result.refreshToken
+      result.refreshToken,
+      parsed.data.rememberMe
     );
 
     return c.json({
