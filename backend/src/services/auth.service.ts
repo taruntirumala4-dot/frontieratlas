@@ -36,7 +36,7 @@ const userSelect = {
   github: true,
   twitter: true,
   website: true,
-  reputationScore: true,
+  reputation_score: true,
   createdAt: true,
 } as const;
  
@@ -130,6 +130,7 @@ export const signupUser = async (
       email: input.email,
       password: hashedPassword,
       display_name: input.displayName,
+       github: input.github,
     },
  
     select: userSelect,

@@ -28,6 +28,11 @@ export const signupSchema = z.object({
   .trim()
   .min(1, "Display name is required")
   .max(80, "Display name must be at most 80 characters"),
+
+github: z
+  .string()
+  .trim()
+  .optional(),
 });
 
 export const loginSchema = z.object({

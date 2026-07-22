@@ -5,6 +5,7 @@ export async function fetchApi<T>(endpoint: string, options: RequestInit = {}): 
   const url = `${API_BASE}${path}`;
   const response = await fetch(url, {
     ...options,
+     credentials: "include",
     next: { revalidate: 120 },
     headers: {
       'Content-Type': 'application/json',
