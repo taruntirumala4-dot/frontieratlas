@@ -168,7 +168,7 @@ async function fallbackSearch(query: string, limit: number): Promise<SearchResul
       title: p.title,
       slug: p.slug,
       subtitle: `${p.citations} citation${p.citations !== 1 ? 's' : ''}`,
-      metadata: { citationCount: p.citations, date: p.date },
+      metadata: { citationCount: p.citations, date: p.date, projectUrl: p.projectUrl },
     }));
 
   return {

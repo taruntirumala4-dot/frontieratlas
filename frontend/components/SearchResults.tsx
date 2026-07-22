@@ -32,7 +32,7 @@ function ResultCard({ result }: { result: SearchResult }) {
   };
 
   const getPath = () => {
-    return `/${result.type === 'papers' ? 'papers' : result.type}/${result.slug}`;
+    return `/${result.type === 'papers' ? 'papers' : result.type}/${encodeURIComponent(result.slug)}`;
   };
 
   return (

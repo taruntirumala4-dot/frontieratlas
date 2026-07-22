@@ -53,6 +53,10 @@ const paperSelect = {
   githubUrl: true,
   githubStars: true,
   githubForks: true,
+  hfUrl: true,
+  huggingface_url: true,
+  hfUpvotes: true,
+  projectUrl: true,
   citationCount: true,
   language: true,
   authors: true,
@@ -131,6 +135,7 @@ const paperSearchSelect = {
   citationCount: true,
   thumbnailUrl: true,
   authors: true,
+  projectUrl: true,
 } satisfies Prisma.PaperSelect;
 
 // Infer the type from the select object
@@ -477,6 +482,19 @@ export const getPaperBySlug = async (
               benchmark: { select: { id: true, name: true, slug: true } },
             },
           },
+          repositories: {
+            select: {
+              repository: {
+                select: {
+                  url: true,
+                  owner: true,
+                  name: true,
+                },
+              },
+            },
+          },
+          huggingface_url: true,
+          hfUpvotes: true,
         },
       });
 
@@ -499,6 +517,7 @@ export const getPaperBySlug = async (
         conferences: paperData.conferences.map((r: any) => r.conference),
         rankings: paperData.rankings,
         sotaClaims: paperData.sotaClaims,
+        repositories: (paperData as any).repositories?.map((r: any) => r.repository) || [],
       };
     },
   );

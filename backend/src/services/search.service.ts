@@ -108,6 +108,7 @@ export const globalSearch = async (
             citationCount: true,
             authors: true,
             thumbnailUrl: true,
+            projectUrl: true,
           },
         }),
 
