@@ -9,6 +9,7 @@ import Link from "next/link";
 export default function SignInForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -28,7 +29,7 @@ export default function SignInForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, rememberMe }),
       });
 
       const data = await res.json();
@@ -75,11 +76,13 @@ export default function SignInForm() {
       />
 
       <div className="flex items-center justify-between text-[14px]">
-        <label className="flex items-center gap-2 text-[#555555]">
+        <label className="flex items-center gap-2 text-[#555555] cursor-pointer">
           <input
             type="checkbox"
             className="w-4 h-4 rounded border-[#CFC8BC]"
             disabled={loading}
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
           />
           Remember me
         </label>
