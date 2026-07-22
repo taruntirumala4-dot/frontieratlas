@@ -177,8 +177,7 @@ export default function ModelDetailPage({
   const [loading, setLoading] = useState(true);
   const [logoError, setLogoError] = useState(false);
 
-  // Benchmarks Comparison Mode ("standard" | "human")
-  const [evalMode, setEvalMode] = useState<"standard" | "human">("standard");
+
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -394,20 +393,7 @@ export default function ModelDetailPage({
               </div>
             </div>
 
-            <div className="flex items-center p-1 bg-[#F8F7F2] rounded-[8px] border border-[#EAE9E4]">
-              <button
-                onClick={() => setEvalMode("standard")}
-                className={`px-4 py-2 rounded-[6px] text-[13px] font-bold transition-all ${evalMode === "standard" ? "bg-white shadow-sm text-[#111111] border border-[#EAE9E4]" : "text-[#8B8B8B] hover:text-[#555555] border border-transparent"}`}
-              >
-                <BarChart3 size={14} className="inline mr-1.5 relative -top-[1px]" /> Standard Matrix
-              </button>
-              <button
-                onClick={() => setEvalMode("human")}
-                className={`px-4 py-2 rounded-[6px] text-[13px] font-bold transition-all ${evalMode === "human" ? "bg-white shadow-sm text-[#16A34A] border border-[#EAE9E4]" : "text-[#8B8B8B] hover:text-[#555555] border border-transparent"}`}
-              >
-                <Zap size={14} className="inline mr-1.5 relative -top-[1px]" /> Human Baseline
-              </button>
-            </div>
+
           </div>
 
           {/* Benchmarks Grid */}
