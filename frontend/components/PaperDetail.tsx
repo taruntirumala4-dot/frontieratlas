@@ -337,11 +337,10 @@ function CitationPanel({
                 key={fmt.key}
                 type="button"
                 onClick={() => onFormatChange(fmt.key)}
-                className={`flex-1 rounded-[5px] px-1.5 py-1 text-[9.5px] font-bold uppercase tracking-[0.06em] transition-all ${
-                  active
+                className={`flex-1 rounded-[5px] px-1.5 py-1 text-[9.5px] font-bold uppercase tracking-[0.06em] transition-all ${active
                     ? "bg-white text-[#171717] shadow-[0_1px_2px_rgba(0,0,0,0.04)]"
                     : "bg-transparent text-[#8B8B8B] hover:text-[#555555]"
-                }`}
+                  }`}
               >
                 {fmt.label}
               </button>
@@ -356,11 +355,10 @@ function CitationPanel({
         <button
           type="button"
           onClick={() => onCopy(selectedFormat)}
-          className={`w-full inline-flex items-center justify-center gap-2 rounded-full border px-4 py-2.5 text-[13px] font-medium transition-all ${
-            isCopied
+          className={`w-full inline-flex items-center justify-center gap-2 rounded-full border px-4 py-2.5 text-[13px] font-medium transition-all ${isCopied
               ? "scale-[0.98] border-[#A7F3D0] bg-[#ECFDF5] text-[#047857]"
               : "border-[#E0DDD6] bg-transparent text-[#444444] hover:bg-[rgba(255,90,31,0.06)] hover:text-[#FF5A1F] hover:border-[rgba(255,90,31,0.3)]"
-          }`}
+            }`}
         >
           {isCopied ? (
             <>
@@ -671,7 +669,7 @@ export function RelatedPaperCard({ paper }: { paper: Paper }) {
 export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
   const [citationCopied, setCitationCopied] = useState<CitationFormat | null>(null);
   const [selectedCitationFormat, setSelectedCitationFormat] = useState<CitationFormat>("bibtex");
- 
+
   const [relatedPapers, setRelatedPapers] = useState<Paper[]>([]);
   const [relatedLoading, setRelatedLoading] = useState(true);
   const [showAllAuthors, setShowAllAuthors] = useState(false);
@@ -874,46 +872,43 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
                 {/* Authors */}
                 <div className="flex items-center flex-wrap">
                   <div className="flex flex-wrap items-center">
-                  {paper.authors
-  .slice(0, showAllAuthors ? paper.authors.length : 3)
-  .map((pa, i, arr) => (
-    <span key={pa.id} className="inline-flex items-center">
-      <Link
-        href={`/authors/${pa.slug}`}
-        className="text-[14px] font-semibold text-[#444444] no-underline hover:text-[#FF5A1F] hover:underline decoration-2 underline-offset-4 transition-colors"
-      >
-        {pa.name}
-      </Link>
+                    {paper.authors
+                      .slice(0, showAllAuthors ? paper.authors.length : 3)
+                      .map((pa, i, arr) => (
+                        <span key={pa.id} className="inline-flex items-center">
+                          <span className="text-[14px] font-semibold text-[#444444]">
+                            {pa.name}
+                          </span>
 
-      {i < arr.length - 1 && (
-        <span className="ml-0.5 text-[#171717] font-bold">,</span>
-      )}
-    </span>
-  ))}
-                  {(paper.authors || []).length > 3 && (
-                    <span className="inline-flex items-center">
-                      <button
-  type="button"
-  onClick={() => setShowAllAuthors(!showAllAuthors)}
-  className="ml-1 text-[13px] font-semibold text-[#4A7AA0] hover:text-[#2c4e69] hover:underline"
->
-  {showAllAuthors ? "Show less" : `+${paper.authors.length - 3} more`}
-</button>
-                    </span>
-                  )}
-                </div>
-                {paper.publicationDate && (
-                  <div className="flex items-center gap-1.5 text-[14px] text-[#666]">
-                    <span className="text-[#B0B0B0]">•</span>
-                    <span>
-                      {new Date(paper.publicationDate).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
-                    </span>
+                          {i < arr.length - 1 && (
+                            <span className="ml-0.5 mr-1 text-[#171717] font-bold">,</span>
+                          )}
+                        </span>
+                      ))}
+                    {(paper.authors || []).length > 3 && (
+                      <span className="inline-flex items-center">
+                        <button
+                          type="button"
+                          onClick={() => setShowAllAuthors(!showAllAuthors)}
+                          className="ml-1 text-[13px] font-semibold text-[#4A7AA0] hover:text-[#2c4e69] hover:underline"
+                        >
+                          {showAllAuthors ? "Show less" : `+${paper.authors.length - 3} more`}
+                        </button>
+                      </span>
+                    )}
                   </div>
-                )}
+                  {paper.publicationDate && (
+                    <div className="flex items-center gap-1.5 text-[14px] text-[#666]">
+                      <span className="text-[#B0B0B0]">•</span>
+                      <span>
+                        {new Date(paper.publicationDate).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Action buttons */}
