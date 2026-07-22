@@ -353,9 +353,9 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
   const githubRepo = paper.repositories?.find(
     (repo: any) => repo.url?.includes("github.com")
   );
-const huggingFaceRepo = paper.repositories?.find(
-  (repo: any) => repo.url?.includes("huggingface.co")
-);
+  const huggingFaceRepo = paper.repositories?.find(
+    (repo: any) => repo.url?.includes("huggingface.co")
+  );
 
   const handlePrefetch = useCallback(() => {
     // Prefetch Next.js JS route chunks
@@ -385,32 +385,33 @@ const huggingFaceRepo = paper.repositories?.find(
           </h3>
 
           {/* Authors + Date + Citations */}
-<div className="flex flex-wrap items-center gap-x-2 text-[13px] text-[#666666] mb-3">
+          <div className="flex flex-wrap items-center gap-x-2 text-[13px] text-[#666666] mb-3">
+            <div className="flex flex-wrap items-center">
+              {visibleAuthors.length > 0 ? (
+                visibleAuthors.map((a, i) => (
+                  <span key={a.slug || i}>
+                    {i > 0 && <span>, </span>}
+                    <span className="hover:text-[#F55036]">
+                      {a.name}
+                    </span>
+                  </span>
+                ))
+              ) : (
+                <span>Unknown Author</span>
+              )}
+              {remaining > 0 && <span>, +{remaining}</span>}
+            </div>
+            <span className="text-[#CCCCCC]">•</span>
 
-  {visibleAuthors.length > 0 ? (
-    visibleAuthors.map((a, i) => (
-      <span key={a.slug || i}>
-        {i > 0 && <span>, </span>}
-        <span className="hover:text-[#F55036]">
-        {a.name}
-      </span>
-    </span>
-    ))
-  ) : (
-    <span>Unknown Author</span>
-  )}
-  {remaining > 0 && <span> +{remaining}</span>}
-  <span className="text-[#CCCCCC]">•</span>
+            <span>{paper.date}</span>
 
-  <span>{paper.date}</span>
+            <span className="text-[#CCCCCC]">•</span>
 
-  <span className="text-[#CCCCCC]">•</span>
+            <span>{paper.citations || 0} citations</span>
 
-  <span>{paper.citations || 0} citations</span>
+          </div>
 
-</div>
 
-          
 
           {/* Description */}
           <p className="text-[13px] sm:text-[13.5px] xl:text-[14px] text-[#444444] leading-[1.6] mb-3 line-clamp-3">
@@ -424,7 +425,7 @@ const huggingFaceRepo = paper.repositories?.find(
 
           {/* Tasks (Row 2) */}
           <div className="flex flex-wrap items-center gap-1.5 mb-1.5 w-full">
-            {paper.tags?.slice(0,4).map((t) => {
+            {paper.tags?.slice(0, 4).map((t) => {
               const colorKey = getTagColor(t);
               return <Pill key={t} label={t} colorKey={colorKey} />;
             })}
@@ -432,7 +433,7 @@ const huggingFaceRepo = paper.repositories?.find(
 
           {/* Methods (Row 3) */}
           <div className="flex flex-wrap items-center gap-1.5 w-full">
-            {paper.additionalTags?.slice(0,4).map((t) => {
+            {paper.additionalTags?.slice(0, 4).map((t) => {
               return <Pill key={t} label={t} colorKey="gray" />;
             })}
           </div>
@@ -449,12 +450,12 @@ const huggingFaceRepo = paper.repositories?.find(
             >
               <div className="flex items-center gap-0.5 min-[375px]:gap-1 md:gap-1.5 lg:gap-3 xl:gap-1.5">
                 <div className="w-[12px] h-[12px] min-[375px]:w-[14px] min-[375px]:h-[14px] md:w-[20px] md:h-[20px] lg:w-8 lg:h-8 xl:w-[20px] xl:h-[20px] rounded-[4px] md:rounded-[6px] lg:rounded-[10px] xl:rounded-[6px] bg-transparent flex items-center justify-center">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="https://cdn.simpleicons.org/arxiv/b31b1b" alt="arXiv" className="w-[9px] h-[9px] min-[375px]:w-[10px] min-[375px]:h-[10px] md:w-[12px] md:h-[12px] lg:w-4 lg:h-4 xl:w-[12px] xl:h-[12px]" />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="https://cdn.simpleicons.org/arxiv/b31b1b" alt="arXiv" className="w-[9px] h-[9px] min-[375px]:w-[10px] min-[375px]:h-[10px] md:w-[12px] md:h-[12px] lg:w-4 lg:h-4 xl:w-[12px] xl:h-[12px]" />
                 </div>
                 <div className="flex flex-col items-start">
-                    <span className="font-medium lg:font-semibold xl:font-medium text-[7.5px] min-[375px]:text-[8.5px] sm:text-[9.5px] md:text-[11.5px] lg:text-[15px] xl:text-[11.5px] whitespace-nowrap tracking-tighter min-[375px]:tracking-tight">arXiv</span>
-                    <span className="hidden lg:block text-[12px] text-[#666] xl:hidden">Original preprint</span>
+                  <span className="font-medium lg:font-semibold xl:font-medium text-[7.5px] min-[375px]:text-[8.5px] sm:text-[9.5px] md:text-[11.5px] lg:text-[15px] xl:text-[11.5px] whitespace-nowrap tracking-tighter min-[375px]:tracking-tight">arXiv</span>
+                  <span className="hidden lg:block text-[12px] text-[#666] xl:hidden">Original preprint</span>
                 </div>
               </div>
               <ArrowUpRight size={14} strokeWidth={1.5} className="hidden lg:block xl:hidden" />
@@ -470,11 +471,11 @@ const huggingFaceRepo = paper.repositories?.find(
             >
               <div className="flex items-center gap-0.5 min-[375px]:gap-1 md:gap-1.5 lg:gap-3 xl:gap-1.5">
                 <div className="w-[12px] h-[12px] min-[375px]:w-[14px] min-[375px]:h-[14px] md:w-[20px] md:h-[20px] lg:w-8 lg:h-8 xl:w-[20px] xl:h-[20px] rounded-[4px] md:rounded-[6px] lg:rounded-[10px] xl:rounded-[6px] bg-transparent flex items-center justify-center">
-                    <FileText className="text-[#E54D59] w-[9px] h-[9px] min-[375px]:w-[10px] min-[375px]:h-[10px] md:w-[12px] md:h-[12px] lg:w-4 lg:h-4 xl:w-[12px] xl:h-[12px]" />
+                  <FileText className="text-[#E54D59] w-[9px] h-[9px] min-[375px]:w-[10px] min-[375px]:h-[10px] md:w-[12px] md:h-[12px] lg:w-4 lg:h-4 xl:w-[12px] xl:h-[12px]" />
                 </div>
                 <div className="flex flex-col items-start">
-                    <span className="font-medium lg:font-semibold xl:font-medium text-[7.5px] min-[375px]:text-[8.5px] sm:text-[9.5px] md:text-[11.5px] lg:text-[15px] xl:text-[11.5px] whitespace-nowrap tracking-tighter min-[375px]:tracking-tight">PDF</span>
-                    <span className="hidden lg:block text-[12px] text-[#666] xl:hidden">Full paper</span>
+                  <span className="font-medium lg:font-semibold xl:font-medium text-[7.5px] min-[375px]:text-[8.5px] sm:text-[9.5px] md:text-[11.5px] lg:text-[15px] xl:text-[11.5px] whitespace-nowrap tracking-tighter min-[375px]:tracking-tight">PDF</span>
+                  <span className="hidden lg:block text-[12px] text-[#666] xl:hidden">Full paper</span>
                 </div>
               </div>
               <ArrowUpRight size={14} strokeWidth={1.5} className="hidden lg:block xl:hidden" />
@@ -490,14 +491,14 @@ const huggingFaceRepo = paper.repositories?.find(
             >
               <div className="flex items-center gap-0.5 min-[375px]:gap-1 md:gap-1.5 lg:gap-3 xl:gap-1.5">
                 <div className="w-[12px] h-[12px] min-[375px]:w-[14px] min-[375px]:h-[14px] md:w-[20px] md:h-[20px] lg:w-8 lg:h-8 xl:w-[20px] xl:h-[20px] rounded-[4px] md:rounded-[6px] lg:rounded-[10px] xl:rounded-[6px] bg-transparent flex items-center justify-center">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="https://cdn.simpleicons.org/github/24292f" alt="GitHub" className="w-[9px] h-[9px] min-[375px]:w-[10px] min-[375px]:h-[10px] md:w-[12px] md:h-[12px] lg:w-4 lg:h-4 xl:w-[12px] xl:h-[12px]" />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="https://cdn.simpleicons.org/github/24292f" alt="GitHub" className="w-[9px] h-[9px] min-[375px]:w-[10px] min-[375px]:h-[10px] md:w-[12px] md:h-[12px] lg:w-4 lg:h-4 xl:w-[12px] xl:h-[12px]" />
                 </div>
                 <div className="flex flex-col items-start">
-                    <span className="font-medium lg:font-semibold xl:font-medium text-[7.5px] min-[375px]:text-[8.5px] sm:text-[9.5px] md:text-[11.5px] lg:text-[15px] xl:text-[11.5px] whitespace-nowrap tracking-tighter min-[375px]:tracking-tight">GitHub</span>
-                    <span className="hidden lg:block text-[12px] text-[#666] xl:hidden">
-                        {upvotesNum > 0 ? `${upvotesNum >= 1000 ? (upvotesNum / 1000).toFixed(1) + "k" : upvotesNum} stars` : "0 stars"}
-                    </span>
+                  <span className="font-medium lg:font-semibold xl:font-medium text-[7.5px] min-[375px]:text-[8.5px] sm:text-[9.5px] md:text-[11.5px] lg:text-[15px] xl:text-[11.5px] whitespace-nowrap tracking-tighter min-[375px]:tracking-tight">GitHub</span>
+                  <span className="hidden lg:block text-[12px] text-[#666] xl:hidden">
+                    {upvotesNum > 0 ? `${upvotesNum >= 1000 ? (upvotesNum / 1000).toFixed(1) + "k" : upvotesNum} stars` : "0 stars"}
+                  </span>
                 </div>
                 {upvotesNum > 0 && <span className="hidden lg:inline xl:hidden text-[#9CA3AF] text-[12.5px] font-normal">{upvotesNum}k</span>}
               </div>
@@ -523,14 +524,14 @@ const huggingFaceRepo = paper.repositories?.find(
             >
               <div className="flex items-center gap-0.5 min-[375px]:gap-1 md:gap-1.5 lg:gap-3 xl:gap-1.5">
                 <div className="w-[12px] h-[12px] min-[375px]:w-[14px] min-[375px]:h-[14px] md:w-[20px] md:h-[20px] lg:w-8 lg:h-8 xl:w-[20px] xl:h-[20px] rounded-[4px] md:rounded-[6px] lg:rounded-[10px] xl:rounded-[6px] bg-transparent flex items-center justify-center">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="https://cdn.simpleicons.org/huggingface" alt="Hugging Face" className="w-[9px] h-[9px] min-[375px]:w-[10px] min-[375px]:h-[10px] md:w-[12px] md:h-[12px] lg:w-4 lg:h-4 xl:w-[12px] xl:h-[12px]" />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="https://cdn.simpleicons.org/huggingface" alt="Hugging Face" className="w-[9px] h-[9px] min-[375px]:w-[10px] min-[375px]:h-[10px] md:w-[12px] md:h-[12px] lg:w-4 lg:h-4 xl:w-[12px] xl:h-[12px]" />
                 </div>
                 <div className="flex flex-col items-start">
-                    <span className="font-medium lg:font-semibold xl:font-medium text-[7.5px] min-[375px]:text-[8.5px] sm:text-[9.5px] md:text-[11.5px] lg:text-[15px] xl:text-[11.5px] whitespace-nowrap tracking-tighter min-[375px]:tracking-tight">Hugging Face</span>
-                    <span className="hidden lg:block text-[12px] text-[#666] xl:hidden">
-                        {paper.repositories?.filter((repo: any) => repo.url?.includes("huggingface.co")).length || 0} models
-                    </span>
+                  <span className="font-medium lg:font-semibold xl:font-medium text-[7.5px] min-[375px]:text-[8.5px] sm:text-[9.5px] md:text-[11.5px] lg:text-[15px] xl:text-[11.5px] whitespace-nowrap tracking-tighter min-[375px]:tracking-tight">Hugging Face</span>
+                  <span className="hidden lg:block text-[12px] text-[#666] xl:hidden">
+                    {paper.repositories?.filter((repo: any) => repo.url?.includes("huggingface.co")).length || 0} models
+                  </span>
                 </div>
               </div>
               <ArrowUpRight size={14} strokeWidth={1.5} className="text-[#9CA3AF] hidden lg:block xl:hidden" />
@@ -538,7 +539,7 @@ const huggingFaceRepo = paper.repositories?.find(
           </div>
         </div>
       </div>
-    </Link>
+    </Link >
   );
 });
 PaperCard.displayName = "PaperCard";
@@ -622,22 +623,22 @@ export default function PaperList({
   );
   const filteredPapers = useMemo(() => {
     if (!selectedFilter || selectedFilter === "All") {
-        return papers;
+      return papers;
     }
 
     return papers.filter((paper) => {
-        const text = [
-            paper.title,
-            paper.description,
-            ...(paper.tags ?? []),
-            ...(paper.additionalTags ?? [])
-        ]
-            .join(" ")
-            .toLowerCase();
+      const text = [
+        paper.title,
+        paper.description,
+        ...(paper.tags ?? []),
+        ...(paper.additionalTags ?? [])
+      ]
+        .join(" ")
+        .toLowerCase();
 
-        return text.includes(selectedFilter.toLowerCase());
+      return text.includes(selectedFilter.toLowerCase());
     });
-}, [papers, selectedFilter]);
+  }, [papers, selectedFilter]);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const nextPageRef = useRef<number>(
     initialPapers?.hasMore ? initialPapers.page + 1 : 0,
@@ -850,7 +851,7 @@ export default function PaperList({
 
         if (result.hasMore) {
           nextPageRef.current = result.page + 1;
-          
+
           // If all papers were filtered out, automatically load the next page
           if (visiblePapers.length === 0) {
             setTimeout(() => {
@@ -961,16 +962,16 @@ export default function PaperList({
   return (
     <Profiler id="PaperList" onRender={logRender}>
       <div
-  className="pb-12 bg-transparent grid grid-cols-1 md:grid-cols-2 xl:flex xl:flex-col gap-6 xl:gap-0"
-  data-page={page}
->
+        className="pb-12 bg-transparent grid grid-cols-1 md:grid-cols-2 xl:flex xl:flex-col gap-6 xl:gap-0"
+        data-page={page}
+      >
         {filteredPapers
-    .slice(0, displayCount)
-    .map((paper) => (
-          <div key={paper.slug} ref={observeCard} data-paper-slug={paper.slug}>
-            <PaperCard paper={paper} />
-          </div>
-        ))}
+          .slice(0, displayCount)
+          .map((paper) => (
+            <div key={paper.slug} ref={observeCard} data-paper-slug={paper.slug}>
+              <PaperCard paper={paper} />
+            </div>
+          ))}
 
         {/* Initial load: show skeleton cards instead of spinner */}
         {(loading || isFilterChanging) && papers.length === 0 && (
