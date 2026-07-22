@@ -9,6 +9,7 @@ import {
   logoutUser,
   refreshUserToken,
   signupUser,
+  upsertGoogleUser,
 } from "../services/auth.service.js";
 
 import {
@@ -104,6 +105,66 @@ const handleAuthError = (
     },
     500
   );
+};
+
+export const googleLogin = async (c: Context) => {
+  const env: any = c.env || process.env;
+  const clientId = env.GOOGLE_CLIENT_ID;
+  if (!clientId) return c.json({ message: "Missing GOOGLE_CLIENT_ID" }, 500);
+
+  const backendBase = process.env.NODE_ENV === "development" ? "http://localhost:8787" : "https://frontieratlas-backend.morningsignal-india.workers.dev";
+  const redirectUri = `${backendBase}/api/v1/auth/google/callback`;
+
+  const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=openid email profile&access_type=offline&prompt=consent`;
+
+  return c.redirect(authUrl);
+};
+
+export const googleCallback = async (c: AuthContext) => {
+  const code = c.req.query("code");
+  if (!code) return c.json({ error: "Missing authorization code" }, 400);
+
+  const env: any = c.env || process.env;
+  const clientId = env.GOOGLE_CLIENT_ID;
+  const clientSecret = env.GOOGLE_CLIENT_SECRET;
+
+  const backendBase = process.env.NODE_ENV === "development" ? "http://localhost:8787" : "https://frontieratlas-backend.morningsignal-india.workers.dev";
+  const redirectUri = `${backendBase}/api/v1/auth/google/callback`;
+
+  try {
+    const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        client_id: clientId!,
+        client_secret: clientSecret!,
+        code,
+        grant_type: "authorization_code",
+        redirect_uri: redirectUri,
+      }),
+    });
+
+    const tokenData = await tokenRes.json();
+    if (!tokenRes.ok) throw new Error("Google token exchange failed");
+
+    const userRes = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
+      headers: { Authorization: `Bearer ${tokenData.access_token}` },
+    });
+
+    const userData = await userRes.json();
+    if (!userRes.ok) throw new Error("Failed connecting to Google profile");
+
+    const result = await upsertGoogleUser(c.var.prisma, userData);
+
+    setAuthCookies(c, result.accessToken, result.refreshToken, true);
+
+    const frontendBase = process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://frontieratlas.co";
+    return c.redirect(frontendBase);
+  } catch (error) {
+    console.error(error);
+    const frontendBase = process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://frontieratlas.co";
+    return c.redirect(`${frontendBase}/login?error=Google_Auth_Failed`);
+  }
 };
 
 export const signup = async (
