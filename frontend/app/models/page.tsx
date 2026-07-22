@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo, Suspense } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Search, Trophy, Cpu, Layers, ExternalLink, Code2, Check, Copy, X, ArrowRight, Zap, Calendar, BookOpen, Building2, Brain, Monitor, Globe, FileText, Link as LinkIcon, Volume2, ImageIcon, Video, Bot, Sparkles, TrendingUp, MessageSquare, Plus, Eye, Puzzle, Network, Database, Shield, Terminal, Activity, GitBranch, BarChart3, Radio, Mic, Share2, ChevronRight } from "lucide-react";
+import { Search, Trophy, Cpu, Layers, ExternalLink, Code2, Check, Copy, X, ArrowRight, Zap, Calendar, BookOpen, Building2, Brain, Monitor, Globe, FileText, Link as LinkIcon, Volume2, ImageIcon, Video, Bot, Sparkles, TrendingUp, Eye, Puzzle, Network, Database, Shield, Terminal, Activity, GitBranch, BarChart3, Radio, Mic, Share2, ChevronRight } from "lucide-react";
 import {
   getModels,
   getTrendingModels,
@@ -514,25 +514,7 @@ const [loading, setLoading] = useState(
                 </ul>
               </nav>
 
-              <div className="px-2 mt-10">
-                <div className="bg-gradient-to-br from-rose-50 to-white rounded-xl border border-rose-100 p-4 shadow-sm">
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 bg-rose-100 rounded-full text-rose-500 shrink-0">
-                      <MessageSquare className="h-4 w-4" />
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium text-gray-800">Can’t find what you need?</p>
-                      <p className="text-xs text-gray-500">Suggest a new domain or model to improve our taxonomy.</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => alert("Thank you! Suggestion recorded for next taxonomy update.")}
-                    className="mt-2 w-full flex items-center justify-center gap-1.5 bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-lg text-xs font-semibold transition-colors shadow-sm cursor-pointer"
-                  >
-                    <Plus className="h-3.5 w-3.5" /> Suggest a Domain
-                  </button>
-                </div>
-              </div>
+
             </div>
           </aside>
 
