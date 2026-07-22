@@ -16,17 +16,17 @@ export default function SignUpForm() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  const defaultApiUrl = "https://frontieratlas-backend.morningsignal-india.workers.dev";
+  const API_BASE = process.env.NODE_ENV === "development"
+    ? ""
+    : (process.env.NEXT_PUBLIC_API_URL || defaultApiUrl).replace(/\/$/, "");
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      const defaultApiUrl = "https://frontieratlas-backend.morningsignal-india.workers.dev";
-      const API_BASE = process.env.NODE_ENV === "development"
-        ? ""
-        : (process.env.NEXT_PUBLIC_API_URL || defaultApiUrl).replace(/\/$/, "");
-
       // The username explicitly mirrors the email address
       const username = email;
 
@@ -155,13 +155,13 @@ export default function SignUpForm() {
 
       {/* Social */}
       <div className="grid grid-cols-2 gap-3">
-        <button
-          type="button"
+        <a
+          href={`${API_BASE}/api/v1/auth/google`}
           className="flex h-9 items-center justify-center gap-2 rounded-xl border border-[#DDD4C5] font-semibold"
         >
           <FcGoogle size={18} />
           Google
-        </button>
+        </a>
 
         <button
           type="button"
