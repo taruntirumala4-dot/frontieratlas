@@ -419,6 +419,7 @@ exports.Prisma.UserScalarFieldEnum = {
   avatar: 'avatar',
   bio: 'bio',
   github: 'github',
+  linkedin: 'linkedin',
   twitter: 'twitter',
   website: 'website',
   reputation_score: 'reputation_score',

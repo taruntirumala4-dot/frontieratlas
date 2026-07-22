@@ -31257,6 +31257,7 @@ export namespace Prisma {
     avatar: string | null
     bio: string | null
     github: string | null
+    linkedin: string | null
     twitter: string | null
     website: string | null
     reputation_score: number | null
@@ -31276,6 +31277,7 @@ export namespace Prisma {
     avatar: string | null
     bio: string | null
     github: string | null
+    linkedin: string | null
     twitter: string | null
     website: string | null
     reputation_score: number | null
@@ -31295,6 +31297,7 @@ export namespace Prisma {
     avatar: number
     bio: number
     github: number
+    linkedin: number
     twitter: number
     website: number
     reputation_score: number
@@ -31324,6 +31327,7 @@ export namespace Prisma {
     avatar?: true
     bio?: true
     github?: true
+    linkedin?: true
     twitter?: true
     website?: true
     reputation_score?: true
@@ -31343,6 +31347,7 @@ export namespace Prisma {
     avatar?: true
     bio?: true
     github?: true
+    linkedin?: true
     twitter?: true
     website?: true
     reputation_score?: true
@@ -31362,6 +31367,7 @@ export namespace Prisma {
     avatar?: true
     bio?: true
     github?: true
+    linkedin?: true
     twitter?: true
     website?: true
     reputation_score?: true
@@ -31468,6 +31474,7 @@ export namespace Prisma {
     avatar: string | null
     bio: string | null
     github: string | null
+    linkedin: string | null
     twitter: string | null
     website: string | null
     reputation_score: number
@@ -31506,6 +31513,7 @@ export namespace Prisma {
     avatar?: boolean
     bio?: boolean
     github?: boolean
+    linkedin?: boolean
     twitter?: boolean
     website?: boolean
     reputation_score?: boolean
@@ -31528,6 +31536,7 @@ export namespace Prisma {
     avatar?: boolean
     bio?: boolean
     github?: boolean
+    linkedin?: boolean
     twitter?: boolean
     website?: boolean
     reputation_score?: boolean
@@ -31547,6 +31556,7 @@ export namespace Prisma {
     avatar?: boolean
     bio?: boolean
     github?: boolean
+    linkedin?: boolean
     twitter?: boolean
     website?: boolean
     reputation_score?: boolean
@@ -31566,6 +31576,7 @@ export namespace Prisma {
     avatar?: boolean
     bio?: boolean
     github?: boolean
+    linkedin?: boolean
     twitter?: boolean
     website?: boolean
     reputation_score?: boolean
@@ -31576,7 +31587,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "email" | "password" | "display_name" | "avatar" | "bio" | "github" | "twitter" | "website" | "reputation_score" | "auth_id" | "created_at" | "updated_at" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "email" | "password" | "display_name" | "avatar" | "bio" | "github" | "linkedin" | "twitter" | "website" | "reputation_score" | "auth_id" | "created_at" | "updated_at" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     refresh_tokens?: boolean | User$refresh_tokensArgs<ExtArgs>
     summaries?: boolean | User$summariesArgs<ExtArgs>
@@ -31600,6 +31611,7 @@ export namespace Prisma {
       avatar: string | null
       bio: string | null
       github: string | null
+      linkedin: string | null
       twitter: string | null
       website: string | null
       reputation_score: number
@@ -32041,6 +32053,7 @@ export namespace Prisma {
     readonly avatar: FieldRef<"User", 'String'>
     readonly bio: FieldRef<"User", 'String'>
     readonly github: FieldRef<"User", 'String'>
+    readonly linkedin: FieldRef<"User", 'String'>
     readonly twitter: FieldRef<"User", 'String'>
     readonly website: FieldRef<"User", 'String'>
     readonly reputation_score: FieldRef<"User", 'Int'>
@@ -35092,6 +35105,7 @@ export namespace Prisma {
     avatar: 'avatar',
     bio: 'bio',
     github: 'github',
+    linkedin: 'linkedin',
     twitter: 'twitter',
     website: 'website',
     reputation_score: 'reputation_score',
@@ -37167,6 +37181,7 @@ export namespace Prisma {
     avatar?: StringNullableFilter<"User"> | string | null
     bio?: StringNullableFilter<"User"> | string | null
     github?: StringNullableFilter<"User"> | string | null
+    linkedin?: StringNullableFilter<"User"> | string | null
     twitter?: StringNullableFilter<"User"> | string | null
     website?: StringNullableFilter<"User"> | string | null
     reputation_score?: IntFilter<"User"> | number
@@ -37188,6 +37203,7 @@ export namespace Prisma {
     avatar?: SortOrderInput | SortOrder
     bio?: SortOrderInput | SortOrder
     github?: SortOrderInput | SortOrder
+    linkedin?: SortOrderInput | SortOrder
     twitter?: SortOrderInput | SortOrder
     website?: SortOrderInput | SortOrder
     reputation_score?: SortOrder
@@ -37213,6 +37229,7 @@ export namespace Prisma {
     avatar?: StringNullableFilter<"User"> | string | null
     bio?: StringNullableFilter<"User"> | string | null
     github?: StringNullableFilter<"User"> | string | null
+    linkedin?: StringNullableFilter<"User"> | string | null
     twitter?: StringNullableFilter<"User"> | string | null
     website?: StringNullableFilter<"User"> | string | null
     reputation_score?: IntFilter<"User"> | number
@@ -37233,6 +37250,7 @@ export namespace Prisma {
     avatar?: SortOrderInput | SortOrder
     bio?: SortOrderInput | SortOrder
     github?: SortOrderInput | SortOrder
+    linkedin?: SortOrderInput | SortOrder
     twitter?: SortOrderInput | SortOrder
     website?: SortOrderInput | SortOrder
     reputation_score?: SortOrder
@@ -37260,6 +37278,7 @@ export namespace Prisma {
     avatar?: StringNullableWithAggregatesFilter<"User"> | string | null
     bio?: StringNullableWithAggregatesFilter<"User"> | string | null
     github?: StringNullableWithAggregatesFilter<"User"> | string | null
+    linkedin?: StringNullableWithAggregatesFilter<"User"> | string | null
     twitter?: StringNullableWithAggregatesFilter<"User"> | string | null
     website?: StringNullableWithAggregatesFilter<"User"> | string | null
     reputation_score?: IntWithAggregatesFilter<"User"> | number
@@ -39525,6 +39544,7 @@ export namespace Prisma {
     avatar?: string | null
     bio?: string | null
     github?: string | null
+    linkedin?: string | null
     twitter?: string | null
     website?: string | null
     reputation_score?: number
@@ -39546,6 +39566,7 @@ export namespace Prisma {
     avatar?: string | null
     bio?: string | null
     github?: string | null
+    linkedin?: string | null
     twitter?: string | null
     website?: string | null
     reputation_score?: number
@@ -39567,6 +39588,7 @@ export namespace Prisma {
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     github?: NullableStringFieldUpdateOperationsInput | string | null
+    linkedin?: NullableStringFieldUpdateOperationsInput | string | null
     twitter?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     reputation_score?: IntFieldUpdateOperationsInput | number
@@ -39588,6 +39610,7 @@ export namespace Prisma {
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     github?: NullableStringFieldUpdateOperationsInput | string | null
+    linkedin?: NullableStringFieldUpdateOperationsInput | string | null
     twitter?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     reputation_score?: IntFieldUpdateOperationsInput | number
@@ -39609,6 +39632,7 @@ export namespace Prisma {
     avatar?: string | null
     bio?: string | null
     github?: string | null
+    linkedin?: string | null
     twitter?: string | null
     website?: string | null
     reputation_score?: number
@@ -39628,6 +39652,7 @@ export namespace Prisma {
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     github?: NullableStringFieldUpdateOperationsInput | string | null
+    linkedin?: NullableStringFieldUpdateOperationsInput | string | null
     twitter?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     reputation_score?: IntFieldUpdateOperationsInput | number
@@ -39647,6 +39672,7 @@ export namespace Prisma {
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     github?: NullableStringFieldUpdateOperationsInput | string | null
+    linkedin?: NullableStringFieldUpdateOperationsInput | string | null
     twitter?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     reputation_score?: IntFieldUpdateOperationsInput | number
@@ -41297,6 +41323,7 @@ export namespace Prisma {
     avatar?: SortOrder
     bio?: SortOrder
     github?: SortOrder
+    linkedin?: SortOrder
     twitter?: SortOrder
     website?: SortOrder
     reputation_score?: SortOrder
@@ -41320,6 +41347,7 @@ export namespace Prisma {
     avatar?: SortOrder
     bio?: SortOrder
     github?: SortOrder
+    linkedin?: SortOrder
     twitter?: SortOrder
     website?: SortOrder
     reputation_score?: SortOrder
@@ -41339,6 +41367,7 @@ export namespace Prisma {
     avatar?: SortOrder
     bio?: SortOrder
     github?: SortOrder
+    linkedin?: SortOrder
     twitter?: SortOrder
     website?: SortOrder
     reputation_score?: SortOrder
@@ -47673,6 +47702,7 @@ export namespace Prisma {
     avatar?: string | null
     bio?: string | null
     github?: string | null
+    linkedin?: string | null
     twitter?: string | null
     website?: string | null
     reputation_score?: number
@@ -47693,6 +47723,7 @@ export namespace Prisma {
     avatar?: string | null
     bio?: string | null
     github?: string | null
+    linkedin?: string | null
     twitter?: string | null
     website?: string | null
     reputation_score?: number
@@ -47729,6 +47760,7 @@ export namespace Prisma {
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     github?: NullableStringFieldUpdateOperationsInput | string | null
+    linkedin?: NullableStringFieldUpdateOperationsInput | string | null
     twitter?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     reputation_score?: IntFieldUpdateOperationsInput | number
@@ -47749,6 +47781,7 @@ export namespace Prisma {
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     github?: NullableStringFieldUpdateOperationsInput | string | null
+    linkedin?: NullableStringFieldUpdateOperationsInput | string | null
     twitter?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     reputation_score?: IntFieldUpdateOperationsInput | number
@@ -47880,6 +47913,7 @@ export namespace Prisma {
     avatar?: string | null
     bio?: string | null
     github?: string | null
+    linkedin?: string | null
     twitter?: string | null
     website?: string | null
     reputation_score?: number
@@ -47900,6 +47934,7 @@ export namespace Prisma {
     avatar?: string | null
     bio?: string | null
     github?: string | null
+    linkedin?: string | null
     twitter?: string | null
     website?: string | null
     reputation_score?: number
@@ -48053,6 +48088,7 @@ export namespace Prisma {
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     github?: NullableStringFieldUpdateOperationsInput | string | null
+    linkedin?: NullableStringFieldUpdateOperationsInput | string | null
     twitter?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     reputation_score?: IntFieldUpdateOperationsInput | number
@@ -48073,6 +48109,7 @@ export namespace Prisma {
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     github?: NullableStringFieldUpdateOperationsInput | string | null
+    linkedin?: NullableStringFieldUpdateOperationsInput | string | null
     twitter?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     reputation_score?: IntFieldUpdateOperationsInput | number

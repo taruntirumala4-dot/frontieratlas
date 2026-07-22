@@ -35,12 +35,13 @@ export default function SignUpForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ 
-          username, 
-          email, 
+        body: JSON.stringify({
+          username,
+          email,
           password,
           displayName: name || "New User",
           github,
+          linkedin,
         }),
       });
 
@@ -98,12 +99,12 @@ export default function SignUpForm() {
             <FaGithub className="text-[15px] text-[#555]" />
 
             <input
-  type="text"
-  value={github}
-  onChange={(e) => setGithub(e.target.value)}
-  placeholder="username"
-  className="w-full bg-transparent text-[14px] outline-none placeholder:text-[#A79C8A]"
-/>
+              type="text"
+              value={github}
+              onChange={(e) => setGithub(e.target.value)}
+              placeholder="username"
+              className="w-full bg-transparent text-[14px] outline-none placeholder:text-[#A79C8A]"
+            />
           </div>
         </div>
 
@@ -116,12 +117,12 @@ export default function SignUpForm() {
             <FaLinkedin className="text-[15px] text-[#0A66C2]" />
 
             <input
-  type="text"
-  value={linkedin}
-  onChange={(e) => setLinkedin(e.target.value)}
-  placeholder="profile-name"
-  className="w-full bg-transparent text-[14px] outline-none placeholder:text-[#A79C8A]"
-/>
+              type="text"
+              value={linkedin}
+              onChange={(e) => setLinkedin(e.target.value)}
+              placeholder="profile-name"
+              className="w-full bg-transparent text-[14px] outline-none placeholder:text-[#A79C8A]"
+            />
           </div>
         </div>
       </div>

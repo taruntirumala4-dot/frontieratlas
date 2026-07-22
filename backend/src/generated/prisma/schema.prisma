@@ -416,6 +416,7 @@ model User {
   avatar           String?
   bio              String?
   github           String?
+  linkedin         String?
   twitter          String?
   website          String?
   reputation_score Int            @default(0)
