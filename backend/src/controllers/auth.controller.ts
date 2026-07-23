@@ -108,27 +108,32 @@ const handleAuthError = (
 };
 
 export const googleLogin = async (c: Context) => {
-  const env: any = c.env || process.env;
-  const clientId = env.GOOGLE_CLIENT_ID;
-  if (!clientId) return c.json({ message: "Missing GOOGLE_CLIENT_ID" }, 500);
+  try {
+    const clientId = (c.env as any)?.GOOGLE_CLIENT_ID || (typeof process !== "undefined" ? process.env?.GOOGLE_CLIENT_ID : undefined);
+    if (!clientId) return c.text("Error: Missing GOOGLE_CLIENT_ID in environment", 500);
 
-  const backendBase = process.env.NODE_ENV === "development" ? "http://localhost:8787" : "https://frontieratlas-backend.morningsignal-india.workers.dev";
-  const redirectUri = `${backendBase}/api/v1/auth/google/callback`;
+    const isDev = (c.env as any)?.NODE_ENV === "development" || (typeof process !== "undefined" ? process.env?.NODE_ENV === "development" : false);
+    const backendBase = isDev ? "http://localhost:8787" : "https://frontieratlas-backend.morningsignal-india.workers.dev";
+    const redirectUri = `${backendBase}/api/v1/auth/google/callback`;
 
-  const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=openid email profile&access_type=offline&prompt=consent`;
+    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=openid email profile&access_type=offline&prompt=consent`;
 
-  return c.redirect(authUrl);
+    return c.redirect(authUrl);
+  } catch (error: any) {
+    console.error("googleLogin error:", error);
+    return c.text(`googleLogin Crash: ${error.message}`, 500);
+  }
 };
 
 export const googleCallback = async (c: AuthContext) => {
   const code = c.req.query("code");
   if (!code) return c.json({ error: "Missing authorization code" }, 400);
 
-  const env: any = c.env || process.env;
-  const clientId = env.GOOGLE_CLIENT_ID;
-  const clientSecret = env.GOOGLE_CLIENT_SECRET;
+  const clientId = (c.env as any)?.GOOGLE_CLIENT_ID || (typeof process !== "undefined" ? process.env?.GOOGLE_CLIENT_ID : undefined);
+  const clientSecret = (c.env as any)?.GOOGLE_CLIENT_SECRET || (typeof process !== "undefined" ? process.env?.GOOGLE_CLIENT_SECRET : undefined);
 
-  const backendBase = process.env.NODE_ENV === "development" ? "http://localhost:8787" : "https://frontieratlas-backend.morningsignal-india.workers.dev";
+  const isDev = (c.env as any)?.NODE_ENV === "development" || (typeof process !== "undefined" ? process.env?.NODE_ENV === "development" : false);
+  const backendBase = isDev ? "http://localhost:8787" : "https://frontieratlas-backend.morningsignal-india.workers.dev";
   const redirectUri = `${backendBase}/api/v1/auth/google/callback`;
 
   try {
@@ -158,11 +163,13 @@ export const googleCallback = async (c: AuthContext) => {
 
     setAuthCookies(c, result.accessToken, result.refreshToken, true);
 
-    const frontendBase = process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://frontieratlas.co";
+    const isDev = (c.env as any)?.NODE_ENV === "development" || (typeof process !== "undefined" ? process.env?.NODE_ENV === "development" : false);
+    const frontendBase = isDev ? "http://localhost:3000" : "https://frontieratlas.co";
     return c.redirect(frontendBase);
   } catch (error) {
     console.error(error);
-    const frontendBase = process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://frontieratlas.co";
+    const isDev = (c.env as any)?.NODE_ENV === "development" || (typeof process !== "undefined" ? process.env?.NODE_ENV === "development" : false);
+    const frontendBase = isDev ? "http://localhost:3000" : "https://frontieratlas.co";
     return c.redirect(`${frontendBase}/login?error=Google_Auth_Failed`);
   }
 };
