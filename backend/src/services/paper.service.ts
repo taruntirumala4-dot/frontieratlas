@@ -363,7 +363,7 @@ export const getPapers = async (
             { publicationDate: "desc" as const },
             { slug: "asc" as const },
           ];
-  const papers = await queryRouter.routeQuery<any>(
+let papers = await queryRouter.routeQuery<any>(
     async (prisma: PrismaClient) => {
       return prisma.paper.findMany({
         where,
@@ -374,6 +374,40 @@ export const getPapers = async (
       });
     },
   );
+
+  // ADDED: Cascading fallback to guarantee papers are always shown
+  if (papers.length === 0 && skip === 0) {
+    // Fallback 1: Keep the tag (e.g., Robotics) but remove the strict date (Search "All Time")
+    const fallbackWhere = { ...where, publicationDate: { not: null } };
+    
+    papers = await queryRouter.routeQuery<any>(
+      async (prisma: PrismaClient) => {
+        return prisma.paper.findMany({
+          where: fallbackWhere,
+          orderBy,
+          take: limit + 1,
+          skip,
+          select: paperSelect,
+        });
+      },
+    );
+
+    // Fallback 2: If STILL empty (e.g., no Robotics papers exist in the DB at all), 
+    // remove all tags/filters and just return the overall list of papers.
+    if (papers.length === 0) {
+      papers = await queryRouter.routeQuery<any>(
+        async (prisma: PrismaClient) => {
+          return prisma.paper.findMany({
+            where: { publicationDate: { not: null } },
+            orderBy,
+            take: limit + 1,
+            skip,
+            select: paperSelect,
+          });
+        },
+      );
+    }
+  }
 
   const hasMore = papers.length > limit;
   const pagePapers = hasMore ? papers.slice(0, limit) : papers;
