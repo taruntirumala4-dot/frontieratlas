@@ -3,8 +3,6 @@ import { Hono } from "hono";
 import {
   signup,
   login,
-  googleLogin,
-  googleCallback,
   logout,
   refresh,
   me,
@@ -24,10 +22,6 @@ const auth = new Hono<{
 auth.post("/signup", signup);
 
 auth.post("/login", login);
-
-auth.get("/google", googleLogin);
-
-auth.get("/google/callback", googleCallback);
 
 auth.post("/logout", logout);
 
