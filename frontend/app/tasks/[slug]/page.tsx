@@ -376,9 +376,9 @@ export default async function TaskPage({ params }: TaskPageProps) {
         id="scroll-container"
         className="flex-1 overflow-y-auto overflow-x-hidden hide-scroll flex flex-col"
       >
-        <div className="w-full max-w-[1600px] mx-auto px-6 md:px-10 xl:px-14 py-8">
+        <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-8 md:px-10 xl:px-14 py-4 md:py-8">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 text-[13px] tracking-wide text-[#7B736A] mb-8">
+          <nav className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[12px] sm:text-[13px] tracking-wide text-[#7B736A] mb-4 md:mb-8">
             <Link href="/" className="hover:text-black transition-colors">
               Home
             </Link>
@@ -387,32 +387,32 @@ export default async function TaskPage({ params }: TaskPageProps) {
               Tasks
             </Link>
             <span>/</span>
-            <span className="text-[#0E4B8E] uppercase font-medium">
+            <span className="text-[#0E4B8E] uppercase font-medium truncate max-w-[200px] sm:max-w-none">
               {metadata.title}
             </span>
           </nav>
 
           {/* Hero Section */}
-          <div className="grid grid-cols-1 xl:grid-cols-[1fr_460px] gap-12 items-start">
+          <div className="grid grid-cols-1 xl:grid-cols-[1fr_460px] gap-8 md:gap-12 items-start">
             {/* Left Content */}
-            <div className="max-w-[720px]">
+            <div className="w-full max-w-[720px] min-w-0">
               {/* Task Title */}
-              <div className="mt-2">
-                <p className="text-[12px] uppercase tracking-[0.18em] text-[#0E4B8E] font-medium mb-3">
+              <div className="mt-1 md:mt-2">
+                <p className="text-[11px] sm:text-[12px] uppercase tracking-[0.18em] text-[#0E4B8E] font-semibold mb-2 md:mb-3">
                   TASK
                 </p>
-                <h1 className="text-[72px] leading-none font-black tracking-tighter text-[#1A1A1A]">
+                <h1 className="text-[32px] min-[375px]:text-[38px] sm:text-[52px] md:text-[64px] lg:text-[72px] leading-[1.05] font-black tracking-tight text-[#1A1A1A] break-words uppercase">
                   {metadata.title}
                 </h1>
               </div>
 
               {/* Description */}
-              <p className="mt-8 text-[14px] leading-[1.5rem] text-[#222222]">
+              <p className="mt-4 md:mt-8 text-[13px] sm:text-[14px] leading-[1.5rem] text-[#222222]">
                 {metadata.description}
               </p>
 
               {/* Stats */}
-              <div className="mt-10">
+              <div className="mt-6 md:mt-10">
                 <div className="flex flex-wrap items-center gap-x-12 gap-y-8">
                 </div>
               </div>
@@ -422,11 +422,11 @@ export default async function TaskPage({ params }: TaskPageProps) {
         </div>
 
         {/* Papers Section */}
-        <div className="w-full px-8 md:px-12 xl:px-16 pt-0 pb-12">
+        <div className="w-full px-3 sm:px-6 md:px-12 xl:px-16 pt-0 pb-12">
           <div className="w-full">
-            <main className="w-full max-w-none">
-    <TaskDetailClient slug={slug} />
-</main>
+            <main className="w-full max-w-none min-w-0">
+              <TaskDetailClient slug={slug} />
+            </main>
           </div>
         </div>
       </div>

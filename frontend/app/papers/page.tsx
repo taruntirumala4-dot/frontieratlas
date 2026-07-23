@@ -3,7 +3,7 @@ import { getPapers } from "@/lib/paperApi";
 
 export const revalidate = 60; // ISR instead of edge serverless
 
-export default async function Home() {
+export default async function PapersPage() {
   try {
     const initialPapers = await getPapers({ page: 1, sort: "trending", period: "today" });
     return <HomeContent initialPapers={initialPapers} />;

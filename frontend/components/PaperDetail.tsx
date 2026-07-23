@@ -17,7 +17,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useCallback, useEffect, type ReactNode } from "react";
 import type { PaperDetail as PaperDetailType, PaperRanking, PaperSotaClaim } from "@/lib/papers";
-import { getPapers, type Paper } from "@/lib/paperApi";
+import { getPapers, getArxivAbsUrl, getArxivPdfUrl, type Paper } from "@/lib/paperApi";
 import { atlasUiFont } from "@/lib/fonts";
 
 
@@ -675,7 +675,8 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
   const [showAllAuthors, setShowAllAuthors] = useState(false);
   const [deferred, setDeferred] = useState(false);
 
-  const arxivUrl = paper.arxivId ? `https://arxiv.org/abs/${paper.arxivId}` : null;
+  const arxivUrl = getArxivAbsUrl(paper.arxivId, paper.paperUrl) || (paper.arxivId ? `https://arxiv.org/abs/${paper.arxivId}` : null);
+  const pdfUrl = getArxivPdfUrl(paper.pdfUrl, paper.paperUrl, paper.arxivId);
   const doiUrl = paper.doi ? `https://doi.org/${paper.doi}` : null;
   const huggingFaceRepo = paper.repositories?.find(
     (repo: any) => repo.url?.includes("huggingface.co")
@@ -687,9 +688,10 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
     (paper.paperUrl?.includes("huggingface.co") ? paper.paperUrl : null) ||
     (paper.sourceUrl?.includes("huggingface.co") ? paper.sourceUrl : null) ||
     (paper.arxivId ? `https://huggingface.co/papers/${paper.arxivId}` : null);
-  const projectPageUrl = formatExternalUrl(paper.projectUrl);
+  const rawProjectPageUrl = formatExternalUrl(paper.projectUrl);
+  const projectPageUrl = rawProjectPageUrl && !rawProjectPageUrl.includes("huggingface.co") ? rawProjectPageUrl : null;
   const previewHref =
-    paper.pdfUrl || paper.paperUrl || arxivUrl || doiUrl || paper.sourceUrl || projectPageUrl || hfResolvedUrl;
+    pdfUrl || arxivUrl || paper.paperUrl || doiUrl || paper.sourceUrl || projectPageUrl || hfResolvedUrl;
 
   const handleShare = useCallback(async () => {
     if (navigator.share) {
@@ -875,10 +877,13 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
                     {paper.authors
                       .slice(0, showAllAuthors ? paper.authors.length : 3)
                       .map((pa, i, arr) => (
-                        <span key={pa.id} className="inline-flex items-center">
-                          <span className="text-[14px] font-semibold text-[#444444]">
+                        <span key={pa.id || i} className="inline-flex items-center">
+                          <Link
+                            href={`/authors/${pa.slug || pa.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+                            className="text-[14px] font-semibold text-[#444444] hover:text-[#F55036] hover:underline cursor-pointer no-underline"
+                          >
                             {pa.name}
-                          </span>
+                          </Link>
 
                           {i < arr.length - 1 && (
                             <span className="ml-0.5 mr-1 text-[#171717] font-bold">,</span>
@@ -913,9 +918,9 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
 
                 {/* Action buttons */}
                 <div className="flex flex-wrap items-center gap-3 pt-2">
-                  {(paper.pdfUrl || arxivUrl) && (
+                  {(pdfUrl || arxivUrl) && (
                     <a
-                      href={paper.pdfUrl || arxivUrl!}
+                      href={pdfUrl || arxivUrl!}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="ds-button inline-flex items-center justify-center gap-2 rounded-full bg-[#FF5A1F] px-6 py-2.5 text-[14px] font-semibold text-white no-underline transition-all hover:bg-[#FF6C37] active:scale-[0.97]"

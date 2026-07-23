@@ -19,6 +19,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   getPapers,
+  getArxivAbsUrl,
+  getArxivPdfUrl,
   type GetPapersParams,
   type GetPapersResult,
   type Paper,
@@ -391,9 +393,13 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
                 visibleAuthors.map((a, i) => (
                   <span key={a.slug || i}>
                     {i > 0 && <span>, </span>}
-                    <span className="hover:text-[#F55036]">
+                    <Link
+                      href={`/authors/${a.slug || a.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="hover:text-[#F55036] hover:underline cursor-pointer"
+                    >
                       {a.name}
-                    </span>
+                    </Link>
                   </span>
                 ))
               ) : (
@@ -444,7 +450,8 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                window.open((paper as any).arxivUrl || "https://arxiv.org", "_blank");
+                const url = paper.arxivUrl || getArxivAbsUrl(paper.arxivId, paper.paperUrl) || "https://arxiv.org";
+                window.open(url, "_blank");
               }}
               className="flex-none md:flex-1 flex items-center justify-center lg:justify-between xl:justify-center px-0.5 min-[375px]:px-1 md:px-2 lg:px-4 xl:px-2 h-[24px] md:h-[28px] lg:h-[58px] xl:h-[28px] bg-white text-[#b31b1b] border-[1.5px] border-[#b31b1b]/40 hover:border-[#b31b1b] hover:bg-[#b31b1b]/5 rounded-[6px] transition-all duration-300"
             >
@@ -465,7 +472,8 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                window.open((paper as any).pdfUrl || "https://arxiv.org/pdf", "_blank");
+                const url = paper.pdfUrl || getArxivPdfUrl((paper as any).pdfUrl, paper.paperUrl, paper.arxivId) || "https://arxiv.org";
+                window.open(url, "_blank");
               }}
               className="flex-none md:flex-1 flex items-center justify-center lg:justify-between xl:justify-center px-0.5 min-[375px]:px-1 md:px-2 lg:px-4 xl:px-2 h-[24px] md:h-[28px] lg:h-[58px] xl:h-[28px] bg-white text-[#E54D59] border-[1.5px] border-[#E54D59]/40 hover:border-[#E54D59] hover:bg-[#E54D59]/5 rounded-[6px] transition-all duration-300"
             >
@@ -485,7 +493,15 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                window.open(githubRepo?.url || "https://github.com", "_blank");
+                const ghUrl =
+                  paper.githubUrl ||
+                  githubRepo?.url ||
+                  (paper.repositories?.find((repo: any) => repo.url?.includes("github.com"))?.url);
+                if (ghUrl) {
+                  window.open(ghUrl, "_blank");
+                } else {
+                  window.open("https://github.com", "_blank");
+                }
               }}
               className="flex-none md:flex-1 flex items-center justify-center lg:justify-between xl:justify-center px-0.5 min-[375px]:px-1 md:px-2 lg:px-4 xl:px-2 h-[24px] md:h-[28px] lg:h-[58px] xl:h-[28px] bg-white text-[#24292f] border-[1.5px] border-[#24292f]/30 hover:border-[#24292f] hover:bg-[#24292f]/5 rounded-[6px] transition-all duration-300"
             >
@@ -891,8 +907,8 @@ export default function PaperList({
       !filterParams?.task &&
       !filterParams?.method &&
       !filterParams?.model &&
-      (!filterParams?.sort || filterParams.sort === "latest") &&
-      (!period || period === "all") &&
+      (!filterParams?.sort || filterParams.sort === "trending") &&
+      (!period || period === "today") &&
       !normalizedSearchQuery
     ) {
       cacheRef.current.set(getCacheKey(initialPapers.page), initialPapers);
