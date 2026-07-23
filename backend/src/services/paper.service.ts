@@ -240,7 +240,8 @@ export const ingestPaper = async (queryRouter: QueryRouter, data: any) => {
             paperUrl: incomingUrl,
             thumbnailUrl: data.thumbnail_url || data.thumbnailUrl,
             projectUrl: data.github_url || data.githubUrl,
-            citationCount: data.github_stars || data.citationCount || 0,
+            githubStars: data.github_stars || data.githubStars || 0, // Added Github Stars
+            citationCount: data.citationCount || 0, // Fixed Citation Count
           },
           update: {
             title: data.title,
@@ -248,7 +249,8 @@ export const ingestPaper = async (queryRouter: QueryRouter, data: any) => {
             paperUrl: incomingUrl,
             thumbnailUrl: data.thumbnail_url || data.thumbnailUrl,
             projectUrl: data.github_url || data.githubUrl,
-            citationCount: data.github_stars || data.citationCount || 0,
+            githubStars: data.github_stars || data.githubStars || 0, // Added Github Stars
+            citationCount: data.citationCount || 0, // Fixed Citation Count
           },
         });
       };
@@ -336,22 +338,31 @@ export const getPapers = async (
           { githubStars: "desc" as const },
           { slug: "asc" as const },
         ]
-      : sort === "citations"
+      : sort === "stars"
+        ? [
+            { githubStars: "desc" as const },
+            { citationCount: "desc" as const },
+            { publicationDate: "desc" as const },
+            { slug: "asc" as const },
+          ]
+      // Use Citations as the metric for "Trending" papers
+      : sort === "trending" || sort === "citations"
         ? [
             { citationCount: "desc" as const },
             { githubStars: "desc" as const },
             { publicationDate: "desc" as const },
             { slug: "asc" as const },
           ]
-        : sort === "alphabetical"
-          ? [{ title: "asc" as const }, { slug: "asc" as const }]
-          : [
-              { githubStars: "desc" as const },
-              { citationCount: "desc" as const },
-              { publicationDate: "desc" as const },
-              { slug: "asc" as const },
-            ];
-
+      : sort === "alphabetical"
+        ? [
+            { title: "asc" as const }, 
+            { slug: "asc" as const }
+          ]
+        : [
+            // Failsafe Default
+            { publicationDate: "desc" as const },
+            { slug: "asc" as const },
+          ];
   const papers = await queryRouter.routeQuery<any>(
     async (prisma: PrismaClient) => {
       return prisma.paper.findMany({
