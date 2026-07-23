@@ -84,8 +84,19 @@ export default function HomeContent({
       selectedPeriod === "This Week" ? "week" :
         selectedPeriod === "This Month" ? "month" : "all";
 
-  const apiSort = activeSort === "Trending Papers" ? "trending" : activeSort === "Most GitHub Stars" ? "stars" : "latest";
+const apiSort = activeSort === "Trending Papers" ? "trending" : activeSort === "Most GitHub Stars" ? "stars" : "latest";
 
+// ADDED: Distinguish methods from tasks
+const isMethod = selectedTag === "mcp"; 
+const dynamicFilterParams: Record<string, string> = { sort: apiSort };
+
+if (selectedTag) {
+  if (isMethod) {
+    dynamicFilterParams.method = selectedTag;
+  } else {
+    dynamicFilterParams.task = selectedTag; // This is what was missing!
+  }
+}
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-[#F8F7F2] text-[#111111]">
       <Navbar activeSort={activeSort} onItemSelect={handleSidebarSelect} />
@@ -110,9 +121,9 @@ export default function HomeContent({
           <main className="flex-1 min-w-0 max-w-[1380px]">
             <PaperTabs selectedPeriod={selectedPeriod} onPeriodSelect={setSelectedPeriod} />
             <PaperList
-              selectedTag={selectedTag}
+              selectedTag={isMethod ? undefined : selectedTag}
               period={apiPeriod}
-              filterParams={{ sort: apiSort }}
+              filterParams={dynamicFilterParams}
               initialPapers={initialPapers}
               initialError={initialError}
               isFilterChanging={isFilterChanging}
