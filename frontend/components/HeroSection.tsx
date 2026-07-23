@@ -69,12 +69,12 @@ export default function HeroSection({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
   const tags = [
-    { label: "Agents", icon: Bot },
-    { label: "Reasoning", icon: Brain },
-    { label: "Vision", icon: Eye },
-    { label: "Coding", icon: Code2 },
-    { label: "Robotics", icon: Cpu },
-    { label: "MCP", icon: Plug },
+    { label: "Agents", slug: "agents", icon: Bot },
+    { label: "Reasoning", slug: "reasoning", icon: Brain },
+    { label: "Vision", slug: "vision-language-models", icon: Eye },
+    { label: "Coding", slug: "coding-agents", icon: Code2 },
+    { label: "Robotics", slug: "robotics", icon: Cpu },
+    { label: "MCP", slug: "mcp", icon: Plug },
   ];
 
   // Track if tags should show in expanded (multi-row) mode
@@ -164,27 +164,27 @@ export default function HeroSection({
           <div className="hidden md:flex flex-wrap items-center justify-center gap-2">
             {tags.map((tag) => (
               <button
-                key={tag.label}
+                key={tag.slug}
                 onClick={() =>
                   setSelectedTag(
-                    selectedTag === tag.label ? undefined : tag.label
+                    selectedTag === tag.slug ? undefined : tag.slug
                   )
                 }
                 className={`flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 min-h-[24px] transition-all duration-200 ease-out cursor-pointer select-none
                   ${
-                    selectedTag === tag.label
+                    selectedTag === tag.slug
                       ? "bg-[#F55036] text-white border border-[#F55036] scale-[1.04] shadow-[0_2px_8px_rgba(245,80,54,0.30)]"
                       : "bg-white border border-[#E5E5E0] hover:border-[#FF5A1F]/50 hover:bg-[#FFF7F3] hover:scale-[1.03] hover:shadow-sm active:scale-95"
                   }`}
               >
                 <tag.icon
                   className={`w-[11px] h-[11px] transition-transform duration-200 ${
-                    selectedTag === tag.label ? "text-white" : "text-[#F55036]"
+                    selectedTag === tag.slug ? "text-white" : "text-[#F55036]"
                   }`}
                 />
                 <span
                   className={`text-[10.5px] font-semibold ${
-                    selectedTag === tag.label ? "text-white" : "text-[#111111]"
+                    selectedTag === tag.slug ? "text-white" : "text-[#111111]"
                   }`}
                 >
                   {tag.label}
@@ -197,27 +197,27 @@ export default function HeroSection({
           <div className="flex md:hidden w-full items-center justify-center gap-0.5 min-[375px]:gap-1 mt-1 px-1">
             {tags.map((tag) => (
               <button
-                key={tag.label}
+                key={tag.slug}
                 onClick={() =>
                   setSelectedTag(
-                    selectedTag === tag.label ? undefined : tag.label
+                    selectedTag === tag.slug ? undefined : tag.slug
                   )
                 }
                 className={`flex shrink items-center justify-center gap-0.5 rounded-full px-1 py-1 transition-all duration-200 ease-out cursor-pointer select-none
                   ${
-                    selectedTag === tag.label
+                    selectedTag === tag.slug
                       ? "bg-[#F55036] text-white border border-[#F55036] shadow-sm"
                       : "bg-white border border-[#E5E5E0]"
                   }`}
               >
                 <tag.icon
                   className={`w-2 h-2 shrink-0 transition-transform duration-200 ${
-                    selectedTag === tag.label ? "text-white" : "text-[#F55036]"
+                    selectedTag === tag.slug ? "text-white" : "text-[#F55036]"
                   }`}
                 />
                 <span
                   className={`text-[7px] min-[375px]:text-[7.5px] font-bold tracking-tighter whitespace-nowrap ${
-                    selectedTag === tag.label ? "text-white" : "text-[#111111]"
+                    selectedTag === tag.slug ? "text-white" : "text-[#111111]"
                   }`}
                   style={{ lineHeight: 1 }}
                 >
@@ -225,7 +225,7 @@ export default function HeroSection({
                 </span>
               </button>
             ))}
-          </div>
+          </div>  
         </div>
       </div>
     </div>
