@@ -110,8 +110,9 @@ const handleAuthError = (
 
 export const githubLogin = async (c: Context) => {
   try {
-    const clientId = (c.env as any)?.GITHUB_CLIENT_ID || (typeof process !== "undefined" ? process.env?.GITHUB_CLIENT_ID : undefined);
-    if (!clientId) return c.text("Error: Missing GITHUB_CLIENT_ID in environment", 500);
+    const clientIdRaw = (c.env as any)?.GITHUB_CLIENT_ID || (typeof process !== "undefined" ? process.env?.GITHUB_CLIENT_ID : undefined);
+    if (!clientIdRaw) return c.text("Error: Missing GITHUB_CLIENT_ID in environment", 500);
+    const clientId = clientIdRaw.trim().replace(/^"|"$/g, "");
 
     const isDev = (c.env as any)?.NODE_ENV === "development" || (typeof process !== "undefined" ? process.env?.NODE_ENV === "development" : false);
     const backendBase = isDev ? "http://localhost:8787" : "https://frontieratlas-backend.morningsignal-india.workers.dev";
@@ -129,8 +130,10 @@ export const githubCallback = async (c: AuthContext) => {
   const code = c.req.query("code");
   if (!code) return c.json({ error: "Missing authorization code" }, 400);
 
-  const clientId = (c.env as any)?.GITHUB_CLIENT_ID || (typeof process !== "undefined" ? process.env?.GITHUB_CLIENT_ID : undefined);
-  const clientSecret = (c.env as any)?.GITHUB_CLIENT_SECRET || (typeof process !== "undefined" ? process.env?.GITHUB_CLIENT_SECRET : undefined);
+  const rawClientId = (c.env as any)?.GITHUB_CLIENT_ID || (typeof process !== "undefined" ? process.env?.GITHUB_CLIENT_ID : undefined);
+  const rawClientSecret = (c.env as any)?.GITHUB_CLIENT_SECRET || (typeof process !== "undefined" ? process.env?.GITHUB_CLIENT_SECRET : undefined);
+  const clientId = rawClientId?.trim().replace(/^"|"$/g, "");
+  const clientSecret = rawClientSecret?.trim().replace(/^"|"$/g, "");
 
   try {
     const tokenRes = await fetch("https://github.com/login/oauth/access_token", {
@@ -176,14 +179,15 @@ export const githubCallback = async (c: AuthContext) => {
 
 export const googleLogin = async (c: Context) => {
   try {
-    const clientId = (c.env as any)?.GOOGLE_CLIENT_ID || (typeof process !== "undefined" ? process.env?.GOOGLE_CLIENT_ID : undefined);
-    if (!clientId) return c.text("Error: Missing GOOGLE_CLIENT_ID in environment", 500);
+    const clientIdRaw = (c.env as any)?.GOOGLE_CLIENT_ID || (typeof process !== "undefined" ? process.env?.GOOGLE_CLIENT_ID : undefined);
+    if (!clientIdRaw) return c.text("Error: Missing GOOGLE_CLIENT_ID in environment", 500);
+    const clientId = clientIdRaw.trim().replace(/^"|"$/g, "");
 
     const isDev = (c.env as any)?.NODE_ENV === "development" || (typeof process !== "undefined" ? process.env?.NODE_ENV === "development" : false);
     const backendBase = isDev ? "http://localhost:8787" : "https://frontieratlas-backend.morningsignal-india.workers.dev";
     const redirectUri = `${backendBase}/api/v1/auth/google/callback`;
 
-    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=openid email profile&access_type=offline&prompt=consent`;
+    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=openid%20email%20profile&access_type=offline&prompt=consent`;
 
     return c.redirect(authUrl);
   } catch (error: any) {
@@ -196,8 +200,10 @@ export const googleCallback = async (c: AuthContext) => {
   const code = c.req.query("code");
   if (!code) return c.json({ error: "Missing authorization code" }, 400);
 
-  const clientId = (c.env as any)?.GOOGLE_CLIENT_ID || (typeof process !== "undefined" ? process.env?.GOOGLE_CLIENT_ID : undefined);
-  const clientSecret = (c.env as any)?.GOOGLE_CLIENT_SECRET || (typeof process !== "undefined" ? process.env?.GOOGLE_CLIENT_SECRET : undefined);
+  const rawClientId = (c.env as any)?.GOOGLE_CLIENT_ID || (typeof process !== "undefined" ? process.env?.GOOGLE_CLIENT_ID : undefined);
+  const rawClientSecret = (c.env as any)?.GOOGLE_CLIENT_SECRET || (typeof process !== "undefined" ? process.env?.GOOGLE_CLIENT_SECRET : undefined);
+  const clientId = rawClientId?.trim().replace(/^"|"$/g, "");
+  const clientSecret = rawClientSecret?.trim().replace(/^"|"$/g, "");
 
   const isDev = (c.env as any)?.NODE_ENV === "development" || (typeof process !== "undefined" ? process.env?.NODE_ENV === "development" : false);
   const backendBase = isDev ? "http://localhost:8787" : "https://frontieratlas-backend.morningsignal-india.workers.dev";
