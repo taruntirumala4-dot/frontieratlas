@@ -25,6 +25,8 @@ export interface Paper {
   huggingface_url?: string;
   hfUpvotes?: number;
   arxivId?: string;
+  arxivUrl?: string;
+  pdfUrl?: string;
   paperUrl?: string;
   sourceUrl?: string;
   projectUrl?: string;
@@ -88,23 +90,53 @@ function mapAuthors(rawAuthors: unknown): PaperAuthor[] {
   }).filter(Boolean) as PaperAuthor[];
 }
 
-function mapBackendPaper(raw: Record<string, unknown>): Paper {
-  let displayAuthors = "Unknown Authors";
-  if (typeof raw.authors === 'string') {
-    displayAuthors = raw.authors;
-  } else if (Array.isArray(raw.authors)) {
-    displayAuthors = raw.authors.map((a: unknown) => {
-      if (typeof a === 'object' && a !== null) {
-        if ('name' in a) return String((a as { name: string }).name);
-        if ('author' in a && typeof (a as { author: unknown }).author === 'object' && (a as { author: { name: string } }).author !== null && 'name' in (a as { author: { name: string } }).author) {
-          return String((a as { author: { name: string } }).author.name);
-        }
-      }
-      return String(a);
-    }).join(", ");
-  } else if (raw.authors && typeof raw.authors === 'object') {
-    displayAuthors = 'name' in raw.authors ? String((raw.authors as { name: unknown }).name) : "Unknown Author";
+export function extractArxivId(input?: string | null): string | null {
+  if (!input) return null;
+  const str = String(input).trim();
+  const match = str.match(/(?:arxiv\.org\/(?:abs|pdf)\/|arxiv:\s*|^)([a-z\-]+(?:\.[a-z\-]+)?\/\d+|\d{4}\.\d{4,5}(?:v\d+)?)/i);
+  if (match && match[1]) {
+    return match[1].replace(/\.pdf$/i, "");
   }
+  if (/^([a-z\-]+(?:\.[a-z\-]+)?\/\d+|\d{4}\.\d{4,5}(?:v\d+)?)$/i.test(str)) {
+    return str;
+  }
+  return null;
+}
+
+export function getArxivAbsUrl(arxivId?: string | null, paperUrl?: string | null): string | null {
+  const cleanId = extractArxivId(arxivId) || extractArxivId(paperUrl);
+  if (cleanId) {
+    return `https://arxiv.org/abs/${cleanId}`;
+  }
+  if (paperUrl && paperUrl.includes("arxiv.org") && !paperUrl.includes("pdf-")) {
+    return paperUrl;
+  }
+  return null;
+}
+
+export function getArxivPdfUrl(pdfUrl?: string | null, paperUrl?: string | null, arxivId?: string | null): string | null {
+  const cleanId = extractArxivId(arxivId) || extractArxivId(pdfUrl) || extractArxivId(paperUrl);
+  if (cleanId) {
+    return `https://arxiv.org/pdf/${cleanId}.pdf`;
+  }
+  if (pdfUrl && !pdfUrl.includes("pdf-") && pdfUrl !== "https://arxiv.org/pdf") {
+    if (pdfUrl.includes("arxiv.org/pdf/") && !pdfUrl.endsWith(".pdf")) {
+      return `${pdfUrl}.pdf`;
+    }
+    return pdfUrl;
+  }
+  if (paperUrl && !paperUrl.includes("pdf-") && paperUrl !== "https://arxiv.org/pdf") {
+    if (paperUrl.includes("arxiv.org/pdf/") && !paperUrl.endsWith(".pdf")) {
+      return `${paperUrl}.pdf`;
+    }
+    if (paperUrl.includes("arxiv.org/abs/")) {
+      return paperUrl.replace("/abs/", "/pdf/") + ".pdf";
+    }
+  }
+  return null;
+}
+
+function mapBackendPaper(raw: Record<string, unknown>): Paper {
 
   let formattedDate = "Unknown Date";
   if (raw.publicationDate) {
@@ -139,7 +171,11 @@ function mapBackendPaper(raw: Record<string, unknown>): Paper {
     // Otherwise, it's a corrupted short string (e.g., 'z5HwCV1J...'). We ignore it to prevent 404s.
   }
 
-  return {
+  const cleanArxivId = extractArxivId(raw.arxivId as string) || extractArxivId(raw.paperUrl as string) || extractArxivId(raw.pdfUrl as string) || undefined;
+  const computedArxivUrl = getArxivAbsUrl(cleanArxivId, raw.paperUrl as string) || undefined;
+  const computedPdfUrl = getArxivPdfUrl(raw.pdfUrl as string, raw.paperUrl as string, cleanArxivId) || undefined;
+
+    return {
     id: Number(raw.id) || String(raw.id),
     slug: String(raw.slug || raw.id || ""),
     title: String(raw.title || "Untitled Paper"),
@@ -158,7 +194,9 @@ function mapBackendPaper(raw: Record<string, unknown>): Paper {
     hfUrl: raw.hfUrl ? String(raw.hfUrl) : undefined,
     huggingface_url: raw.huggingface_url ? String(raw.huggingface_url) : undefined,
     hfUpvotes: raw.hfUpvotes != null ? Number(raw.hfUpvotes) : undefined,
-    arxivId: raw.arxivId ? String(raw.arxivId) : undefined,
+    arxivId: cleanArxivId,
+    arxivUrl: computedArxivUrl,
+    pdfUrl: computedPdfUrl,
     paperUrl: raw.paperUrl ? String(raw.paperUrl) : undefined,
     sourceUrl: raw.sourceUrl ? String(raw.sourceUrl) : undefined,
     projectUrl: (raw.projectUrl || raw.project_url) ? String(raw.projectUrl || raw.project_url) : undefined,

@@ -98,6 +98,14 @@ export default function SearchResults({ query }: SearchResultsProps) {
     try {
       const data = await globalSearch(query, 20);
       setResults(data);
+      if (data.papers.length === 0) {
+        const firstNonEmpty = (Object.keys(data) as SearchResultType[]).find(
+          (key) => data[key] && data[key].length > 0
+        );
+        if (firstNonEmpty) {
+          setActiveTab(firstNonEmpty);
+        }
+      }
     } catch (err) {
       console.error("Failed to fetch search results:", err);
       setError("Failed to load search results. Please try again later.");

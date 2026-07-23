@@ -18,8 +18,8 @@ export default function HomeContent({
   initialError?: string;
 }) {
   const [selectedTag, setSelectedTag] = useState<string | undefined>(undefined);
-  const [activeSort, setActiveSort] = useState<string>("Latest Papers");
-  const [selectedPeriod, setSelectedPeriod] = useState<string>("All time");
+  const [activeSort, setActiveSort] = useState<string>("Trending Papers");
+  const [selectedPeriod, setSelectedPeriod] = useState<string>("Today");
   const [isFilterChanging, setIsFilterChanging] = useState(false);
 
   const isMounted = useRef(false);
