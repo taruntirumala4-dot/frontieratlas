@@ -10,6 +10,7 @@ import {
   refreshUserToken,
   signupUser,
   upsertGoogleUser,
+  upsertGithubUser,
 } from "../services/auth.service.js";
 
 import {
@@ -105,6 +106,72 @@ const handleAuthError = (
     },
     500
   );
+};
+
+export const githubLogin = async (c: Context) => {
+  try {
+    const clientId = (c.env as any)?.GITHUB_CLIENT_ID || (typeof process !== "undefined" ? process.env?.GITHUB_CLIENT_ID : undefined);
+    if (!clientId) return c.text("Error: Missing GITHUB_CLIENT_ID in environment", 500);
+
+    const isDev = (c.env as any)?.NODE_ENV === "development" || (typeof process !== "undefined" ? process.env?.NODE_ENV === "development" : false);
+    const backendBase = isDev ? "http://localhost:8787" : "https://frontieratlas-backend.morningsignal-india.workers.dev";
+    const redirectUri = `${backendBase}/api/v1/auth/github/callback`;
+
+    const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=user:email`;
+    return c.redirect(authUrl);
+  } catch (error: any) {
+    console.error("githubLogin error:", error);
+    return c.text(`githubLogin Crash: ${error.message}`, 500);
+  }
+};
+
+export const githubCallback = async (c: AuthContext) => {
+  const code = c.req.query("code");
+  if (!code) return c.json({ error: "Missing authorization code" }, 400);
+
+  const clientId = (c.env as any)?.GITHUB_CLIENT_ID || (typeof process !== "undefined" ? process.env?.GITHUB_CLIENT_ID : undefined);
+  const clientSecret = (c.env as any)?.GITHUB_CLIENT_SECRET || (typeof process !== "undefined" ? process.env?.GITHUB_CLIENT_SECRET : undefined);
+
+  try {
+    const tokenRes = await fetch("https://github.com/login/oauth/access_token", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify({ client_id: clientId, client_secret: clientSecret, code }),
+    });
+
+    const tokenData: any = await tokenRes.json();
+    if (!tokenRes.ok || tokenData.error) throw new Error("GitHub token exchange failed");
+
+    const userRes = await fetch("https://api.github.com/user", {
+      headers: { Authorization: `Bearer ${tokenData.access_token}`, "User-Agent": "FrontierAtlas-Auth" },
+    });
+
+    const userData: any = await userRes.json();
+
+    let primaryEmail = userData.email;
+    if (!primaryEmail) {
+      const emailRes = await fetch("https://api.github.com/user/emails", {
+        headers: { Authorization: `Bearer ${tokenData.access_token}`, "User-Agent": "FrontierAtlas-Auth" },
+      });
+      const emails: any = await emailRes.json();
+      primaryEmail = emails.find((e: any) => e.primary)?.email || emails[0]?.email;
+    }
+
+    if (!primaryEmail) throw new Error("Failed extracting email from GitHub");
+    userData.email = primaryEmail;
+
+    const result = await upsertGithubUser(c.var.prisma, userData);
+    setAuthCookies(c, result.accessToken, result.refreshToken, true);
+
+    const isDev = (c.env as any)?.NODE_ENV === "development" || (typeof process !== "undefined" ? process.env?.NODE_ENV === "development" : false);
+    const frontendBase = isDev ? "http://localhost:3000" : "https://frontieratlas.co";
+    return c.redirect(frontendBase);
+  } catch (error: any) {
+    console.error(error);
+    const isDev = (c.env as any)?.NODE_ENV === "development" || (typeof process !== "undefined" ? process.env?.NODE_ENV === "development" : false);
+    const frontendBase = isDev ? "http://localhost:3000" : "https://frontieratlas.co";
+    return c.redirect(`${frontendBase}/login?error=GitHub_Auth_Failed`);
+  }
 };
 
 export const googleLogin = async (c: Context) => {
