@@ -163,13 +163,13 @@ export default function SignUpForm() {
           Google
         </a>
 
-        <button
-          type="button"
+        <a
+          href={`${API_BASE}/api/v1/auth/github`}
           className="flex h-9 items-center justify-center gap-2 rounded-xl border border-[#DDD4C5] font-semibold"
         >
           <FaGithub size={17} />
           GitHub
-        </button>
+        </a>
       </div>
 
       <p className="pt-1 text-center text-[13px] text-[#555]">

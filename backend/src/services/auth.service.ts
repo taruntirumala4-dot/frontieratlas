@@ -151,6 +151,37 @@ export const signupUser = async (
   };
 };
 
+export const upsertGithubUser = async (
+  prisma: PrismaClient,
+  githubProfile: any
+) => {
+  const email = githubProfile.email.toLowerCase();
+
+  let user = await prisma.user.findUnique({
+    where: { email },
+    select: userSelect,
+  });
+
+  if (!user) {
+    const randomPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
+    const hashedPassword = await hashPassword(randomPassword);
+
+    user = await prisma.user.create({
+      data: {
+        username: email,
+        email: email,
+        password: hashedPassword,
+        display_name: githubProfile.name || githubProfile.login || email.split("@")[0],
+      },
+      select: userSelect,
+    });
+  }
+
+  const tokens = await createTokenPair(prisma, user.id);
+
+  return { user, ...tokens };
+};
+
 export const upsertGoogleUser = async (
   prisma: PrismaClient,
   googleProfile: any
