@@ -1,6 +1,8 @@
 import { fetchApi } from './api';
 import { MOCK_BENCHMARKS, getMockBenchmarkDetail } from './mockBenchmarks';
 
+let benchmarksCache: Promise<BenchmarkItem[]> | null = null;
+
 export interface BenchmarkItem {
   id: string;
   name: string;
@@ -57,11 +59,26 @@ export interface GetBenchmarkBySlugResponse {
 }
 
 export async function getBenchmarks(): Promise<BenchmarkItem[]> {
+  // 1. If the data is already being fetched or is cached, return it immediately
+  if (benchmarksCache) {
+    return benchmarksCache;
+  }
+
+  // 2. Otherwise, fetch it and store the promise in the cache
   try {
-    const response = await fetchApi<GetBenchmarksResponse>('/api/v1/benchmarks?limit=100');
-    return Array.isArray(response?.data) ? response.data : [];
+    benchmarksCache = fetchApi<GetBenchmarksResponse>('/api/v1/benchmarks?limit=5000')
+      .then(response => {
+        return Array.isArray(response?.data) ? response.data : [];
+      })
+      .catch(error => {
+        benchmarksCache = null; // Clear cache on error so it can retry later
+        console.warn('[benchmarks] API unavailable:', error.message);
+        return MOCK_BENCHMARKS;
+      });
+
+    return await benchmarksCache;
   } catch (error) {
-    console.warn('[benchmarks] API unavailable, using mock data:', (error as Error).message);
+    benchmarksCache = null;
     return MOCK_BENCHMARKS;
   }
 }
