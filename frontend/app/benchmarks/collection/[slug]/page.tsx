@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import { atlasUiFont } from "@/lib/fonts";
 import { getBenchmarks, type BenchmarkItem } from "@/lib/benchmarks";
 import { Search } from "lucide-react";
+export const runtime = 'edge';
 
 // --- UNIVERSAL META MATCHER ---
 function getMeta(name: string) {

@@ -10,6 +10,7 @@ import {
   Layers, Mic, Video, Cpu, Activity, Heart, BarChart3, 
   TrendingUp, Network, Target 
 } from "lucide-react";
+export const runtime = 'edge';
 
 const STATUS_CFG: Record<string, { color: string; text: string; bg: string; border: string }> = {
   Active:     { color: "#10B981", text: "text-emerald-700", bg: "bg-emerald-50",  border: "border-emerald-100"  },
