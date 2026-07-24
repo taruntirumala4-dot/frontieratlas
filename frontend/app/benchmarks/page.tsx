@@ -75,31 +75,77 @@ const STATUS_CFG: Record<string, { color: string; text: string; bg: string; bord
 
 function getMeta(name: string) {
   const n = name.toLowerCase();
+
+  // ── Document AI / OCR ──
   if (n.includes("ocrbench v2"))        return { task: "Document OCR",           metric: "overall-en-private", status: "Active",     category: "OCR & Document AI", year: "2024" };
   if (n.includes("ocrbench"))           return { task: "Document OCR",           metric: "score",              status: "Unmapped",   category: "OCR & Document AI", year: "2023" };
-  if (n.includes("olmocr"))             return { task: "Document Parsing",       metric: "pass-rate",          status: "Active",     category: "OCR & Document AI", year: "2024" };
-  if (n.includes("omnidoc"))            return { task: "Document Parsing",       metric: "composite",          status: "Active",     category: "OCR & Document AI", year: "2024" };
-  if (n.includes("parsebench"))         return { task: "Document Parsing",       metric: "accuracy",           status: "Active",     category: "OCR & Document AI", year: "2024" };
+  if (n.includes("olmocr") || n.includes("omnidoc") || n.includes("parsebench")) 
+                                        return { task: "Document Parsing",       metric: "pass-rate",          status: "Active",     category: "OCR & Document AI", year: "2024" };
+
+  // ── Coding ──
   if (n.includes("swe-bench verified")) return { task: "Software Engineering",   metric: "resolve-rate",       status: "Saturating", category: "Coding",            year: "2024" };
-  if (n.includes("swe-bench"))          return { task: "Software Engineering",   metric: "resolve-rate",       status: "Active",     category: "Coding",            year: "2023" };
-  if (n.includes("terminal-bench"))     return { task: "Software Engineering",   metric: "solve-rate",         status: "Active",     category: "Coding",            year: "2024" };
-  if (n.includes("humaneval"))          return { task: "Code Generation",        metric: "pass@1",             status: "Saturated",  category: "Coding",            year: "2021" };
-  if (n.includes("mbpp"))               return { task: "Code Generation",        metric: "pass@1",             status: "Active",     category: "Coding",            year: "2021" };
-  if (n.includes("gpqa"))               return { task: "Expert QA",              metric: "accuracy",           status: "Active",     category: "Reasoning",         year: "2023" };
-  if (n.includes("humanity"))           return { task: "Expert QA",              metric: "accuracy",           status: "Active",     category: "Reasoning",         year: "2024" };
-  if (n.includes("big-bench"))          return { task: "Reasoning",              metric: "accuracy",           status: "Active",     category: "Reasoning",         year: "2022" };
-  if (n.includes("arc-agi"))            return { task: "Abstract Reasoning",     metric: "accuracy",           status: "Active",     category: "Reasoning",         year: "2019" };
-  if (n.includes("hellaswag"))          return { task: "Commonsense Reasoning",  metric: "accuracy",           status: "Saturated",  category: "Reasoning",         year: "2019" };
-  if (n.includes("arc"))                return { task: "Science QA",             metric: "accuracy",           status: "Active",     category: "Reasoning",         year: "2018" };
-  if (n.includes("mathvista"))          return { task: "Mathematical Reasoning", metric: "accuracy",           status: "Active",     category: "Mathematics",       year: "2023" };
-  if (n.includes("math"))               return { task: "Mathematical Reasoning", metric: "accuracy",           status: "Saturating", category: "Mathematics",       year: "2021" };
-  if (n.includes("gsm8k"))              return { task: "Math Word Problems",     metric: "accuracy",           status: "Active",     category: "Mathematics",       year: "2021" };
-  if (n.includes("mmmu"))               return { task: "Multimodal Understanding",metric: "accuracy",          status: "Active",     category: "Multimodal",        year: "2023" };
-  if (n.includes("mmlu"))               return { task: "Question Answering",     metric: "accuracy",           status: "Active",     category: "Language",          year: "2021" };
-  if (n.includes("vqa"))                return { task: "Visual QA",              metric: "accuracy",           status: "Saturated",  category: "Computer Vision",   year: "2017" };
-  if (n.includes("imagenet"))           return { task: "Image Classification",   metric: "top-1-accuracy",     status: "Saturated",  category: "Computer Vision",   year: "2012" };
-  if (n.includes("coco"))               return { task: "Object Detection",       metric: "mAP",                status: "Active",     category: "Computer Vision",   year: "2014" };
-  return                                       { task: "General ML Evaluation",  metric: "accuracy",           status: "Active",     category: "General AI",        year: "2024" };
+  if (n.includes("swe-bench") || n.includes("terminal-bench")) 
+                                        return { task: "Software Engineering",   metric: "resolve-rate",       status: "Active",     category: "Coding",            year: "2023" };
+  if (n.includes("humaneval") || n.includes("mbpp") || n.includes("code")) 
+                                        return { task: "Code Generation",        metric: "pass@1",             status: "Active",     category: "Coding",            year: "2021" };
+
+  // ── Reasoning ──
+  if (n.includes("gpqa") || n.includes("humanity") || n.includes("big-bench") || n.includes("arc") || n.includes("hellaswag")) 
+                                        return { task: "Reasoning",              metric: "accuracy",           status: "Active",     category: "Reasoning",         year: "2023" };
+
+  // ── Mathematics ──
+  if (n.includes("math") || n.includes("gsm8k")) 
+                                        return { task: "Mathematical Reasoning", metric: "accuracy",           status: "Active",     category: "Mathematics",       year: "2023" };
+
+  // ── Vision & Multimodal ──
+  if (n.includes("mmmu") || n.includes("multimodal")) return { task: "Multimodal Understanding", metric: "accuracy", status: "Active", category: "Multimodal", year: "2023" };
+  if (n.includes("vqa") || n.includes("imagenet") || n.includes("coco") || n.includes("vision")) 
+                                        return { task: "Visual Understanding",   metric: "accuracy",           status: "Active",     category: "Computer Vision",   year: "2021" };
+
+  // ── Audio & Speech ──
+  if (n.includes("audio") || n.includes("speech") || n.includes("whisper") || n.includes("asr") || n.includes("voice")) 
+                                        return { task: "Speech Recognition",     metric: "WER",                status: "Active",     category: "Audio & Speech",    year: "2022" };
+
+  // ── Video ──
+  if (n.includes("video") || n.includes("action") || n.includes("kinetics") || n.includes("frame")) 
+                                        return { task: "Video Understanding",   metric: "accuracy",           status: "Active",     category: "Video",             year: "2022" };
+
+  // ── Agents ──
+  if (n.includes("agent") || n.includes("webarena") || n.includes("tool")) 
+                                        return { task: "Planning & Tool Use",   metric: "success-rate",       status: "Active",     category: "Agents",            year: "2023" };
+
+  // ── Robotics & Embodied AI ──
+  if (n.includes("robot") || n.includes("manipulation") || n.includes("control")) 
+                                        return { task: "Robotic Control",        metric: "success-rate",       status: "Active",     category: "Robotics",          year: "2023" };
+  if (n.includes("embodied") || n.includes("habitat") || n.includes("alfred") || n.includes("navigation")) 
+                                        return { task: "Embodied Navigation",    metric: "SPL",                status: "Active",     category: "Embodied AI",       year: "2022" };
+
+  // ── Healthcare ──
+  if (n.includes("med") || n.includes("health") || n.includes("clinical") || n.includes("bio")) 
+                                        return { task: "Medical QA",             metric: "accuracy",           status: "Active",     category: "Healthcare",        year: "2023" };
+
+  // ── Time Series ──
+  if (n.includes("time") || n.includes("forecast") || n.includes("series") || n.includes("temporal") || n.includes("sensor")) 
+                                        return { task: "Time Series Forecasting",metric: "MSE / MAE",          status: "Active",     category: "Time Series",       year: "2023" };
+
+  // ── Graphs ──
+  if (n.includes("graph") || n.includes("node") || n.includes("network") || n.includes("link")) 
+                                        return { task: "Graph Reasoning",        metric: "accuracy",           status: "Active",     category: "Graphs",            year: "2022" };
+
+  // ── Scientific AI ──
+  if (n.includes("sci") || n.includes("chem") || n.includes("phys") || n.includes("discovery") || n.includes("molecule") || n.includes("protein")) 
+                                        return { task: "Scientific Reasoning",   metric: "accuracy",           status: "Active",     category: "Scientific AI",     year: "2024" };
+
+  // ── Language ──
+  if (n.includes("mmlu") || n.includes("language") || n.includes("translation") || n.includes("qa") || n.includes("squad") || n.includes("glue") || n.includes("text")) 
+                                        return { task: "Question Answering",     metric: "accuracy",           status: "Active",     category: "Language",          year: "2021" };
+
+  // ── Robotics & Embodied AI ──
+  if (n.includes("embodied") || n.includes("habitat") || n.includes("alfred") || n.includes("navigation") || n.includes("ai2-thor") || n.includes("virtualhome") || n.includes("simulator")) 
+                                        return { task: "Embodied Navigation",    metric: "SPL",                status: "Active",     category: "Embodied AI",       year: "2022" };
+
+  // ── Default / General AI ──
+  return { task: "General ML Evaluation", metric: "accuracy", status: "Active", category: "General AI", year: "2024" };
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -118,7 +164,7 @@ const DOMAINS = [
   { label: "Audio & Speech",   icon: Mic,       color: "#0d9488", desc: "Speech recognition, synthesis quality & audio classification measured by WER and MOS" },
   { label: "Video",            icon: Video,     color: "#ea580c", desc: "Temporal action recognition, video QA & long-form understanding across frame sequences" },
   { label: "Robotics",         icon: Cpu,       color: "#4f46e5", desc: "Manipulation, navigation & embodied control tasks across simulated & real-world settings" },
-  { label: "Embodied AI",      icon: Activity,  color: "#ca8a04", desc: "Agents acting, exploring & solving goals in simulated 3D environments with physical constraints" },
+  //{ label: "Embodied AI",      icon: Activity,  color: "#ca8a04", desc: "Agents acting, exploring & solving goals in simulated 3D environments with physical constraints" },
   { label: "Healthcare",       icon: Heart,     color: "#dc2626", desc: "Medical QA, clinical NLP & diagnostic imaging benchmarks for biomedical AI systems" },
   { label: "Mathematics",      icon: BarChart3, color: "#2563eb", desc: "From arithmetic word problems to formal proof verification across multiple difficulty levels" },
   { label: "Time Series",      icon: TrendingUp,color: "#65a30d", desc: "Forecasting future values & anomaly detection across temporal signals and sensor streams" },
