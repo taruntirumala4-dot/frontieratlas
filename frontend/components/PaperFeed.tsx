@@ -392,7 +392,7 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
                       className="hover:text-[#F55036] hover:underline cursor-pointer"
                     >
                       {a.name}
-                    </span>
+                    </Link>
                   </span>
                 ))
               ) : (

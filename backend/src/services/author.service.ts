@@ -1,4 +1,4 @@
-// import { PrismaClient } from '../generated/prisma/client';
+ import { PrismaClient } from '../generated/prisma/client';
 // import { QueryRouter } from '../routing/index.js';
 // import { QueryIntent, QueryType } from '../routing/types.js';
 
