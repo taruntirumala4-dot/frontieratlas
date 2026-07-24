@@ -92,9 +92,9 @@ export async function globalSearch(query: string, limit: number = 10): Promise<S
 async function fallbackSearch(query: string, limit: number): Promise<SearchResults> {
   const q = query.toLowerCase();
 
-  // Methods has backend search support
-  const methodsData = await getMethods({ search: q, limit });
-  const methods: SearchResult[] = methodsData.methods.slice(0, limit).map((m) => ({
+  // Individual sub-fetches with resilient error handling
+  const methodsData = await getMethods({ search: q, limit }).catch(() => ({ methods: [], total: 0, page: 1, hasMore: false }));
+  const methods: SearchResult[] = (methodsData?.methods || []).slice(0, limit).map((m) => ({
     type: 'methods' as const,
     id: m.id,
     title: m.name,
@@ -103,13 +103,12 @@ async function fallbackSearch(query: string, limit: number): Promise<SearchResul
     metadata: { paperCount: m.paperCount },
   }));
 
-  // Other entities require client-side filtering
   const [tasks, models, datasets, authors, papersResult] = await Promise.all([
-    getTasks(),
-    getModels(),
-    getDatasets(),
-    getAuthors(),
-    searchPapers(query),
+    getTasks().catch(() => []),
+    getModels().catch(() => []),
+    getDatasets().catch(() => []),
+    getAuthors().catch(() => []),
+    searchPapers(query).catch(() => []),
   ]);
 
   const papersData = papersResult;

@@ -53,10 +53,14 @@ export default function PaperPage() {
 
     getPaperBySlug(slug)
       .then((data) => {
-        setPaper(data);
+        if (data) {
+          setPaper(data);
+        } else {
+          setNotFound(true);
+        }
       })
       .catch((err: unknown) => {
-        if (err instanceof Error && err.message.includes("404")) {
+        if (err instanceof Error && (err.message.includes("404") || err.message.includes("Not Found"))) {
           setNotFound(true);
         } else {
           setError("Failed to load paper. Please try again later.");

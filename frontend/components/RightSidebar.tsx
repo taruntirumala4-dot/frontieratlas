@@ -75,9 +75,11 @@ export default function RightSidebar() {
 
 const filteredTopics =
   (
-    activeTab === "all"
+    !Array.isArray(discussions)
+      ? []
+      : activeTab === "all"
       ? discussions
-      : discussions.filter(topic => topic.platform === activeTab)
+      : discussions.filter(topic => topic?.platform === activeTab)
   ).slice(0, 5);
 
     

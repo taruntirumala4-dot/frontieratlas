@@ -283,7 +283,7 @@ export async function getModelBySlug(slug: string): Promise<ModelDetail> {
     citationCount: data.citationCount,
     githubStars: data.githubStars,
     trendingScore: data.trendingScore,
-    papers: (data.papers ?? []).map(({ paper }) => paper),
+    papers: (data.papers ?? []).map((item: any) => item?.paper || item).filter(Boolean),
     tasks: data.tasks ?? [],
   };
 }

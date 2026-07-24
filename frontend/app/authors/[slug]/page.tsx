@@ -133,7 +133,38 @@ export default function AuthorDetailPage() {
     );
   }
 
-  if (!author) return null;
+  if (!author) {
+    return (
+      <div className="min-h-screen bg-[#F8F7F2] text-[#111111]">
+        <div className="w-full max-w-[1200px] mx-auto px-4 md:px-8 xl:px-12 py-8">
+          <nav className="flex items-center gap-2 text-[13px] text-[#8B8B8B] mb-6">
+            <Link href="/" className="hover:text-[#F55036] transition-colors no-underline">
+              Home
+            </Link>
+            <span>/</span>
+            <Link href="/authors" className="hover:text-[#F55036] transition-colors no-underline">
+              Authors
+            </Link>
+            <span>/</span>
+            <span className="text-[#555555] font-medium">{slug}</span>
+          </nav>
+
+          <div className="flex flex-col items-center justify-center py-20 gap-3 text-center">
+            <AlertCircle size={32} className="text-[#FF5A1F]" />
+            <h2 className="text-xl font-bold text-[#111111]">Author Not Found</h2>
+            <p className="text-[14px] text-[#666666]">The author details could not be found.</p>
+            <Link
+              href="/authors"
+              className="inline-flex items-center gap-1.5 ds-button-ghost text-[12px] px-4 py-2 no-underline mt-2"
+            >
+              <ArrowLeft size={14} />
+              Back to Authors
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return <AuthorDetailComponent author={author} />;
 }

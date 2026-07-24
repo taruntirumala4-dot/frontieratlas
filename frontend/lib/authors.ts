@@ -69,6 +69,6 @@ export async function getAuthorBySlug(slug: string): Promise<AuthorDetail> {
     slug: data.slug,
     createdAt: data.createdAt,
     paperCount: data.papers?.length ?? 0,
-    papers: (data.papers ?? []).map(({ paper }) => paper),
+    papers: (data.papers ?? []).map((item: any) => item?.paper || item).filter(Boolean),
   };
 }

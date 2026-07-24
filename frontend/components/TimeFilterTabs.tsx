@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { getPapers } from "@/lib/paperApi";
 
 const TIME_FILTERS = [
   { label: "Today", value: "today" },
@@ -17,11 +18,18 @@ interface TimeFilterTabsProps {
 }
 
 export default function TimeFilterTabs({ activeFilter, onFilterChange }: TimeFilterTabsProps) {
+  const handleHover = (period: string) => {
+    getPapers({ page: 1, sort: "trending", period }).catch(() => {});
+    getPapers({ page: 1, sort: "latest", period }).catch(() => {});
+  };
+
   return (
     <div className="flex items-center gap-1 mb-4">
       {TIME_FILTERS.map((filter) => (
         <button
           key={filter.value}
+          onMouseEnter={() => handleHover(filter.value)}
+          onTouchStart={() => handleHover(filter.value)}
           onClick={() => onFilterChange(filter.value)}
           className={cn(
             "px-4 py-2 rounded-lg text-[13px] font-bold transition-colors",

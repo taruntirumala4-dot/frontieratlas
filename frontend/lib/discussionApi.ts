@@ -18,5 +18,7 @@ export async function getDiscussions(): Promise<Discussion[]> {
     data: Discussion[];
   }>("/api/v1/discussions");
 
-  return response.data;
+  if (Array.isArray(response?.data)) return response.data;
+  if (response?.data && Array.isArray((response.data as any).discussions)) return (response.data as any).discussions;
+  return [];
 }

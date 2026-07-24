@@ -260,7 +260,7 @@ export default function Sidebar({
                 label={item.label}
                 isActive={activeItem === item.label}
                 onClick={() => handleItemClick(item.label)}
-                href={`/methods/${item.slug}`}
+                href={item.slug ? `/methods/${item.slug}` : `/methods`}
               />
             ))}
 

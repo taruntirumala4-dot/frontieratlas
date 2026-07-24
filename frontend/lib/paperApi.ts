@@ -212,6 +212,7 @@ function getCacheKey(params: GetPapersParams): string {
 
 // In-memory cache — fastest possible, zero deserialization cost
 const memoryCache = new Map<string, { data: any; timestamp: number }>();
+const inFlightMap = new Map<string, Promise<GetPapersResult>>();
 
 function readCache<T>(key: string): { data: T; timestamp: number } | null {
   // Check in-memory first (instant)
@@ -234,6 +235,27 @@ function readCache<T>(key: string): { data: T; timestamp: number } | null {
   }
 }
 
+function findFuzzyCache(params: GetPapersParams): GetPapersResult | null {
+  const page = params.page ?? 1;
+  const targetTask = params.task ? `:${params.task}:` : null;
+  const targetMethod = params.method ? `:${params.method}:` : null;
+
+  for (const [key, entry] of memoryCache.entries()) {
+    if (!key.startsWith(`papers:${page}:`)) continue;
+    if (!entry.data?.papers?.length) continue;
+
+    if (targetTask) {
+      if (key.includes(targetTask)) return entry.data as GetPapersResult;
+    } else if (targetMethod) {
+      if (key.includes(targetMethod)) return entry.data as GetPapersResult;
+    } else {
+      // For general feed period/sort switching, return any existing page 1 paper cache instantly
+      return entry.data as GetPapersResult;
+    }
+  }
+  return null;
+}
+
 function writeCache<T>(key: string, data: T): void {
   const entry = { data, timestamp: Date.now() };
   // Write to memory (instant)
@@ -249,53 +271,102 @@ function writeCache<T>(key: string, data: T): void {
 export async function getPapers(params: GetPapersParams = {}): Promise<GetPapersResult> {
   const cacheKey = getCacheKey(params);
 
-  // Check cache
+  // 1. Check exact cache (0ms)
   const cached = readCache<GetPapersResult>(cacheKey);
   if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
     return cached.data;
   }
 
-  try {
-    const start = performance.now();
-    if (process.env.NODE_ENV === "development") console.log(`[paperApi] getPapers called with params:`, params);
-    
-    const query = new URLSearchParams();
-    
-    if (params.page !== undefined) query.append("page", params.page.toString());
-    if (params.limit !== undefined) query.append("limit", params.limit.toString());
-    if (params.task) query.append("task", params.task);
-    if (params.method) query.append("method", params.method);
-    if (params.model) query.append("model", params.model);
-    if (params.sort) query.append("sort", params.sort);
-    if (params.period) query.append("period", params.period);
-
-    const response = await fetchApi<PapersResponse>(
-      `/api/v1/research-papers?${query.toString()}`
-    );
-    
-    const mapStart = performance.now();
-    const mappedPapers = response.data.papers.map(mapBackendPaper);
-    const mapDuration = performance.now() - mapStart;
-    const totalDuration = performance.now() - start;
-    
-    if (process.env.NODE_ENV === "development") console.log(`[paperApi] getPapers complete in ${totalDuration.toFixed(2)}ms (mapping took ${mapDuration.toFixed(2)}ms)`);
-
-    const validPapers = mappedPapers.filter(p => p.authors.length > 0 && p.date !== "Unknown Date");
-
-    const result: GetPapersResult = {
-      papers: validPapers,
-      total: response.data.total,
-      page: response.data.page,
-      hasMore: response.data.hasMore,
-    };
-
-    writeCache(cacheKey, result);
-
-    return result;
-  } catch (error) {
-    console.error('Failed to fetch research papers:', error);
-    throw error;
+  // 2. Check in-flight request deduplication
+  const existingInFlight = inFlightMap.get(cacheKey);
+  if (existingInFlight) {
+    return existingInFlight;
   }
+
+  // 3. Instant Fuzzy Stale-While-Revalidate fallback for chips/filters
+  const fuzzy = findFuzzyCache(params);
+  if (fuzzy && fuzzy.papers.length > 0) {
+    // Revalidate in background without blocking
+    const bgFetch = (async () => {
+      try {
+        const query = new URLSearchParams();
+        if (params.page !== undefined) query.append("page", params.page.toString());
+        if (params.limit !== undefined) query.append("limit", params.limit.toString());
+        if (params.task) query.append("task", params.task);
+        if (params.method) query.append("method", params.method);
+        if (params.model) query.append("model", params.model);
+        if (params.sort) query.append("sort", params.sort);
+        if (params.period) query.append("period", params.period);
+
+        const response = await fetchApi<PapersResponse>(`/api/v1/research-papers?${query.toString()}`);
+        const mappedPapers = response.data.papers.map(mapBackendPaper);
+        const validPapers = mappedPapers.filter(p => p.authors.length > 0 && p.date !== "Unknown Date");
+        const freshResult: GetPapersResult = {
+          papers: validPapers,
+          total: response.data.total,
+          page: response.data.page,
+          hasMore: response.data.hasMore,
+        };
+        writeCache(cacheKey, freshResult);
+        return freshResult;
+      } catch {
+        return fuzzy;
+      } finally {
+        inFlightMap.delete(cacheKey);
+      }
+    })();
+    inFlightMap.set(cacheKey, bgFetch);
+    return fuzzy; // Instant return of cached paper set!
+  }
+
+  const fetchPromise = (async (): Promise<GetPapersResult> => {
+    try {
+      const start = performance.now();
+      if (process.env.NODE_ENV === "development") console.log(`[paperApi] getPapers called with params:`, params);
+      
+      const query = new URLSearchParams();
+      
+      if (params.page !== undefined) query.append("page", params.page.toString());
+      if (params.limit !== undefined) query.append("limit", params.limit.toString());
+      if (params.task) query.append("task", params.task);
+      if (params.method) query.append("method", params.method);
+      if (params.model) query.append("model", params.model);
+      if (params.sort) query.append("sort", params.sort);
+      if (params.period) query.append("period", params.period);
+
+      const response = await fetchApi<PapersResponse>(
+        `/api/v1/research-papers?${query.toString()}`
+      );
+      
+      const mapStart = performance.now();
+      const mappedPapers = response.data.papers.map(mapBackendPaper);
+      const mapDuration = performance.now() - mapStart;
+      const totalDuration = performance.now() - start;
+      
+      if (process.env.NODE_ENV === "development") console.log(`[paperApi] getPapers complete in ${totalDuration.toFixed(2)}ms (mapping took ${mapDuration.toFixed(2)}ms)`);
+
+      const validPapers = mappedPapers.filter(p => p.authors.length > 0 && p.date !== "Unknown Date");
+
+      const result: GetPapersResult = {
+        papers: validPapers,
+        total: response.data.total,
+        page: response.data.page,
+        hasMore: response.data.hasMore,
+      };
+
+      writeCache(cacheKey, result);
+
+      return result;
+    } catch (error) {
+      console.error('Failed to fetch research papers:', error);
+      throw error;
+    } finally {
+      inFlightMap.delete(cacheKey);
+    }
+  })();
+
+  inFlightMap.set(cacheKey, fetchPromise);
+  return fetchPromise;
 }
 
 export async function searchPapers(query: string): Promise<Paper[]> {

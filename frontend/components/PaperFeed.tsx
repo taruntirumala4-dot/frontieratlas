@@ -910,7 +910,6 @@ export default function PaperList({
       return;
     }
  
-    setPapers([]);
     setPage(1);
     setHasMore(true);
     nextPageRef.current = 1;
@@ -924,9 +923,22 @@ export default function PaperList({
     initialError,
     initialPapers,
     loadPage,
-    normalizedSearchQuery,
+  ]);
+
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  useEffect(() => {
+    setIsTransitioning(true);
+    const timer = setTimeout(() => {
+      setIsTransitioning(false);
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [
+    filterParams?.method,
+    filterParams?.model,
+    filterParams?.sort,
+    filterParams?.task,
     period,
-    prefetchPage,
     selectedTag,
   ]);
  
@@ -965,20 +977,20 @@ export default function PaperList({
         className="pb-12 bg-transparent grid grid-cols-1 md:grid-cols-2 xl:flex xl:flex-col gap-6 xl:gap-0"
         data-page={page}
       >
-        {filteredPapers
-          .slice(0, displayCount)
-          .map((paper) => (
-            <div key={paper.slug} ref={observeCard} data-paper-slug={paper.slug}>
-              <PaperCard paper={paper} />
-            </div>
-          ))}
- 
-        {(loading || isFilterChanging) && papers.length === 0 && (
+        {isTransitioning || isFilterChanging || (loading && papers.length === 0) ? (
           <>
             <PaperCardSkeleton />
             <PaperCardSkeleton />
             <PaperCardSkeleton />
           </>
+        ) : (
+          filteredPapers
+            .slice(0, displayCount)
+            .map((paper) => (
+              <div key={paper.slug} ref={observeCard} data-paper-slug={paper.slug} className="animate-fade-in">
+                <PaperCard paper={paper} />
+              </div>
+            ))
         )}
  
         <div ref={sentinelRef} className="h-px" />

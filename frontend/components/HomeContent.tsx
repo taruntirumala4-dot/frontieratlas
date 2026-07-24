@@ -55,12 +55,32 @@ export default function HomeContent({
     const prefetch = async (params: Parameters<typeof getPapers>[0]) => {
       try { await getPapers(params); } catch {}
     };
-    prefetch({ sort: "trending", period: "all", page: 1 });
-    prefetch({ sort: "latest", period: "all", page: 1 });
-    prefetch({ sort: "stars", period: "all", page: 1 });
+    const periods = ["today", "week", "month", "all"];
+    const mainSorts = ["trending", "latest", "stars"];
+    mainSorts.forEach(sort => {
+      periods.forEach(period => {
+        prefetch({ sort, period, page: 1 });
+      });
+    });
+    // Pre-warm hero chips for instant chip clicks (0ms latency)
+    const heroChips = [
+      { task: "agents" },
+      { task: "reasoning" },
+      { task: "vision-language-models" },
+      { task: "coding-agents" },
+      { task: "robotics" },
+      { method: "mcp" },
+    ];
+    heroChips.forEach((chip) => {
+      prefetch({ sort: "trending", period: "today", page: 1, ...chip });
+      prefetch({ sort: "trending", period: "all", page: 1, ...chip });
+      prefetch({ sort: "latest", period: "today", page: 1, ...chip });
+      prefetch({ sort: "latest", period: "all", page: 1, ...chip });
+      prefetch({ page: 1, ...chip });
+    });
+
     const taskSlugs = ["large-language-models","agents","reasoning","vision-language-models","multimodal-models","world-models","image-generation","automatic-speech-recognition","robotics"];
     taskSlugs.forEach(t => {
-      // Warm both variants: with sort (for home sidebar) and without sort (for /tasks/[slug] pages)
       prefetch({ sort: "latest", period: "all", task: t, page: 1 });
       prefetch({ task: t, page: 1 });
     });
@@ -69,7 +89,6 @@ export default function HomeContent({
       prefetch({ sort: "latest", period: "all", method: m, page: 1 });
       prefetch({ method: m, page: 1 });
     });
-    // Also prefetch full method detail data for instant /methods/[slug] pages
     prefetchMethods();
   }, []);
 

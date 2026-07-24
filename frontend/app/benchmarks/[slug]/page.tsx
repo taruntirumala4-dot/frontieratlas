@@ -50,6 +50,7 @@ function ProgressionChart({ rankings }: { rankings: BenchmarkDetailRanking[] }) 
 
   const pts = useMemo<Pt[]>(() =>
     [...rankings]
+      .filter(r => r && r.paper)
       .map(r => ({
         x: r.paper.publicationDate
           ? new Date(r.paper.publicationDate).getFullYear()
@@ -216,12 +217,12 @@ function LeaderboardTable({ rankings }: { rankings: BenchmarkDetailRanking[] }) 
           </tr>
         </thead>
         <tbody className="divide-y divide-[#F4F4F0]">
-          {rankings.length === 0 ? (
+          {rankings.filter(r => r && r.paper).length === 0 ? (
             <tr>
               <td colSpan={8} className="py-14 text-center text-[#9CA3AF] text-[13px]">No submissions yet.</td>
             </tr>
           ) : (
-            rankings.map(r => {
+            rankings.filter(r => r && r.paper).map(r => {
               const score = scoreFromRank(r.rank);
               const isTop = r.rank === 1;
               const pct = (score / maxScore) * 100;
@@ -470,7 +471,7 @@ export default function BenchmarkDetailPage() {
                   <span className="ml-2 text-[13px] font-normal text-[#9CA3AF]">({benchmark.claims.length})</span>
                 </h2>
                 <div className="border-t border-[#E8E8E2]">
-                  {benchmark.claims.map((c, i) => (
+                  {benchmark.claims.filter(c => c && c.paper).map((c, i) => (
                     <Link key={c.id} href={`/papers/${c.paper.slug}`}
                       className="no-underline flex items-center gap-4 py-4 transition-colors group border-b border-[#F0EDE8]">
                       <span className="text-[12px] font-bold text-[#9CA3AF] w-5 shrink-0 tabular-nums">{i + 1}</span>

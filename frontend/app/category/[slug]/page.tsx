@@ -99,7 +99,11 @@ function getFilterParams(slug: string) {
       params.task = "audio-generation";
       break;
     default:
-      params.sort = "trending";
+      if (["transformer", "diffusion-models", "mixture-of-experts-moe", "policy-learning", "chain-of-thought", "rag", "mcp", "lora", "rlhf"].includes(slug)) {
+        params.method = slug;
+      } else {
+        params.task = slug;
+      }
   }
 
   return params;
@@ -122,7 +126,7 @@ function getPeriodParam(selectedPeriod: string) {
 
 export default function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
-  const label = SLUG_TO_LABEL[slug] || "Trending Papers";
+  const label = SLUG_TO_LABEL[slug] || slug.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
   const [selectedTag, setSelectedTag] = useState<string | undefined>(undefined);
   const [selectedPeriod, setSelectedPeriod] = useState<string>("All time");
   const filterParams = useMemo(() => getFilterParams(slug), [slug]);

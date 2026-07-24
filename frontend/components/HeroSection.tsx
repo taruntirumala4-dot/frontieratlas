@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Search, Bot, Brain, Eye, Code2, Cpu, Plug, Loader2, ChevronDown, ChevronUp } from "lucide-react";
-import { searchPapers, type Paper, type PaperAuthor } from "@/lib/paperApi";
+import { searchPapers, getPapers, type Paper, type PaperAuthor } from "@/lib/paperApi";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useScrollThreshold } from "@/lib/useScroll";
@@ -77,8 +77,13 @@ export default function HeroSection({
     { label: "MCP", slug: "mcp", icon: Plug },
   ];
 
-  // Track if tags should show in expanded (multi-row) mode
-  const [showAllTags, setShowAllTags] = useState(false);
+  const handleChipHover = (slug: string) => {
+    const isMethod = slug === "mcp";
+    const item = isMethod ? { method: slug } : { task: slug };
+    getPapers({ page: 1, sort: "trending", period: "today", ...item }).catch(() => {});
+    getPapers({ page: 1, sort: "trending", period: "all", ...item }).catch(() => {});
+    getPapers({ page: 1, sort: "latest", period: "today", ...item }).catch(() => {});
+  };
 
   return (
     <div className="w-full flex flex-col items-center justify-center pt-2 md:pt-6 pb-1 md:pb-4 relative shrink-0 text-center">
@@ -165,6 +170,8 @@ export default function HeroSection({
             {tags.map((tag) => (
               <button
                 key={tag.slug}
+                onMouseEnter={() => handleChipHover(tag.slug)}
+                onTouchStart={() => handleChipHover(tag.slug)}
                 onClick={() =>
                   setSelectedTag(
                     selectedTag === tag.slug ? undefined : tag.slug
@@ -198,6 +205,8 @@ export default function HeroSection({
             {tags.map((tag) => (
               <button
                 key={tag.slug}
+                onMouseEnter={() => handleChipHover(tag.slug)}
+                onTouchStart={() => handleChipHover(tag.slug)}
                 onClick={() =>
                   setSelectedTag(
                     selectedTag === tag.slug ? undefined : tag.slug

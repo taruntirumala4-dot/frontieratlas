@@ -1,7 +1,7 @@
 import HomeContent from "@/components/HomeContent";
 import { getPapers } from "@/lib/paperApi";
 
-export const revalidate = 60; // ISR instead of edge serverless
+export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   try {
