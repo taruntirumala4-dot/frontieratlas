@@ -355,6 +355,7 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
   const githubRepo = paper.repositories?.find(
     (repo: any) => repo.url?.includes("github.com")
   );
+  const resolvedGithubUrl = paper.githubUrl || githubRepo?.url || null;
   const huggingFaceRepo = paper.repositories?.find(
     (repo: any) => repo.url?.includes("huggingface.co")
   );
@@ -393,13 +394,15 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
                 visibleAuthors.map((a, i) => (
                   <span key={a.slug || i}>
                     {i > 0 && <span>, </span>}
-                    <Link
-                      href={`/authors/${a.slug || a.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
-                      onClick={(e) => e.stopPropagation()}
+                    <span
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(`/authors/${a.slug || a.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`);
+                      }}
                       className="hover:text-[#F55036] hover:underline cursor-pointer"
                     >
                       {a.name}
-                    </Link>
+                    </span>
                   </span>
                 ))
               ) : (
@@ -489,37 +492,31 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
               <ArrowUpRight size={14} strokeWidth={1.5} className="hidden lg:block xl:hidden" />
             </button>
 
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                const ghUrl =
-                  paper.githubUrl ||
-                  githubRepo?.url ||
-                  (paper.repositories?.find((repo: any) => repo.url?.includes("github.com"))?.url);
-                if (ghUrl) {
-                  window.open(ghUrl, "_blank");
-                } else {
-                  window.open("https://github.com", "_blank");
-                }
-              }}
-              className="flex-none md:flex-1 flex items-center justify-center lg:justify-between xl:justify-center px-0.5 min-[375px]:px-1 md:px-2 lg:px-4 xl:px-2 h-[24px] md:h-[28px] lg:h-[58px] xl:h-[28px] bg-white text-[#24292f] border-[1.5px] border-[#24292f]/30 hover:border-[#24292f] hover:bg-[#24292f]/5 rounded-[6px] transition-all duration-300"
-            >
-              <div className="flex items-center gap-0.5 min-[375px]:gap-1 md:gap-1.5 lg:gap-3 xl:gap-1.5">
-                <div className="w-[12px] h-[12px] min-[375px]:w-[14px] min-[375px]:h-[14px] md:w-[20px] md:h-[20px] lg:w-8 lg:h-8 xl:w-[20px] xl:h-[20px] rounded-[4px] md:rounded-[6px] lg:rounded-[10px] xl:rounded-[6px] bg-transparent flex items-center justify-center">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="https://cdn.simpleicons.org/github/24292f" alt="GitHub" className="w-[9px] h-[9px] min-[375px]:w-[10px] min-[375px]:h-[10px] md:w-[12px] md:h-[12px] lg:w-4 lg:h-4 xl:w-[12px] xl:h-[12px]" />
+            {resolvedGithubUrl && (
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  window.open(resolvedGithubUrl, "_blank");
+                }}
+                className="flex-none md:flex-1 flex items-center justify-center lg:justify-between xl:justify-center px-0.5 min-[375px]:px-1 md:px-2 lg:px-4 xl:px-2 h-[24px] md:h-[28px] lg:h-[58px] xl:h-[28px] bg-white text-[#24292f] border-[1.5px] border-[#24292f]/30 hover:border-[#24292f] hover:bg-[#24292f]/5 rounded-[6px] transition-all duration-300"
+              >
+                <div className="flex items-center gap-0.5 min-[375px]:gap-1 md:gap-1.5 lg:gap-3 xl:gap-1.5">
+                  <div className="w-[12px] h-[12px] min-[375px]:w-[14px] min-[375px]:h-[14px] md:w-[20px] md:h-[20px] lg:w-8 lg:h-8 xl:w-[20px] xl:h-[20px] rounded-[4px] md:rounded-[6px] lg:rounded-[10px] xl:rounded-[6px] bg-transparent flex items-center justify-center">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="https://cdn.simpleicons.org/github/24292f" alt="GitHub" className="w-[9px] h-[9px] min-[375px]:w-[10px] min-[375px]:h-[10px] md:w-[12px] md:h-[12px] lg:w-4 lg:h-4 xl:w-[12px] xl:h-[12px]" />
+                  </div>
+                  <div className="flex flex-col items-start">
+                    <span className="font-medium lg:font-semibold xl:font-medium text-[7.5px] min-[375px]:text-[8.5px] sm:text-[9.5px] md:text-[11.5px] lg:text-[15px] xl:text-[11.5px] whitespace-nowrap tracking-tighter min-[375px]:tracking-tight">GitHub</span>
+                    <span className="hidden lg:block text-[12px] text-[#666] xl:hidden">
+                      {upvotesNum > 0 ? `${upvotesNum >= 1000 ? (upvotesNum / 1000).toFixed(1) + "k" : upvotesNum} stars` : "0 stars"}
+                    </span>
+                  </div>
+                  {upvotesNum > 0 && <span className="hidden lg:inline xl:hidden text-[#9CA3AF] text-[12.5px] font-normal">{upvotesNum}k</span>}
                 </div>
-                <div className="flex flex-col items-start">
-                  <span className="font-medium lg:font-semibold xl:font-medium text-[7.5px] min-[375px]:text-[8.5px] sm:text-[9.5px] md:text-[11.5px] lg:text-[15px] xl:text-[11.5px] whitespace-nowrap tracking-tighter min-[375px]:tracking-tight">GitHub</span>
-                  <span className="hidden lg:block text-[12px] text-[#666] xl:hidden">
-                    {upvotesNum > 0 ? `${upvotesNum >= 1000 ? (upvotesNum / 1000).toFixed(1) + "k" : upvotesNum} stars` : "0 stars"}
-                  </span>
-                </div>
-                {upvotesNum > 0 && <span className="hidden lg:inline xl:hidden text-[#9CA3AF] text-[12.5px] font-normal">{upvotesNum}k</span>}
-              </div>
-              <ArrowUpRight size={14} strokeWidth={1.5} className="text-[#9CA3AF] hidden lg:block xl:hidden" />
-            </button>
+                <ArrowUpRight size={14} strokeWidth={1.5} className="text-[#9CA3AF] hidden lg:block xl:hidden" />
+              </button>
+            )}
 
             <button
               onClick={(e) => {
