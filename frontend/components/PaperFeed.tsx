@@ -386,13 +386,16 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
                 visibleAuthors.map((a, i) => (
                   <span key={a.slug || i}>
                     {i > 0 && <span>, </span>}
-                    <Link
-                      href={`/authors/${a.slug || a.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
-                      onClick={(e) => e.stopPropagation()}
+                    <span
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        router.push(`/authors/${a.slug || a.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`);
+                      }}
                       className="hover:text-[#F55036] hover:underline cursor-pointer"
                     >
                       {a.name}
-                    </Link>
+                    </span>
                   </span>
                 ))
               ) : (
