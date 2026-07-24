@@ -127,6 +127,7 @@ export default function DomainPage() {
 
         <div className="bg-white border border-gray-200 rounded-full py-3 px-6 flex items-center gap-6 mb-8 shadow-sm">
           <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Sort</span>
+          <div className="w-px h-4 bg-gray-300 mx-1.5" />
           <button onClick={() => setSortBy("popular")} className={`text-sm flex items-center gap-1.5 ${sortBy === "popular" ? "font-semibold text-gray-900" : "text-gray-500 hover:text-gray-900"}`}> Popular</button>
           <button onClick={() => setSortBy("recent")} className={`text-sm flex items-center gap-1.5 ${sortBy === "recent" ? "font-semibold text-gray-900" : "text-gray-500 hover:text-gray-900"}`}> Recent</button>
           <span className="ml-auto text-sm text-gray-400 font-mono">{domainBenchmarks.length} benchmarks found</span>
