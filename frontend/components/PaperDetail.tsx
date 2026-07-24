@@ -17,7 +17,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useCallback, useEffect, type ReactNode } from "react";
 import type { PaperDetail as PaperDetailType, PaperRanking, PaperSotaClaim } from "@/lib/papers";
-import { getPapers, type Paper } from "@/lib/paperApi";
+import { getPapers, getArxivAbsUrl, getArxivPdfUrl, type Paper } from "@/lib/paperApi";
 import { atlasUiFont } from "@/lib/fonts";
 
 
@@ -192,11 +192,11 @@ function CitationPreview({ text, format }: { text: string; format: CitationForma
   );
 }
 
-function RepositoryPanel({ paper }: { paper: PaperDetailType }) {
-  const repoName = parseGitHubRepo(paper.githubUrl);
+function RepositoryPanel({ paper, resolvedGithubUrl }: { paper: PaperDetailType; resolvedGithubUrl: string | null }) {
+  const repoName = parseGitHubRepo(resolvedGithubUrl);
   const hasStars = paper.githubStars != null && paper.githubStars > 0;
   const hasForks = paper.githubForks != null && paper.githubForks > 0;
-  if (!paper.githubUrl) {
+  if (!resolvedGithubUrl) {
     return (
       <div className="border border-[#EDE8DF] rounded-lg p-6">
         <div className="flex items-center gap-3 pb-4 border-b border-[#E5E5E0]">
@@ -246,13 +246,13 @@ function RepositoryPanel({ paper }: { paper: PaperDetailType }) {
           <Github size={24} className="shrink-0 text-[#8B8B8B]" />
         </div>
 
-        {paper.githubUrl && (
+        {resolvedGithubUrl && (
           <>
             <p className="text-[13px] font-medium text-[#6F665D] m-0">
               {paper.isOfficialCode ? "Official implementation from the authors" : "Community-maintained repository"}
             </p>
             <a
-              href={paper.githubUrl}
+              href={resolvedGithubUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full inline-flex items-center justify-center gap-2 rounded-full border border-[#E0DDD6] bg-transparent px-5 py-3 text-[14px] font-medium text-[#444444] no-underline transition-all hover:bg-[rgba(255,90,31,0.06)] hover:text-[#FF5A1F] hover:border-[rgba(255,90,31,0.3)]"
@@ -608,7 +608,7 @@ export function RelatedPaperCard({ paper }: { paper: Paper }) {
     return names.join(", ");
   })();
 
-  const hasCode = !!paper.githubUrl;
+  const hasCode = !!(paper.githubUrl || paper.repositories?.find((r: any) => r.url?.includes("github.com"))?.url);
   const hasConference = !!paper.conference && paper.conference !== "";
 
   return (
@@ -675,11 +675,16 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
   const [showAllAuthors, setShowAllAuthors] = useState(false);
   const [deferred, setDeferred] = useState(false);
 
-  const arxivUrl = paper.arxivId ? `https://arxiv.org/abs/${paper.arxivId}` : null;
+  const arxivUrl = getArxivAbsUrl(paper.arxivId, paper.paperUrl) || (paper.arxivId ? `https://arxiv.org/abs/${paper.arxivId}` : null);
+  const pdfUrl = getArxivPdfUrl(paper.pdfUrl, paper.paperUrl, paper.arxivId);
   const doiUrl = paper.doi ? `https://doi.org/${paper.doi}` : null;
   const huggingFaceRepo = paper.repositories?.find(
     (repo: any) => repo.url?.includes("huggingface.co")
   );
+  const githubRepo = paper.repositories?.find(
+    (repo: any) => repo.url?.includes("github.com")
+  );
+  const resolvedGithubUrl = paper.githubUrl || githubRepo?.url || null;
   const hfResolvedUrl =
     paper.hfUrl ||
     paper.huggingface_url ||
@@ -687,9 +692,10 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
     (paper.paperUrl?.includes("huggingface.co") ? paper.paperUrl : null) ||
     (paper.sourceUrl?.includes("huggingface.co") ? paper.sourceUrl : null) ||
     (paper.arxivId ? `https://huggingface.co/papers/${paper.arxivId}` : null);
-  const projectPageUrl = formatExternalUrl(paper.projectUrl);
+  const rawProjectPageUrl = formatExternalUrl(paper.projectUrl);
+  const projectPageUrl = rawProjectPageUrl && !rawProjectPageUrl.includes("huggingface.co") ? rawProjectPageUrl : null;
   const previewHref =
-    paper.pdfUrl || paper.paperUrl || arxivUrl || doiUrl || paper.sourceUrl || projectPageUrl || hfResolvedUrl;
+    pdfUrl || arxivUrl || paper.paperUrl || doiUrl || paper.sourceUrl || projectPageUrl || hfResolvedUrl;
 
   const handleShare = useCallback(async () => {
     if (navigator.share) {
@@ -875,10 +881,13 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
                     {paper.authors
                       .slice(0, showAllAuthors ? paper.authors.length : 3)
                       .map((pa, i, arr) => (
-                        <span key={pa.id} className="inline-flex items-center">
-                          <span className="text-[14px] font-semibold text-[#444444]">
+                        <span key={pa.id || i} className="inline-flex items-center">
+                          <Link
+                            href={`/authors/${pa.slug || pa.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+                            className="text-[14px] font-semibold text-[#444444] hover:text-[#F55036] hover:underline cursor-pointer no-underline"
+                          >
                             {pa.name}
-                          </span>
+                          </Link>
 
                           {i < arr.length - 1 && (
                             <span className="ml-0.5 mr-1 text-[#171717] font-bold">,</span>
@@ -913,9 +922,9 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
 
                 {/* Action buttons */}
                 <div className="flex flex-wrap items-center gap-3 pt-2">
-                  {(paper.pdfUrl || arxivUrl) && (
+                  {(pdfUrl || arxivUrl) && (
                     <a
-                      href={paper.pdfUrl || arxivUrl!}
+                      href={pdfUrl || arxivUrl!}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="ds-button inline-flex items-center justify-center gap-2 rounded-full bg-[#FF5A1F] px-6 py-2.5 text-[14px] font-semibold text-white no-underline transition-all hover:bg-[#FF6C37] active:scale-[0.97]"
@@ -935,9 +944,9 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
                       arXiv
                     </a>
                   )}
-                  {paper.githubUrl && (
+                  {resolvedGithubUrl && (
                     <a
-                      href={paper.githubUrl}
+                      href={resolvedGithubUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="ds-button-ghost inline-flex items-center justify-center gap-1.5 rounded-full border-[1.5px] border-[#E0DDD6] bg-transparent px-5 py-2 text-[13px] font-medium text-[#444444] no-underline transition-all hover:bg-[rgba(255,90,31,0.06)] hover:text-[#FF5A1F] hover:border-[rgba(255,90,31,0.3)] active:scale-[0.97]"
@@ -1228,7 +1237,7 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
           {/* ===== SIDEBAR ===== */}
           {deferred ? (
             <aside className="space-y-5 xl:sticky xl:top-6 self-start">
-              <RepositoryPanel paper={paper} />
+              <RepositoryPanel paper={paper} resolvedGithubUrl={resolvedGithubUrl} />
               {hfResolvedUrl && <HuggingFacePanel paper={paper} hfUrl={hfResolvedUrl} />}
               <CitationPanel
                 paper={paper}

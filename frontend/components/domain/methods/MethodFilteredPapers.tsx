@@ -6,6 +6,7 @@ import Image from "next/image";
 import { TrendingUp, Clock, Star } from "lucide-react";
 import { PaperCard } from "../../PaperFeed";
 import type { Paper as ApiPaper } from "@/lib/paperApi";
+import { getArxivAbsUrl, getArxivPdfUrl } from "@/lib/paperApi";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Task {
@@ -285,8 +286,8 @@ export default function MethodFilteredPapers({ papers, methodName }: Props) {
             } as ApiPaper;
 
             // PaperCard reads these from (paper as any)
-            (apiPaper as any).arxivUrl = paper.arxivId ? `https://arxiv.org/abs/${paper.arxivId}` : (paper as any).paperUrl;
-            (apiPaper as any).pdfUrl = (paper as any).pdfUrl || (paper.arxivId ? `https://arxiv.org/pdf/${paper.arxivId}` : undefined);
+            (apiPaper as any).arxivUrl = getArxivAbsUrl(paper.arxivId, (paper as any).paperUrl) || (paper.arxivId ? `https://arxiv.org/abs/${paper.arxivId}` : (paper as any).paperUrl);
+            (apiPaper as any).pdfUrl = getArxivPdfUrl((paper as any).pdfUrl, (paper as any).paperUrl, paper.arxivId) || (paper.arxivId ? `https://arxiv.org/pdf/${paper.arxivId}.pdf` : undefined);
             
             apiPaper.repositories = [];
             if (paper.githubUrl) {

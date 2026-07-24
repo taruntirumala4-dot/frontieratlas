@@ -1,4 +1,4 @@
-// import { PrismaClient } from '../generated/prisma/client';
+ import { PrismaClient } from '../generated/prisma/client';
 // import { QueryRouter } from '../routing/index.js';
 // import { QueryIntent, QueryType } from '../routing/types.js';
 
@@ -91,17 +91,94 @@
 //   };
 // };
 
-export const getAuthors = async (
-  _queryRouter?: any,
-  _limit?: number,
-  _skip?: number
-) => {
-  return [];
+export const getAuthors = async (queryRouter: any, limit: number = 50, skip: number = 0) => {
+  return queryRouter.routeQuery(async (prisma: PrismaClient) => {
+    const papers = await prisma.paper.findMany({
+      where: { authors: { not: null } },
+      select: { authors: true },
+      take: 300,
+    });
+    const authorMap = new Map<string, { id: string; name: string; slug: string; createdAt: string }>();
+    for (const p of papers) {
+      if (!p.authors) continue;
+      const names = p.authors.split(",").map((n: string) => n.trim()).filter(Boolean);
+      for (const name of names) {
+        const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+        if (!authorMap.has(slug)) {
+          authorMap.set(slug, {
+            id: slug,
+            name,
+            slug,
+            createdAt: new Date().toISOString(),
+          });
+        }
+      }
+    }
+    return Array.from(authorMap.values()).sort((a, b) => a.name.localeCompare(b.name)).slice(skip, skip + limit);
+  });
 };
 
-export const getAuthorBySlug = async (
-  _queryRouter?: any,
-  _slug?: string
-) => {
-  return null;
+export const getAuthorBySlug = async (queryRouter: any, slug: string) => {
+  if (!slug) return null;
+  const authorName = slug.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+  return queryRouter.routeQuery(async (prisma: PrismaClient) => {
+    const papers = await prisma.paper.findMany({
+      where: {
+        authors: {
+          contains: authorName,
+          mode: "insensitive",
+        },
+      },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        citationCount: true,
+        githubStars: true,
+      },
+      take: 100,
+      orderBy: { citationCount: "desc" },
+    });
+
+    if (papers.length === 0) {
+      const words = slug.split("-").filter((w) => w.length > 2);
+      if (words.length > 0) {
+        const fallbackPapers = await prisma.paper.findMany({
+          where: {
+            OR: words.map((w) => ({
+              authors: { contains: w, mode: "insensitive" },
+            })),
+          },
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+            citationCount: true,
+            githubStars: true,
+          },
+          take: 100,
+          orderBy: { citationCount: "desc" },
+        });
+
+        if (fallbackPapers.length > 0) {
+          return {
+            id: slug,
+            name: authorName,
+            slug,
+            createdAt: new Date().toISOString(),
+            papers: fallbackPapers.map((p: any) => ({ paper: p })),
+          };
+        }
+      }
+      return null;
+    }
+
+    return {
+      id: slug,
+      name: authorName,
+      slug,
+      createdAt: new Date().toISOString(),
+      papers: papers.map((p: any) => ({ paper: p })),
+    };
+  });
 };

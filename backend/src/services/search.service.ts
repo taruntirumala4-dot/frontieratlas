@@ -39,6 +39,12 @@ export const globalSearch = async (
                   mode: "insensitive",
                 },
               },
+              {
+                abstract: {
+                  contains: searchTerm,
+                  mode: "insensitive",
+                },
+              },
 
               // Search paper's linked models
               {

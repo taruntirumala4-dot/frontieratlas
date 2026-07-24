@@ -104,9 +104,89 @@ export default function Sidebar({
   const pathname = usePathname();
   const router = useRouter();
 
+  // Navigation Items
+  const discover = [
+    {
+      label: "Trending Papers",
+      slug: "trending",
+      icon: (
+        <Flame
+          size={16}
+          className={
+            activeItem === "Trending Papers"
+              ? "text-[#F55036] fill-[#F55036]"
+              : ""
+          }
+        />
+      ),
+    },
+    { label: "Latest Papers", icon: <Clock size={16} />, slug: "latest" },
+    { label: "Most GitHub Stars", icon: <Star size={16} />, slug: "github-stars" },
+  ];
+
+  const tasks = [
+    { label: "Large Language Models", icon: <MessageSquare size={16} />, slug: "large-language-models" },
+    { label: "Agents", icon: <Bot size={16} />, slug: "agents" },
+    { label: "Reasoning", icon: <Brain size={16} />, slug: "reasoning" },
+    { label: "Vision-Language Models", icon: <ImageIcon size={16} />, slug: "vision-language-models" },
+    { label: "Multimodal Models", icon: <Layers size={16} />, slug: "multimodal-models" },
+    { label: "World Models", icon: <Globe size={16} />, slug: "world-models" },
+    { label: "Image Generation", icon: <ImageIcon size={16} />, slug: "image-generation" },
+    { label: "Automatic Speech Recognition", icon: <Volume2 size={16} />, slug: "automatic-speech-recognition" },
+    { label: "Robotics", icon: <Cpu size={16} />, slug: "robotics" },
+    { label: "All Tasks", icon: <FileText size={16} />, slug: "" },
+  ];
+
+  const methods = [
+    { label: "Transformers", icon: <Zap size={16} />, slug: "transformer" },
+    { label: "Diffusion Models", icon: <ImageIcon size={16} />, slug: "diffusion-models" },
+    { label: "Mixture of Experts", icon: <Layers size={16} />, slug: "mixture-of-experts-moe" },
+    { label: "Reinforcement Learning", icon: <BarChart2 size={16} />, slug: "policy-learning" },
+    { label: "Chain-of-Thought", icon: <LinkIcon size={16} />, slug: "chain-of-thought" },
+    { label: "RAG", icon: <Search size={16} />, slug: "rag" },
+    { label: "Model Context Protocol", icon: <Plug size={16} />, slug: "mcp" },
+    { label: "LoRA", icon: <Layers size={16} />, slug: "lora" },
+    { label: "RLHF", icon: <Target size={16} />, slug: "rlhf" },
+    { label: "All Methods", icon: <FileText size={16} />, slug: "" },
+  ];
+
   useEffect(() => {
-    setActiveItem(initialActive);
-  }, [initialActive]);
+    if (pathname.startsWith("/tasks/")) {
+      const taskSlug = pathname.replace("/tasks/", "");
+      const matched = tasks.find((t) => t.slug === taskSlug);
+      if (matched) {
+        setActiveItem(matched.label);
+        return;
+      }
+    } else if (pathname === "/tasks") {
+      setActiveItem("All Tasks");
+      return;
+    } else if (pathname.startsWith("/methods/")) {
+      const methodSlug = pathname.replace("/methods/", "");
+      const matched = methods.find((m) => m.slug === methodSlug);
+      if (matched) {
+        setActiveItem(matched.label);
+        return;
+      }
+    } else if (pathname === "/methods") {
+      setActiveItem("All Methods");
+      return;
+    } else if (pathname.startsWith("/category/")) {
+      const catSlug = pathname.replace("/category/", "");
+      const matched = discover.find((d) => d.slug === catSlug);
+      if (matched) {
+        setActiveItem(matched.label);
+        return;
+      }
+    } else if (pathname === "/" || pathname === "/papers") {
+      if (initialActive) {
+        setActiveItem(initialActive);
+      } else {
+        setActiveItem("Trending Papers");
+      }
+      return;
+    }
+  }, [pathname, initialActive]);
 
   // Aggressively prefetch ALL sidebar routes on mount for instant navigation
   useEffect(() => {
@@ -131,52 +211,6 @@ export default function Sidebar({
     onItemSelect?.(label);
     onItemClick?.();
   };
-
-  // Navigation Items
-  const discover = [
-    {
-      label: "Trending Papers",
-      slug: "trending",
-      icon: (
-        <Flame
-          size={16}
-          className={
-            activeItem === "Trending Papers"
-              ? "text-[#F55036] fill-[#F55036]"
-              : ""
-          }
-        />
-      ),
-    },
-    { label: "Latest Papers", icon: <Clock size={16} />, slug: "latest" },
-    { label: "Most GitHub Stars", icon: <Star size={16} />, slug: "github-stars" },
-  ];
-
-  const tasks = [
-  { label: "Large Language Models", icon: <MessageSquare size={16} />, slug: "large-language-models" },
-  { label: "Agents", icon: <Bot size={16} />, slug: "agents" },
-  { label: "Reasoning", icon: <Brain size={16} />, slug: "reasoning" },
-  { label: "Vision-Language Models", icon: <ImageIcon size={16} />, slug: "vision-language-models" },
-  { label: "Multimodal Models", icon: <Layers size={16} />, slug: "multimodal-models" },
-  { label: "World Models", icon: <Globe size={16} />, slug: "world-models" },
-  { label: "Image Generation", icon: <ImageIcon size={16} />, slug: "image-generation" },
-  { label: "Automatic Speech Recognition", icon: <Volume2 size={16} />, slug: "automatic-speech-recognition" },
-  { label: "Robotics", icon: <Cpu size={16} />, slug: "robotics" },
-  { label: "All Tasks", icon: <FileText size={16} />, slug: "" },
-];
-
-const methods = [
-  { label: "Transformers", icon: <Zap size={16} />, slug: "transformer" },
-  { label: "Diffusion Models", icon: <ImageIcon size={16} />, slug: "diffusion-models" },
-  { label: "Mixture of Experts", icon: <Layers size={16} />, slug: "mixture-of-experts-moe" },
-  { label: "Reinforcement Learning", icon: <BarChart2 size={16} />, slug: "policy-learning" },
-  { label: "Chain-of-Thought", icon: <LinkIcon size={16} />, slug: "chain-of-thought" },
-  { label: "RAG", icon: <Search size={16} />, slug: "rag" },
-  { label: "Model Context Protocol", icon: <Plug size={16} />, slug: "mcp" },
-  { label: "LoRA", icon: <Layers size={16} />, slug: "lora" },
-  { label: "RLHF", icon: <Target size={16} />, slug: "rlhf" },
-  { label: "All Methods", icon: <FileText size={16} />, slug: "" },
-];
 
   return (
     <aside className="flex flex-col w-full bg-transparent h-full border-r border-[#E5E5E0]">
