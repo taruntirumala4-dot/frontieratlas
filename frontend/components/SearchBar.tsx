@@ -1,16 +1,18 @@
+
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Search, X, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { searchSuggestions, type SearchResult } from "@/lib/search";
+import { type SearchResult } from "@/lib/search";
+import { searchPapers } from "@/lib/paperApi";
 import { motion } from "framer-motion";
 
 interface SearchBarProps {
   placeholder?: string;
   autoFocus?: boolean;
-  variant?: "default" | "compact";
+  variant?: "default" | "compact" | "homepage";
   initialQuery?: string;
   layoutIdPrefix?: string;
 }
@@ -40,8 +42,17 @@ export default function SearchBar({
     setLoading(true);
     try {
       // Fetch a larger pool of results to ensure we capture the research fields
-      const results = await searchSuggestions(q, 10);
-      setSuggestions(results.slice(0, 6));
+      const papers = await searchPapers(q);
+
+const results: SearchResult[] = papers.slice(0, 6).map((paper) => ({
+  type: "papers",
+  id: String(paper.id),
+  title: paper.title,
+  slug: paper.slug,
+  subtitle: `${paper.citations} citation${paper.citations !== 1 ? "s" : ""}`,
+}));
+
+setSuggestions(results);
     } catch (error) {
       console.error("Failed to fetch suggestions:", error);
       setSuggestions([]);
@@ -159,25 +170,44 @@ export default function SearchBar({
   // Determine if we should show suggestions
   const shouldShowSuggestions = showSuggestions && suggestions.length > 0;
 
+  const isHomepagePresentation = variant === "homepage";
+
   return (
     <div
-      ref={containerRef}
-      className={`relative ${variant === "compact" ? "w-full max-w-[400px]" : "w-full max-w-[600px] mx-auto"}`}
-    >
+  ref={containerRef}
+ className={`relative ${
+  variant === "compact"
+    ? "w-full max-w-[360px]"
+    : "w-full max-w-[640px] mx-auto"
+}`}
+>
       <motion.form
         layoutId={layoutIdPrefix ? `${layoutIdPrefix}-container` : undefined}
         transition={{ type: "spring", stiffness: 250, damping: 25 }}
         onSubmit={handleSubmit}
-        className={`relative flex items-center px-3 md:px-4 bg-white border border-[#E5E5E0] focus-within:border-[#DCDCD7] focus-within:shadow-[0_4px_20px_rgb(0,0,0,0.08)] transition-all ${
-          variant === "compact" ? "rounded-[20px]" : "rounded-[24px]"
-        }`}
+        className={`relative flex items-center px-4 md:px-5 bg-white border border-[#E5E5E0]
+shadow-[0_8px_30px_rgb(0,0,0,0.06)]
+hover:shadow-[0_12px_32px_rgb(0,0,0,0.10)]
+focus-within:border-[#FF5A1F]/40
+focus-within:shadow-[0_0_0_3px_rgba(255,90,31,0.08)]
+transition-all duration-200
+${
+  variant === "compact"
+    ? "rounded-[24px]"
+    : "rounded-[24px]"
+}`}
       >
         <motion.div
           layoutId={layoutIdPrefix ? `${layoutIdPrefix}-icon` : undefined}
           transition={{ type: "spring", stiffness: 250, damping: 25 }}
-          className="flex items-center text-[#737373] mr-2 shrink-0"
+          className={`flex items-center text-[#737373] shrink-0 ${
+            isHomepagePresentation ? "mr-2 md:mr-3" : "mr-2"
+          }`}
         >
-          <Search size={variant === "compact" ? 16 : 18} />
+          <Search
+            size={variant === "compact" ? 16 : 18}
+            className={isHomepagePresentation ? "md:w-[20px] md:h-[20px]" : undefined}
+          />
         </motion.div>
         <motion.input
           layoutId={layoutIdPrefix ? `${layoutIdPrefix}-input` : undefined}
@@ -189,8 +219,10 @@ export default function SearchBar({
           onFocus={() => setShowSuggestions(true)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className={`bg-transparent outline-none flex-1 text-[#111111] placeholder:text-[#737373] min-w-0 pr-10 ${
-            variant === "compact" ? "h-9 text-[12px]" : "h-10 text-[13px]"
+          className={`bg-transparent outline-none flex-1 text-[#111111] placeholder:text-[#737373] min-w-0 pr-10 text-left ${
+           variant === "compact"
+  ? "h-12 text-[13px]"
+  : isHomepagePresentation ? "h-10 text-[13px] md:text-[14px] truncate mr-2" : "h-12 text-[15px]"
           }`}
           aria-label="Search"
           aria-autocomplete="list"
@@ -232,22 +264,23 @@ export default function SearchBar({
           transition={{ duration: 0.15 }}
           id="search-suggestions"
           role="listbox"
-          className="
-            absolute 
-            top-full 
-            left-0 
-            right-0 
-            mt-1 lg:mt-2 
-            bg-white 
-            border border-[#E5E5E0] 
-            rounded-lg 
-            shadow-lg 
-            z-50 
-            max-h-[300px] lg:max-h-[400px] 
-            overflow-y-auto
-            overflow-x-hidden
-            py-1
-          "
+          className={`
+absolute
+${isHomepagePresentation ? "left-[-40px] w-[440px] max-w-[calc(100vw-2rem)]" : "left-0 right-0"}
+${isHomepagePresentation ? "top-[calc(100%+8px)]" : "top-[calc(100%+12px)]"}
+
+bg-white
+
+${isHomepagePresentation ? "rounded-xl border border-[#E5E5E0] py-2" : "rounded-[28px] border border-[#ECEAE4]"}
+
+${isHomepagePresentation ? "shadow-[0_8px_30px_rgb(0,0,0,0.12)]" : "shadow-[0_24px_80px_rgba(0,0,0,0.10)]"}
+
+overflow-hidden
+z-50
+
+${isHomepagePresentation ? "max-h-[400px]" : "max-h-[420px]"}
+overflow-y-auto
+`}
         >
           {suggestions.map((suggestion, index) => {
             const href = `/${suggestion.type === "papers" ? "papers" : suggestion.type}/${suggestion.slug}`;
@@ -265,26 +298,70 @@ export default function SearchBar({
                 <Link
                   href={href}
                   onClick={() => setShowSuggestions(false)}
-                  className="flex items-start gap-3 px-4 py-3 cursor-pointer transition-colors block w-full h-full"
+                  className={`flex items-start gap-3 cursor-pointer transition-colors block w-full h-full ${
+                    isHomepagePresentation ? "px-4 md:px-5 py-3" : "px-4 py-3"
+                  }`}
                 >
-                  <span className="text-lg shrink-0">
-                    {getSuggestionIcon(suggestion.type)}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[14px] font-medium text-[#111111] truncate">
+                  {isHomepagePresentation ? (
+                    <div className="flex flex-col gap-1 text-left">
+                      <h4 className="text-[14px] font-semibold text-[#111111] leading-snug line-clamp-2">
                         {suggestion.title}
-                      </span>
-                      <span className="text-[10px] font-medium text-[#8B8B8B] uppercase tracking-wide shrink-0">
-                        {getSuggestionTypeLabel(suggestion.type)}
-                      </span>
+                      </h4>
+                      {suggestion.subtitle && (
+                        <div className="text-[12px] text-[#737373]">
+                          {suggestion.subtitle}
+                        </div>
+                      )}
                     </div>
+                  ) : (
+                    <>
+                      <div
+  className="
+    w-10
+    h-10
+    rounded-xl
+    bg-[#F7F6F2]
+    flex
+    items-center
+    justify-center
+    shrink-0
+  "
+>
+  <span className="text-base">
+    {getSuggestionIcon(suggestion.type)}
+  </span>
+</div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3">
+  <span className="flex-1 text-[15px] font-semibold text-[#111111] leading-6 truncate">
+    {suggestion.title}
+  </span>
+
+  <span
+    className="
+      shrink-0
+      rounded-full
+      bg-[#F5F5F4]
+      px-2.5
+      py-1
+      text-[10px]
+      font-semibold
+      uppercase
+      tracking-wide
+      text-[#737373]
+    "
+  >
+    {getSuggestionTypeLabel(suggestion.type)}
+  </span>
+</div>
                     {suggestion.subtitle && (
-                      <p className="text-[12px] text-[#555555] mt-0.5">
-                        {suggestion.subtitle}
-                      </p>
+                      <p className="mt-1 text-[13px] text-[#6B7280] leading-5">
+  {suggestion.subtitle}
+</p>
                     )}
                   </div>
+                    </>
+                  )}
                 </Link>
               </li>
             );

@@ -43,6 +43,8 @@ export default function Navbar({
   const isHomePage = pathname === "/";
   const isCategoryPage = pathname.startsWith("/category/");
   const hasHeroSection = isHomePage || isCategoryPage;
+  const usesHomepageSearchPresentation =
+    isMethodsActive || isModelsActive || isBenchmarksActive || isTasksActive;
   
   const shouldShowSearch = !hasHeroSection || isScrolled;
 
@@ -205,7 +207,9 @@ export default function Navbar({
         </div>
 
         {/* Center — Search Bar (Desktop) */}
-        <div className="hidden lg:flex absolute left-1/2 -translate-x-1/2 items-center justify-center w-[240px] xl:w-[400px]">
+        <div className={`hidden lg:flex absolute left-1/2 -translate-x-1/2 items-center justify-center ${
+          usesHomepageSearchPresentation ? "w-[360px]" : "w-[240px] xl:w-[400px]"
+        }`}>
           <AnimatePresence>
             {shouldShowSearch && (
               <motion.div
@@ -215,7 +219,11 @@ export default function Navbar({
                 transition={{ duration: 0.25, ease: "easeOut" }}
                 className="w-full"
               >
-                <SearchBar variant="compact" placeholder="Search..." initialQuery="" />
+                <SearchBar
+                  variant={usesHomepageSearchPresentation ? "homepage" : "compact"}
+                  placeholder="Search..."
+                  initialQuery=""
+                />
               </motion.div>
             )}
           </AnimatePresence>
@@ -332,3 +340,5 @@ export default function Navbar({
     </>
   );
 }
+
+
