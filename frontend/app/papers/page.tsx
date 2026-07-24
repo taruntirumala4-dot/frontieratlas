@@ -1,6 +1,7 @@
 import HomeContent from "@/components/HomeContent";
 import { getPapers } from "@/lib/paperApi";
 
+export const runtime = "edge";
 export const dynamic = 'force-dynamic';
 
 export default async function PapersPage() {
