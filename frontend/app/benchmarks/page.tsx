@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { useState, useEffect, useMemo, useRef } from "react";
+import { Suspense, useState, useEffect, useMemo, useRef } from "react";
 import {
   Search,
   ArrowUpRight,
@@ -233,7 +233,7 @@ const TRENDING_ICON_POOL = [
    COMPONENT
    ══════════════════════════════════════════════════════════════ */
 
-export default function BenchmarksPage() {
+function BenchmarksContent() {
   const router = useRouter();
   const slugify = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, "-");
   const searchParams = useSearchParams();
@@ -443,28 +443,6 @@ export default function BenchmarksPage() {
                       })}
                     </ul>
                   </nav>
-
-                  {/* Suggest a Benchmark Card */}
-                  <div className="px-2 mt-4">
-                    <div className="bg-gradient-to-br from-rose-50 to-white rounded-xl border border-rose-100 p-4 shadow-sm">
-                      <div className="flex items-start gap-3">
-                        <div className="p-2 bg-rose-100 rounded-full text-rose-500 shrink-0">
-                          <MessageSquare size={16} />
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-sm font-medium text-gray-800">
-                            Can’t find what you need?
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            Submit a benchmark to keep our registry up to date.
-                          </p>
-                        </div>
-                      </div>
-                      <button className="mt-3 w-full flex items-center justify-center gap-1.5 bg-[#e11d48] hover:bg-[#be123c] text-white px-4 py-2 rounded-lg text-xs font-semibold transition-colors shadow-sm">
-                        <Plus size={14} /> Submit Benchmark
-                      </button>
-                    </div>
-                  </div>
                 </div>
               </aside>
 
@@ -1018,5 +996,12 @@ export default function BenchmarksPage() {
         </div>
       )}
     </div>
+  );
+}
+export default function BenchmarksPage() {
+  return (
+    <Suspense fallback={<div className="h-screen w-full bg-[#F8F7F2]" />}>
+      <BenchmarksContent />
+    </Suspense>
   );
 }
