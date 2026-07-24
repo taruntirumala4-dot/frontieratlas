@@ -339,7 +339,7 @@ export const getModelBySlug = async (
           },
           papers: {
             take: 100,
-            include: {
+            select: {
               paper: {
                 select: {
                   id: true,
