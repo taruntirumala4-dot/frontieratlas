@@ -608,7 +608,7 @@ export function RelatedPaperCard({ paper }: { paper: Paper }) {
     return names.join(", ");
   })();
 
-  const hasCode = !!paper.githubUrl;
+  const hasCode = !!(paper.githubUrl || paper.repositories?.find((r: any) => r.url?.includes("github.com"))?.url);
   const hasConference = !!paper.conference && paper.conference !== "";
 
   return (

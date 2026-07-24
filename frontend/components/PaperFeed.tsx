@@ -349,6 +349,7 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
   const githubRepo = paper.repositories?.find(
     (repo: any) => repo.url?.includes("github.com")
   );
+  const resolvedGithubUrl = paper.githubUrl || githubRepo?.url || null;
   const huggingFaceRepo = paper.repositories?.find(
     (repo: any) => repo.url?.includes("huggingface.co")
   );
@@ -385,14 +386,9 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
                 visibleAuthors.map((a, i) => (
                   <span key={a.slug || i}>
                     {i > 0 && <span>, </span>}
-                    <span
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        router.push(
-                          `/authors/${a.slug || a.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`
-                        );
-                      }}
+                    <Link
+                      href={`/authors/${a.slug || a.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+                      onClick={(e) => e.stopPropagation()}
                       className="hover:text-[#F55036] hover:underline cursor-pointer"
                     >
                       {a.name}
@@ -485,7 +481,7 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
               </div>
               <ArrowUpRight size={14} strokeWidth={1.5} className="hidden lg:block xl:hidden" />
             </button>
- 
+
             <button
               onClick={(e) => {
                 e.preventDefault();
@@ -517,7 +513,7 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
               </div>
               <ArrowUpRight size={14} strokeWidth={1.5} className="text-[#9CA3AF] hidden lg:block xl:hidden" />
             </button>
- 
+
             <button
               onClick={(e) => {
                 e.preventDefault();
