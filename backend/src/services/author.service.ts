@@ -91,7 +91,7 @@
 //   };
 // };
 
-export const getAuthors = async (queryRouter: any, limit: number = 50) => {
+export const getAuthors = async (queryRouter: any, limit: number = 50, skip: number = 0) => {
   return queryRouter.routeQuery(async (prisma: PrismaClient) => {
     const papers = await prisma.paper.findMany({
       where: { authors: { not: null } },
@@ -114,7 +114,7 @@ export const getAuthors = async (queryRouter: any, limit: number = 50) => {
         }
       }
     }
-    return Array.from(authorMap.values()).slice(0, limit);
+    return Array.from(authorMap.values()).sort((a, b) => a.name.localeCompare(b.name)).slice(skip, skip + limit);
   });
 };
 
