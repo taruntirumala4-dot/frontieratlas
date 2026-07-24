@@ -134,8 +134,8 @@ function ProgressionChart({ rankings }: { rankings: BenchmarkDetailRanking[] }) 
         ))}
 
         {/* X-axis: only first and last year like reference */}
-        {xTicksDisplay.map(yr => (
-          <text key={yr} x={cx(yr)} y={H - 8}
+        {xTicksDisplay.map((yr, i) => (
+          <text key={`${yr}-${i}`} x={cx(yr)} y={H - 8}
             textAnchor="middle" fontSize="10" fill="#6B7280" fontFamily="ui-monospace,monospace">
             {yr}
           </text>
