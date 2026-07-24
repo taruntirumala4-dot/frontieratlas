@@ -192,11 +192,11 @@ function CitationPreview({ text, format }: { text: string; format: CitationForma
   );
 }
 
-function RepositoryPanel({ paper }: { paper: PaperDetailType }) {
-  const repoName = parseGitHubRepo(paper.githubUrl);
+function RepositoryPanel({ paper, resolvedGithubUrl }: { paper: PaperDetailType; resolvedGithubUrl: string | null }) {
+  const repoName = parseGitHubRepo(resolvedGithubUrl);
   const hasStars = paper.githubStars != null && paper.githubStars > 0;
   const hasForks = paper.githubForks != null && paper.githubForks > 0;
-  if (!paper.githubUrl) {
+  if (!resolvedGithubUrl) {
     return (
       <div className="border border-[#EDE8DF] rounded-lg p-6">
         <div className="flex items-center gap-3 pb-4 border-b border-[#E5E5E0]">
@@ -246,13 +246,13 @@ function RepositoryPanel({ paper }: { paper: PaperDetailType }) {
           <Github size={24} className="shrink-0 text-[#8B8B8B]" />
         </div>
 
-        {paper.githubUrl && (
+        {resolvedGithubUrl && (
           <>
             <p className="text-[13px] font-medium text-[#6F665D] m-0">
               {paper.isOfficialCode ? "Official implementation from the authors" : "Community-maintained repository"}
             </p>
             <a
-              href={paper.githubUrl}
+              href={resolvedGithubUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full inline-flex items-center justify-center gap-2 rounded-full border border-[#E0DDD6] bg-transparent px-5 py-3 text-[14px] font-medium text-[#444444] no-underline transition-all hover:bg-[rgba(255,90,31,0.06)] hover:text-[#FF5A1F] hover:border-[rgba(255,90,31,0.3)]"
@@ -681,6 +681,10 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
   const huggingFaceRepo = paper.repositories?.find(
     (repo: any) => repo.url?.includes("huggingface.co")
   );
+  const githubRepo = paper.repositories?.find(
+    (repo: any) => repo.url?.includes("github.com")
+  );
+  const resolvedGithubUrl = paper.githubUrl || githubRepo?.url || null;
   const hfResolvedUrl =
     paper.hfUrl ||
     paper.huggingface_url ||
@@ -940,9 +944,9 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
                       arXiv
                     </a>
                   )}
-                  {paper.githubUrl && (
+                  {resolvedGithubUrl && (
                     <a
-                      href={paper.githubUrl}
+                      href={resolvedGithubUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="ds-button-ghost inline-flex items-center justify-center gap-1.5 rounded-full border-[1.5px] border-[#E0DDD6] bg-transparent px-5 py-2 text-[13px] font-medium text-[#444444] no-underline transition-all hover:bg-[rgba(255,90,31,0.06)] hover:text-[#FF5A1F] hover:border-[rgba(255,90,31,0.3)] active:scale-[0.97]"
@@ -1233,7 +1237,7 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
           {/* ===== SIDEBAR ===== */}
           {deferred ? (
             <aside className="space-y-5 xl:sticky xl:top-6 self-start">
-              <RepositoryPanel paper={paper} />
+              <RepositoryPanel paper={paper} resolvedGithubUrl={resolvedGithubUrl} />
               {hfResolvedUrl && <HuggingFacePanel paper={paper} hfUrl={hfResolvedUrl} />}
               <CitationPanel
                 paper={paper}
