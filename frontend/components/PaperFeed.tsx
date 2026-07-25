@@ -12,8 +12,10 @@ import {
 import {
   Github,
   ArrowUpRight,
+  ArrowUp,
   FileText,
   FileCode2,
+  Star,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -358,7 +360,19 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
     router.prefetch(`/papers/${paper.slug}`);
     prefetchPaperBySlug(paper.slug);
   }, [router, paper.slug]);
+<<<<<<< HEAD
  
+=======
+
+  const starsPerHour = useMemo(() => {
+    const paperDate = new Date(paper.date);
+    if (isNaN(paperDate.getTime())) return "0.00";
+    const now = new Date();
+    const hoursSincePublication = Math.max(24, (now.getTime() - paperDate.getTime()) / (1000 * 60 * 60));
+    return (upvotesNum / hoursSincePublication).toFixed(2);
+  }, [paper.date, upvotesNum]);
+
+>>>>>>> 89ff1ab (Ui improvements in Homepage)
   return (
     <Link
       href={`/papers/${paper.slug}`}
@@ -366,7 +380,7 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
       onMouseEnter={handlePrefetch}
       onTouchStart={handlePrefetch}
     >
-      <div className="group flex flex-col xl:flex-row gap-3 sm:gap-4 xl:gap-5 p-3 sm:p-4 xl:pt-2 xl:pb-2 bg-white xl:bg-transparent border xl:border-x-0 xl:border-t-0 border-[#E5E5E0] rounded-none cursor-pointer hover:shadow-lg xl:hover:bg-white xl:hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all duration-300 ease-out hover:-translate-y-1 relative hover:z-10 active:scale-[0.99]">
+      <div className="group flex flex-col xl:flex-row gap-3 sm:gap-4 xl:gap-5 p-3 sm:p-4 xl:pt-2 xl:pb-2 bg-white xl:bg-transparent border xl:border-x-0 xl:border-t-0 border-[#E5E5E0] rounded-none cursor-pointer hover:shadow-lg xl:hover:bg-white xl:hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all duration-300 ease-out">
         {/* PDF thumbnail */}
         <div className="order-first xl:order-last shrink-0 w-full xl:w-auto mx-auto xl:mx-0 xl:self-stretch border-b xl:border-b-0 border-[#E5E5E0] pb-3 xl:pb-0 mb-1 xl:mb-0">
           <PaperThumbnail title={paper.title} thumbnail={paper.thumbnail} />
@@ -401,7 +415,7 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
               ) : (
                 <span>Unknown Author</span>
               )}
-              {remaining > 0 && <span>, +{remaining}</span>}
+              {remaining > 0 && <span>, +{remaining} {remaining === 1 ? 'author' : 'authors'}</span>}
             </div>
             <span className="text-[#CCCCCC]">•</span>
  
@@ -441,7 +455,7 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
           </div>
  
           {/* Action Buttons */}
-          <div className="grid grid-cols-4 md:grid md:grid-cols-4 gap-1 sm:gap-2 md:gap-3 mt-1.5">
+          <div className="grid grid-cols-5 md:grid md:grid-cols-5 gap-1 sm:gap-2 md:gap-3 mt-1.5">
             <button
               onClick={(e) => {
                 e.preventDefault();
@@ -507,7 +521,7 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
                   <img src="https://cdn.simpleicons.org/github/24292f" alt="GitHub" className="w-[9px] h-[9px] min-[375px]:w-[10px] min-[375px]:h-[10px] md:w-[12px] md:h-[12px] lg:w-4 lg:h-4 xl:w-[12px] xl:h-[12px]" />
                 </div>
                 <div className="flex flex-col items-start">
-                  <span className="font-medium lg:font-semibold xl:font-medium text-[7.5px] min-[375px]:text-[8.5px] sm:text-[9.5px] md:text-[11.5px] lg:text-[15px] xl:text-[11.5px] whitespace-nowrap tracking-tighter min-[375px]:tracking-tight">GitHub</span>
+                  <span className="font-medium lg:font-semibold xl:font-medium text-[7.5px] min-[375px]:text-[8.5px] sm:text-[9.5px] md:text-[11.5px] lg:text-[15px] xl:text-[11.5px] whitespace-nowrap tracking-tighter min-[375px]:tracking-tight">Code</span>
                   <span className="hidden lg:block text-[12px] text-[#666] xl:hidden">
                     {upvotesNum > 0 ? `${upvotesNum >= 1000 ? (upvotesNum / 1000).toFixed(1) + "k" : upvotesNum} stars` : "0 stars"}
                   </span>
@@ -539,12 +553,29 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="https://cdn.simpleicons.org/huggingface" alt="Hugging Face" className="w-[9px] h-[9px] min-[375px]:w-[10px] min-[375px]:h-[10px] md:w-[12px] md:h-[12px] lg:w-4 lg:h-4 xl:w-[12px] xl:h-[12px]" />
                 </div>
-                <div className="flex flex-col items-start">
-                  <span className="font-medium lg:font-semibold xl:font-medium text-[7.5px] min-[375px]:text-[8.5px] sm:text-[9.5px] md:text-[11.5px] lg:text-[15px] xl:text-[11.5px] whitespace-nowrap tracking-tighter min-[375px]:tracking-tight">Hugging Face</span>
-                  <span className="hidden lg:block text-[12px] text-[#666] xl:hidden">
-                    {paper.repositories?.filter((repo: any) => repo.url?.includes("huggingface.co")).length || 0} models
-                  </span>
+                <span className="font-medium lg:font-semibold xl:font-medium text-[7.5px] min-[375px]:text-[8.5px] sm:text-[9.5px] md:text-[11.5px] lg:text-[15px] xl:text-[11.5px] whitespace-nowrap tracking-tighter min-[375px]:tracking-tight">
+                  Hugging Face
+                </span>
+              </div>
+              <ArrowUpRight size={14} strokeWidth={1.5} className="text-[#9CA3AF] hidden lg:block xl:hidden" />
+            </button>
+
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              className="flex-none md:flex-1 flex items-center justify-center lg:justify-between xl:justify-center px-0.5 min-[375px]:px-1 md:px-2 lg:px-4 xl:px-2 h-[24px] md:h-[28px] lg:h-[58px] xl:h-[28px] bg-white text-[#24292f] border-[1.5px] border-[#24292f]/30 hover:border-[#24292f] hover:bg-[#24292f]/5 rounded-[6px] transition-all duration-300 overflow-hidden"
+            >
+              <div className="flex items-center gap-0.5 min-[375px]:gap-1 md:gap-1.5 lg:gap-3 xl:gap-1.5">
+                <div className="w-[12px] h-[12px] min-[375px]:w-[14px] min-[375px]:h-[14px] md:w-[20px] md:h-[20px] lg:w-8 lg:h-8 xl:w-[20px] xl:h-[20px] rounded-[4px] md:rounded-[6px] lg:rounded-[10px] xl:rounded-[6px] bg-transparent flex items-center justify-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="https://cdn.simpleicons.org/github/24292f" alt="GitHub" className="w-[9px] h-[9px] min-[375px]:w-[10px] min-[375px]:h-[10px] md:w-[12px] md:h-[12px] lg:w-4 lg:h-4 xl:w-[12px] xl:h-[12px]" />
                 </div>
+                <ArrowUp className="w-[8px] h-[8px] min-[375px]:w-[10px] min-[375px]:h-[10px] md:w-[12px] md:h-[12px] lg:w-4 lg:h-4 xl:w-[12px] xl:h-[12px] text-[#24292f]" strokeWidth={2.5} />
+                <span className="font-medium lg:font-semibold xl:font-medium text-[7.5px] min-[375px]:text-[8.5px] sm:text-[9.5px] md:text-[11.5px] lg:text-[15px] xl:text-[11.5px] whitespace-nowrap tracking-tighter min-[375px]:tracking-tight">
+                  {upvotesNum} stars / hour
+                </span>
               </div>
               <ArrowUpRight size={14} strokeWidth={1.5} className="text-[#9CA3AF] hidden lg:block xl:hidden" />
             </button>
@@ -621,6 +652,7 @@ export default function PaperList({
   const [papers, setPapers] = useState<Paper[]>(
     () => initialPapers?.papers ?? [],
   );
+
   const [page, setPage] = useState(() => initialPapers?.page ?? 1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(initialError ?? null);
