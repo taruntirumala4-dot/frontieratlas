@@ -248,12 +248,21 @@ function findFuzzyCache(params: GetPapersParams): GetPapersResult | null {
       if (key.includes(targetTask)) return entry.data as GetPapersResult;
     } else if (targetMethod) {
       if (key.includes(targetMethod)) return entry.data as GetPapersResult;
-    } else {
-      // For general feed period/sort switching, return any existing page 1 paper cache instantly
+    } else if (!params.task && !params.method && !params.model) {
+      // For general feed period/sort switching, return any existing page 1 paper cache
       return entry.data as GetPapersResult;
     }
   }
   return null;
+}
+
+export function getPapersSync(params: GetPapersParams = {}): GetPapersResult | null {
+  const cacheKey = getCacheKey(params);
+  const cached = readCache<GetPapersResult>(cacheKey);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    return cached.data;
+  }
+  return findFuzzyCache(params);
 }
 
 function writeCache<T>(key: string, data: T): void {

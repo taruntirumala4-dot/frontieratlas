@@ -21,6 +21,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   getPapers,
+  getPapersSync,
   getArxivAbsUrl,
   getArxivPdfUrl,
   type GetPapersParams,
@@ -28,6 +29,8 @@ import {
   type Paper,
 } from "@/lib/paperApi";
 import { prefetchPaperBySlug } from "@/lib/papers";
+import { prefetchBenchmarkDetail } from "@/lib/benchmarks";
+import { getTaxonomyHref } from "@/lib/taxonomy";
 import Image from "next/image";
  
 // --- Performance Logger ---
@@ -106,12 +109,40 @@ const getTagColor = (label: string): string => {
  
 /* ─── Pill tag ───────────────────────────────────────────────────────────── */
 const Pill = memo(
-  ({ label, colorKey }: { label: string; colorKey: string }) => {
+  ({
+    label,
+    colorKey,
+    defaultType = "task",
+  }: {
+    label: string;
+    colorKey: string;
+    defaultType?: "task" | "method" | "model" | "dataset" | "benchmark" | "author";
+  }) => {
+    const router = useRouter();
     const c = TAG_COLORS[colorKey] || TAG_COLORS.gray;
     const isGray = colorKey === "gray";
+    const href = getTaxonomyHref(label, defaultType);
+ 
+    const handleClick = (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      router.push(href);
+    };
+ 
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        e.stopPropagation();
+        router.push(href);
+      }
+    };
  
     return (
       <span
+        role="link"
+        tabIndex={0}
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
         className={`group h-[24px] inline-flex items-center px-2.5 rounded-[4px] text-[11px] cursor-pointer transition-all duration-200 hover:-translate-y-px hover:brightness-[0.96] hover:shadow-sm active:scale-95 select-none ${c.bg} ${c.text} ${c.border || ""} whitespace-nowrap`}
       >
         {!isGray && (
@@ -128,6 +159,7 @@ Pill.displayName = "Pill";
  
 /* ─── SOTA Display ───────────────────────────────────────────────────────── */
 const SotaDisplay = memo(({ sota }: { sota: string }) => {
+  const router = useRouter();
   if (!sota) return null;
   const segments = sota.split(" • ");
  
@@ -148,6 +180,8 @@ const SotaDisplay = memo(({ sota }: { sota: string }) => {
           benchmarks = parts[1];
         }
  
+        const benchmarkList = benchmarks.split(",").map((b) => b.trim()).filter(Boolean);
+ 
         return (
           <span key={idx} className="inline-flex items-center">
             {idx > 0 && (
@@ -161,19 +195,79 @@ const SotaDisplay = memo(({ sota }: { sota: string }) => {
                 </span>
                 <span className="mr-1 text-[10px]">🏆</span>
                 <span className="text-[#8B8B8B] mr-1 font-normal">on</span>
-                <span className="text-[#1E40AF] text-[11.5px] tracking-tighter">
-                  {benchmarks}
-                </span>
+                {benchmarkList.map((bName, bIdx) => {
+                  const href = getTaxonomyHref(bName, "benchmark");
+                  const bSlug = href.replace("/benchmarks/", "");
+                  const handlePrefetch = () => {
+                    if (bSlug) {
+                      router.prefetch(href);
+                      prefetchBenchmarkDetail(bSlug);
+                    }
+                  };
+                  return (
+                    <span key={bIdx}>
+                      {bIdx > 0 && <span className="text-[#8B8B8B] mr-1">, </span>}
+                      <span
+                        role="link"
+                        tabIndex={0}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handlePrefetch();
+                          router.push(href);
+                        }}
+                        onMouseEnter={handlePrefetch}
+                        onTouchStart={handlePrefetch}
+                        onFocus={handlePrefetch}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handlePrefetch();
+                            router.push(href);
+                          }
+                        }}
+                        className="text-[#1E40AF] text-[11.5px] tracking-tighter hover:underline cursor-pointer"
+                      >
+                        {bName}
+                      </span>
+                    </span>
+                  );
+                })}
               </>
             ) : isOn ? (
               <>
                 <span className="text-[#8B8B8B] font-normal mr-1">
                   {prefix}
                 </span>
-                <span className="text-[#8B8B8B] mr-1 font-normal">on</span>
-                <span className="text-[#1E40AF] text-[11.5px] tracking-tighter">
-                  {benchmarks}
-                </span>
+                <span className="text-[#8B8B8B] font-normal mr-1">on</span>
+                {benchmarkList.map((bName, bIdx) => {
+                  const href = getTaxonomyHref(bName, "benchmark");
+                  return (
+                    <span key={bIdx}>
+                      {bIdx > 0 && <span className="text-[#8B8B8B] mr-1">, </span>}
+                      <span
+                        role="link"
+                        tabIndex={0}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          router.push(href);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            router.push(href);
+                          }
+                        }}
+                        className="text-[#1E40AF] text-[11.5px] tracking-tighter hover:underline cursor-pointer"
+                      >
+                        {bName}
+                      </span>
+                    </span>
+                  );
+                })}
               </>
             ) : (
               <span className="text-[#8B8B8B] font-normal tracking-tight">
@@ -395,10 +489,19 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
                   <span key={a.slug || i}>
                     {i > 0 && <span>, </span>}
                     <span
+                      role="link"
+                      tabIndex={0}
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
                         router.push(`/authors/${a.slug || a.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          router.push(`/authors/${a.slug || a.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`);
+                        }
                       }}
                       className="hover:text-[#F55036] hover:underline cursor-pointer"
                     >
@@ -788,14 +891,14 @@ export default function PaperList({
       ? selectedTag.toLowerCase().replace(/\s+/g, "-")
       : undefined;
   }, [filterParams?.task, selectedTag]);
- 
+
   const getCacheKey = useCallback(
     (pageNumber: number) => {
       return `${task ?? "all"}:${filterParams?.model ?? "none"}:${method ?? "none"}:${filterParams?.sort ?? "none"}:${period ?? "all"}:${pageNumber}`;
     },
     [method, filterParams?.model, filterParams?.sort, period, task],
   );
- 
+
   const fetchPage = useCallback(
     (pageNumber: number): Promise<GetPapersResult> => {
       const key = getCacheKey(pageNumber);
@@ -806,7 +909,7 @@ export default function PaperList({
       if (inFlightRef.current.has(key)) {
         return inFlightRef.current.get(key)!;
       }
- 
+
       const request = getPapers({
         page: pageNumber,
         task,
@@ -822,7 +925,7 @@ export default function PaperList({
         .finally(() => {
           inFlightRef.current.delete(key);
         });
- 
+
       inFlightRef.current.set(key, request);
       return request;
     },
@@ -835,7 +938,7 @@ export default function PaperList({
       task,
     ],
   );
- 
+
   const appendPapers = useCallback((newPapers: Paper[]) => {
     setPapers((prev) => {
       const existingSlugs = new Set(prev.map((paper) => paper.slug));
@@ -845,7 +948,7 @@ export default function PaperList({
       return uniquePapers.length ? [...prev, ...uniquePapers] : prev;
     });
   }, []);
- 
+
   const prefetchPage = useCallback(
     (pageNumber: number) => {
       void fetchPage(pageNumber).catch((err) => {
@@ -854,33 +957,33 @@ export default function PaperList({
     },
     [fetchPage],
   );
- 
+
   const loadPage = useCallback(
     async (pageNumber: number, replace = false) => {
       if (loadingRef.current) return;
- 
+
       try {
         loadingRef.current = true;
         setLoading(true);
         setError(null);
- 
+
         const result = await fetchPage(pageNumber);
         const visiblePapers = normalizedSearchQuery
           ? result.papers.filter(matchesSearch)
           : result.papers;
- 
+
         setPage(result.page);
         setHasMore(result.hasMore);
- 
+
         if (replace) {
           setPapers(visiblePapers);
         } else {
           appendPapers(visiblePapers);
         }
- 
+
         if (result.hasMore) {
           nextPageRef.current = result.page + 1;
- 
+
           if (visiblePapers.length === 0) {
             setTimeout(() => {
               if (nextPageRef.current > 0) {
@@ -910,8 +1013,18 @@ export default function PaperList({
       prefetchPage,
     ],
   );
- 
+
   useEffect(() => {
+    const currentParams: GetPapersParams = {
+      page: 1,
+      task,
+      method,
+      model: filterParams?.model,
+      sort: filterParams?.sort,
+      period,
+    };
+
+    // Default home feed with SSR initialPapers
     if (
       initialPapers &&
       !selectedTag &&
@@ -927,6 +1040,7 @@ export default function PaperList({
       setPage(initialPapers.page);
       setHasMore(initialPapers.hasMore);
       setError(initialError ?? null);
+      setLoading(false);
       if (initialPapers.hasMore) {
         nextPageRef.current = initialPapers.page + 1;
         prefetchPage(initialPapers.page + 1);
@@ -935,7 +1049,22 @@ export default function PaperList({
       }
       return;
     }
- 
+
+    // Check synchronous cache hit for this specific chip or filter (0ms instant render)
+    const syncHit = getPapersSync(currentParams);
+    if (syncHit && syncHit.papers.length > 0) {
+      const visible = normalizedSearchQuery ? syncHit.papers.filter(matchesSearch) : syncHit.papers;
+      setPapers(visible);
+      setPage(syncHit.page);
+      setHasMore(syncHit.hasMore);
+      setLoading(false);
+      onFilterDone?.();
+      return;
+    }
+
+    // NEVER show stale papers: clear papers array immediately and show skeleton loading
+    setPapers([]);
+    setLoading(true);
     setPage(1);
     setHasMore(true);
     nextPageRef.current = 1;
@@ -949,6 +1078,14 @@ export default function PaperList({
     initialError,
     initialPapers,
     loadPage,
+    matchesSearch,
+    method,
+    normalizedSearchQuery,
+    onFilterDone,
+    period,
+    prefetchPage,
+    selectedTag,
+    task,
   ]);
 
   const [isTransitioning, setIsTransitioning] = useState(false);
