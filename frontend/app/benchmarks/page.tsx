@@ -58,7 +58,7 @@ import {
   ScanEye,
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
-import { getBenchmarks, type BenchmarkItem } from "@/lib/benchmarks";
+import { getBenchmarks, getCachedBenchmarksSync, prefetchBenchmarkDetail, prefetchBenchmarkList, type BenchmarkItem } from "@/lib/benchmarks";
 import { atlasUiFont } from "@/lib/fonts";
 
 /* ══════════════════════════════════════════════════════════════
@@ -285,8 +285,8 @@ function BenchmarksContent() {
   const searchParams = useSearchParams();
   const directoryRef = useRef<HTMLDivElement>(null);
 
-  const [benchmarks, setBenchmarks]   = useState<BenchmarkItem[]>([]);
-  const [loading, setLoading]         = useState(true);
+  const [benchmarks, setBenchmarks]   = useState<BenchmarkItem[]>(() => getCachedBenchmarksSync() ?? []);
+  const [loading, setLoading]         = useState(() => !(benchmarks && benchmarks.length > 0));
   const [searchQuery, setSearchQuery] = useState("");
   const [domainFilter, setDomainFilter] = useState<string | null>(null);
   const [taskFilter, setTaskFilter]     = useState<string | null>(null);
@@ -307,7 +307,10 @@ function BenchmarksContent() {
 
   useEffect(() => {
     getBenchmarks()
-      .then((data) => setBenchmarks(data))
+      .then((data) => {
+        setBenchmarks(data);
+        prefetchBenchmarkList(data);
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
@@ -365,7 +368,17 @@ function BenchmarksContent() {
     directoryRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const handleItemClick = (slug: string) => router.push(`/benchmarks/${slug}`);
+  const handlePrefetch = (slug: string) => {
+    if (slug) {
+      router.prefetch(`/benchmarks/${slug}`);
+      prefetchBenchmarkDetail(slug);
+    }
+  };
+
+  const handleItemClick = (slug: string) => {
+    handlePrefetch(slug);
+    router.push(`/benchmarks/${slug}`);
+  };
 
   const clearFilters = () => {
     setDomainFilter(null);
@@ -385,6 +398,9 @@ function BenchmarksContent() {
     return (
       <div
         onClick={() => handleItemClick(b.slug)}
+        onMouseEnter={() => handlePrefetch(b.slug)}
+        onTouchStart={() => handlePrefetch(b.slug)}
+        onFocus={() => handlePrefetch(b.slug)}
         className="bg-white border border-gray-100 rounded-sm hover:shadow-md hover:border-gray-200 transition-all cursor-pointer group flex flex-col h-[180px] p-5 w-full"
       >
         <div className="flex items-start gap-2.5 mb-2">
@@ -617,6 +633,9 @@ function BenchmarksContent() {
                               <div
                                 key={b.id}
                                 onClick={() => handleItemClick(b.slug)}
+                                onMouseEnter={() => handlePrefetch(b.slug)}
+                                onTouchStart={() => handlePrefetch(b.slug)}
+                                onFocus={() => handlePrefetch(b.slug)}
                                 className="bg-white border border-gray-100 rounded-sm p-5 hover:shadow-md cursor-pointer group transition-all flex flex-col h-[180px]"
                               >
                                 <div className="flex items-start gap-2.5 mb-2">
@@ -665,6 +684,9 @@ function BenchmarksContent() {
                               <div
                                 key={b.id}
                                 onClick={() => handleItemClick(b.slug)}
+                                onMouseEnter={() => handlePrefetch(b.slug)}
+                                onTouchStart={() => handlePrefetch(b.slug)}
+                                onFocus={() => handlePrefetch(b.slug)}
                                 className="bg-white border border-gray-100 rounded-sm p-5 hover:shadow-md cursor-pointer group transition-all flex flex-col h-[180px]"
                               >
                                 <div className="flex items-start gap-2.5 mb-2">
@@ -868,6 +890,9 @@ function BenchmarksContent() {
                               <tr
                                 key={b.id}
                                 onClick={() => handleItemClick(b.slug)}
+                                onMouseEnter={() => handlePrefetch(b.slug)}
+                                onTouchStart={() => handlePrefetch(b.slug)}
+                                onFocus={() => handlePrefetch(b.slug)}
                                 className="hover:bg-gray-50 cursor-pointer transition-colors group"
                               >
                                 <td className="px-4 py-3">

@@ -4,7 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect, useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import { atlasUiFont } from "@/lib/fonts";
-import { getBenchmarks, type BenchmarkItem } from "@/lib/benchmarks";
+import { getBenchmarks, getCachedBenchmarksSync, prefetchBenchmarkDetail, prefetchBenchmarkList, type BenchmarkItem } from "@/lib/benchmarks";
 import { 
   Search, Trophy, BookOpen, Brain, Code, Bot, Eye, FileText, 
   Layers, Mic, Video, Cpu, Activity, Heart, BarChart3, 
@@ -86,13 +86,26 @@ export default function DomainPage() {
   const title = slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   const domainInfo = DOMAINS.find(d => d.label.toLowerCase() === title.toLowerCase());
 
-  const [benchmarks, setBenchmarks] = useState<BenchmarkItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [benchmarks, setBenchmarks] = useState<BenchmarkItem[]>(() => getCachedBenchmarksSync() ?? []);
+  const [loading, setLoading] = useState(() => !(benchmarks && benchmarks.length > 0));
   const [sortBy, setSortBy] = useState<"popular" | "recent">("popular");
 
   useEffect(() => {
-    getBenchmarks().then(setBenchmarks).catch(console.error).finally(() => setLoading(false));
+    getBenchmarks()
+      .then((data) => {
+        setBenchmarks(data);
+        prefetchBenchmarkList(data);
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, []);
+
+  const handlePrefetch = (bSlug: string) => {
+    if (bSlug) {
+      router.prefetch(`/benchmarks/${bSlug}`);
+      prefetchBenchmarkDetail(bSlug);
+    }
+  };
 
   const domainBenchmarks = useMemo(() => {
     const cleanSlug = slug.replace(/[^a-z0-9]/g, "").toLowerCase();
@@ -159,7 +172,14 @@ export default function DomainPage() {
                   const Icon = getCategoryIcon(meta.category);
                   const color = getCategoryColor(meta.category);
                   return (
-                    <tr key={b.id} onClick={() => router.push(`/benchmarks/${b.slug}`)} className="hover:bg-gray-50 cursor-pointer group">
+                    <tr
+                      key={b.id}
+                      onClick={() => { handlePrefetch(b.slug); router.push(`/benchmarks/${b.slug}`); }}
+                      onMouseEnter={() => handlePrefetch(b.slug)}
+                      onTouchStart={() => handlePrefetch(b.slug)}
+                      onFocus={() => handlePrefetch(b.slug)}
+                      className="hover:bg-gray-50 cursor-pointer group"
+                    >
                       <td className="px-4 py-3 flex items-center gap-2.5">
                         <div className="p-1.5 rounded-md group-hover:scale-110 transition-transform" style={{ background: color + "18" }}><Icon size={13} style={{ color }} /></div>
                         <span className="font-medium text-gray-800 group-hover:text-[#e11d48]">{b.name}</span>

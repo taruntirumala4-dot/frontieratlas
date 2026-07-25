@@ -4,7 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect, useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import { atlasUiFont } from "@/lib/fonts";
-import { getBenchmarks, type BenchmarkItem } from "@/lib/benchmarks";
+import { getBenchmarks, getCachedBenchmarksSync, prefetchBenchmarkDetail, prefetchBenchmarkList, type BenchmarkItem } from "@/lib/benchmarks";
 import { Search } from "lucide-react";
 export const runtime = 'edge';
 
@@ -54,15 +54,25 @@ export default function CollectionPage() {
   const slug = (params.slug as string) || "";
   const title = slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 
-  const [benchmarks, setBenchmarks] = useState<BenchmarkItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [benchmarks, setBenchmarks] = useState<BenchmarkItem[]>(() => getCachedBenchmarksSync() ?? []);
+  const [loading, setLoading] = useState(() => !(benchmarks && benchmarks.length > 0));
 
   useEffect(() => {
     getBenchmarks()
-      .then((data) => setBenchmarks(data || []))
+      .then((data) => {
+        setBenchmarks(data || []);
+        prefetchBenchmarkList(data || []);
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
+
+  const handlePrefetch = (bSlug: string) => {
+    if (bSlug) {
+      router.prefetch(`/benchmarks/${bSlug}`);
+      prefetchBenchmarkDetail(bSlug);
+    }
+  };
 
   const collectionBenchmarks = useMemo(() => {
     const target = title.toLowerCase();
@@ -115,7 +125,14 @@ export default function CollectionPage() {
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {collectionBenchmarks.map((b) => (
-                  <tr key={b.id} onClick={() => router.push(`/benchmarks/${b.slug}`)} className="hover:bg-gray-50 cursor-pointer">
+                  <tr
+                    key={b.id}
+                    onClick={() => { handlePrefetch(b.slug); router.push(`/benchmarks/${b.slug}`); }}
+                    onMouseEnter={() => handlePrefetch(b.slug)}
+                    onTouchStart={() => handlePrefetch(b.slug)}
+                    onFocus={() => handlePrefetch(b.slug)}
+                    className="hover:bg-gray-50 cursor-pointer"
+                  >
                     <td className="px-4 py-3 font-medium text-gray-800">{b.name}</td>
                     <td className="px-4 py-3 text-gray-500 hidden md:table-cell">{getMeta(b.name).category}</td>
                     <td className="px-4 py-3 text-right font-bold text-[#e11d48] font-mono text-xs">{b._count?.rankings ?? 0} results</td>

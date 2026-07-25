@@ -15,7 +15,8 @@ export default async function MethodsPage() {
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://frontieratlas-backend.morningsignal-india.workers.dev';
     const res = await fetch(`${apiUrl}/api/v1/methods/taxonomy`, {
-      next: { revalidate: 60 }
+      next: { revalidate: 60 },
+      signal: AbortSignal.timeout(800)
     });
     if (res.ok) {
       const data = await res.json();

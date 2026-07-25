@@ -9,7 +9,7 @@ import {
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import Link from "next/link";
-import { getBenchmarkBySlug, type BenchmarkDetail, type BenchmarkDetailRanking } from "@/lib/benchmarks";
+import { useBenchmarkDetail, type BenchmarkDetail, type BenchmarkDetailRanking } from "@/lib/benchmarks";
 import { atlasUiFont } from "@/lib/fonts";
 /* ─────────────────────────────────────────────────────────────────
    HELPERS
@@ -285,16 +285,7 @@ export default function BenchmarkDetailPage() {
   const params = useParams();
   const slug = params.slug as string;
 
-  const [benchmark, setBenchmark] = useState<BenchmarkDetail | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!slug) return;
-    getBenchmarkBySlug(slug)
-      .then(setBenchmark)
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, [slug]);
+  const { data: benchmark, loading } = useBenchmarkDetail(slug);
 
   const bestRanking = useMemo(() =>
     benchmark?.rankings?.find(r => r.rank === 1) ?? null,
@@ -308,12 +299,61 @@ export default function BenchmarkDetailPage() {
 
   if (loading) {
     return (
-      <div className={`${atlasUiFont.className} flex flex-col h-screen overflow-hidden bg-[#F8F7F2] tracking-normal`}>
+      <div className={`${atlasUiFont.className} flex flex-col h-screen overflow-hidden bg-[#F8F7F2] text-[#111111] tracking-normal`}>
         <Navbar />
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <div className="w-10 h-10 border-[3px] border-[#FF5A1F] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-            <p className="text-[13px] text-[#8B8B8B]">Loading benchmark data…</p>
+        <div className="flex-1 overflow-y-auto overflow-x-hidden hide-scroll">
+          <div className="w-full max-w-[1600px] mx-auto px-4 md:px-8 xl:px-12 pt-5 pb-20 flex items-start gap-6 xl:gap-8">
+            <div className="hidden lg:block w-[240px] shrink-0 sticky top-4">
+              <Sidebar />
+            </div>
+            <main className="flex-1 min-w-0">
+              {/* Breadcrumb skeleton */}
+              <div className="flex items-center gap-2 mb-4">
+                <div className="h-3 w-12 bg-gray-200 rounded animate-pulse" />
+                <span className="text-gray-300">›</span>
+                <div className="h-3 w-20 bg-gray-200 rounded animate-pulse" />
+                <span className="text-gray-300">›</span>
+                <div className="h-3 w-32 bg-gray-200 rounded animate-pulse" />
+              </div>
+
+              {/* Hero skeleton */}
+              <div className="mb-6">
+                <div className="h-1 w-full bg-gradient-to-r from-orange-200 to-amber-200 rounded-full mb-6" />
+                <div className="h-6 w-36 bg-orange-100 rounded-full animate-pulse mb-4" />
+                <div className="h-9 w-3/4 bg-gray-200 rounded animate-pulse mb-3" />
+                <div className="space-y-2 max-w-2xl mb-6">
+                  <div className="h-4 w-full bg-gray-200 rounded animate-pulse" />
+                  <div className="h-4 w-5/6 bg-gray-200 rounded animate-pulse" />
+                </div>
+                <div className="flex gap-6 mb-6">
+                  <div className="h-6 w-28 bg-gray-200 rounded animate-pulse" />
+                  <div className="h-6 w-28 bg-gray-200 rounded animate-pulse" />
+                  <div className="h-6 w-28 bg-gray-200 rounded animate-pulse" />
+                </div>
+              </div>
+
+              {/* Chart skeleton */}
+              <div className="mb-6 bg-white border border-[#E8E8E2] rounded-xl p-5 shadow-sm">
+                <div className="h-5 w-40 bg-gray-200 rounded animate-pulse mb-2" />
+                <div className="h-4 w-64 bg-gray-100 rounded animate-pulse mb-6" />
+                <div className="h-[220px] w-full bg-gray-50 rounded animate-pulse border border-dashed border-gray-200" />
+              </div>
+
+              {/* Table skeleton */}
+              <div className="bg-white border border-[#E8E8E2] rounded-xl overflow-hidden p-4">
+                <div className="h-5 w-32 bg-gray-200 rounded animate-pulse mb-4" />
+                <div className="space-y-3">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <div key={i} className="flex items-center justify-between py-2 border-b border-gray-50">
+                      <div className="h-4 w-8 bg-gray-200 rounded animate-pulse" />
+                      <div className="h-4 w-48 bg-gray-200 rounded animate-pulse" />
+                      <div className="h-4 w-16 bg-orange-100 rounded animate-pulse" />
+                      <div className="h-4 w-64 bg-gray-100 rounded animate-pulse" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </main>
           </div>
         </div>
       </div>

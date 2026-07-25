@@ -3,48 +3,15 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import { CategoryRow } from "@/components/CategoryRow";
 import { MethodsHero } from "@/components/MethodsHero";
-import { fetchApi } from "@/lib/api";
+import { prefetchTaxonomyMethods } from "@/lib/methodCache";
 
 export function TaxonomyView({ initialTaxonomy }: { initialTaxonomy: any[] }) {
-  const [taxonomy, setTaxonomy] = useState(initialTaxonomy);
+  const [taxonomy] = useState(initialTaxonomy);
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    let cancelled = false;
-    async function loadCounts() {
-      try {
-        const json = await fetchApi<any>("/api/v1/methods/taxonomy");
-        if (cancelled || !json.data) return;
-
-        const liveData: Record<string, { paperCount: number; description?: string }> = {};
-        json.data.forEach((cat: any) => {
-          if (cat.methods) {
-            cat.methods.forEach((m: any) => {
-              liveData[m.slug || m.id] = {
-                paperCount: m.paperCount || 0,
-                description: m.description,
-              };
-            });
-          }
-        });
-        setTaxonomy(prev => prev.map(cat => ({
-          ...cat,
-          methods: cat.methods.map((m: any) => {
-            const live = liveData[m.slug || m.id];
-            return {
-              ...m,
-              paperCount: live?.paperCount ?? m.paperCount,
-              description: live?.description ?? m.description
-            };
-          })
-        })));
-      } catch (err) {
-        console.error("Failed to load live paper counts:", err);
-      }
-    }
-    loadCounts();
-    return () => { cancelled = true; };
-  }, []);
+    prefetchTaxonomyMethods(initialTaxonomy);
+  }, [initialTaxonomy]);
 
   const filteredTaxonomy = taxonomy
   .map((category: any) => ({

@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useCallback } from "react";
 import { Mic } from "lucide-react";
 import {
   SlidersHorizontal,
@@ -579,22 +581,34 @@ export default function MethodCard({
   method: MethodCardData;
   accentColor?: string;
 }) {
+  const router = useRouter();
   const paperCount = method.paperCount || 0;
-const Icon =
-  iconMap[method.name.toLowerCase()] ||
-  iconMap[method.slug?.replace(/-/g, " ").toLowerCase() || ""] ||
+  const slug = method.slug ?? method.id;
+
+  const handlePrefetch = useCallback(() => {
+    if (slug) {
+      router.prefetch(`/methods/${slug}`);
+      fetchMethodCached(slug).catch(() => {});
+    }
+  }, [router, slug]);
+
+  const Icon =
+    iconMap[method.name.toLowerCase()] ||
+    iconMap[method.slug?.replace(/-/g, " ").toLowerCase() || ""] ||
     Brain;
-    const iconColor =
-  colorMap[method.name.toLowerCase()] ||
-  colorMap[method.slug?.replace(/-/g, " ").toLowerCase() || ""] ||
-  accentColor ||
-  "#2563EB";
+  const iconColor =
+    colorMap[method.name.toLowerCase()] ||
+    colorMap[method.slug?.replace(/-/g, " ").toLowerCase() || ""] ||
+    accentColor ||
+    "#2563EB";
   return (
-  <Link
-    href={`/methods/${method.slug ?? method.id}`}
-    onMouseEnter={() => fetchMethodCached(method.slug ?? method.id).catch(() => {})}
-    className="bg-white rounded-md border border-[#ECECEC] p-5 min-h-[150px] flex flex-col hover:shadow-md transition-shadow duration-200 group no-underline"
-  >
+    <Link
+      href={`/methods/${slug}`}
+      onMouseEnter={handlePrefetch}
+      onTouchStart={handlePrefetch}
+      onFocus={handlePrefetch}
+      className="bg-white rounded-md border border-[#ECECEC] p-5 min-h-[150px] flex flex-col hover:shadow-md transition-shadow duration-200 group no-underline"
+    >
     <div className="flex items-start gap-4">
       <div className="flex items-center justify-center transition-transform duration-200 group-hover:scale-125">
   <Icon
