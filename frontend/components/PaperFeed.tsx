@@ -360,10 +360,6 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
     router.prefetch(`/papers/${paper.slug}`);
     prefetchPaperBySlug(paper.slug);
   }, [router, paper.slug]);
-<<<<<<< HEAD
- 
-=======
-
   const starsPerHour = useMemo(() => {
     const paperDate = new Date(paper.date);
     if (isNaN(paperDate.getTime())) return "0.00";
@@ -371,8 +367,6 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
     const hoursSincePublication = Math.max(24, (now.getTime() - paperDate.getTime()) / (1000 * 60 * 60));
     return (upvotesNum / hoursSincePublication).toFixed(2);
   }, [paper.date, upvotesNum]);
-
->>>>>>> 89ff1ab (Ui improvements in Homepage)
   return (
     <Link
       href={`/papers/${paper.slug}`}
