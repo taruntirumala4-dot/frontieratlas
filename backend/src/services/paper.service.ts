@@ -301,7 +301,7 @@ export const getPapers = async (
         }
       : queryOrLimit;
 
- const limit = Math.min(Math.max(Number(query.limit) || 5, 1), 10);
+ const limit = Math.min(Math.max(Number(query.limit) || 20, 1), 50);
   const page = Math.max(Number(query.page) || 1, 1);
   const skip = Number(query.skip) || (page - 1) * limit;
   const sort = query.sort || "trending";

@@ -754,10 +754,14 @@ export default function PaperList({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(initialError ?? null);
   const [hasMore, setHasMore] = useState(() => initialPapers?.hasMore ?? true);
-  const [displayCount, setDisplayCount] = useState(5);
+  const [displayCount, setDisplayCount] = useState(() => initialPapers?.papers?.length ?? 20);
   const cacheRef = useRef<Map<string, GetPapersResult>>(new Map());
   const inFlightRef = useRef<Map<string, Promise<GetPapersResult>>>(new Map());
   const loadingRef = useRef(false);
+
+  // Stabilize onFilterDone so it doesn't cause the filter effect to re-run
+  const onFilterDoneRef = useRef(onFilterDone);
+  onFilterDoneRef.current = onFilterDone;
   const normalizedSearchQuery = useMemo(
     () => searchQuery?.trim().toLowerCase() ?? "",
     [searchQuery],
@@ -785,25 +789,10 @@ export default function PaperList({
     initialPapers?.hasMore ? initialPapers.page + 1 : 0,
   );
  
-  // Progressive rendering: show cards in batches
-  const prevPaperLen = useRef(0);
+  // Render all fetched cards immediately without artificial delay
   useEffect(() => {
-    if (papers.length === 0) {
-      prevPaperLen.current = 0;
-      setDisplayCount(0);
-    } else if (papers.length < prevPaperLen.current || prevPaperLen.current === 0) {
-      prevPaperLen.current = papers.length;
-      setDisplayCount(Math.min(5, papers.length));
-    } else if (papers.length > prevPaperLen.current) {
-      prevPaperLen.current = papers.length;
-    }
+    setDisplayCount(papers.length);
   }, [papers.length]);
-  useEffect(() => {
-    if (displayCount < papers.length) {
-      const t = setTimeout(() => setDisplayCount(p => Math.min(p + 5, papers.length)), 80);
-      return () => clearTimeout(t);
-    }
-  }, [displayCount, papers.length]);
  
   // Paper detail prefetching — staggered to avoid connection saturation
   const prefetchedRef = useRef(new Set<string>());
@@ -838,6 +827,7 @@ export default function PaperList({
   const observerRef = useRef<IntersectionObserver | null>(null);
  
   useEffect(() => {
+    const scrollRoot = document.getElementById("scroll-container") || null;
     observerRef.current = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
@@ -847,7 +837,7 @@ export default function PaperList({
           }
         }
       },
-      { rootMargin: "400px" }
+      { root: scrollRoot, rootMargin: "400px" }
     );
     return () => {
       observerRef.current?.disconnect();
@@ -1002,7 +992,7 @@ export default function PaperList({
       } finally {
         loadingRef.current = false;
         setLoading(false);
-        onFilterDone?.();
+        onFilterDoneRef.current?.();
       }
     },
     [
@@ -1057,8 +1047,14 @@ export default function PaperList({
       setPapers(visible);
       setPage(syncHit.page);
       setHasMore(syncHit.hasMore);
+      if (syncHit.hasMore) {
+        nextPageRef.current = syncHit.page + 1;
+        prefetchPage(syncHit.page + 1);
+      } else {
+        nextPageRef.current = 0;
+      }
       setLoading(false);
-      onFilterDone?.();
+      onFilterDoneRef.current?.();
       return;
     }
 
@@ -1069,6 +1065,7 @@ export default function PaperList({
     setHasMore(true);
     nextPageRef.current = 1;
     void loadPage(1, true);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     filterParams?.method,
     filterParams?.model,
@@ -1081,7 +1078,6 @@ export default function PaperList({
     matchesSearch,
     method,
     normalizedSearchQuery,
-    onFilterDone,
     period,
     prefetchPage,
     selectedTag,
@@ -1108,7 +1104,8 @@ export default function PaperList({
   useEffect(() => {
     const sentinel = sentinelRef.current;
     if (!sentinel || !hasMore) return;
- 
+
+    const scrollRoot = document.getElementById("scroll-container") || null;
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0]?.isIntersecting && !loadingRef.current && hasMore) {
@@ -1118,7 +1115,7 @@ export default function PaperList({
           }
         }
       },
-      { rootMargin: "600px" },
+      { root: scrollRoot, rootMargin: "600px" },
     );
  
     observer.observe(sentinel);
