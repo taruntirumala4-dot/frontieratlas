@@ -50,46 +50,36 @@ export default function HomeContent({
     }
   }, [selectedPeriod]);
 
-  // Pre-cache all sidebar data on mount so every click hits cache instantly
+  // Defer speculative background prefetching so initial feed & infinite scroll get 100% network bandwidth
   useEffect(() => {
-    const prefetch = async (params: Parameters<typeof getPapers>[0]) => {
-      try { await getPapers(params); } catch {}
-    };
-    const periods = ["today", "week", "month", "all"];
-    const mainSorts = ["trending", "latest", "stars"];
-    mainSorts.forEach(sort => {
-      periods.forEach(period => {
-        prefetch({ sort, period, page: 1 });
-      });
-    });
-    // Pre-warm hero chips for instant chip clicks (0ms latency)
-    const heroChips = [
-      { task: "agents" },
-      { task: "reasoning" },
-      { task: "vision-language-models" },
-      { task: "coding-agents" },
-      { task: "robotics" },
-      { method: "mcp" },
-    ];
-    heroChips.forEach((chip) => {
-      prefetch({ sort: "trending", period: "today", page: 1, ...chip });
-      prefetch({ sort: "trending", period: "all", page: 1, ...chip });
-      prefetch({ sort: "latest", period: "today", page: 1, ...chip });
-      prefetch({ sort: "latest", period: "all", page: 1, ...chip });
-      prefetch({ page: 1, ...chip });
-    });
+    const timer = setTimeout(() => {
+      const prefetch = async (params: Parameters<typeof getPapers>[0]) => {
+        try { await getPapers(params); } catch {}
+      };
+      
+      // Warm main periods/sorts sequentially with small delays to keep network open
+      const periods = ["today", "week", "month", "all"];
+      const mainSorts = ["trending", "latest", "stars"];
+      let delay = 0;
 
-    const taskSlugs = ["large-language-models","agents","reasoning","vision-language-models","multimodal-models","world-models","image-generation","automatic-speech-recognition","robotics"];
-    taskSlugs.forEach(t => {
-      prefetch({ sort: "latest", period: "all", task: t, page: 1 });
-      prefetch({ task: t, page: 1 });
-    });
-    const methodSlugs = ["transformer","diffusion-models","mixture-of-experts-moe","policy-learning","chain-of-thought","rag","mcp","lora","rlhf"];
-    methodSlugs.forEach(m => {
-      prefetch({ sort: "latest", period: "all", method: m, page: 1 });
-      prefetch({ method: m, page: 1 });
-    });
-    prefetchMethods();
+      mainSorts.forEach(sort => {
+        periods.forEach(period => {
+          setTimeout(() => prefetch({ sort, period, page: 1 }), delay);
+          delay += 100;
+        });
+      });
+
+      // Lazy pre-warm key hero chips
+      const heroChips = [{ task: "agents" }, { task: "reasoning" }, { method: "mcp" }];
+      heroChips.forEach((chip) => {
+        setTimeout(() => prefetch({ sort: "trending", period: "today", page: 1, ...chip }), delay);
+        delay += 100;
+      });
+
+      setTimeout(() => prefetchMethods(), delay);
+    }, 2500);
+
+    return () => clearTimeout(timer);
   }, []);
 
   const handleSidebarSelect = (label: string) => {
