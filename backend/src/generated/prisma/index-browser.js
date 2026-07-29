@@ -150,16 +150,18 @@ exports.Prisma.PaperScalarFieldEnum = {
   githubUrl: 'githubUrl',
   isOfficialCode: 'isOfficialCode',
   hfUpvotes: 'hfUpvotes',
-  hfUrl: 'hfUrl',
   trendingScore: 'trendingScore',
   discoverySource: 'discoverySource',
+  authors: 'authors',
+  domain: 'domain',
+  task: 'task',
+  huggingface_url: 'huggingface_url',
+  hf_model_url: 'hf_model_url',
+  hfUrl: 'hfUrl',
   importance_score: 'importance_score',
   venue: 'venue',
   organization: 'organization',
-  authors: 'authors',
-  huggingface_url: 'huggingface_url',
-  domain: 'domain',
-  task: 'task'
+  github_hourly_increase: 'github_hourly_increase'
 };
 
 exports.Prisma.EntityRelationshipScalarFieldEnum = {
@@ -189,9 +191,9 @@ exports.Prisma.TaskScalarFieldEnum = {
   name: 'name',
   slug: 'slug',
   color: 'color',
+  domain: 'domain',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  domain: 'domain'
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.PaperTaskScalarFieldEnum = {
@@ -218,25 +220,26 @@ exports.Prisma.BenchmarkScalarFieldEnum = {
   id: 'id',
   name: 'name',
   slug: 'slug',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
   description: 'description',
   domain: 'domain',
   task: 'task',
-  category: 'category',
   metric: 'metric',
-  status: 'status',
   year: 'year',
+  papers_evaluated: 'papers_evaluated',
+  is_popular: 'is_popular',
+  is_trending: 'is_trending',
+  is_recently_added: 'is_recently_added',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  category: 'category',
+  status: 'status',
   results_count: 'results_count',
   models_count: 'models_count',
-  top_models: 'top_models',
   paper_title: 'paper_title',
   paper_url: 'paper_url',
   repo_url: 'repo_url',
   dataset_url: 'dataset_url',
-  is_popular: 'is_popular',
-  is_trending: 'is_trending',
-  is_recently_added: 'is_recently_added',
+  top_models: 'top_models',
   modality: 'modality',
   benchmark_url: 'benchmark_url'
 };
@@ -253,19 +256,22 @@ exports.Prisma.RankingScalarFieldEnum = {
   benchmark_id: 'benchmark_id',
   rank: 'rank',
   previous_rank: 'previous_rank',
-  metric: 'metric',
   score: 'score',
-  result_date: 'result_date',
-  source_url: 'source_url',
-  verified: 'verified',
+  score_str: 'score_str',
+  model_name: 'model_name',
+  metric: 'metric',
   updated_at: 'updated_at',
+  url: 'url',
+  source: 'source',
+  model_id: 'model_id',
+  organization: 'organization',
+  verified: 'verified',
   updatedAt: 'updatedAt',
   resultDate: 'resultDate',
   previousRank: 'previousRank',
   sourceUrl: 'sourceUrl',
-  model_name: 'model_name',
-  organization: 'organization',
-  score_str: 'score_str'
+  result_date: 'result_date',
+  source_url: 'source_url'
 };
 
 exports.Prisma.ModelScalarFieldEnum = {
@@ -274,13 +280,25 @@ exports.Prisma.ModelScalarFieldEnum = {
   slug: 'slug',
   vendor: 'vendor',
   vendor_logo_url: 'vendor_logo_url',
-  release_date: 'release_date',
+  description: 'description',
   parameter_count: 'parameter_count',
   modality: 'modality',
   access_type: 'access_type',
   openness_type: 'openness_type',
-  description: 'description',
+  release_date: 'release_date',
   benchmark_score: 'benchmark_score',
+  model_family: 'model_family',
+  category: 'category',
+  capabilities: 'capabilities',
+  research_areas: 'research_areas',
+  architecture: 'architecture',
+  context_window: 'context_window',
+  license: 'license',
+  model_versions: 'model_versions',
+  release_notes: 'release_notes',
+  paper_url: 'paper_url',
+  repository_url: 'repository_url',
+  api_url: 'api_url',
   created_at: 'created_at',
   updated_at: 'updated_at',
   createdAt: 'createdAt',
@@ -290,27 +308,16 @@ exports.Prisma.ModelScalarFieldEnum = {
   accessType: 'accessType',
   opennessType: 'opennessType',
   benchmarkScore: 'benchmarkScore',
-  model_family: 'model_family',
   modelFamily: 'modelFamily',
-  category: 'category',
-  capabilities: 'capabilities',
-  research_areas: 'research_areas',
-  researchAreas: 'researchAreas',
-  architecture: 'architecture',
-  context_window: 'context_window',
-  contextWindow: 'contextWindow',
-  license: 'license',
-  model_versions: 'model_versions',
-  modelVersions: 'modelVersions',
-  release_notes: 'release_notes',
-  releaseNotes: 'releaseNotes',
-  paper_url: 'paper_url',
+  trendingScore: 'trendingScore',
   paperUrl: 'paperUrl',
-  repository_url: 'repository_url',
   repositoryUrl: 'repositoryUrl',
-  api_url: 'api_url',
   apiUrl: 'apiUrl',
-  trendingScore: 'trendingScore'
+  contextWindow: 'contextWindow',
+  researchAreas: 'researchAreas',
+  modelVersions: 'modelVersions',
+  releaseNotes: 'releaseNotes',
+  role: 'role'
 };
 
 exports.Prisma.PaperModelScalarFieldEnum = {
@@ -323,10 +330,10 @@ exports.Prisma.DatasetScalarFieldEnum = {
   id: 'id',
   name: 'name',
   slug: 'slug',
-  created_at: 'created_at',
-  updated_at: 'updated_at',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
 };
 
 exports.Prisma.PaperDatasetScalarFieldEnum = {
@@ -338,10 +345,10 @@ exports.Prisma.LabScalarFieldEnum = {
   id: 'id',
   name: 'name',
   slug: 'slug',
-  created_at: 'created_at',
-  updated_at: 'updated_at',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
 };
 
 exports.Prisma.PaperLabScalarFieldEnum = {
@@ -353,10 +360,10 @@ exports.Prisma.UniversityScalarFieldEnum = {
   id: 'id',
   name: 'name',
   slug: 'slug',
-  created_at: 'created_at',
-  updated_at: 'updated_at',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
 };
 
 exports.Prisma.PaperUniversityScalarFieldEnum = {
@@ -368,10 +375,10 @@ exports.Prisma.ConferenceScalarFieldEnum = {
   id: 'id',
   name: 'name',
   slug: 'slug',
-  created_at: 'created_at',
-  updated_at: 'updated_at',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
 };
 
 exports.Prisma.PaperConferenceScalarFieldEnum = {
@@ -383,10 +390,10 @@ exports.Prisma.JournalScalarFieldEnum = {
   id: 'id',
   name: 'name',
   slug: 'slug',
-  created_at: 'created_at',
-  updated_at: 'updated_at',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
 };
 
 exports.Prisma.PaperJournalScalarFieldEnum = {
@@ -399,10 +406,10 @@ exports.Prisma.RepositoryScalarFieldEnum = {
   url: 'url',
   name: 'name',
   owner: 'owner',
-  created_at: 'created_at',
-  updated_at: 'updated_at',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
 };
 
 exports.Prisma.PaperRepositoryScalarFieldEnum = {
@@ -415,29 +422,32 @@ exports.Prisma.UserScalarFieldEnum = {
   username: 'username',
   email: 'email',
   password: 'password',
-  display_name: 'display_name',
+  displayName: 'displayName',
   avatar: 'avatar',
   bio: 'bio',
   github: 'github',
-  linkedin: 'linkedin',
   twitter: 'twitter',
   website: 'website',
-  reputation_score: 'reputation_score',
+  reputationScore: 'reputationScore',
   auth_id: 'auth_id',
-  created_at: 'created_at',
-  updated_at: 'updated_at',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  linkedin: 'linkedin',
+  display_name: 'display_name',
+  reputation_score: 'reputation_score',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
 };
 
 exports.Prisma.RefreshTokenScalarFieldEnum = {
   id: 'id',
   token: 'token',
+  userId: 'userId',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
   user_id: 'user_id',
   expires_at: 'expires_at',
-  created_at: 'created_at',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  created_at: 'created_at'
 };
 
 exports.Prisma.SummaryScalarFieldEnum = {
@@ -445,10 +455,10 @@ exports.Prisma.SummaryScalarFieldEnum = {
   content: 'content',
   paper_id: 'paper_id',
   user_id: 'user_id',
-  created_at: 'created_at',
-  updated_at: 'updated_at',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
 };
 
 exports.Prisma.SortOrder = {
