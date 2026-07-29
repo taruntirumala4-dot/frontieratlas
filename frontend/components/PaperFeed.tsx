@@ -661,6 +661,13 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
+                const ghUrl =
+                  paper.githubUrl ||
+                  githubRepo?.url ||
+                  (paper.repositories?.find((repo: any) => repo.url?.includes("github.com"))?.url);
+                if (ghUrl) {
+                  window.open(ghUrl, "_blank");
+                }
               }}
               className="flex-none md:flex-1 flex items-center justify-center lg:justify-between xl:justify-center px-0.5 min-[375px]:px-1 md:px-2 lg:px-4 xl:px-2 h-[24px] md:h-[28px] lg:h-[58px] xl:h-[28px] bg-white text-[#24292f] border-[1.5px] border-[#24292f]/30 hover:border-[#24292f] hover:bg-[#24292f]/5 rounded-[6px] transition-all duration-300 overflow-hidden"
             >
