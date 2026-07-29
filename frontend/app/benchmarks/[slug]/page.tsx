@@ -403,11 +403,7 @@ export default function BenchmarkDetailPage() {
               <div className="h-[3px] w-full mb-6 rounded-full" style={{ background: "linear-gradient(90deg,#FF5A1F 0%,#FFB347 50%,#FF5A1F 100%)" }} />
 
               <div>
-                <div className="inline-flex items-center gap-1.5 bg-[rgba(255,90,31,0.08)]
-                  border border-[rgba(255,90,31,0.18)] text-[#FF5A1F] text-[11px] font-bold
-                  px-3 py-1 rounded-full mb-2 uppercase tracking-wider">
-                  <Award size={11} /> Benchmark Leaderboard
-                </div>
+
 
                 <h1 className="text-[28px] md:text-[36px] font-black text-[#111111] leading-tight uppercase">
                   {benchmark.name}
