@@ -34,7 +34,7 @@ function benchmarkDescription(name: string) {
 }
 
 /* ─────────────────────────────────────────────────────────────────
-   LEADERBOARD TABLE (Domain-Matched Style with Sharp Corners)
+   LEADERBOARD TABLE
 ───────────────────────────────────────────────────────────────── */
 function LeaderboardTable({ rankings }: { rankings: BenchmarkDetailRanking[] }) {
   const maxScore = rankings.length ? scoreFromRank(1) : 1;
@@ -42,23 +42,25 @@ function LeaderboardTable({ rankings }: { rankings: BenchmarkDetailRanking[] }) 
   return (
     <div className="bg-white rounded-none shadow-sm border border-slate-200 overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-max text-left text-sm whitespace-nowrap">
+        {/* Removed min-w-max and whitespace-nowrap to fit screen */}
+        <table className="w-full text-left text-sm">
           <thead className="bg-slate-50 border-b border-slate-200 text-slate-500">
             <tr>
-              <th className="px-6 py-4 font-bold text-[11px] uppercase tracking-wider w-14">Rank</th>
-              <th className="px-6 py-4 font-bold text-[11px] uppercase tracking-wider">Model</th>
-              <th className="px-6 py-4 font-bold text-[11px] uppercase tracking-wider text-right">Score ↓</th>
-              <th className="px-6 py-4 font-bold text-[11px] uppercase tracking-wider text-right hidden md:table-cell">Overall (Chamfer)</th>
-              <th className="px-6 py-4 font-bold text-[11px] uppercase tracking-wider text-right hidden lg:table-cell">Pointmap Accuracy</th>
-              <th className="px-6 py-4 font-bold text-[11px] uppercase tracking-wider text-right hidden xl:table-cell">Normal Consistency</th>
-              <th className="px-6 py-4 font-bold text-[11px] uppercase tracking-wider">Paper</th>
-              <th className="px-6 py-4 font-bold text-[11px] uppercase tracking-wider text-center">Year</th>
+              {/* Reduced padding to px-4 to save space; added whitespace-nowrap to number columns */}
+              <th className="px-4 py-4 font-bold text-[11px] uppercase tracking-wider w-12 whitespace-nowrap">Rank</th>
+              <th className="px-4 py-4 font-bold text-[11px] uppercase tracking-wider min-w-[150px]">Model</th>
+              <th className="px-4 py-4 font-bold text-[11px] uppercase tracking-wider text-right whitespace-nowrap">Score ↓</th>
+              <th className="px-4 py-4 font-bold text-[11px] uppercase tracking-wider text-right hidden md:table-cell whitespace-nowrap">Overall (Chamfer)</th>
+              <th className="px-4 py-4 font-bold text-[11px] uppercase tracking-wider text-right hidden lg:table-cell whitespace-nowrap">Pointmap Accuracy</th>
+              <th className="px-4 py-4 font-bold text-[11px] uppercase tracking-wider text-right hidden xl:table-cell whitespace-nowrap">Normal Consistency</th>
+              <th className="px-4 py-4 font-bold text-[11px] uppercase tracking-wider min-w-[200px]">Paper</th>
+              <th className="px-4 py-4 font-bold text-[11px] uppercase tracking-wider text-center whitespace-nowrap">Year</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
             {rankings.filter(r => r && r.paper).length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-6 py-14 text-center text-slate-500 font-medium">No submissions yet.</td>
+                <td colSpan={8} className="px-4 py-14 text-center text-slate-500 font-medium">No submissions yet.</td>
               </tr>
             ) : (
               rankings.filter(r => r && r.paper).map(r => {
@@ -67,18 +69,17 @@ function LeaderboardTable({ rankings }: { rankings: BenchmarkDetailRanking[] }) 
                 const pct = (score / maxScore) * 100;
                 return (
                   <tr key={r.id} className="hover:bg-slate-50/60 transition-colors group">
-                    <td className="px-6 py-4">
-                      {/* Medals removed, just showing the standard number for all ranks */}
+                    <td className="px-4 py-4 whitespace-nowrap">
                       <span className="text-sm font-bold text-slate-500">{r.rank}</span>
                     </td>
-                    <td className="px-6 py-4">
-                      <span className={`text-sm font-bold ${isTop ? "text-slate-800" : "text-slate-600"}`}>
+                    <td className="px-4 py-4">
+                      {/* Added leading-snug so wrapped text breathes */}
+                      <span className={`text-sm font-bold leading-snug block ${isTop ? "text-slate-800" : "text-slate-600"}`}>
                         {r.paper.title.split(":")[0].trim()}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-4 py-4 text-right whitespace-nowrap">
                       <div className="inline-flex flex-col items-end gap-1.5">
-                        {/* Orange text conditional removed, using slate-700 */}
                         <span className="text-[12px] font-bold font-mono tabular-nums text-slate-700">
                           {score.toFixed(2)}
                         </span>
@@ -88,16 +89,17 @@ function LeaderboardTable({ rankings }: { rankings: BenchmarkDetailRanking[] }) 
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-right hidden md:table-cell text-slate-500 font-mono text-xs">{secMetric(r.rank, 0.1)}</td>
-                    <td className="px-6 py-4 text-right hidden lg:table-cell text-slate-500 font-mono text-xs">{secMetric(r.rank, 0.3)}</td>
-                    <td className="px-6 py-4 text-right hidden xl:table-cell text-slate-500 font-mono text-xs">{secMetric(r.rank, 0.5)}</td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-4 text-right hidden md:table-cell text-slate-500 font-mono text-xs whitespace-nowrap">{secMetric(r.rank, 0.1)}</td>
+                    <td className="px-4 py-4 text-right hidden lg:table-cell text-slate-500 font-mono text-xs whitespace-nowrap">{secMetric(r.rank, 0.3)}</td>
+                    <td className="px-4 py-4 text-right hidden xl:table-cell text-slate-500 font-mono text-xs whitespace-nowrap">{secMetric(r.rank, 0.5)}</td>
+                    <td className="px-4 py-4">
+                      {/* Added leading-relaxed so multi-line paper titles look neat */}
                       <Link href={`/papers/${r.paper.slug}`}
-                        className="text-xs text-blue-600 no-underline hover:text-[#F55036] transition-colors">
+                        className="text-xs text-blue-600 no-underline hover:text-[#F55036] transition-colors leading-relaxed block">
                         {r.paper.title}
                       </Link>
                     </td>
-                    <td className="px-6 py-4 text-center text-slate-500 font-mono text-xs">
+                    <td className="px-4 py-4 text-center text-slate-500 font-mono text-xs whitespace-nowrap">
                       {formatYear(r.paper.publicationDate)}
                     </td>
                   </tr>
