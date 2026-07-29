@@ -867,7 +867,7 @@ function BenchmarksContent() {
                       <button onClick={clearFilters} className="mt-3 text-[#e11d48] text-sm hover:underline">Clear filters</button>
                     </div>
                   ) : (
-                    <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
+                    <div className="overflow-x-auto rounded-sm border border-gray-200 bg-white shadow-sm">
                       <table className="w-full text-sm">
                         <thead>
                           <tr className="border-b border-gray-100 bg-gray-50/60">
