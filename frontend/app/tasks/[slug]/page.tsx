@@ -19,7 +19,7 @@ const tasks = [
     description:
       "AI agents are autonomous software systems that use artificial intelligence to achieve goals and complete tasks on behalf of users, acting independently to perceive their environment, make decisions, and take actions without constant human intervention. They use advanced capabilities like reasoning, memory, planning, and learning, often leveraging large language models (LLMs) and other AI tools to interpret information and perform complex workflows across various industries.",
 
-    
+
   },
   {
     slug: "world-models",
@@ -28,7 +28,7 @@ const tasks = [
     description:
       "World models are AI systems that learn a function from a (current world state, action) pair to the next world state, letting an agent predict how its environment will evolve and simulate the outcomes of actions before taking them. The term spans two paradigms: internal world models that predict the future at a high, semantic level (cognitive sense, in the spirit of LeCun's JEPA family) and external world models that aim to simulate reality at full visual fidelity (e.g. Genie-2, GAIA-1). Both are foundational for embodied AI: agents can plan and act using internal models while learning inside external simulators.",
 
-    
+
   },
   {
     slug: "anomaly-detection",
@@ -36,8 +36,8 @@ const tasks = [
     title: "ANOMALY DETECTION",
     description:
       "Anomaly and out-of-distribution (OOD) detection identifies unusual, novel, or defective inputs in images, video, and other sensor data.",
-    
-    
+
+
   },
   {
     slug: "autonomous-driving",
@@ -45,7 +45,7 @@ const tasks = [
     title: "AUTONOMOUS DRIVING",
     description:
       "Autonomous driving research covers perception, planning, and control for self-driving vehicles, including bird's-eye-view (BEV) perception, occupancy prediction, end-to-end driving, and ADAS.",
-    
+
     sisterTasks: [
       { name: "Autonomous Driving", slug: "autonomous-driving" },
       { name: "Image Understanding", slug: "image-understanding" },
@@ -65,15 +65,15 @@ const tasks = [
       { name: "GPT-3", count: -2 },
     ],
   },
-  
-  
+
+
   {
     slug: "deepfake-forensics",
     displayName: "Deepfake and Forensics",
     title: "DEEPFAKE AND FORENSICS",
     description:
       "Deepfake detection and media forensics identify synthetic, manipulated, or spoofed visual and audiovisual content, including anti-spoofing and security-oriented authenticity verification.",
-    
+
   },
   {
     slug: "document-understanding",
@@ -81,7 +81,7 @@ const tasks = [
     title: "DOCUMENT UNDERSTANDING",
     description:
       "Document understanding covers machine learning systems that interpret visually rich documents, including forms, receipts, tables, layout-aware OCR, key information extraction, entity extraction, and entity linking.",
-   
+
     sisterTasks: [
       { name: "Image Understanding", slug: "image-understanding" },
       { name: "OCR", slug: "ocr" },
@@ -106,48 +106,48 @@ const tasks = [
 
   },
   {
-  slug: "large-language-models",
+    slug: "large-language-models",
 
-  displayName: "Large Language Models",
-  title: "LARGE LANGUAGE MODELS",
+    displayName: "Large Language Models",
+    title: "LARGE LANGUAGE MODELS",
 
-  description:
-    "Large Language Models (LLMs) are AI models trained on massive text datasets to understand and generate human language. They are used for text generation, question answering, summarization, translation, coding assistance, reasoning, and many other natural language processing tasks.",
+    description:
+      "Large Language Models (LLMs) are AI models trained on massive text datasets to understand and generate human language. They are used for text generation, question answering, summarization, translation, coding assistance, reasoning, and many other natural language processing tasks.",
 
-},
+  },
   {
-  slug: "vision-language-models",
-  displayName: "Vision-Language Models",
-  title: "VISION-LANGUAGE MODELS",
-  description:
-    "Vision-Language Models combine visual understanding and natural language processing, enabling AI systems to understand images, answer questions, generate captions, and perform multimodal reasoning.",
-  
+    slug: "vision-language-models",
+    displayName: "Vision-Language Models",
+    title: "VISION-LANGUAGE MODELS",
+    description:
+      "Vision-Language Models combine visual understanding and natural language processing, enabling AI systems to understand images, answer questions, generate captions, and perform multimodal reasoning.",
 
-},
-{
-  slug: "multimodal-models",
-  displayName: "Multimodal Models",
-  title: "MULTIMODAL MODELS",
-  description:
-    "Multimodal Models process multiple types of data such as text, images, audio, and video together, allowing richer understanding and generation across different modalities.",
 
-},
-{
-  slug: "automatic-speech-recognition",
-  displayName: "Automatic Speech Recognition",
-  title: "AUTOMATIC SPEECH RECOGNITION",
-  description:
-    "Speech AI focuses on speech recognition, speech synthesis, speaker identification, speech translation, and spoken language understanding.",
+  },
+  {
+    slug: "multimodal-models",
+    displayName: "Multimodal Models",
+    title: "MULTIMODAL MODELS",
+    description:
+      "Multimodal Models process multiple types of data such as text, images, audio, and video together, allowing richer understanding and generation across different modalities.",
 
-},
-{
-  slug: "image-generation",
-  displayName: "Image Generation",
-  title: "IMAGE GENERATION",
-  description:
-    "Image Generation focuses on creating realistic or artistic images from text prompts or other inputs using diffusion models and generative AI.",
+  },
+  {
+    slug: "automatic-speech-recognition",
+    displayName: "Automatic Speech Recognition",
+    title: "AUTOMATIC SPEECH RECOGNITION",
+    description:
+      "Speech AI focuses on speech recognition, speech synthesis, speaker identification, speech translation, and spoken language understanding.",
 
-},
+  },
+  {
+    slug: "image-generation",
+    displayName: "Image Generation",
+    title: "IMAGE GENERATION",
+    description:
+      "Image Generation focuses on creating realistic or artistic images from text prompts or other inputs using diffusion models and generative AI.",
+
+  },
   {
     slug: "ocr",
     displayName: "OCR",
@@ -186,7 +186,7 @@ const tasks = [
     title: "REMOTE SENSING",
     description:
       "Remote sensing analyzes satellite, aerial, and drone imagery for land cover, environmental monitoring, geospatial understanding, and earth observation.",
-    
+
   },
   {
     slug: "robotics",
@@ -376,9 +376,9 @@ export default async function TaskPage({ params }: TaskPageProps) {
         id="scroll-container"
         className="flex-1 overflow-y-auto overflow-x-hidden hide-scroll flex flex-col"
       >
-        <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-8 md:px-10 xl:px-14 py-4 md:py-8">
+        <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-8 md:px-10 xl:px-14 pt-6 pb-6">
           {/* Breadcrumb */}
-          <nav className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[12px] sm:text-[13px] tracking-wide text-[#7B736A] mb-4 md:mb-8">
+          <nav className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[12px] sm:text-[13px] tracking-wide text-[#7B736A] uppercase mb-6">
             <Link href="/" className="hover:text-black transition-colors">
               Home
             </Link>
@@ -393,30 +393,21 @@ export default async function TaskPage({ params }: TaskPageProps) {
           </nav>
 
           {/* Hero Section */}
-          <div className="grid grid-cols-1 xl:grid-cols-[1fr_460px] gap-8 md:gap-12 items-start">
+          <div className="grid grid-cols-1 xl:grid-cols-[1fr_460px] gap-8 items-start">
             {/* Left Content */}
             <div className="w-full max-w-[720px] min-w-0">
               {/* Task Title */}
-              <div className="mt-1 md:mt-2">
-                <p className="text-[11px] sm:text-[12px] uppercase tracking-[0.18em] text-[#0E4B8E] font-semibold mb-2 md:mb-3">
-                  TASK
-                </p>
-                <h1 className="text-[32px] min-[375px]:text-[38px] sm:text-[52px] md:text-[64px] lg:text-[72px] leading-[1.05] font-black tracking-tight text-[#1A1A1A] break-words uppercase">
+              <div>
+                <h1 className="text-[26px] font-black leading-[1.1] tracking-[-0.03em] text-[#171717] md:text-[34px] lg:text-[38px] break-words uppercase">
                   {metadata.title}
                 </h1>
               </div>
 
               {/* Description */}
-              <p className="mt-4 md:mt-8 text-[13px] sm:text-[14px] leading-[1.5rem] text-[#222222]">
-                {metadata.description}
+              <p className="mt-6 text-[13px] sm:text-[14px] leading-[1.65] text-[#222222]">
+                {(metadata.description || `${metadata.displayName} is a key area of artificial intelligence research.`) +
+                  ` ${metadata.displayName || "This task"} is a crucial area of AI research that provides developers with powerful tools to solve complex real-world problems.`}
               </p>
-
-              {/* Stats */}
-              <div className="mt-6 md:mt-10">
-                <div className="flex flex-wrap items-center gap-x-12 gap-y-8">
-                </div>
-              </div>
-              
             </div>
           </div>
         </div>
