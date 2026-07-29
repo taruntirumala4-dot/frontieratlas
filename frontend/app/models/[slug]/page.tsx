@@ -290,7 +290,23 @@ export default function ModelDetailPage({
             </div>
           </div>
 
-          <PaperList filterParams={{ model: resolvedParams.slug.toLowerCase().trim(), sort: "citations" }} />
+        {model.paperCount === 0 ? (
+          <div className="bg-white rounded-[12px] border border-[#F0F0F0] p-12 text-center">
+            <h3 className="text-xl font-bold text-[#111111] mb-2">
+              No Indexed Papers
+            </h3>
+            <p className="text-[#555555]">
+              There are currently no research papers associated with <strong>{model.name}</strong>.
+            </p>
+          </div>
+        ) : (
+          <PaperList
+            filterParams={{
+              model: resolvedParams.slug.toLowerCase().trim(),
+              sort: "citations",
+            }}
+          />
+        )}
         </section>
     </div>
   );
