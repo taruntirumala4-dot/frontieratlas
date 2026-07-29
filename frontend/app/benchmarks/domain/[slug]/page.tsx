@@ -5,39 +5,39 @@ import { useState, useEffect, useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import { atlasUiFont } from "@/lib/fonts";
 import { getBenchmarks, getCachedBenchmarksSync, prefetchBenchmarkDetail, prefetchBenchmarkList, type BenchmarkItem } from "@/lib/benchmarks";
-import { 
-  Search, Trophy, BookOpen, Brain, Code, Bot, Eye, FileText, 
-  Layers, Mic, Video, Cpu, Activity, Heart, BarChart3, 
-  TrendingUp, Network, Target 
+import {
+  Search, Trophy, BookOpen, Brain, Code, Bot, Eye, FileText,
+  Layers, Mic, Video, Cpu, Activity, Heart, BarChart3,
+  TrendingUp, Network, Target
 } from "lucide-react";
 export const runtime = 'edge';
 
 const STATUS_CFG: Record<string, { color: string; text: string; bg: string; border: string }> = {
-  Active:     { color: "#10B981", text: "text-emerald-700", bg: "bg-emerald-50",  border: "border-emerald-100"  },
-  Saturating: { color: "#F59E0B", text: "text-amber-700",   bg: "bg-amber-50",    border: "border-amber-100"    },
-  Saturated:  { color: "#F87171", text: "text-rose-700",    bg: "bg-rose-50",     border: "border-rose-100"     },
-  Superseded: { color: "#A78BFA", text: "text-purple-700",  bg: "bg-purple-50",   border: "border-purple-100"   },
-  Unmapped:   { color: "#9CA3AF", text: "text-gray-500",    bg: "bg-gray-50",     border: "border-gray-100"     },
+  Active: { color: "#10B981", text: "text-emerald-700", bg: "bg-emerald-50", border: "border-emerald-100" },
+  Saturating: { color: "#F59E0B", text: "text-amber-700", bg: "bg-amber-50", border: "border-amber-100" },
+  Saturated: { color: "#F87171", text: "text-rose-700", bg: "bg-rose-50", border: "border-rose-100" },
+  Superseded: { color: "#A78BFA", text: "text-purple-700", bg: "bg-purple-50", border: "border-purple-100" },
+  Unmapped: { color: "#9CA3AF", text: "text-gray-500", bg: "bg-gray-50", border: "border-gray-100" },
 };
 
 const DOMAINS = [
-  { label: "General AI",       icon: Trophy,    color: "#e11d48", desc: "Measures overall AI capability across diverse tasks spanning language, vision, reasoning & planning" },
-  { label: "Language",         icon: BookOpen,  color: "#0284c7", desc: "NLP benchmarks for comprehension, fluent text generation & cross-lingual translation quality" },
-  { label: "Reasoning",        icon: Brain,     color: "#9333ea", desc: "Evaluates logical, causal & commonsense inference across multi-step problem chains" },
-  { label: "Coding",           icon: Code,      color: "#16a34a", desc: "Code generation, debugging & software engineering evaluations across real-world repositories" },
-  { label: "Agents",           icon: Bot,       color: "#d97706", desc: "Tool use, long-horizon planning & multi-turn decision-making in interactive environments" },
-  { label: "Computer Vision",  icon: Eye,       color: "#0891b2", desc: "Detection, segmentation, classification & other pixel-level visual understanding tasks" },
-  { label: "OCR & Document AI",icon: FileText,  color: "#7c3aed", desc: "Text recognition, layout parsing & structured extraction from scanned documents & PDFs" },
-  { label: "Multimodal",       icon: Layers,    color: "#db2777", desc: "Cross-modal reasoning across image, text & audio inputs requiring joint understanding" },
-  { label: "Audio & Speech",   icon: Mic,       color: "#0d9488", desc: "Speech recognition, synthesis quality & audio classification measured by WER and MOS" },
-  { label: "Video",            icon: Video,     color: "#ea580c", desc: "Temporal action recognition, video QA & long-form understanding across frame sequences" },
-  { label: "Robotics",         icon: Cpu,       color: "#4f46e5", desc: "Manipulation, navigation & embodied control tasks across simulated & real-world settings" },
-  { label: "Embodied AI",      icon: Activity,  color: "#ca8a04", desc: "Agents acting, exploring & solving goals in simulated 3D environments with physical constraints" },
-  { label: "Healthcare",       icon: Heart,     color: "#dc2626", desc: "Medical QA, clinical NLP & diagnostic imaging benchmarks for biomedical AI systems" },
-  { label: "Mathematics",      icon: BarChart3, color: "#2563eb", desc: "From arithmetic word problems to formal proof verification across multiple difficulty levels" },
-  { label: "Time Series",      icon: TrendingUp,color: "#65a30d", desc: "Forecasting future values & anomaly detection across temporal signals and sensor streams" },
-  { label: "Graphs",           icon: Network,   color: "#c026d3", desc: "Node classification, link prediction & graph-level reasoning on structured relational data" },
-  { label: "Scientific AI",    icon: Target,    color: "#0284c7", desc: "Biology, chemistry & physics evaluations measuring AI progress on scientific discovery tasks" },
+  { label: "General AI", icon: Trophy, color: "#e11d48", desc: "Measures overall AI capability across diverse tasks spanning language, vision, reasoning & planning" },
+  { label: "Language", icon: BookOpen, color: "#0284c7", desc: "NLP benchmarks for comprehension, fluent text generation & cross-lingual translation quality" },
+  { label: "Reasoning", icon: Brain, color: "#9333ea", desc: "Evaluates logical, causal & commonsense inference across multi-step problem chains" },
+  { label: "Coding", icon: Code, color: "#16a34a", desc: "Code generation, debugging & software engineering evaluations across real-world repositories" },
+  { label: "Agents", icon: Bot, color: "#d97706", desc: "Tool use, long-horizon planning & multi-turn decision-making in interactive environments" },
+  { label: "Computer Vision", icon: Eye, color: "#0891b2", desc: "Detection, segmentation, classification & other pixel-level visual understanding tasks" },
+  { label: "OCR & Document AI", icon: FileText, color: "#7c3aed", desc: "Text recognition, layout parsing & structured extraction from scanned documents & PDFs" },
+  { label: "Multimodal", icon: Layers, color: "#db2777", desc: "Cross-modal reasoning across image, text & audio inputs requiring joint understanding" },
+  { label: "Audio & Speech", icon: Mic, color: "#0d9488", desc: "Speech recognition, synthesis quality & audio classification measured by WER and MOS" },
+  { label: "Video", icon: Video, color: "#ea580c", desc: "Temporal action recognition, video QA & long-form understanding across frame sequences" },
+  { label: "Robotics", icon: Cpu, color: "#4f46e5", desc: "Manipulation, navigation & embodied control tasks across simulated & real-world settings" },
+  { label: "Embodied AI", icon: Activity, color: "#ca8a04", desc: "Agents acting, exploring & solving goals in simulated 3D environments with physical constraints" },
+  { label: "Healthcare", icon: Heart, color: "#dc2626", desc: "Medical QA, clinical NLP & diagnostic imaging benchmarks for biomedical AI systems" },
+  { label: "Mathematics", icon: BarChart3, color: "#2563eb", desc: "From arithmetic word problems to formal proof verification across multiple difficulty levels" },
+  { label: "Time Series", icon: TrendingUp, color: "#65a30d", desc: "Forecasting future values & anomaly detection across temporal signals and sensor streams" },
+  { label: "Graphs", icon: Network, color: "#c026d3", desc: "Node classification, link prediction & graph-level reasoning on structured relational data" },
+  { label: "Scientific AI", icon: Target, color: "#0284c7", desc: "Biology, chemistry & physics evaluations measuring AI progress on scientific discovery tasks" },
 ];
 
 const getCategoryIcon = (category: string) => DOMAINS.find(d => d.label === category)?.icon ?? Trophy;
@@ -46,33 +46,33 @@ const getCategoryColor = (category: string) => DOMAINS.find(d => d.label === cat
 // --- UNIVERSAL META MATCHER ---
 function getMeta(name: string) {
   const n = name.toLowerCase();
-  
+
   // Computer Vision
-  if (n.includes("vqa") || n.includes("imagenet") || n.includes("coco") || n.includes("mmmu") || n.includes("vision")) 
+  if (n.includes("vqa") || n.includes("imagenet") || n.includes("coco") || n.includes("mmmu") || n.includes("vision"))
     return { task: "Visual QA", category: "Computer Vision", collection: "Vision", metric: "accuracy", status: "Active", year: "2023" };
-  
+
   // Coding
-  if (n.includes("swe") || n.includes("humaneval") || n.includes("mbpp") || n.includes("code") || n.includes("ds-1000")) 
+  if (n.includes("swe") || n.includes("humaneval") || n.includes("mbpp") || n.includes("code") || n.includes("ds-1000"))
     return { task: "Software Engineering", category: "Coding", collection: "Coding", metric: "pass@1", status: "Active", year: "2023" };
-  
+
   // OCR & Document AI
-  if (n.includes("ocr") || n.includes("doc") || n.includes("parse")) 
+  if (n.includes("ocr") || n.includes("doc") || n.includes("parse"))
     return { task: "Document Parsing", category: "OCR & Document AI", collection: "Document AI", metric: "f1-score", status: "Active", year: "2024" };
-  
+
   // Mathematics
-  if (n.includes("math") || n.includes("gsm")) 
+  if (n.includes("math") || n.includes("gsm"))
     return { task: "Mathematical Reasoning", category: "Mathematics", collection: "Math", metric: "accuracy", status: "Active", year: "2021" };
-  
+
   // Reasoning
-  if (n.includes("arc") || n.includes("hellaswag") || n.includes("piqa") || n.includes("boolq")) 
+  if (n.includes("arc") || n.includes("hellaswag") || n.includes("piqa") || n.includes("boolq"))
     return { task: "Commonsense Reasoning", category: "Reasoning", collection: "Reasoning", metric: "accuracy", status: "Saturated", year: "2019" };
-  
+
   // Language
-  if (n.includes("mmlu") || n.includes("gpqa")) 
+  if (n.includes("mmlu") || n.includes("gpqa"))
     return { task: "Question Answering", category: "Language", collection: "General QA", metric: "accuracy", status: "Active", year: "2021" };
-    
+
   // Healthcare (NEW)
-  if (n.includes("medqa") || n.includes("pubmed") || n.includes("clinical")) 
+  if (n.includes("medqa") || n.includes("pubmed") || n.includes("clinical"))
     return { task: "Medical QA", category: "Healthcare", collection: "Healthcare", metric: "accuracy", status: "Active", year: "2023" };
 
   // Fallback
@@ -125,20 +125,24 @@ export default function DomainPage() {
   return (
     <div className={`${atlasUiFont.className} flex flex-col min-h-screen bg-[#F8F7F2] text-slate-800`}>
       <Navbar />
-      <main className="flex-1 max-w-7xl mx-auto px-6 py-12 w-full">
-        <div className="text-sm text-gray-500 mb-8 uppercase tracking-wide font-medium cursor-pointer">
+      <main className="flex-1 max-w-7xl mx-auto px-6 pt-6 pb-6 w-full">
+        <div className="text-sm text-gray-500 mb-6 uppercase tracking-wide font-medium cursor-pointer">
           <span onClick={() => router.push('/')} className="hover:text-gray-900">Home</span> /{" "}
           <span onClick={() => router.push('/benchmarks')} className="hover:text-gray-900">Benchmarks</span> /{" "}
           <span className="text-gray-900">{title}</span>
         </div>
 
-        <div className="max-w-3xl mb-12">
-          <p className="text-[#FF5A1F] text-sm font-bold uppercase tracking-widest mb-3">Benchmark Domain</p>
-          <h1 className="text-3xl md:text-4xl font-black mb-6 tracking-tight uppercase">{title}</h1>
-          <p className="text-lg text-gray-600 leading-relaxed">{domainInfo?.desc || `Explore benchmarks and evaluations in the ${title} domain.`}</p>
+        <div className="max-w-3xl">
+          <div>
+            <p className="text-[#FF5A1F] text-sm font-bold uppercase tracking-widest mb-2">Benchmark Domain</p>
+            <h1 className="text-3xl md:text-4xl font-black tracking-tight uppercase">{title}</h1>
+          </div>
+          <p className="mt-6 text-lg text-gray-600 leading-relaxed">
+            {domainInfo?.desc || `Explore benchmarks and evaluations in the ${title} domain.`} This area of evaluation is critical for accurately quantifying the capabilities and progress of modern AI systems.
+          </p>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-full py-3 px-6 flex items-center gap-6 mb-8 shadow-sm">
+        <div className="mt-6 mb-6 bg-white border border-gray-200 rounded-full py-3 px-6 flex items-center gap-6 shadow-sm">
           <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Sort</span>
           <div className="w-px h-4 bg-gray-300 mx-1.5" />
           <button onClick={() => setSortBy("popular")} className={`text-sm flex items-center gap-1.5 ${sortBy === "popular" ? "font-semibold text-gray-900" : "text-gray-500 hover:text-gray-900"}`}> Popular</button>
