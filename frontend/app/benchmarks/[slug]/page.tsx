@@ -33,8 +33,6 @@ function benchmarkDescription(name: string) {
   );
 }
 
-const MEDAL = ["🥇", "🥈", "🥉"];
-
 /* ─────────────────────────────────────────────────────────────────
    LEADERBOARD TABLE (Domain-Matched Style with Sharp Corners)
 ───────────────────────────────────────────────────────────────── */
@@ -43,9 +41,7 @@ function LeaderboardTable({ rankings }: { rankings: BenchmarkDetailRanking[] }) 
 
   return (
     <div className="bg-white rounded-none shadow-sm border border-slate-200 overflow-hidden">
-      {/* Removed hide-scroll so the scrollbar is visible if the table is wide */}
       <div className="overflow-x-auto">
-        {/* Added min-w-max to force the table to never squish columns */}
         <table className="w-full min-w-max text-left text-sm whitespace-nowrap">
           <thead className="bg-slate-50 border-b border-slate-200 text-slate-500">
             <tr>
@@ -72,9 +68,8 @@ function LeaderboardTable({ rankings }: { rankings: BenchmarkDetailRanking[] }) 
                 return (
                   <tr key={r.id} className="hover:bg-slate-50/60 transition-colors group">
                     <td className="px-6 py-4">
-                      {r.rank <= 3
-                        ? <span className="text-lg">{MEDAL[r.rank - 1]}</span>
-                        : <span className="text-sm font-bold text-slate-500">{r.rank}</span>}
+                      {/* Medals removed, just showing the standard number for all ranks */}
+                      <span className="text-sm font-bold text-slate-500">{r.rank}</span>
                     </td>
                     <td className="px-6 py-4">
                       <span className={`text-sm font-bold ${isTop ? "text-slate-800" : "text-slate-600"}`}>
@@ -83,12 +78,13 @@ function LeaderboardTable({ rankings }: { rankings: BenchmarkDetailRanking[] }) 
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="inline-flex flex-col items-end gap-1.5">
-                        <span className={`text-[12px] font-bold font-mono tabular-nums ${isTop ? "text-[#F55036]" : "text-slate-700"}`}>
+                        {/* Orange text conditional removed, using slate-700 */}
+                        <span className="text-[12px] font-bold font-mono tabular-nums text-slate-700">
                           {score.toFixed(2)}
                         </span>
                         <div className="w-16 h-1 bg-slate-100 rounded-full overflow-hidden">
                           <div className="h-full rounded-full"
-                            style={{ width: `${pct}%`, background: isTop ? "#F55036" : "#cbd5e1" }} />
+                            style={{ width: `${pct}%`, background: "#cbd5e1" }} />
                         </div>
                       </div>
                     </td>
@@ -96,7 +92,6 @@ function LeaderboardTable({ rankings }: { rankings: BenchmarkDetailRanking[] }) 
                     <td className="px-6 py-4 text-right hidden lg:table-cell text-slate-500 font-mono text-xs">{secMetric(r.rank, 0.3)}</td>
                     <td className="px-6 py-4 text-right hidden xl:table-cell text-slate-500 font-mono text-xs">{secMetric(r.rank, 0.5)}</td>
                     <td className="px-6 py-4">
-                      {/* Removed whitespace-normal and max constraints so it flows on one line naturally */}
                       <Link href={`/papers/${r.paper.slug}`}
                         className="text-xs text-blue-600 no-underline hover:text-[#F55036] transition-colors">
                         {r.paper.title}
