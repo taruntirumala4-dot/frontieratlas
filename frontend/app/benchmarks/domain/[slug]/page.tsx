@@ -134,11 +134,11 @@ export default function DomainPage() {
 
         <div className="max-w-3xl">
           <div>
-            <p className="text-[#FF5A1F] text-sm font-bold uppercase tracking-widest mb-2">Benchmark Domain</p>
             <h1 className="text-3xl md:text-4xl font-black tracking-tight uppercase">{title}</h1>
           </div>
           <p className="mt-6 text-lg text-gray-600 leading-relaxed">
-            {domainInfo?.desc || `Explore benchmarks and evaluations in the ${title} domain.`} This area of evaluation is critical for accurately quantifying the capabilities and progress of modern AI systems.
+            {domainInfo?.desc || `Explore benchmarks and evaluations in the ${title} domain.`}
+            {domainInfo?.desc && !domainInfo.desc.endsWith('.') ? '.' : ''} This area of evaluation is critical for accurately quantifying the capabilities and progress of modern AI systems.
           </p>
         </div>
 
