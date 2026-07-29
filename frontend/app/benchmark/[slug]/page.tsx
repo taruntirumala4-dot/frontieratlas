@@ -142,8 +142,16 @@ export default function UnifiedBenchmarkCategoryPage() {
     });
 
     return filtered.sort((a, b) => {
-      if (sortBy === "popular") return (b._count?.rankings ?? 0) - (a._count?.rankings ?? 0);
-      return (parseInt(getMeta(b.name).year) || 0) - (parseInt(getMeta(a.name).year) || 0);
+      if (sortBy === "popular") {
+        const countA = a._count?.rankings ?? 0;
+        const countB = b._count?.rankings ?? 0;
+        return countB - countA;
+      } else {
+        // Sort by recent (descending year)
+        const yearA = parseInt(getMeta(a.name).year) || 0;
+        const yearB = parseInt(getMeta(b.name).year) || 0;
+        return yearB - yearA;
+      }
     });
   }, [benchmarks, slug, sortBy]);
 
@@ -157,7 +165,7 @@ export default function UnifiedBenchmarkCategoryPage() {
           <span className="text-gray-900">{title}</span>
         </div>
 
-        <div className="max-w-3xl">
+        <div className="max-w-3xl mb-8">
           <div>
             <h1 className="text-3xl md:text-4xl font-black tracking-tight uppercase">{title}</h1>
           </div>
@@ -169,61 +177,66 @@ export default function UnifiedBenchmarkCategoryPage() {
           </p>
         </div>
 
-        <div className="mt-6 mb-6 bg-white border border-gray-200 rounded-full py-3 px-6 flex items-center gap-6 shadow-sm">
-          <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Sort</span>
-          <div className="w-px h-4 bg-gray-300 mx-1.5" />
-          <button onClick={() => setSortBy("popular")} className={`text-sm flex items-center gap-1.5 ${sortBy === "popular" ? "font-semibold text-gray-900" : "text-gray-500 hover:text-gray-900"}`}> Popular</button>
-          <button onClick={() => setSortBy("recent")} className={`text-sm flex items-center gap-1.5 ${sortBy === "recent" ? "font-semibold text-gray-900" : "text-gray-500 hover:text-gray-900"}`}> Recent</button>
-          <span className="ml-auto text-sm text-gray-400 font-mono">{filteredBenchmarks.length} benchmarks found</span>
-        </div>
-
+        {/* Table Area (Sharp Edges & No Squishing) */}
         {loading ? (
-          <div className="animate-pulse h-20 bg-white rounded" />
+          <div className="animate-pulse h-20 bg-white rounded-none border border-slate-200 shadow-sm" />
         ) : filteredBenchmarks.length === 0 ? (
-          <div className="text-center py-16 bg-white rounded-xl border border-gray-100">
-            <Search size={32} className="mx-auto text-gray-300 mb-3" />
-            <p className="text-gray-500 font-medium">No benchmarks match this category.</p>
+          <div className="text-center py-16 bg-white rounded-none border border-slate-200 shadow-sm">
+            <Search size={32} className="mx-auto text-slate-300 mb-3" />
+            <p className="text-slate-500 font-medium">No benchmarks match this category.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-100 bg-gray-50/60">
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs uppercase tracking-wide">Benchmark</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs uppercase tracking-wide hidden md:table-cell">Task</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs uppercase tracking-wide hidden lg:table-cell">Category</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs uppercase tracking-wide hidden xl:table-cell">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {filteredBenchmarks.map((b) => {
-                  const meta = getMeta(b.name);
-                  const cfg = STATUS_CFG[meta.status] ?? STATUS_CFG["Unmapped"];
-                  const Icon = getCategoryIcon(meta.category);
-                  const color = getCategoryColor(meta.category);
-                  return (
-                    <tr
-                      key={b.id}
-                      onClick={() => { handlePrefetch(b.slug); router.push(`/benchmarks/${b.slug}`); }}
-                      onMouseEnter={() => handlePrefetch(b.slug)}
-                      onTouchStart={() => handlePrefetch(b.slug)}
-                      onFocus={() => handlePrefetch(b.slug)}
-                      className="hover:bg-gray-50 cursor-pointer group"
-                    >
-                      <td className="px-4 py-3 flex items-center gap-2.5">
-                        <div className="p-1.5 rounded-md group-hover:scale-110 transition-transform" style={{ background: color + "18" }}><Icon size={13} style={{ color }} /></div>
-                        <span className="font-medium text-gray-800 group-hover:text-[#e11d48]">{b.name}</span>
-                      </td>
-                      <td className="px-4 py-3 text-gray-500 hidden md:table-cell">{meta.task}</td>
-                      <td className="px-4 py-3 text-gray-500 hidden lg:table-cell">{meta.category}</td>
-                      <td className="px-4 py-3 hidden xl:table-cell">
-                        <span className={`inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded ${cfg.bg} ${cfg.text} border ${cfg.border}`}>{meta.status}</span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+          <div className="bg-white rounded-none shadow-sm border border-slate-200 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-max text-left text-sm whitespace-nowrap">
+                <thead className="bg-slate-50 border-b border-slate-200 text-slate-500">
+                  <tr>
+                    <th className="px-6 py-4 font-bold text-[11px] uppercase tracking-wider">Benchmark</th>
+                    <th className="px-6 py-4 font-bold text-[11px] uppercase tracking-wider hidden md:table-cell">Task</th>
+                    <th className="px-6 py-4 font-bold text-[11px] uppercase tracking-wider hidden lg:table-cell">Category</th>
+                    <th className="px-6 py-4 font-bold text-[11px] uppercase tracking-wider hidden xl:table-cell">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {filteredBenchmarks.map((b) => {
+                    const meta = getMeta(b.name);
+                    const cfg = STATUS_CFG[meta.status] ?? STATUS_CFG["Unmapped"];
+                    const Icon = getCategoryIcon(meta.category);
+                    const color = getCategoryColor(meta.category);
+                    return (
+                      <tr
+                        key={b.id}
+                        onClick={() => { handlePrefetch(b.slug); router.push(`/benchmarks/${b.slug}`); }}
+                        onMouseEnter={() => handlePrefetch(b.slug)}
+                        onTouchStart={() => handlePrefetch(b.slug)}
+                        onFocus={() => handlePrefetch(b.slug)}
+                        className="hover:bg-slate-50/60 transition-colors cursor-pointer group"
+                      >
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div 
+                              className="w-8 h-8 rounded-sm flex items-center justify-center border border-white shadow-sm group-hover:scale-105 transition-transform duration-200" 
+                              style={{ backgroundColor: color + "15", color: color }}
+                            >
+                              <Icon size={15} />
+                            </div>
+                            <span className="font-bold text-slate-800 group-hover:text-[#F55036] transition-colors">{b.name}</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-slate-500 font-medium hidden md:table-cell">{meta.task}</td>
+                        <td className="px-6 py-4 text-slate-500 hidden lg:table-cell">{meta.category}</td>
+                        <td className="px-6 py-4 hidden xl:table-cell">
+                          <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-sm ${cfg.bg} ${cfg.text} border ${cfg.border}`}>
+                            <span className="w-1.5 h-1.5 rounded-sm" style={{ background: cfg.color }} />
+                            {meta.status}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </main>
