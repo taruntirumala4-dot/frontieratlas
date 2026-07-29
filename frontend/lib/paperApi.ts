@@ -18,6 +18,7 @@ export interface Paper {
   additionalTags?: string[];
   upvotes: string;
   repo: string;
+  github_hourly_increase?: number;
   citations: number;
   conference?: string;
   githubUrl?: string;
@@ -187,6 +188,7 @@ function mapBackendPaper(raw: Record<string, unknown>): Paper {
     tags: Array.isArray(raw.tasks) ? raw.tasks.map(extractString) : [],
     additionalTags: Array.isArray(raw.methods) ? raw.methods.map(extractString) : [],
     upvotes: String(raw.githubStars || 0),
+    github_hourly_increase: Number(raw.github_hourly_increase || 0),
     repo: String(raw.githubForks || 0),
     citations: Number(raw.citationCount || raw.citations || 0),
     conference: String(raw.conference || ""),

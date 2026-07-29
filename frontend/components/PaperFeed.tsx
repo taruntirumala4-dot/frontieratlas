@@ -454,13 +454,7 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
     router.prefetch(`/papers/${paper.slug}`);
     prefetchPaperBySlug(paper.slug);
   }, [router, paper.slug]);
-  const starsPerHour = useMemo(() => {
-    const paperDate = new Date(paper.date);
-    if (isNaN(paperDate.getTime())) return "0.00";
-    const now = new Date();
-    const hoursSincePublication = Math.max(24, (now.getTime() - paperDate.getTime()) / (1000 * 60 * 60));
-    return (upvotesNum / hoursSincePublication).toFixed(2);
-  }, [paper.date, upvotesNum]);
+  
   return (
     <Link
       href={`/papers/${paper.slug}`}
@@ -678,7 +672,7 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
                 </div>
                 <ArrowUp className="w-[8px] h-[8px] min-[375px]:w-[10px] min-[375px]:h-[10px] md:w-[12px] md:h-[12px] lg:w-4 lg:h-4 xl:w-[12px] xl:h-[12px] text-[#24292f]" strokeWidth={2.5} />
                 <span className="font-medium lg:font-semibold xl:font-medium text-[7.5px] min-[375px]:text-[8.5px] sm:text-[9.5px] md:text-[11.5px] lg:text-[15px] xl:text-[11.5px] whitespace-nowrap tracking-tighter min-[375px]:tracking-tight">
-                  {upvotesNum} stars / hour
+                  {paper.github_hourly_increase?.toFixed(2) ?? "0.00"} stars / hour
                 </span>
               </div>
               <ArrowUpRight size={14} strokeWidth={1.5} className="text-[#9CA3AF] hidden lg:block xl:hidden" />
