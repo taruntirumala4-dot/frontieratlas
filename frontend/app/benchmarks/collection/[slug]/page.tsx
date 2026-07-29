@@ -11,37 +11,37 @@ export const runtime = 'edge';
 // --- UNIVERSAL META MATCHER ---
 function getMeta(name: string) {
   const n = name.toLowerCase();
-  
+
   // Computer Vision
-  if (n.includes("vqa") || n.includes("imagenet") || n.includes("coco") || n.includes("mmmu") || n.includes("vision")) 
+  if (n.includes("vqa") || n.includes("imagenet") || n.includes("coco") || n.includes("mmmu") || n.includes("vision"))
     return { task: "Visual QA", category: "Computer Vision", collection: "Vision", metric: "accuracy", status: "Active", year: "2023" };
-  
+
   // Coding
-  if (n.includes("swe") || n.includes("humaneval") || n.includes("mbpp") || n.includes("code") || n.includes("ds-1000")) 
+  if (n.includes("swe") || n.includes("humaneval") || n.includes("mbpp") || n.includes("code") || n.includes("ds-1000"))
     return { task: "Software Engineering", category: "Coding", collection: "Coding", metric: "pass@1", status: "Active", year: "2023" };
-  
+
   // OCR & Document AI
-  if (n.includes("ocr") || n.includes("doc") || n.includes("parse")) 
+  if (n.includes("ocr") || n.includes("doc") || n.includes("parse"))
     return { task: "Document Parsing", category: "OCR & Document AI", collection: "Document AI", metric: "f1-score", status: "Active", year: "2024" };
-  
+
   // Mathematics
-  if (n.includes("math") || n.includes("gsm")) 
+  if (n.includes("math") || n.includes("gsm"))
     return { task: "Mathematical Reasoning", category: "Mathematics", collection: "Math", metric: "accuracy", status: "Active", year: "2021" };
-  
+
   // Reasoning
-  if (n.includes("arc") || n.includes("hellaswag") || n.includes("piqa") || n.includes("boolq")) 
+  if (n.includes("arc") || n.includes("hellaswag") || n.includes("piqa") || n.includes("boolq"))
     return { task: "Commonsense Reasoning", category: "Reasoning", collection: "Reasoning", metric: "accuracy", status: "Saturated", year: "2019" };
-  
+
   // Language
-  if (n.includes("mmlu") || n.includes("gpqa")) 
+  if (n.includes("mmlu") || n.includes("gpqa"))
     return { task: "Question Answering", category: "Language", collection: "General QA", metric: "accuracy", status: "Active", year: "2021" };
-    
+
   // Healthcare
-  if (n.includes("medqa") || n.includes("pubmed") || n.includes("clinical") || n.includes("med")) 
+  if (n.includes("medqa") || n.includes("pubmed") || n.includes("clinical") || n.includes("med"))
     return { task: "Medical QA", category: "Healthcare", collection: "Healthcare", metric: "accuracy", status: "Active", year: "2023" };
 
   // Audio & Speech (NEW)
-  if (n.includes("audio") || n.includes("speech") || n.includes("voice") || n.includes("librispeech") || n.includes("whisper")) 
+  if (n.includes("audio") || n.includes("speech") || n.includes("voice") || n.includes("librispeech") || n.includes("whisper"))
     return { task: "Speech Recognition", category: "Audio Speech", collection: "Audio Speech", metric: "WER", status: "Active", year: "2023" };
 
   // Fallback
@@ -76,11 +76,11 @@ export default function CollectionPage() {
 
   const collectionBenchmarks = useMemo(() => {
     const target = title.toLowerCase();
-    
+
     return benchmarks.filter(b => {
       if (!b || !b.name) return false;
       const meta = getMeta(b.name);
-      
+
       return (
         b.name.toLowerCase().includes(target) ||
         meta.category.toLowerCase().includes(target) ||
@@ -93,16 +93,20 @@ export default function CollectionPage() {
   return (
     <div className={`${atlasUiFont.className} flex flex-col min-h-screen bg-[#F8F7F2] text-slate-800`}>
       <Navbar />
-      <main className="flex-1 max-w-7xl mx-auto px-6 py-12 w-full">
-        <div className="text-sm text-gray-500 mb-8 uppercase tracking-wide font-medium cursor-pointer">
+      <main className="flex-1 max-w-7xl mx-auto px-6 pt-6 pb-6 w-full">
+        <div className="text-sm text-gray-500 mb-6 uppercase tracking-wide font-medium cursor-pointer">
           <span onClick={() => router.push('/')} className="hover:text-gray-900">Home</span> /{" "}
           <span onClick={() => router.push('/benchmarks')} className="hover:text-gray-900">Benchmarks</span> /{" "}
           <span className="text-gray-900">{title}</span>
         </div>
 
-        <div className="max-w-3xl mb-12">
-          <p className="text-[#FF5A1F] text-sm font-bold uppercase tracking-widest mb-3">Benchmark Collection</p>
-          <h1 className="text-5xl md:text-6xl font-black mb-6 tracking-tight uppercase">{title}</h1>
+        <div className="max-w-3xl mb-6">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-black tracking-tight uppercase">{title}</h1>
+          </div>
+          <p className="mt-6 text-lg text-gray-600 leading-relaxed">
+            Explore {title.toLowerCase()} benchmarks and evaluations. This area of evaluation is critical for accurately quantifying the capabilities and progress of modern AI systems.
+          </p>
         </div>
 
         {loading ? (
@@ -116,7 +120,7 @@ export default function CollectionPage() {
         ) : (
           <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
             <table className="w-full text-sm">
-               <thead>
+              <thead>
                 <tr className="border-b border-gray-100 bg-gray-50/60">
                   <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs uppercase tracking-wide">Benchmark</th>
                   <th className="text-left px-4 py-3 font-semibold text-gray-600 text-xs uppercase tracking-wide hidden md:table-cell">Category</th>

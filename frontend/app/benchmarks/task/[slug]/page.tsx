@@ -10,51 +10,51 @@ export const runtime = 'edge';
 // --- UNIVERSAL META MATCHER ---
 function getMeta(name: string) {
   const n = name.toLowerCase();
-  
+
   // 1. Agents (NEW)
-  if (n.includes("agent") || n.includes("tool") || n.includes("webarena") || n.includes("alfworld") || n.includes("gym") || n.includes("env")) 
+  if (n.includes("agent") || n.includes("tool") || n.includes("webarena") || n.includes("alfworld") || n.includes("gym") || n.includes("env"))
     return { task: "Autonomous Agents", category: "Agents", collection: "Agents", metric: "success rate", status: "Active", year: "2024" };
 
   // 2. Multimodal (NEW)
-  if (n.includes("multimodal") || n.includes("mmmu") || n.includes("mm-") || n.includes("llava") || n.includes("vl")) 
+  if (n.includes("multimodal") || n.includes("mmmu") || n.includes("mm-") || n.includes("llava") || n.includes("vl"))
     return { task: "Joint Understanding", category: "Multimodal", collection: "Multimodal", metric: "accuracy", status: "Active", year: "2024" };
 
   // 3. Audio Speech (NEW)
-  if (n.includes("audio") || n.includes("speech") || n.includes("voice") || n.includes("librispeech") || n.includes("whisper") || n.includes("asr") || n.includes("tts")) 
+  if (n.includes("audio") || n.includes("speech") || n.includes("voice") || n.includes("librispeech") || n.includes("whisper") || n.includes("asr") || n.includes("tts"))
     return { task: "Speech Recognition", category: "Audio Speech", collection: "Audio Speech", metric: "WER", status: "Active", year: "2023" };
 
   // 4. Text Generation (NEW)
-  if (n.includes("text") || n.includes("generation") || n.includes("summar") || n.includes("wmt") || n.includes("translate") || n.includes("bleu")) 
+  if (n.includes("text") || n.includes("generation") || n.includes("summar") || n.includes("wmt") || n.includes("translate") || n.includes("bleu"))
     return { task: "Text Generation", category: "Text Generation", collection: "Language", metric: "score", status: "Active", year: "2022" };
 
   // 5. Computer Vision
-  if (n.includes("vqa") || n.includes("imagenet") || n.includes("coco") || n.includes("vision") || n.includes("image")) 
+  if (n.includes("vqa") || n.includes("imagenet") || n.includes("coco") || n.includes("vision") || n.includes("image"))
     return { task: "Visual QA", category: "Computer Vision", collection: "Vision", metric: "accuracy", status: "Active", year: "2023" };
-  
+
   // 6. Coding
-  if (n.includes("swe") || n.includes("humaneval") || n.includes("mbpp") || n.includes("code") || n.includes("ds-1000")) 
+  if (n.includes("swe") || n.includes("humaneval") || n.includes("mbpp") || n.includes("code") || n.includes("ds-1000"))
     return { task: "Software Engineering", category: "Coding", collection: "Coding", metric: "pass@1", status: "Active", year: "2023" };
-  
+
   // 7. OCR & Document AI
-  if (n.includes("ocr") || n.includes("doc") || n.includes("parse")) 
+  if (n.includes("ocr") || n.includes("doc") || n.includes("parse"))
     return { task: "Document Parsing", category: "OCR & Document AI", collection: "Document AI", metric: "f1-score", status: "Active", year: "2024" };
-  
+
   // 8. Mathematics
-  if (n.includes("math") || n.includes("gsm")) 
+  if (n.includes("math") || n.includes("gsm"))
     return { task: "Mathematical Reasoning", category: "Mathematics", collection: "Math", metric: "accuracy", status: "Active", year: "2021" };
-  
+
   // 9. Reasoning
-  if (n.includes("arc") || n.includes("hellaswag") || n.includes("piqa") || n.includes("boolq")) 
+  if (n.includes("arc") || n.includes("hellaswag") || n.includes("piqa") || n.includes("boolq"))
     return { task: "Commonsense Reasoning", category: "Reasoning", collection: "Reasoning", metric: "accuracy", status: "Saturated", year: "2019" };
-  
+
   // 10. Healthcare
-  if (n.includes("medqa") || n.includes("pubmed") || n.includes("clinical") || n.includes("med")) 
+  if (n.includes("medqa") || n.includes("pubmed") || n.includes("clinical") || n.includes("med"))
     return { task: "Medical QA", category: "Healthcare", collection: "Healthcare", metric: "accuracy", status: "Active", year: "2023" };
 
   // 11. Language
-  if (n.includes("mmlu") || n.includes("gpqa") || n.includes("nlp")) 
+  if (n.includes("mmlu") || n.includes("gpqa") || n.includes("nlp"))
     return { task: "Question Answering", category: "Language", collection: "General QA", metric: "accuracy", status: "Active", year: "2021" };
-    
+
   // Fallback
   return { task: "General Evaluation", category: "General AI", collection: "General", metric: "score", status: "Active", year: "2024" };
 }
@@ -103,19 +103,23 @@ export default function TaskPage() {
   return (
     <div className={`${atlasUiFont.className} flex flex-col min-h-screen bg-[#F8F7F2] text-slate-800`}>
       <Navbar />
-      <main className="flex-1 max-w-7xl mx-auto px-6 py-12 w-full">
-        <div className="text-sm text-gray-500 mb-8 uppercase tracking-wide font-medium cursor-pointer">
+      <main className="flex-1 max-w-7xl mx-auto px-6 pt-6 pb-6 w-full">
+        <div className="text-sm text-gray-500 mb-6 uppercase tracking-wide font-medium cursor-pointer">
           <span onClick={() => router.push('/')} className="hover:text-gray-900">Home</span> /{" "}
           <span onClick={() => router.push('/benchmarks')} className="hover:text-gray-900">Benchmarks</span> /{" "}
           <span className="text-gray-900">{title}</span>
         </div>
 
-        <div className="max-w-3xl mb-12">
-          <p className="text-[#FF5A1F] text-sm font-bold uppercase tracking-widest mb-3">Benchmark Task</p>
-          <h1 className="text-5xl md:text-6xl font-black mb-6 tracking-tight uppercase">{title}</h1>
+        <div className="max-w-3xl">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-black tracking-tight uppercase">{title}</h1>
+          </div>
+          <p className="mt-6 text-lg text-gray-600 leading-relaxed">
+            Explore {title.toLowerCase()} benchmarks and evaluations. This area of evaluation is critical for accurately quantifying the capabilities and progress of modern AI systems.
+          </p>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-full py-3 px-6 flex items-center gap-6 mb-8 shadow-sm">
+        <div className="mt-6 mb-6 bg-white border border-gray-200 rounded-full py-3 px-6 flex items-center gap-6 shadow-sm">
           <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Sort</span>
           <div className="w-px h-4 bg-gray-300 mx-1.5" />
           <button onClick={() => setSortBy("popular")} className={`text-sm flex items-center gap-1.5 ${sortBy === "popular" ? "font-semibold text-gray-900" : "text-gray-500"}`}>Popular</button>
