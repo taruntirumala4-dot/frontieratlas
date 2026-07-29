@@ -30,14 +30,14 @@ const userSelect = {
   id: true,
   username: true,
   email: true,
-  display_name: true,
+  displayName: true,
   avatar: true,
   bio: true,
   github: true,
   linkedin: true,
   twitter: true,
   website: true,
-  reputation_score: true,
+  reputationScore: true,
   createdAt: true,
 } as const;
 
@@ -60,8 +60,8 @@ const createTokenPair = async (
   await prisma.refreshToken.create({
     data: {
       token: refreshToken,
-      user_id: userId,
-      expires_at: getRefreshTokenExpiry(),
+      userId,
+      expiresAt: getRefreshTokenExpiry(),
     },
   });
 
@@ -130,7 +130,7 @@ export const signupUser = async (
       username: input.username,
       email: input.email,
       password: hashedPassword,
-      display_name: input.displayName,
+      displayName: input.displayName,
       github: input.github,
       linkedin: input.linkedin,
     },
@@ -171,7 +171,7 @@ export const upsertGithubUser = async (
         username: email,
         email: email,
         password: hashedPassword,
-        display_name: githubProfile.name || githubProfile.login || email.split("@")[0],
+        displayName: githubProfile.name || githubProfile.login || email.split("@")[0],
       },
       select: userSelect,
     });
@@ -202,7 +202,7 @@ export const upsertGoogleUser = async (
         username: email,
         email: email,
         password: hashedPassword,
-        display_name: googleProfile.name || email.split("@")[0],
+        displayName: googleProfile.name || email.split("@")[0],
       },
       select: userSelect,
     });
@@ -341,7 +341,7 @@ export const refreshUserToken = async (
   }
 
   if (
-    storedToken.user_id !== payload.userId
+    storedToken.userId !== payload.userId
   ) {
     throw new AuthError(
       "Invalid refresh token",
@@ -350,7 +350,7 @@ export const refreshUserToken = async (
   }
 
   if (
-    storedToken.expires_at.getTime() <=
+    storedToken.expiresAt.getTime() <=
     Date.now()
   ) {
 
@@ -407,9 +407,8 @@ export const refreshUserToken = async (
     prisma.refreshToken.create({
       data: {
         token: newRefreshToken,
-        user_id: user.id,
-        expires_at:
-          getRefreshTokenExpiry(),
+        userId: user.id,
+        expiresAt: getRefreshTokenExpiry(),
       },
     }),
 
