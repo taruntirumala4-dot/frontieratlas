@@ -30,10 +30,9 @@ function secMetric(rank: number, seed: number) {
 
 function benchmarkDescription(name: string) {
   return (
-    `${name} is a rigorous evaluation framework measuring model performance across standardised ` +
-    `conditions. Researchers submit results to the leaderboard and the community tracks progress ` +
-    `over time. Use this page to explore ranked submissions, compare approaches, and trace the ` +
-    `SOTA progression curve.`
+    `${name} is a rigorous evaluation framework measuring model performance across standardized conditions. ` +
+    `It plays a crucial role in advancing artificial intelligence capabilities by providing standardized metrics. ` +
+    `Its continuous evolution ensures robust scalability and optimized system performance.`
   );
 }
 
@@ -54,7 +53,7 @@ function ProgressionChart({ rankings }: { rankings: BenchmarkDetailRanking[] }) 
       .map(r => ({
         x: r.paper.publicationDate
           ? new Date(r.paper.publicationDate).getFullYear()
-            + new Date(r.paper.publicationDate).getMonth() / 12
+          + new Date(r.paper.publicationDate).getMonth() / 12
           : 2025,
         y: scoreFromRank(r.rank),
         label: r.paper.title.split(":")[0].trim(),
@@ -62,7 +61,7 @@ function ProgressionChart({ rankings }: { rankings: BenchmarkDetailRanking[] }) 
         slug: r.paper.slug,
       }))
       .sort((a, b) => a.x - b.x),
-  [rankings]);
+    [rankings]);
 
   if (pts.length === 0) {
     return (
@@ -114,7 +113,7 @@ function ProgressionChart({ rankings }: { rankings: BenchmarkDetailRanking[] }) 
       >
         <defs>
           <linearGradient id="sota-g" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stopColor="#3B82F6" stopOpacity="0.18" />
+            <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.18" />
             <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.02" />
           </linearGradient>
         </defs>
@@ -289,11 +288,11 @@ export default function BenchmarkDetailPage() {
 
   const bestRanking = useMemo(() =>
     benchmark?.rankings?.find(r => r.rank === 1) ?? null,
-  [benchmark]);
+    [benchmark]);
 
   const sourcePaper = useMemo(() =>
     benchmark?.claims?.[0]?.paper ?? benchmark?.rankings?.[0]?.paper ?? null,
-  [benchmark]);
+    [benchmark]);
 
   const totalResults = (benchmark?.rankings?.length ?? 0) + (benchmark?.claims?.length ?? 0);
 
@@ -381,7 +380,7 @@ export default function BenchmarkDetailPage() {
       <Navbar />
 
       <div className="flex-1 overflow-y-auto overflow-x-hidden hide-scroll">
-        <div className="w-full max-w-[1600px] mx-auto px-4 md:px-8 xl:px-12 pt-5 pb-20
+        <div className="w-full max-w-[1600px] mx-auto px-4 md:px-8 xl:px-12 pt-6 pb-6
           flex items-start gap-6 xl:gap-8">
 
           <div className="hidden lg:block w-[240px] shrink-0 sticky top-4">
@@ -391,7 +390,7 @@ export default function BenchmarkDetailPage() {
           <main className="flex-1 min-w-0 animate-fade-in">
 
             {/* Breadcrumb */}
-            <nav className="flex items-center gap-1.5 text-[12px] text-[#9CA3AF] mb-4">
+            <nav className="flex items-center gap-1.5 text-[12px] text-[#9CA3AF] mb-6 uppercase tracking-wide">
               <Link href="/" className="hover:text-[#FF5A1F] transition-colors no-underline">Home</Link>
               <ChevronRight size={12} />
               <Link href="/benchmarks" className="hover:text-[#FF5A1F] transition-colors no-underline">Benchmarks</Link>
@@ -403,24 +402,27 @@ export default function BenchmarkDetailPage() {
             <div className="mb-6">
               <div className="h-[3px] w-full mb-6 rounded-full" style={{ background: "linear-gradient(90deg,#FF5A1F 0%,#FFB347 50%,#FF5A1F 100%)" }} />
 
-              <div className="inline-flex items-center gap-1.5 bg-[rgba(255,90,31,0.08)]
-                border border-[rgba(255,90,31,0.18)] text-[#FF5A1F] text-[11px] font-bold
-                px-3 py-1 rounded-full mb-4 uppercase tracking-wider">
-                <Award size={11} /> Benchmark Leaderboard
+              <div>
+                <div className="inline-flex items-center gap-1.5 bg-[rgba(255,90,31,0.08)]
+                  border border-[rgba(255,90,31,0.18)] text-[#FF5A1F] text-[11px] font-bold
+                  px-3 py-1 rounded-full mb-2 uppercase tracking-wider">
+                  <Award size={11} /> Benchmark Leaderboard
+                </div>
+
+                <h1 className="text-[28px] md:text-[36px] font-black text-[#111111] leading-tight uppercase">
+                  {benchmark.name}
+                </h1>
               </div>
 
-              <h1 className="text-[28px] md:text-[36px] font-black text-[#111111] leading-tight mb-3">
-                {benchmark.name}
-              </h1>
-              <p className="text-[#555555] text-[13px] leading-relaxed max-w-2xl mb-6">
+              <p className="mt-6 text-[#555555] text-[13px] leading-relaxed max-w-2xl mb-6">
                 {benchmarkDescription(benchmark.name)}
               </p>
 
               <div className="flex flex-wrap gap-6 mb-6">
                 {[
                   { icon: <TrendingUp size={13} />, val: benchmark.rankings.length, label: "Ranked entries" },
-                  { icon: <Zap size={13} />,        val: benchmark.claims.length,   label: "SOTA claims"   },
-                  { icon: <FileText size={13} />,   val: totalResults,              label: "Total submissions" },
+                  { icon: <Zap size={13} />, val: benchmark.claims.length, label: "SOTA claims" },
+                  { icon: <FileText size={13} />, val: totalResults, label: "Total submissions" },
                 ].map(s => (
                   <div key={s.label} className="flex items-center gap-2">
                     <span className="text-[#FF5A1F]">{s.icon}</span>
