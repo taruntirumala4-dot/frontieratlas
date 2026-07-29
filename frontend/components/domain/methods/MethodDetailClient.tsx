@@ -116,7 +116,7 @@ export default function MethodDetailClient({ slug }: { slug: string }) {
       <div id="scroll-container" className="flex-1 overflow-y-auto overflow-x-hidden hide-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <main className="max-w-7xl mx-auto px-5 lg:px-6 py-5 lg:py-6 w-full">
           {/* Breadcrumbs */}
-          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs lg:text-sm text-gray-500 mb-2 lg:mb-4">
+          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs lg:text-sm text-gray-500 uppercase mb-2 lg:mb-4">
             <Link href="/" className="hover:text-gray-800">Home</Link>
             <span>›</span>
             <Link href="/methods" className="hover:text-gray-800">Methods</Link>
@@ -126,12 +126,13 @@ export default function MethodDetailClient({ slug }: { slug: string }) {
 
           <section className="mb-8 lg:mb-10">
             <div className="w-full max-w-4xl">
-              <h1 className="text-2xl lg:text-4xl font-bold mb-1.5 lg:mb-2 text-slate-800 leading-tight">
+              <h1 className="text-2xl lg:text-4xl font-bold mb-1.5 lg:mb-2 text-slate-800 leading-tight uppercase">
                 {methodDetail.name}
               </h1>
 
-              <p className="text-sm lg:text-lg text-gray-500 leading-relaxed mb-5 lg:mb-6">
-                {methodDetail.description || `${methodDetail.name} is an advanced artificial intelligence system that learns to process human language by being trained on vast amounts of text data.`}
+              <p className="text-sm lg:text-[15px] text-gray-500 leading-[1.65] mb-5 lg:mb-6">
+                {(methodDetail.description || `${methodDetail.name} is an advanced artificial intelligence method.`) +
+                  ` By leveraging state-of-the-art computational techniques, this method provides researchers and engineers with powerful tools to solve complex real-world problems. Its continued advancement plays a central role in shaping the next generation of AI systems.`}
               </p>
 
               {/* Metrics Widget */}
