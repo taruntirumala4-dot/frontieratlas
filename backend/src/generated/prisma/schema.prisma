@@ -13,57 +13,59 @@ datasource db {
 }
 
 model Paper {
-  id               String            @id @default(uuid())
-  slug             String            @unique
-  title            String
-  shortTitle       String?           @map("short_title")
-  abstract         String?
-  tlDr             String?           @map("tl_dr")
-  publicationDate  DateTime?         @map("publication_date") @db.Timestamp(6)
-  submissionDate   DateTime?         @map("submission_date") @db.Timestamp(6)
-  arxivId          String?           @unique @map("arxiv_id")
-  doi              String?
-  paperUrl         String?           @map("paper_url")
-  pdfUrl           String?           @map("pdf_url")
-  thumbnailUrl     String?           @map("thumbnail_url")
-  sourceUrl        String?           @map("source_url")
-  projectUrl       String?           @map("project_url")
-  citationCount    Int               @default(0) @map("citation_count")
-  referenceCount   Int               @default(0) @map("reference_count")
-  pageCount        Int?              @map("page_count")
-  paperType        String?           @map("paper_type")
-  status           String?
-  language         String?
-  license          String?
-  createdAt        DateTime          @default(now()) @map("created_at") @db.Timestamp(6)
-  updatedAt        DateTime?         @updatedAt @map("updated_at") @db.Timestamp(6)
-  githubForks      Int?              @default(0) @map("github_forks")
-  githubStars      Int?              @default(0) @map("github_stars")
-  githubUrl        String?           @map("github_url")
-  isOfficialCode   Boolean?          @default(false) @map("is_official_code")
-  hfUpvotes        Int?              @default(0) @map("hf_upvotes")
-  hfUrl            String?           @map("hf_url")
-  trendingScore    Float?            @default(0) @map("trending_score")
-  discoverySource  String?           @map("discovery_source")
-  importance_score Float?            @default(0.0)
-  venue            String?
-  organization     String?
-  authors          String?
-  huggingface_url  String?
-  domain           String?
-  task             String?
-  conferences      PaperConference[]
-  datasets         PaperDataset[]
-  journals         PaperJournal[]
-  labs             PaperLab[]
-  methods          PaperMethod[]
-  models           PaperModel[]
-  repositories     PaperRepository[]
-  tasks            PaperTask[]
-  universities     PaperUniversity[]
-  rankings         Ranking[]
-  sotaClaims       SotaClaim[]
-  summaries        Summary[]
+  id                     String            @id @default(uuid())
+  slug                   String            @unique
+  title                  String
+  shortTitle             String?           @map("short_title")
+  abstract               String?
+  tlDr                   String?           @map("tl_dr")
+  publicationDate        DateTime?         @map("publication_date")
+  submissionDate         DateTime?         @map("submission_date")
+  arxivId                String?           @unique @map("arxiv_id")
+  doi                    String?
+  paperUrl               String?           @map("paper_url")
+  pdfUrl                 String?           @map("pdf_url")
+  thumbnailUrl           String?           @map("thumbnail_url")
+  sourceUrl              String?           @map("source_url")
+  projectUrl             String?           @map("project_url")
+  citationCount          Int               @default(0) @map("citation_count")
+  referenceCount         Int               @default(0) @map("reference_count")
+  pageCount              Int?              @map("page_count")
+  paperType              String?           @map("paper_type")
+  status                 String?
+  language               String?
+  license                String?
+  createdAt              DateTime          @default(now()) @map("created_at")
+  updatedAt              DateTime?         @updatedAt @map("updated_at")
+  githubForks            Int?              @default(0) @map("github_forks")
+  githubStars            Int?              @default(0) @map("github_stars")
+  githubUrl              String?           @map("github_url")
+  isOfficialCode         Boolean?          @default(false) @map("is_official_code")
+  hfUpvotes              Int?              @default(0) @map("hf_upvotes")
+  trendingScore          Float?            @default(0) @map("trending_score")
+  discoverySource        String?           @map("discovery_source")
+  authors                String?
+  domain                 String?
+  task                   String?
+  huggingface_url        String?
+  hf_model_url           String?
+  hfUrl                  String?           @map("hf_url")
+  importance_score       Float?            @default(0.0)
+  venue                  String?
+  organization           String?
+  github_hourly_increase Float?            @default(1.0)
+  conferences            PaperConference[]
+  datasets               PaperDataset[]
+  journals               PaperJournal[]
+  labs                   PaperLab[]
+  methods                PaperMethod[]
+  models                 PaperModel[]
+  repositories           PaperRepository[]
+  tasks                  PaperTask[]
+  universities           PaperUniversity[]
+  rankings               Ranking[]
+  sotaClaims             SotaClaim[]
+  summaries              Summary[]
 
   @@map("papers")
 }
@@ -76,9 +78,11 @@ model EntityRelationship {
   targetEntityId   String @map("target_entity_id")
   relationshipType String @map("relationship_type")
   weight           Float  @default(1.0)
-  metadataJson     Json?  @map("metadata_json") @db.Json
+  metadataJson     Json?  @map("metadata_json")
 
   @@unique([sourceEntityId, targetEntityId, relationshipType])
+  @@index([sourceEntityType, sourceEntityId])
+  @@index([targetEntityType, targetEntityId])
   @@map("entity_relationships")
 }
 
@@ -88,7 +92,7 @@ model Startup {
   sourceName    String?   @map("source_name")
   sourceUrl     String?   @map("source_url")
   employeeCount Int?      @map("employee_count")
-  collectedAt   DateTime  @default(now()) @map("collected_at") @db.Timestamp(6)
+  collectedAt   DateTime  @default(now()) @map("collected_at")
   createdAt     DateTime? @default(now()) @db.Timestamp(6)
   updatedAt     DateTime? @default(now()) @db.Timestamp(6)
 
@@ -100,9 +104,9 @@ model Task {
   name      String      @unique
   slug      String      @unique
   color     String?
-  createdAt DateTime?   @default(now()) @db.Timestamp(6)
-  updatedAt DateTime?   @default(now()) @updatedAt @db.Timestamp(6)
   domain    String?
+  createdAt DateTime?   @db.Timestamp(6)
+  updatedAt DateTime?   @updatedAt @db.Timestamp(6)
   papers    PaperTask[]
 
   @@map("tasks")
@@ -111,8 +115,8 @@ model Task {
 model PaperTask {
   paper_id String
   task_id  String
-  paper    Paper  @relation(fields: [paper_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  task     Task   @relation(fields: [task_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  paper    Paper  @relation(fields: [paper_id], references: [id])
+  task     Task   @relation(fields: [task_id], references: [id])
 
   @@id([paper_id, task_id])
   @@map("paper_tasks")
@@ -124,8 +128,8 @@ model Method {
   slug        String        @unique
   category    String?
   description String?
-  createdAt   DateTime?     @default(now()) @db.Timestamp(6)
-  updatedAt   DateTime?     @default(now()) @db.Timestamp(6)
+  createdAt   DateTime?     @db.Timestamp(6)
+  updatedAt   DateTime?     @db.Timestamp(6)
   papers      PaperMethod[]
 
   @@map("methods")
@@ -134,8 +138,8 @@ model Method {
 model PaperMethod {
   paper_id  String
   method_id String
-  method    Method @relation(fields: [method_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  paper     Paper  @relation(fields: [paper_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  method    Method @relation(fields: [method_id], references: [id])
+  paper     Paper  @relation(fields: [paper_id], references: [id])
 
   @@id([paper_id, method_id])
   @@map("paper_methods")
@@ -145,25 +149,26 @@ model Benchmark {
   id                String      @id @default(uuid())
   name              String      @unique
   slug              String      @unique
-  createdAt         DateTime?   @default(now()) @db.Timestamp(6)
-  updatedAt         DateTime?   @default(now()) @db.Timestamp(6)
   description       String?
   domain            String?
   task              String?
-  category          String?
   metric            String?
-  status            String?     @default("Active")
   year              Int?
-  results_count     Int?        @default(0)
-  models_count      Int?        @default(0)
-  top_models        String[]    @default([])
+  papers_evaluated  Int?
+  is_popular        Boolean?
+  is_trending       Boolean?
+  is_recently_added Boolean?
+  createdAt         DateTime?   @db.Timestamp(6)
+  updatedAt         DateTime?   @db.Timestamp(6)
+  category          String?
+  status            String?
+  results_count     Int?
+  models_count      Int?
   paper_title       String?
   paper_url         String?
   repo_url          String?
   dataset_url       String?
-  is_popular        Boolean?    @default(false)
-  is_trending       Boolean?    @default(false)
-  is_recently_added Boolean?    @default(false)
+  top_models        String[]
   modality          String?
   benchmark_url     String?
   rankings          Ranking[]
@@ -173,39 +178,43 @@ model Benchmark {
 }
 
 model SotaClaim {
-  id           String     @id @default(uuid())
-  paper_id     String?
-  benchmark_id String?
-  benchmark    Benchmark? @relation(fields: [benchmark_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  paper        Paper?     @relation(fields: [paper_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id           String    @id @default(uuid())
+  paper_id     String
+  benchmark_id String
+  benchmark    Benchmark @relation(fields: [benchmark_id], references: [id])
+  paper        Paper     @relation(fields: [paper_id], references: [id])
 
   @@unique([paper_id, benchmark_id])
   @@map("sota_claims")
 }
 
 model Ranking {
-  id            String     @id @default(uuid())
-  paper_id      String?
-  benchmark_id  String?
-  rank          Int
+  id            String    @id @default(uuid())
+  paper_id      String
+  benchmark_id  String
+  rank          Int?
   previous_rank Int?
-  metric        String?
   score         Float?
-  result_date   DateTime?  @db.Timestamp(6)
-  source_url    String?
-  verified      Boolean    @default(false)
-  updated_at    DateTime   @default(now()) @updatedAt @db.Timestamp(6)
-  updatedAt     DateTime?  @default(now()) @db.Timestamp(6)
-  resultDate    DateTime?  @default(now()) @db.Timestamp(6)
-  previousRank  Int?
-  sourceUrl     String?    @default("https://paperswithcode.com/sota")
-  model_name    String?
-  organization  String?
   score_str     String?
-  benchmark     Benchmark? @relation(fields: [benchmark_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  paper         Paper?     @relation(fields: [paper_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  model_name    String?
+  metric        String?
+  updated_at    DateTime  @updatedAt
+  url           String?
+  source        String?
+  model_id      String?
+  organization  String?
+  verified      Boolean?
+  updatedAt     DateTime? @default(now()) @db.Timestamp(6)
+  resultDate    DateTime? @default(now()) @db.Timestamp(6)
+  previousRank  Int?
+  sourceUrl     String?   @default("https://paperswithcode.com/sota")
+  result_date   DateTime? @db.Timestamp(6)
+  source_url    String?
+  benchmark     Benchmark @relation(fields: [benchmark_id], references: [id])
+  paper         Paper     @relation(fields: [paper_id], references: [id])
 
   @@unique([paper_id, benchmark_id])
+  @@index([benchmark_id, rank])
   @@map("rankings")
 }
 
@@ -215,43 +224,44 @@ model Model {
   slug            String       @unique
   vendor          String?
   vendor_logo_url String?
-  release_date    DateTime?    @db.Timestamp(6)
+  description     String?
   parameter_count String?
   modality        String?
   access_type     String?
   openness_type   String?
-  description     String?
-  benchmark_score Json?        @db.Json
-  created_at      DateTime     @default(now()) @db.Timestamp(6)
-  updated_at      DateTime     @default(now()) @db.Timestamp(6)
+  release_date    DateTime?
+  benchmark_score Json?
+  model_family    String?
+  category        String?
+  capabilities    Json?
+  research_areas  Json?
+  architecture    String?
+  context_window  String?
+  license         String?
+  model_versions  Json?
+  release_notes   String?
+  paper_url       String?
+  repository_url  String?
+  api_url         String?
+  created_at      DateTime     @default(now())
+  updated_at      DateTime
   createdAt       DateTime?    @default(now()) @db.Timestamp(6)
   updatedAt       DateTime?    @default(now()) @updatedAt @db.Timestamp(6)
   releaseDate     DateTime?    @default(now()) @db.Timestamp(6)
   parameterCount  String?      @default("100B+")
   accessType      String?      @default("Open / API")
   opennessType    String?      @default("Commercial / Permissive")
-  benchmarkScore  Json?        @default("{\"mmlu\": 88.5}") @db.Json
-  model_family    String?
+  benchmarkScore  Json?        @default("{}")
   modelFamily     String?
-  category        String?
-  capabilities    Json?
-  research_areas  Json?
-  researchAreas   Json?
-  architecture    String?
-  context_window  String?
-  contextWindow   String?
-  license         String?
-  model_versions  Json?
-  modelVersions   Json?
-  release_notes   String?
-  releaseNotes    String?
-  paper_url       String?
+  trendingScore   Float?       @default(0)
   paperUrl        String?
-  repository_url  String?
   repositoryUrl   String?
-  api_url         String?
   apiUrl          String?
-  trendingScore   Float?       @map("trending_score")
+  contextWindow   String?
+  researchAreas   Json?
+  modelVersions   Json?
+  releaseNotes    String?
+  role            String?
   papers          PaperModel[]
 
   @@map("models")
@@ -261,8 +271,8 @@ model PaperModel {
   paper_id String
   model_id String
   role     String? @default("referenced")
-  model    Model   @relation(fields: [model_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  paper    Paper   @relation(fields: [paper_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  model    Model   @relation(fields: [model_id], references: [id], onDelete: Cascade)
+  paper    Paper   @relation(fields: [paper_id], references: [id], onDelete: Cascade)
 
   @@id([paper_id, model_id])
   @@map("paper_models")
@@ -272,10 +282,10 @@ model Dataset {
   id         String         @id @default(uuid())
   name       String
   slug       String         @unique
-  created_at DateTime       @default(now()) @db.Timestamp(6)
-  updated_at DateTime       @default(now()) @db.Timestamp(6)
-  createdAt  DateTime?      @default(now()) @db.Timestamp(6)
-  updatedAt  DateTime?      @default(now()) @updatedAt @db.Timestamp(6)
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  created_at DateTime?      @default(now()) @db.Timestamp(6)
+  updated_at DateTime?      @default(now()) @db.Timestamp(6)
   papers     PaperDataset[]
 
   @@map("datasets")
@@ -284,8 +294,8 @@ model Dataset {
 model PaperDataset {
   paper_id   String
   dataset_id String
-  dataset    Dataset @relation(fields: [dataset_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  paper      Paper   @relation(fields: [paper_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  dataset    Dataset @relation(fields: [dataset_id], references: [id], onDelete: Cascade)
+  paper      Paper   @relation(fields: [paper_id], references: [id], onDelete: Cascade)
 
   @@id([paper_id, dataset_id])
   @@map("paper_datasets")
@@ -295,10 +305,10 @@ model Lab {
   id         String     @id @default(uuid())
   name       String
   slug       String     @unique
-  created_at DateTime   @default(now()) @db.Timestamp(6)
-  updated_at DateTime   @default(now()) @db.Timestamp(6)
-  createdAt  DateTime?  @default(now()) @db.Timestamp(6)
-  updatedAt  DateTime?  @default(now()) @updatedAt @db.Timestamp(6)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  created_at DateTime?  @default(now()) @db.Timestamp(6)
+  updated_at DateTime?  @default(now()) @db.Timestamp(6)
   papers     PaperLab[]
 
   @@map("labs")
@@ -307,8 +317,8 @@ model Lab {
 model PaperLab {
   paper_id String
   lab_id   String
-  lab      Lab    @relation(fields: [lab_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  paper    Paper  @relation(fields: [paper_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  lab      Lab    @relation(fields: [lab_id], references: [id], onDelete: Cascade)
+  paper    Paper  @relation(fields: [paper_id], references: [id], onDelete: Cascade)
 
   @@id([paper_id, lab_id])
   @@map("paper_labs")
@@ -318,10 +328,10 @@ model University {
   id         String            @id @default(uuid())
   name       String
   slug       String            @unique
-  created_at DateTime          @default(now()) @db.Timestamp(6)
-  updated_at DateTime          @default(now()) @db.Timestamp(6)
-  createdAt  DateTime?         @default(now()) @db.Timestamp(6)
-  updatedAt  DateTime?         @default(now()) @updatedAt @db.Timestamp(6)
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+  created_at DateTime?         @default(now()) @db.Timestamp(6)
+  updated_at DateTime?         @default(now()) @db.Timestamp(6)
   papers     PaperUniversity[]
 
   @@map("universities")
@@ -330,8 +340,8 @@ model University {
 model PaperUniversity {
   paper_id      String
   university_id String
-  paper         Paper      @relation(fields: [paper_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  university    University @relation(fields: [university_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  paper         Paper      @relation(fields: [paper_id], references: [id], onDelete: Cascade)
+  university    University @relation(fields: [university_id], references: [id], onDelete: Cascade)
 
   @@id([paper_id, university_id])
   @@map("paper_universities")
@@ -341,10 +351,10 @@ model Conference {
   id         String            @id @default(uuid())
   name       String
   slug       String            @unique
-  created_at DateTime          @default(now()) @db.Timestamp(6)
-  updated_at DateTime          @default(now()) @db.Timestamp(6)
-  createdAt  DateTime?         @default(now()) @db.Timestamp(6)
-  updatedAt  DateTime?         @default(now()) @updatedAt @db.Timestamp(6)
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+  created_at DateTime?         @default(now()) @db.Timestamp(6)
+  updated_at DateTime?         @default(now()) @db.Timestamp(6)
   papers     PaperConference[]
 
   @@map("conferences")
@@ -353,8 +363,8 @@ model Conference {
 model PaperConference {
   paper_id      String
   conference_id String
-  conference    Conference @relation(fields: [conference_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  paper         Paper      @relation(fields: [paper_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  conference    Conference @relation(fields: [conference_id], references: [id], onDelete: Cascade)
+  paper         Paper      @relation(fields: [paper_id], references: [id], onDelete: Cascade)
 
   @@id([paper_id, conference_id])
   @@map("paper_conferences")
@@ -364,10 +374,10 @@ model Journal {
   id         String         @id @default(uuid())
   name       String
   slug       String         @unique
-  created_at DateTime       @default(now()) @db.Timestamp(6)
-  updated_at DateTime       @default(now()) @db.Timestamp(6)
-  createdAt  DateTime?      @default(now()) @db.Timestamp(6)
-  updatedAt  DateTime?      @default(now()) @updatedAt @db.Timestamp(6)
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  created_at DateTime?      @default(now()) @db.Timestamp(6)
+  updated_at DateTime?      @default(now()) @db.Timestamp(6)
   papers     PaperJournal[]
 
   @@map("journals")
@@ -376,8 +386,8 @@ model Journal {
 model PaperJournal {
   paper_id   String
   journal_id String
-  journal    Journal @relation(fields: [journal_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  paper      Paper   @relation(fields: [paper_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  journal    Journal @relation(fields: [journal_id], references: [id], onDelete: Cascade)
+  paper      Paper   @relation(fields: [paper_id], references: [id], onDelete: Cascade)
 
   @@id([paper_id, journal_id])
   @@map("paper_journals")
@@ -388,10 +398,10 @@ model Repository {
   url        String            @unique
   name       String
   owner      String
-  created_at DateTime          @default(now()) @db.Timestamp(6)
-  updated_at DateTime          @default(now()) @db.Timestamp(6)
-  createdAt  DateTime?         @default(now()) @db.Timestamp(6)
-  updatedAt  DateTime?         @default(now()) @updatedAt @db.Timestamp(6)
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+  created_at DateTime?         @default(now()) @db.Timestamp(6)
+  updated_at DateTime?         @default(now()) @db.Timestamp(6)
   papers     PaperRepository[]
 
   @@map("repositories")
@@ -400,8 +410,8 @@ model Repository {
 model PaperRepository {
   paper_id      String
   repository_id String
-  paper         Paper      @relation(fields: [paper_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  repository    Repository @relation(fields: [repository_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  paper         Paper      @relation(fields: [paper_id], references: [id], onDelete: Cascade)
+  repository    Repository @relation(fields: [repository_id], references: [id], onDelete: Cascade)
 
   @@id([paper_id, repository_id])
   @@map("paper_repositories")
@@ -412,19 +422,21 @@ model User {
   username         String         @unique
   email            String         @unique
   password         String
-  display_name     String
+  displayName      String
   avatar           String?
   bio              String?
   github           String?
-  linkedin         String?
   twitter          String?
   website          String?
-  reputation_score Int            @default(0)
+  reputationScore  Int            @default(0)
   auth_id          String?        @unique
-  created_at       DateTime       @default(now()) @db.Timestamp(6)
-  updated_at       DateTime       @default(now()) @db.Timestamp(6)
-  createdAt        DateTime?      @default(now()) @db.Timestamp(6)
-  updatedAt        DateTime?      @default(now()) @updatedAt @db.Timestamp(6)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  linkedin         String?
+  display_name     String?
+  reputation_score Int?           @default(0)
+  created_at       DateTime?      @default(now()) @db.Timestamp(6)
+  updated_at       DateTime?      @default(now()) @db.Timestamp(6)
   refresh_tokens   RefreshToken[]
   summaries        Summary[]
 
@@ -434,12 +446,13 @@ model User {
 model RefreshToken {
   id         String    @id @default(uuid())
   token      String    @unique
-  user_id    String
-  expires_at DateTime  @db.Timestamp(6)
-  created_at DateTime  @default(now()) @db.Timestamp(6)
-  createdAt  DateTime? @default(now()) @db.Timestamp(6)
-  updatedAt  DateTime? @default(now()) @db.Timestamp(6)
-  users      User      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  userId     String
+  expiresAt  DateTime
+  createdAt  DateTime  @default(now())
+  user_id    String?
+  expires_at DateTime? @db.Timestamp(6)
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  users      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("refresh_tokens")
 }
@@ -449,12 +462,12 @@ model Summary {
   content    String
   paper_id   String
   user_id    String
-  created_at DateTime  @default(now()) @db.Timestamp(6)
-  updated_at DateTime  @default(now()) @db.Timestamp(6)
-  createdAt  DateTime? @default(now()) @db.Timestamp(6)
-  updatedAt  DateTime? @default(now()) @updatedAt @db.Timestamp(6)
-  paper      Paper     @relation(fields: [paper_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  user       User      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  updated_at DateTime? @default(now()) @db.Timestamp(6)
+  paper      Paper     @relation(fields: [paper_id], references: [id], onDelete: Cascade)
+  user       User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("summaries")
 }
