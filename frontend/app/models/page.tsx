@@ -721,13 +721,9 @@ const [loading, setLoading] = useState(
                           </div>
                           <h3 className="text-[#111111] text-[15px] font-medium leading-5">{m.name}</h3>
                         </div>
-                        {m.description ? (
-                          <p className="mt-2 text-[13px] leading-5 text-[#666] line-clamp-3">
-                            {m.description}
-                          </p>
-                        ) : (
-                          <div className="flex-1" />
-                        )}
+                        <p className="mt-2 text-[13px] leading-5 text-[#666] line-clamp-3">
+                          {m.description || getCardDescription(m.name)}
+                        </p>
                       </div>
                     );
                   }); })()}
