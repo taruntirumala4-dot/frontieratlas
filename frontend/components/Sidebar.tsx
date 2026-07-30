@@ -143,7 +143,7 @@ export default function Sidebar({
     { label: "Mixture of Experts", icon: <Layers size={16} />, slug: "mixture-of-experts-moe" },
     { label: "Reinforcement Learning", icon: <BarChart2 size={16} />, slug: "policy-learning" },
     { label: "Chain-of-Thought", icon: <LinkIcon size={16} />, slug: "chain-of-thought" },
-    { label: "RAG", icon: <Search size={16} />, slug: "rag" },
+    { label: "RAG", icon: <Search size={16} />, slug: "retrieval-augmented-generation" },
     { label: "Model Context Protocol", icon: <Plug size={16} />, slug: "mcp" },
     { label: "LoRA", icon: <Layers size={16} />, slug: "lora" },
     { label: "RLHF", icon: <Target size={16} />, slug: "rlhf" },
@@ -200,7 +200,7 @@ export default function Sidebar({
       // Methods
       "/methods/transformer", "/methods/diffusion-models",
       "/methods/mixture-of-experts-moe", "/methods/policy-learning",
-      "/methods/chain-of-thought", "/methods/rag", "/methods/mcp",
+      "/methods/chain-of-thought", "/methods/retrieval-augmented-generation", "/methods/mcp",
       "/methods/lora", "/methods/rlhf", "/methods",
     ];
     routes.forEach((route) => router.prefetch(route));

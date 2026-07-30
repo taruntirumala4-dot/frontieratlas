@@ -32,7 +32,7 @@ export async function fetchMethodCached(slug: string): Promise<MethodDetail> {
         return parsed.data;
       }
     }
-  } catch {}
+  } catch { }
 
   // 3. Deduplicate in-flight requests
   if (IN_FLIGHT.has(cacheKey)) {
@@ -57,7 +57,7 @@ export async function fetchMethodCached(slug: string): Promise<MethodDetail> {
       METHOD_CACHE.set(cacheKey, entry);
       try {
         localStorage.setItem(cacheKey, JSON.stringify(entry));
-      } catch {}
+      } catch { }
 
       return data;
     })
@@ -111,10 +111,10 @@ export function prefetchTaxonomyMethods(taxonomy: any[]) {
 export function prefetchMethods() {
   const slugs = [
     "transformer", "diffusion-models", "mixture-of-experts-moe",
-    "policy-learning", "chain-of-thought", "rag", "mcp", "lora", "rlhf",
+    "policy-learning", "chain-of-thought", "retrieval-augmented-generation", "mcp", "lora", "rlhf",
   ];
   slugs.forEach((slug) => {
-    fetchMethodCached(slug).catch(() => {});
+    fetchMethodCached(slug).catch(() => { });
   });
 }
 
@@ -135,7 +135,7 @@ export function useMethodDetail(slug: string) {
           return parsed.data;
         }
       }
-    } catch {}
+    } catch { }
     return null;
   });
   const [loading, setLoading] = useState(!data);
@@ -144,7 +144,7 @@ export function useMethodDetail(slug: string) {
 
   useEffect(() => {
     mountedRef.current = true;
-    
+
     const mem = METHOD_CACHE.get(`method:${slug}`);
     if (mem && Date.now() - mem.timestamp < METHOD_CACHE_TTL) {
       setData(mem.data);
