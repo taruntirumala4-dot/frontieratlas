@@ -45,7 +45,7 @@ export async function fetchMethodCached(slug: string): Promise<MethodDetail> {
 
   const request = fetch(`${API_BASE}/api/v1/methods/${encodeURIComponent(slug)}`, {
     headers: { "Content-Type": "application/json" },
-    signal: AbortSignal.timeout(1200),
+    signal: AbortSignal.timeout(5000),
   })
     .then(async (res) => {
       if (!res.ok) throw new Error(`API error: ${res.status}`);
