@@ -74,11 +74,11 @@ export default function HeroSection({
     { label: "Vision", slug: "vision-language-models", icon: Eye },
     { label: "Coding", slug: "coding-agents", icon: Code2 },
     { label: "Robotics", slug: "robotics", icon: Cpu },
-    { label: "MCP", slug: "mcp", icon: Plug },
+    { label: "MCP", slug: "model-context-protocol-mcp", icon: Plug },
   ];
 
   const handleChipHover = (slug: string) => {
-    const isMethod = slug === "mcp";
+    const isMethod = slug === "model-context-protocol-mcp";
     const item = isMethod ? { method: slug } : { task: slug };
     getPapers({ page: 1, sort: "trending", period: "today", ...item }).catch(() => {});
     getPapers({ page: 1, sort: "trending", period: "all", ...item }).catch(() => {});
