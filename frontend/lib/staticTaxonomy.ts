@@ -108,7 +108,7 @@ export const staticTaxonomy = [
     { id: "agent-memory", name: "Agent Memory", slug: "agent-memory", description: "Maintaining context and recalling information across interactions.", paperCount: 0 },
     { id: "multi-agent-systems", name: "Multi-Agent Systems", slug: "multi-agent-systems", description: "Coordinating multiple intelligent agents to achieve shared goals.", paperCount: 0 },
     { id: "workflow-orchestration", name: "Workflow Orchestration", slug: "workflow-orchestration", description: "Managing multi-step AI workflows and task execution pipelines.", paperCount: 0 },
-    { id: "mcp", name: "Model Context Protocol (MCP)", slug: "mcp", description: "Standardized communication between AI models, tools, and services.", paperCount: 0 }
+    { id: "mcp", name: "Model Context Protocol (MCP)", slug: "model-context-protocol-mcp", description: "Standardized communication between AI models, tools, and services.", paperCount: 0 }
   ]
 },
 {
