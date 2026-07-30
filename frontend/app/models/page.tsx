@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo, Suspense } from "react";
 import Link from "next/link";
+import PageHero from "@/components/shared/PageHero";
 import { useRouter } from "next/navigation";
 import { Search, Trophy, Cpu, Layers, ExternalLink, Code2, Check, Copy, X, ArrowRight, Zap, Calendar, BookOpen, Building2, Brain, Monitor, Globe, FileText, Link as LinkIcon, Volume2, ImageIcon, Video, Bot, Sparkles, TrendingUp, Eye, Puzzle, Network, Database, Shield, Terminal, Activity, GitBranch, BarChart3, Radio, Mic, Share2, ChevronRight } from "lucide-react";
 import {
@@ -440,43 +441,29 @@ const [loading, setLoading] = useState(
       }}
     >
       <div className="w-full max-w-[1370px] mx-auto px-5 md:px-10 lg:px-16 xl:px-24 pt-6 pb-12">
-        <nav className="flex items-center gap-2 text-[13px] text-[#8B8B8B] mb-6">
-          <Link href="/" className="hover:text-[#FF5A1F] transition-colors no-underline">
-            Home
-          </Link>
-          <span>/</span>
-          <span className="text-[#555555] font-medium">Models</span>
-        </nav>
-
         {/* HERO SECTION */}
-        <section className="mb-12">
-          <div className="max-w-[560px]">
-            <h1 className="text-[32px] font-black tracking-tight text-[#111827] leading-none">
-              All <span className="text-[#FF5A1F]">Models</span>
-            </h1>
-            <p className="mt-4 text-[14px] leading-6 text-[#5B6472]">
-              Discover the full landscape of AI foundation models through {facets?.modelFamilies?.length ?? "—"} model families spanning reasoning, vision, code, audio, robotics, healthcare, and more.
-            </p>
-            <div className="flex items-start gap-10 mt-5">
-              <div>
-                <div className="text-[20px] font-bold text-[#111111]">{loading ? (
-                  <div className="h-6 w-10 rounded bg-gray-200 animate-pulse" />
-                ) : (
-                  facets?.capabilities?.length
-                )}</div>
-                <div className="mt-1 text-[14px] text-[#6B7280]">Capabilities</div>
-              </div>
-              <div>
-                <div className="text-[20px] font-bold text-[#111111]">{facets?.modelFamilies?.length ?? "—"}</div>
-                <div className="mt-1 text-[14px] text-[#6B7280]">Model Families</div>
-              </div>
-              <div>
-                <div className="text-[20px] font-bold text-[#111111]">{facets?.totalModels ?? "—"}</div>
-                <div className="mt-1 text-[14px] text-[#6B7280]">Verified Models</div>
-              </div>
-            </div>
-          </div>
-        </section>
+       <PageHero
+  breadcrumb="Models"
+title="All"
+highlight="Models"
+  description={`Discover the full landscape of AI foundation models through ${
+    facets?.modelFamilies?.length ?? "—"
+  } model families spanning reasoning, vision, code, audio, robotics, healthcare, and more.`}
+  stats={[
+    {
+      value: loading ? "…" : facets?.capabilities?.length ?? "—",
+      label: "Capabilities",
+    },
+    {
+      value: facets?.modelFamilies?.length ?? "—",
+      label: "Model Families",
+    },
+    {
+      value: facets?.totalModels ?? "—",
+      label: "Verified Models",
+    },
+  ]}
+/>
         <div className="flex gap-6">
 
           {/* LEFT SIDEBAR WITH SEARCH & NAVIGATION OPTIONS EXACT TO reference */}

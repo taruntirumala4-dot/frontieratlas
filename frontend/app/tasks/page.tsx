@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import PageHero from "@/components/shared/PageHero";
 import {
   Search,
   Activity,
@@ -914,45 +915,13 @@ const Section = ({
         >
           <div className="max-w-[1240px] mx-auto px-5 py-6 w-full">
 
-  <nav className="flex items-center gap-2 text-[13px] text-[#8B8B8B] mb-6">
-    <Link
-      href="/"
-      className="hover:text-[#F55036] transition-colors no-underline"
-    >
-      Home
-    </Link>
-
-    <span>/</span>
-
-    <span className="text-[#555555] font-medium">
-      Tasks
-    </span>
-  </nav>
-<div className="mb-6">
-  <div className="max-w-xl">
-    <h1 className="text-[34px] font-extrabold tracking-tight text-[#111827] leading-none">
-      All <span className="text-[#F55036]">Tasks</span>
-    </h1>
-
-    <p className="mt-5 text-[15px] text-gray-600 leading-6">
-      Discover the full landscape of AI research through 105 tasks spanning
-      language, vision, video, audio, robotics, healthcare, and more.
-    </p>
-
-    <div className="flex items-center gap-6 sm:gap-10 mt-6">
-      {stats.map((stat) => (
-        <div key={stat.label}>
-          <div className="text-2xl font-bold">
-            {stat.value}
-          </div>
-          <div className="text-[15px] text-gray-500 mt-1">
-            {stat.label}
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
-</div>
+  <PageHero
+  breadcrumb="Tasks"
+title="All"
+highlight="Tasks"
+  description="Discover the full landscape of AI research through 105 tasks spanning language, vision, video, audio, robotics, healthcare, and more."
+  stats={stats}
+/>
 
       {/* Main layout: sidebar + content */}
 <div className="flex gap-8 mt-12">

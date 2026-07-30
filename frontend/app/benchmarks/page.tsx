@@ -1,6 +1,7 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
+import PageHero from "@/components/shared/PageHero";
 import { Suspense, useState, useEffect, useMemo, useRef } from "react";
 import {
   Search,
@@ -434,42 +435,35 @@ function BenchmarksContent() {
           <div className="max-w-7xl mx-auto px-6 py-4 w-full">
             
             {/* ══ HERO SECTION — responsive image scales to ~1/3 hero height ══ */}
-            <div className="relative overflow-hidden mb-5 flex items-center min-h-[160px] md:min-h-[200px] lg:min-h-[240px]">
-              {/* Left Content — grows, takes available space */}
-              <div className="relative z-10 flex-1 px-4 md:px-6 py-3 md:py-4">
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 tracking-tight text-gray-900">
-                  Benchmarks
-                </h1>
-                <p className="text-gray-600 text-sm md:text-base mb-3 max-w-md leading-relaxed">
-                  Discover benchmark datasets, evaluation metrics, and state-of-the-art results used to measure AI systems across language, reasoning, and more.
-                </p>
-
-                <div className="flex items-center gap-5 whitespace-nowrap text-sm flex-wrap">
-                  <div>
-                    <div className="text-xl font-bold text-gray-800">{loading ? "—" : stats.domains}</div>
-                    <div className="text-gray-500 text-xs">Domains</div>
-                  </div>
-                  <div className="w-px h-8 bg-gray-200" />
-                  <div>
-                    <div className="text-xl font-bold text-gray-800">{loading ? "—" : stats.benchmarks}</div>
-                    <div className="text-gray-500 text-xs">Benchmarks</div>
-                  </div>
-                  <div className="w-px h-8 bg-gray-200" />
-                  <div>
-                    <div className="text-xl font-bold text-gray-800">{loading ? "—" : stats.results}</div>
-                    <div className="text-gray-500 text-xs">Evaluations</div>
-                  </div>
-                  <div className="w-px h-8 bg-gray-200" />
-                  <button
-                    onClick={() => setShowSubmitModal(true)}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold text-white bg-[#F55036] hover:bg-[#e0432b] active:scale-[0.97] rounded-full shadow-sm transition-all cursor-pointer"
-                  >
-                    <Plus size={16} />
-                    Submit Benchmark
-                  </button>
-                </div>
-              </div>
-            </div>
+            <PageHero
+  breadcrumb="Benchmarks"
+  title="All"
+  highlight="Benchmarks"
+  description="Discover benchmark datasets, evaluation metrics, and state-of-the-art results used to measure AI systems across language, reasoning, and more."
+  stats={[
+    {
+      value: loading ? "—" : stats.domains,
+      label: "Domains",
+    },
+    {
+      value: loading ? "—" : stats.benchmarks,
+      label: "Benchmarks",
+    },
+    {
+      value: loading ? "—" : stats.results,
+      label: "Evaluations",
+    },
+  ]}
+  action={
+  <button
+    onClick={() => setShowSubmitModal(true)}
+    className="inline-flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold text-white bg-[#F55036] hover:bg-[#e0432b] active:scale-[0.97] rounded-full shadow-sm transition-all cursor-pointer"
+  >
+    <Plus size={16} />
+    Submit Benchmark
+  </button>
+}
+/>
 
             {/* ══ CONTENT TWO-COLUMN LAYOUT (Preserved sidebar layout) ══ */}
             <div className="flex gap-6">
