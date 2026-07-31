@@ -476,7 +476,7 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
         <div className="flex-1 min-w-0 flex flex-col">
           {/* Title */}
           <h3 className="text-[15px] sm:text-[17px] xl:text-[20px] font-serif font-medium text-[#111111] leading-snug xl:leading-[1.3] mb-1 xl:mb-1.5 transition-colors line-clamp-2">
-            <Link href={`/papers/${paper.slug}`} className="hover:text-[#F55036] hover:underline">
+            <Link href={`/papers/${paper.slug}`} className="hover:text-[#F55036]">
               {paper.title}
             </Link>
           </h3>
@@ -488,23 +488,7 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
                 visibleAuthors.map((a, i) => (
                   <span key={a.slug || i}>
                     {i > 0 && <span>, </span>}
-                    <span
-                      role="link"
-                      tabIndex={0}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        router.push(`/authors/${a.slug || a.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`);
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          router.push(`/authors/${a.slug || a.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`);
-                        }
-                      }}
-                      className="hover:text-[#F55036] hover:underline cursor-pointer"
-                    >
+                    <span className="hover:text-[#F55036] transition-colors">
                       {a.name}
                     </span>
                   </span>
