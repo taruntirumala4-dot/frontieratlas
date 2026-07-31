@@ -94,7 +94,7 @@ export async function getBenchmarks(): Promise<BenchmarkItem[]> {
   }
 
   try {
-    benchmarksCache = fetchApi<GetBenchmarksResponse>('/api/v1/benchmarks?limit=5000', { signal: AbortSignal.timeout(1200) })
+    benchmarksCache = fetchApi<GetBenchmarksResponse>('/api/v1/benchmarks?limit=5000', { signal: AbortSignal.timeout(5000) })
       .then(response => {
         const items = Array.isArray(response?.data) ? response.data : [];
         if (items.length > 0) {
@@ -150,7 +150,7 @@ export async function getBenchmarkBySlug(slug: string): Promise<BenchmarkDetail 
   // 4. Fetch from API with fallback to mock data
   const request = (async () => {
     try {
-      const response = await fetchApi<GetBenchmarkBySlugResponse>(`/api/v1/benchmarks/${encodeURIComponent(slug)}`, { signal: AbortSignal.timeout(1200) });
+      const response = await fetchApi<GetBenchmarkBySlugResponse>(`/api/v1/benchmarks/${encodeURIComponent(slug)}`, { signal: AbortSignal.timeout(5000) });
       const data = response?.data || getMockBenchmarkDetail(slug);
       if (data) {
         const entry = { data, timestamp: Date.now() };
