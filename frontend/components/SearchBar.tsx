@@ -181,29 +181,25 @@ setSuggestions(results);
     : "w-full max-w-[640px] mx-auto"
 }`}
 >
-      <motion.form
-        layoutId={layoutIdPrefix ? `${layoutIdPrefix}-container` : undefined}
-        transition={{ type: "spring", stiffness: 250, damping: 25 }}
-        onSubmit={handleSubmit}
-        className={`relative flex items-center px-4 md:px-5 bg-white border border-[#E5E5E0]
-shadow-[0_8px_30px_rgb(0,0,0,0.06)]
-hover:shadow-[0_12px_32px_rgb(0,0,0,0.10)]
-focus-within:border-[#FF5A1F]/40
-focus-within:shadow-[0_0_0_3px_rgba(255,90,31,0.08)]
-transition-all duration-200
-${
-  variant === "compact"
-    ? "rounded-[24px]"
-    : "rounded-[24px]"
-}`}
-      >
-        <motion.div
-          layoutId={layoutIdPrefix ? `${layoutIdPrefix}-icon` : undefined}
+        <motion.form
+          layoutId={layoutIdPrefix ? `${layoutIdPrefix}-container` : undefined}
           transition={{ type: "spring", stiffness: 250, damping: 25 }}
-          className={`flex items-center text-[#737373] shrink-0 ${
-            isHomepagePresentation ? "mr-2 md:mr-3" : "mr-2"
-          }`}
+          onSubmit={handleSubmit}
+          className={`relative flex items-center px-3 md:px-5 bg-white border border-[#E5E5E0] h-10 md:h-12
+  shadow-[0_8px_30px_rgb(0,0,0,0.06)]
+  hover:shadow-[0_12px_32px_rgb(0,0,0,0.10)]
+  focus-within:border-[#FF5A1F]/40
+  focus-within:shadow-[0_0_0_3px_rgba(255,90,31,0.08)]
+  transition-all duration-200
+  rounded-full`}
         >
+          <motion.div
+            layoutId={layoutIdPrefix ? `${layoutIdPrefix}-icon` : undefined}
+            transition={{ type: "spring", stiffness: 250, damping: 25 }}
+            className={`flex items-center text-[#737373] shrink-0 ${
+              isHomepagePresentation ? "mr-2 md:mr-3" : "mr-2 md:mr-3"
+            }`}
+          >
           <Search
             size={variant === "compact" ? 16 : 18}
             className={isHomepagePresentation ? "md:w-[20px] md:h-[20px]" : undefined}
@@ -219,10 +215,10 @@ ${
           onFocus={() => setShowSuggestions(true)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className={`bg-transparent outline-none flex-1 text-[#111111] placeholder:text-[#737373] min-w-0 pr-10 text-left ${
+          className={`bg-transparent outline-none flex-1 text-[#111111] placeholder:text-[#737373] min-w-0 pr-10 text-left h-full ${
            variant === "compact"
-  ? "h-12 text-[13px]"
-  : isHomepagePresentation ? "h-10 text-[13px] md:text-[14px] truncate mr-2" : "h-12 text-[15px]"
+  ? "text-[12px] md:text-[13px]"
+  : isHomepagePresentation ? "text-[12px] md:text-[14px] truncate mr-2" : "text-[13px] md:text-[15px]"
           }`}
           aria-label="Search"
           aria-autocomplete="list"

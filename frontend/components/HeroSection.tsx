@@ -97,70 +97,70 @@ export default function HeroSection({
         {!isScrolled && (
           <motion.div 
             ref={searchRef} 
-            className="w-full max-w-[640px] relative shadow-[0_8px_30px_rgb(0,0,0,0.06)] rounded-[24px] bg-white border border-[#E5E5E0] flex items-center px-4 md:px-5 h-12 mb-3 md:mb-4 hover:shadow-[0_12px_32px_rgb(0,0,0,0.10)] focus-within:border-[#FF5A1F]/40 focus-within:shadow-[0_0_0_3px_rgba(255,90,31,0.08)] transition-all duration-200 mx-auto origin-top z-50"
+            className="w-full max-w-[640px] relative shadow-[0_8px_30px_rgb(0,0,0,0.06)] rounded-full bg-white border border-[#E5E5E0] flex items-center px-3 md:px-5 h-10 md:h-12 mb-3 md:mb-4 hover:shadow-[0_12px_32px_rgb(0,0,0,0.10)] focus-within:border-[#FF5A1F]/40 focus-within:shadow-[0_0_0_3px_rgba(255,90,31,0.08)] transition-all duration-200 mx-auto origin-top z-50"
           >
-            <motion.div className="flex items-center text-[#737373] mr-2 md:mr-3 shrink-0">
-              <Search size={18} className="md:w-[20px] md:h-[20px]" />
-            </motion.div>
-            <motion.input
-              type="text"
-              value={query}
-              onChange={(e) => {
-                setQuery(e.target.value);
-                setShowDropdown(true);
-              }}
-              onFocus={() => setShowDropdown(true)}
-              placeholder="Search papers, authors, topics, methods"
-              className="bg-transparent outline-none flex-1 text-[#111111] placeholder:text-[#737373] text-[13px] md:text-[15px] truncate mr-2 text-left w-full"
-            />
-            {isSearching ? (
-              <Loader2 size={16} className="text-[#F55036] animate-spin shrink-0" />
-            ) : (
-              <div className="hidden md:flex items-center justify-center px-2 h-6 rounded-md bg-[#F8F7F2] border border-[#E5E5E0]/80 text-[10px] font-semibold text-[#8B8B8B] shrink-0 gap-0.5 tracking-wide">
-                <span>⌘</span><span>K</span>
-              </div>
-            )}
-  
-            {/* Dropdown Results */}
-            {showDropdown && (debouncedQuery.trim().length > 0 || isSearching) && (
-              <div className="absolute top-[calc(100%+8px)] left-0 w-full bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[#E5E5E0] py-2 z-50 max-h-[400px] overflow-y-auto">
-                {isSearching ? (
-                  <div className="flex items-center justify-center py-8 text-[#8B8B8B] gap-2">
-                    <Loader2 size={16} className="animate-spin" />
-                    <span className="text-[14px]">Searching...</span>
-                  </div>
-                ) : results.length > 0 ? (
-                  <div className="flex flex-col">
-                    {results.map((paper) => (
-                      <Link
-                        key={paper.id}
-                        href={`/papers/${encodeURIComponent(paper.slug || String(paper.id))}`}
-                        onClick={() => setShowDropdown(false)}
-                        className="px-4 md:px-5 py-3 hover:bg-[#F8F7F2] cursor-pointer transition-colors border-b border-[#E5E5E0] last:border-0 flex flex-col gap-1 text-left"
-                      >
-                        <h4 className="text-[14px] font-semibold text-[#111111] leading-snug line-clamp-2">
-                          {paper.title}
-                        </h4>
-                        <div className="flex items-center gap-2 text-[12px] text-[#737373]">
-                          <span className="truncate max-w-[200px]">{formatAuthors(paper.authors)}</span>
-                          {Number(paper.upvotes) > 0 && (
-                            <>
-                              <span>•</span>
-                              <span>{paper.upvotes} stars</span>
-                            </>
-                          )}
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="py-8 text-center text-[#737373] text-[14px]">
-                    No results found for &quot;{debouncedQuery}&quot;
-                  </div>
-                )}
-              </div>
-            )}
+          <motion.div className="flex items-center text-[#737373] mr-2 md:mr-3 shrink-0">
+            <Search className="w-[16px] h-[16px] md:w-[20px] md:h-[20px]" />
           </motion.div>
+          <motion.input
+            type="text"
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setShowDropdown(true);
+            }}
+            onFocus={() => setShowDropdown(true)}
+            placeholder="Search papers, authors, topics, methods"
+            className="bg-transparent outline-none flex-1 text-[#111111] placeholder:text-[#737373] text-[13px] md:text-[15px] truncate mr-2 text-left w-full h-full"
+          />
+          {isSearching ? (
+            <Loader2 size={16} className="text-[#F55036] animate-spin shrink-0" />
+          ) : (
+            <div className="hidden md:flex items-center justify-center px-2 h-6 rounded-md bg-[#F8F7F2] border border-[#E5E5E0]/80 text-[10px] font-semibold text-[#8B8B8B] shrink-0 gap-0.5 tracking-wide">
+              <span>⌘</span><span>K</span>
+            </div>
+          )}
+
+          {/* Dropdown Results */}
+          {showDropdown && (debouncedQuery.trim().length > 0 || isSearching) && (
+            <div className="absolute top-[calc(100%+8px)] left-0 w-full bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[#E5E5E0] py-2 z-50 max-h-[400px] overflow-y-auto">
+              {isSearching ? (
+                <div className="flex items-center justify-center py-8 text-[#8B8B8B] gap-2">
+                  <Loader2 size={16} className="animate-spin" />
+                  <span className="text-[14px]">Searching...</span>
+                </div>
+              ) : results.length > 0 ? (
+                <div className="flex flex-col">
+                  {results.map((paper) => (
+                    <Link
+                      key={paper.id}
+                      href={`/papers/${encodeURIComponent(paper.slug || String(paper.id))}`}
+                      onClick={() => setShowDropdown(false)}
+                      className="px-4 md:px-5 py-3 hover:bg-[#F8F7F2] cursor-pointer transition-colors border-b border-[#E5E5E0] last:border-0 flex flex-col gap-1 text-left"
+                    >
+                      <h4 className="text-[14px] font-semibold text-[#111111] leading-snug line-clamp-2">
+                        {paper.title}
+                      </h4>
+                      <div className="flex items-center gap-2 text-[12px] text-[#737373]">
+                        <span className="truncate max-w-[200px]">{formatAuthors(paper.authors)}</span>
+                        {Number(paper.upvotes) > 0 && (
+                          <>
+                            <span>•</span>
+                            <span>{paper.upvotes} stars</span>
+                          </>
+                        )}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="py-8 text-center text-[#737373] text-[14px]">
+                  No results found for &quot;{debouncedQuery}&quot;
+                </div>
+              )}
+            </div>
+          )}
+        </motion.div>
         )}
 
         {/* Tags - Multi-row responsive layout */}

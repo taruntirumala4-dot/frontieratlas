@@ -211,23 +211,15 @@ export default function Navbar({
         <div className={`hidden lg:flex absolute left-1/2 -translate-x-1/2 items-center justify-center ${
           usesHomepageSearchPresentation ? "w-[360px]" : "w-[240px] xl:w-[400px]"
         }`}>
-          <AnimatePresence>
-            {shouldShowSearch && (
-              <motion.div
-                initial={{ opacity: 0, y: -8, scale: 0.96 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -8, scale: 0.96 }}
-                transition={{ duration: 0.25, ease: "easeOut" }}
-                className="w-full"
-              >
-                <SearchBar
-                  variant={usesHomepageSearchPresentation ? "homepage" : "compact"}
-                  placeholder="Search..."
-                  initialQuery=""
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {shouldShowSearch && (
+            <div className="w-full">
+              <SearchBar
+                variant={usesHomepageSearchPresentation ? "homepage" : "compact"}
+                placeholder="Search..."
+                initialQuery=""
+              />
+            </div>
+          )}
         </div>
 
         {/* Center — Nav Links (Desktop) */}

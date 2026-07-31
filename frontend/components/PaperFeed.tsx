@@ -8,6 +8,7 @@ import {
   useRef,
   memo,
   Profiler,
+  Fragment,
 } from "react";
 import {
   Github,
@@ -375,11 +376,13 @@ const PaperThumbnail = memo(
             src={thumbnail}
             alt={title || "Paper thumbnail"}
             loading="lazy"
-            className="absolute inset-0 w-full h-full object-contain object-center"
+            className="absolute inset-0 w-full h-full object-contain object-center transition-transform duration-300 group-hover/thumb:scale-[1.03]"
             onError={() => setHasError(true)}
           />
         ) : (
-          <GeneratedCover title={title} />
+          <div className="absolute inset-0 w-full h-full transition-transform duration-300 group-hover/thumb:scale-[1.03]">
+            <GeneratedCover title={title} />
+          </div>
         )}
       </div>
     );
@@ -456,23 +459,26 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
   }, [router, paper.slug]);
   
   return (
-    <Link
-      href={`/papers/${paper.slug}`}
-      className="no-underline block"
+    <div
+      className="block"
       onMouseEnter={handlePrefetch}
       onTouchStart={handlePrefetch}
     >
-      <div className="group flex flex-col xl:flex-row gap-3 sm:gap-4 xl:gap-5 p-3 sm:p-4 xl:pt-2 xl:pb-2 bg-white xl:bg-transparent border xl:border-x-0 xl:border-t-0 border-[#E5E5E0] rounded-none cursor-pointer hover:shadow-lg xl:hover:bg-white xl:hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all duration-300 ease-out">
+      <div className="group flex flex-col xl:flex-row gap-3 sm:gap-4 xl:gap-5 p-3 sm:p-4 xl:pt-2 xl:pb-2 bg-white xl:bg-transparent border xl:border-none border-[#E5E5E0] rounded-none hover:shadow-lg xl:hover:bg-white xl:hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all duration-300 ease-out">
         {/* PDF thumbnail */}
         <div className="order-first xl:order-last shrink-0 w-full xl:w-auto mx-auto xl:mx-0 xl:self-stretch border-b xl:border-b-0 border-[#E5E5E0] pb-3 xl:pb-0 mb-1 xl:mb-0">
-          <PaperThumbnail title={paper.title} thumbnail={paper.thumbnail} />
+          <Link href={`/papers/${paper.slug}`} className="block h-full group/thumb cursor-pointer">
+            <PaperThumbnail title={paper.title} thumbnail={paper.thumbnail} />
+          </Link>
         </div>
  
         {/* Content */}
         <div className="flex-1 min-w-0 flex flex-col">
           {/* Title */}
-          <h3 className="text-[15px] sm:text-[17px] xl:text-[20px] font-serif font-medium text-[#111111] leading-snug xl:leading-[1.3] mb-1 xl:mb-1.5 group-hover:text-[#F55036] transition-colors line-clamp-2">
-            {paper.title}
+          <h3 className="text-[15px] sm:text-[17px] xl:text-[20px] font-serif font-medium text-[#111111] leading-snug xl:leading-[1.3] mb-1 xl:mb-1.5 transition-colors line-clamp-2">
+            <Link href={`/papers/${paper.slug}`} className="hover:text-[#F55036] hover:underline">
+              {paper.title}
+            </Link>
           </h3>
  
           {/* Authors + Date + Citations */}
@@ -637,14 +643,23 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
                   alert("Hugging Face model will be available soon.");
                 }
               }}
-              className="flex-none md:flex-1 flex items-center justify-center lg:justify-between xl:justify-center px-0.5 min-[375px]:px-1 md:px-2 lg:px-4 xl:px-2 h-[24px] md:h-[28px] lg:h-[58px] xl:h-[28px] bg-white text-[#B7791F] border-[1.5px] border-[#eab308]/50 hover:border-[#eab308] hover:bg-[#eab308]/10 rounded-[6px] transition-all duration-300"
+              className="relative overflow-hidden flex-none md:flex-1 flex items-center justify-center lg:justify-between xl:justify-center px-0.5 min-[375px]:px-1 md:px-2 lg:px-4 xl:px-2 h-[24px] md:h-[28px] lg:h-[58px] xl:h-[28px] bg-white text-[#B7791F] border-[1.5px] border-[#eab308]/50 hover:border-[#eab308] hover:bg-[#eab308]/10 rounded-[6px] transition-all duration-300"
             >
-              <div className="flex items-center gap-0.5 min-[375px]:gap-1 md:gap-1.5 lg:gap-3 xl:gap-1.5">
-                <div className="w-[12px] h-[12px] min-[375px]:w-[14px] min-[375px]:h-[14px] md:w-[20px] md:h-[20px] lg:w-8 lg:h-8 xl:w-[20px] xl:h-[20px] rounded-[4px] md:rounded-[6px] lg:rounded-[10px] xl:rounded-[6px] bg-transparent flex items-center justify-center">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="https://cdn.simpleicons.org/huggingface" alt="Hugging Face" className="w-[9px] h-[9px] min-[375px]:w-[10px] min-[375px]:h-[10px] md:w-[12px] md:h-[12px] lg:w-4 lg:h-4 xl:w-[12px] xl:h-[12px]" />
+              {/* Mobile Content */}
+              <div className="absolute inset-0 flex sm:hidden items-center justify-center pointer-events-none">
+                <div className="flex items-center gap-0.5 transform scale-[0.60] min-[375px]:scale-[0.70] whitespace-nowrap">
+                  <img src="https://cdn.simpleicons.org/huggingface" alt="Hugging Face" className="w-[10px] h-[10px]" />
+                  <span className="font-medium text-[10px] tracking-tight">Hugging Face</span>
                 </div>
-                <span className="font-medium lg:font-semibold xl:font-medium text-[7.5px] min-[375px]:text-[8.5px] sm:text-[9.5px] md:text-[11.5px] lg:text-[15px] xl:text-[11.5px] whitespace-nowrap tracking-tighter min-[375px]:tracking-tight">
+              </div>
+
+              {/* Desktop Content */}
+              <div className="hidden sm:flex items-center gap-1.5 lg:gap-3 xl:gap-1.5">
+                <div className="w-[20px] h-[20px] lg:w-8 lg:h-8 xl:w-[20px] xl:h-[20px] rounded-[6px] lg:rounded-[10px] xl:rounded-[6px] bg-transparent flex items-center justify-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="https://cdn.simpleicons.org/huggingface" alt="Hugging Face" className="w-[12px] h-[12px] lg:w-4 lg:h-4 xl:w-[12px] xl:h-[12px]" />
+                </div>
+                <span className="font-semibold xl:font-medium text-[9.5px] md:text-[11.5px] lg:text-[15px] xl:text-[11.5px] whitespace-nowrap tracking-tight">
                   Hugging Face
                 </span>
               </div>
@@ -663,15 +678,24 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
                   window.open(ghUrl, "_blank");
                 }
               }}
-              className="flex-none md:flex-1 flex items-center justify-center lg:justify-between xl:justify-center px-0.5 min-[375px]:px-1 md:px-2 lg:px-4 xl:px-2 h-[24px] md:h-[28px] lg:h-[58px] xl:h-[28px] bg-white text-[#24292f] border-[1.5px] border-[#24292f]/30 hover:border-[#24292f] hover:bg-[#24292f]/5 rounded-[6px] transition-all duration-300 overflow-hidden"
+              className="relative overflow-hidden flex-none md:flex-1 flex items-center justify-center lg:justify-between xl:justify-center px-0.5 min-[375px]:px-1 md:px-2 lg:px-4 xl:px-2 h-[24px] md:h-[28px] lg:h-[58px] xl:h-[28px] bg-white text-[#24292f] border-[1.5px] border-[#24292f]/30 hover:border-[#24292f] hover:bg-[#24292f]/5 rounded-[6px] transition-all duration-300"
             >
-              <div className="flex items-center gap-0.5 min-[375px]:gap-1 md:gap-1.5 lg:gap-3 xl:gap-1.5">
-                <div className="w-[12px] h-[12px] min-[375px]:w-[14px] min-[375px]:h-[14px] md:w-[20px] md:h-[20px] lg:w-8 lg:h-8 xl:w-[20px] xl:h-[20px] rounded-[4px] md:rounded-[6px] lg:rounded-[10px] xl:rounded-[6px] bg-transparent flex items-center justify-center">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="https://cdn.simpleicons.org/github/24292f" alt="GitHub" className="w-[9px] h-[9px] min-[375px]:w-[10px] min-[375px]:h-[10px] md:w-[12px] md:h-[12px] lg:w-4 lg:h-4 xl:w-[12px] xl:h-[12px]" />
+              {/* Mobile Content */}
+              <div className="absolute inset-0 flex sm:hidden items-center justify-center pointer-events-none">
+                <div className="flex items-center gap-0.5 transform scale-[0.60] min-[375px]:scale-[0.70] whitespace-nowrap">
+                  <img src="https://cdn.simpleicons.org/github/24292f" alt="GitHub" className="w-[10px] h-[10px]" />
+                  <span className="font-medium text-[10px] tracking-tight">{paper.github_hourly_increase?.toFixed(2) ?? "0.00"} stars/hr</span>
                 </div>
-                <ArrowUp className="w-[8px] h-[8px] min-[375px]:w-[10px] min-[375px]:h-[10px] md:w-[12px] md:h-[12px] lg:w-4 lg:h-4 xl:w-[12px] xl:h-[12px] text-[#24292f]" strokeWidth={2.5} />
-                <span className="font-medium lg:font-semibold xl:font-medium text-[7.5px] min-[375px]:text-[8.5px] sm:text-[9.5px] md:text-[11.5px] lg:text-[15px] xl:text-[11.5px] whitespace-nowrap tracking-tighter min-[375px]:tracking-tight">
+              </div>
+
+              {/* Desktop Content */}
+              <div className="hidden sm:flex items-center gap-1.5 lg:gap-3 xl:gap-1.5">
+                <div className="w-[20px] h-[20px] lg:w-8 lg:h-8 xl:w-[20px] xl:h-[20px] rounded-[6px] lg:rounded-[10px] xl:rounded-[6px] bg-transparent flex items-center justify-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="https://cdn.simpleicons.org/github/24292f" alt="GitHub" className="w-[12px] h-[12px] lg:w-4 lg:h-4 xl:w-[12px] xl:h-[12px]" />
+                </div>
+                <ArrowUp className="w-[12px] h-[12px] lg:w-4 lg:h-4 xl:w-[12px] xl:h-[12px] text-[#24292f]" strokeWidth={2.5} />
+                <span className="font-semibold xl:font-medium text-[9.5px] md:text-[11.5px] lg:text-[15px] xl:text-[11.5px] whitespace-nowrap tracking-tight">
                   {paper.github_hourly_increase?.toFixed(2) ?? "0.00"} stars / hour
                 </span>
               </div>
@@ -680,7 +704,7 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
           </div>
         </div>
       </div>
-    </Link >
+    </div>
   );
 });
 PaperCard.displayName = "PaperCard";
@@ -1135,7 +1159,7 @@ export default function PaperList({
   return (
     <Profiler id="PaperList" onRender={logRender}>
       <div
-        className="pb-12 bg-transparent grid grid-cols-1 md:grid-cols-2 xl:flex xl:flex-col gap-6 xl:gap-0"
+        className="pb-12 bg-transparent grid grid-cols-1 md:grid-cols-2 xl:flex xl:flex-col gap-8 md:gap-10 xl:gap-5"
         data-page={page}
       >
         {isTransitioning || isFilterChanging || (loading && papers.length === 0) ? (
@@ -1147,10 +1171,13 @@ export default function PaperList({
         ) : (
           filteredPapers
             .slice(0, displayCount)
-            .map((paper) => (
-              <div key={paper.slug} ref={observeCard} data-paper-slug={paper.slug} className="animate-fade-in">
-                <PaperCard paper={paper} />
-              </div>
+            .map((paper, idx) => (
+              <Fragment key={paper.slug}>
+                {idx > 0 && <div className="hidden xl:block h-px w-full bg-[#E5E5E0]" />}
+                <div ref={observeCard} data-paper-slug={paper.slug} className="animate-fade-in">
+                  <PaperCard paper={paper} />
+                </div>
+              </Fragment>
             ))
         )}
  

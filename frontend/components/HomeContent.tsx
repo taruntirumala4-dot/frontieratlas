@@ -114,7 +114,7 @@ if (selectedTag) {
         className="flex-1 overflow-y-auto overflow-x-hidden hide-scroll flex flex-col"
       >
         {/* Hero Section Container */}
-        <div className="w-full max-w-[1600px] mx-auto px-4 md:px-8 xl:px-12 pt-3">
+        <div className="w-full max-w-[1600px] mx-auto px-4 md:px-8 xl:px-10 pt-3">
           <HeroSection
             selectedTag={selectedTag}
             setSelectedTag={setSelectedTag}
@@ -122,7 +122,7 @@ if (selectedTag) {
         </div>
 
         {/* 3-Column Layout */}
-        <div className="w-full max-w-[1600px] mx-auto px-4 md:px-8 xl:px-12 pt-4 pb-12 flex items-start gap-4 xl:gap-5">
+        <div className="w-full max-w-[1600px] mx-auto px-4 md:px-8 xl:px-10 pt-4 pb-12 flex items-start gap-5 lg:gap-8 xl:gap-10">
           <div className="hidden lg:block w-[240px] shrink-0 sticky top-3 h-[calc(100vh-80px)]">
             <Sidebar initialActive={activeSort} onItemSelect={handleSidebarSelect} />
           </div>
