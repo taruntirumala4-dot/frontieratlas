@@ -8,13 +8,13 @@ import { buildDeterministicSlug, normalizeArxivId, hashDisambiguator } from "../
 
 type GetPapersQuery = {
   sort?:
-    | "latest"
-    | "stars"
-    | "citations"
-    | "alphabetical"
-    | "ranking"
-    | "trending"
-    | string;
+  | "latest"
+  | "stars"
+  | "citations"
+  | "alphabetical"
+  | "ranking"
+  | "trending"
+  | string;
   task?: string;
   method?: string;
   model?: string;
@@ -103,16 +103,16 @@ const paperSelect = {
     },
   },
   repositories: {
-  select: {
-    repository: {
-      select: {
-        url: true,
-        owner: true,
-        name: true,
+    select: {
+      repository: {
+        select: {
+          url: true,
+          owner: true,
+          name: true,
+        },
       },
     },
   },
-},
 } satisfies Prisma.PaperSelect;
 const parseAuthors = (authors?: string | null) => {
   if (!authors) return [];
@@ -297,13 +297,13 @@ export const getPapers = async (
   const query: GetPapersQuery =
     typeof queryOrLimit === "number"
       ? {
-          limit: queryOrLimit,
-          skip: legacySkip,
-          page: Math.floor(legacySkip / queryOrLimit) + 1,
-        }
+        limit: queryOrLimit,
+        skip: legacySkip,
+        page: Math.floor(legacySkip / queryOrLimit) + 1,
+      }
       : queryOrLimit;
 
- const limit = Math.min(Math.max(Number(query.limit) || 20, 1), 50);
+  const limit = Math.min(Math.max(Number(query.limit) || 20, 1), 50);
   const page = Math.max(Number(query.page) || 1, 1);
   const skip = Number(query.skip) || (page - 1) * limit;
   const sort = query.sort || "trending";
@@ -316,17 +316,34 @@ export const getPapers = async (
     where.methods = { some: { method: { slug: query.method } } };
   if (query.model) where.models = { some: { model: { slug: query.model } } };
 
+  let baseDate = new Date();
   if (period !== "all") {
-    const publicationDate = new Date();
-    if (period === "today") publicationDate.setHours(0, 0, 0, 0);
-    else if (period === "week")
-      publicationDate.setDate(publicationDate.getDate() - 7);
-    else if (period === "month")
-      publicationDate.setDate(publicationDate.getDate() - 30);
+    const latestPaper = await queryRouter.routeQuery<any>(async (prisma: PrismaClient) => {
+      return prisma.paper.findFirst({
+        where: { publicationDate: { not: null } },
+        orderBy: { publicationDate: "desc" },
+        select: { publicationDate: true },
+      });
+    });
+
+    const now = new Date();
+    const latestDbDate = latestPaper?.publicationDate ? new Date(latestPaper.publicationDate) : now;
+    baseDate = (latestDbDate.getTime() > 0 && latestDbDate.getTime() <= now.getTime()) ? latestDbDate : now;
+
+    const publicationCutoff = new Date(baseDate);
+
+    if (period === "today") {
+      // 48-hour window from latest paper date to cover arXiv weekend release gaps and timezones
+      publicationCutoff.setDate(publicationCutoff.getDate() - 2);
+    } else if (period === "week") {
+      publicationCutoff.setDate(publicationCutoff.getDate() - 7);
+    } else if (period === "month") {
+      publicationCutoff.setDate(publicationCutoff.getDate() - 30);
+    }
 
     if (period === "today" || period === "week" || period === "month") {
       where.publicationDate = {
-        gte: publicationDate,
+        gte: publicationCutoff,
       };
     }
   } else {
@@ -347,12 +364,12 @@ export const getPapers = async (
             { publicationDate: "desc" as const },
             { slug: "asc" as const },
           ]
-      // Use Citations as the metric for "Trending" papers
+      // Order by Publication Date FIRST so new papers (2026) are displayed above old papers (2025)
       : sort === "trending" || sort === "citations"
         ? [
+            { publicationDate: "desc" as const },
             { citationCount: "desc" as const },
             { githubStars: "desc" as const },
-            { publicationDate: "desc" as const },
             { slug: "asc" as const },
           ]
       : sort === "alphabetical"
@@ -365,7 +382,7 @@ export const getPapers = async (
             { publicationDate: "desc" as const },
             { slug: "asc" as const },
           ];
-let papers = await queryRouter.routeQuery<any>(
+  let papers = await queryRouter.routeQuery<any>(
     async (prisma: PrismaClient) => {
       return prisma.paper.findMany({
         where,
@@ -377,30 +394,59 @@ let papers = await queryRouter.routeQuery<any>(
     },
   );
 
-  // ADDED: Cascading fallback to guarantee papers are always shown
+  // ADDED: Cascading fallback to guarantee papers are always shown while keeping new papers (2026) first
   if (papers.length === 0 && skip === 0) {
-    // Fallback 1: Keep the tag (e.g., Robotics) but remove the strict date (Search "All Time")
-    const fallbackWhere = { ...where, publicationDate: { not: null } };
-    
-    papers = await queryRouter.routeQuery<any>(
-      async (prisma: PrismaClient) => {
-        return prisma.paper.findMany({
-          where: fallbackWhere,
-          orderBy,
-          take: limit + 1,
-          skip,
-          select: paperSelect,
-        });
-      },
-    );
+    if (period !== "all") {
+      // Fallback 1: Expand date window progressively (e.g. 7 days -> 30 days -> 90 days) while preserving date filter
+      const fallbackCutoff = new Date(baseDate);
+      const lookbackDays = period === "today" ? 7 : period === "week" ? 30 : 90;
+      fallbackCutoff.setDate(fallbackCutoff.getDate() - lookbackDays);
 
-    // Fallback 2: If STILL empty (e.g., no Robotics papers exist in the DB at all), 
-    // remove all tags/filters and just return the overall list of papers.
-    if (papers.length === 0) {
+      const fallbackWhere = { ...where, publicationDate: { gte: fallbackCutoff } };
+      
       papers = await queryRouter.routeQuery<any>(
         async (prisma: PrismaClient) => {
           return prisma.paper.findMany({
-            where: { publicationDate: { not: null } },
+            where: fallbackWhere,
+            orderBy,
+            take: limit + 1,
+            skip,
+            select: paperSelect,
+          });
+        },
+      );
+    } else {
+      // Fallback for period === "all"
+      const fallbackWhere = { ...where, publicationDate: { not: null } };
+      papers = await queryRouter.routeQuery<any>(
+        async (prisma: PrismaClient) => {
+          return prisma.paper.findMany({
+            where: fallbackWhere,
+            orderBy,
+            take: limit + 1,
+            skip,
+            select: paperSelect,
+          });
+        },
+      );
+    }
+
+    // Fallback 2: If STILL empty (e.g., no papers for this specific tag), 
+    // remove tag filters but preserve recent date filter if a period was requested
+    if (papers.length === 0) {
+      const fallbackWhere2: any = {};
+      if (period !== "all") {
+        const monthCutoff = new Date(baseDate);
+        monthCutoff.setDate(monthCutoff.getDate() - 30);
+        fallbackWhere2.publicationDate = { gte: monthCutoff };
+      } else {
+        fallbackWhere2.publicationDate = { not: null };
+      }
+
+      papers = await queryRouter.routeQuery<any>(
+        async (prisma: PrismaClient) => {
+          return prisma.paper.findMany({
+            where: fallbackWhere2,
             orderBy,
             take: limit + 1,
             skip,
@@ -417,14 +463,14 @@ let papers = await queryRouter.routeQuery<any>(
   return {
     papers: pagePapers.map((paper: any) => ({
       ...exposeThumbnailUrl(paper),
-repositories: paper.repositories.map(
-  ({ repository }: any) => repository
-),
+      repositories: paper.repositories.map(
+        ({ repository }: any) => repository
+      ),
 
-authors: parseAuthors(paper.authors),
+      authors: parseAuthors(paper.authors),
       tasks: paper.tasks.map(({ task }: any) => task),
       methods: paper.methods.map(({ method }: any) => method),
-      
+
     })),
     total: pagePapers.length, // Let the frontend use hasMore rather than a fake total
     page,
@@ -473,23 +519,23 @@ export const getPaperBySlug = async (
           discoverySource: true,
           authors: true,
           models: {
-  include: {
-    model: {
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        parameterCount: true,
-        architecture: true,
-        vendor: true,
-        vendor_logo_url: true,
-        modelFamily: true,
-        description: true,
-        repositoryUrl: true,
-      },
-    },
-  },
-},
+            include: {
+              model: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                  parameterCount: true,
+                  architecture: true,
+                  vendor: true,
+                  vendor_logo_url: true,
+                  modelFamily: true,
+                  description: true,
+                  repositoryUrl: true,
+                },
+              },
+            },
+          },
           datasets: {
             select: {
               dataset: { select: { id: true, name: true, slug: true } },
@@ -556,9 +602,9 @@ export const getPaperBySlug = async (
         thumbnailUrl,
         authors: parseAuthors(paperData.authors),
         models: paperData.models.map((r: any) => ({
-  role: r.role,
-  model: r.model,
-})),
+          role: r.role,
+          model: r.model,
+        })),
         datasets: paperData.datasets.map((r: any) => r.dataset),
         tasks: paperData.tasks.map((r: any) => r.task),
         methods: paperData.methods.map((r: any) => r.method),
@@ -640,7 +686,7 @@ export const searchPapers = async (
         where: {
           OR: [
             { title: { contains: searchTerm, mode: "insensitive" } },
-            
+
           ],
         },
         orderBy:
@@ -655,8 +701,8 @@ export const searchPapers = async (
   );
   console.log(JSON.stringify(papers[0], null, 2));
 
- 
-  
+
+
 
 
 
@@ -664,7 +710,7 @@ export const searchPapers = async (
     papers: papers.map((paper: any) => ({
       ...exposeThumbnailUrl(paper),
       authors: parseAuthors(paper.authors),
-      
+
     })),
     total: papers.length,
     page,
