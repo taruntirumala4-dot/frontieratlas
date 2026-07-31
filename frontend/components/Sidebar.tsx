@@ -200,7 +200,7 @@ export default function Sidebar({
       // Methods
       "/methods/transformer", "/methods/diffusion-models",
       "/methods/mixture-of-experts-moe", "/methods/policy-learning",
-      "/methods/chain-of-thought", "/methods/retrieval-augmented-generation", "/methods/mcp",
+      "/methods/chain-of-thought", "/methods/retrieval-augmented-generation", "/methods/model-context-protocol-mcp",
       "/methods/lora", "/methods/rlhf", "/methods",
     ];
     routes.forEach((route) => router.prefetch(route));
