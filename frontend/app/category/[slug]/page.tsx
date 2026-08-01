@@ -99,7 +99,7 @@ function getFilterParams(slug: string) {
       params.task = "audio-generation";
       break;
     default:
-      if (["transformer", "diffusion-models", "mixture-of-experts-moe", "policy-learning", "chain-of-thought", "rag", "mcp", "lora", "rlhf"].includes(slug)) {
+      if (["transformer", "diffusion-models", "mixture-of-experts", "policy-learning", "chain-of-thought", "rag", "mcp", "lora", "rlhf"].includes(slug)) {
         params.method = slug;
       } else {
         params.task = slug;

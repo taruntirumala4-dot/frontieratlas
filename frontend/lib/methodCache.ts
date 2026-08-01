@@ -126,7 +126,7 @@ export function prefetchTaxonomyMethods(taxonomy: any[]) {
  */
 export function prefetchMethods() {
   const slugs = [
-    "transformer", "diffusion-models", "mixture-of-experts-moe",
+    "transformer", "diffusion-models", "mixture-of-experts",
     "policy-learning", "chain-of-thought", "retrieval-augmented-generation", "model-context-protocol-mcp", "lora", "rlhf",
   ];
   slugs.forEach((slug) => {

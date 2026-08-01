@@ -29,7 +29,7 @@ export const staticTaxonomy = [
       { id: "convolutional-networks", name: "Convolutional Networks", slug: "convolutional-networks", paperCount: 0 },
       { id: "recurrent-networks", name: "Recurrent Networks", slug: "recurrent-networks", paperCount: 0 },
       { id: "graph-neural-networks", name: "Graph Neural Networks", slug: "graph-neural-networks", paperCount: 0 },
-      { id: "mixture-of-experts-moe", name: "Mixture of Experts", slug: "mixture-of-experts-moe", paperCount: 0 },
+      { id: "mixture-of-experts-moe", name: "Mixture of Experts", slug: "mixture-of-experts", paperCount: 0 },
       { id: "autoencoders", name: "Autoencoders", slug: "autoencoders", paperCount: 0 },
       { id: "generative-adversarial-networks", name: "Generative Adversarial Networks", slug: "generative-adversarial-networks", paperCount: 0 },
       { id: "diffusion-architectures", name: "Diffusion Architectures", slug: "diffusion-architectures", paperCount: 0 }

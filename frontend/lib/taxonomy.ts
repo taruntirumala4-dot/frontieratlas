@@ -10,9 +10,9 @@ export function slugifyTaxonomy(name: string): string {
 const SLUG_MAP: Record<string, string> = {
   "transformers": "transformer",
   "transformer": "transformer",
-  "mixture of experts": "mixture-of-experts-moe",
-  "moe": "mixture-of-experts-moe",
-  "mixture-of-experts": "mixture-of-experts-moe",
+  "mixture of experts": "mixture-of-experts",
+  "moe": "mixture-of-experts",
+  "mixture-of-experts": "mixture-of-experts",
   "chain-of-thought (cot)": "chain-of-thought",
   "cot": "chain-of-thought",
   "model context protocol (mcp)": "mcp",
@@ -42,7 +42,7 @@ const KNOWN_BENCHMARKS = new Set([
 ]);
 
 const KNOWN_METHODS = new Set([
-  "transformer", "diffusion-models", "mixture-of-experts-moe", "policy-learning",
+  "transformer", "diffusion-models", "mixture-of-experts", "policy-learning",
   "chain-of-thought", "rag", "mcp", "lora", "rlhf", "dpo", "language",
   "pre-training", "fine-tuning", "instruction-tuning", "attention", "embeddings",
   "tokenization", "distillation", "mamba", "state-space-models", "autoencoders",

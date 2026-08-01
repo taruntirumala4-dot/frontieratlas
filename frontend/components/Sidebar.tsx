@@ -140,7 +140,7 @@ export default function Sidebar({
   const methods = [
     { label: "Transformers", icon: <Zap size={16} />, slug: "transformer" },
     { label: "Diffusion Models", icon: <ImageIcon size={16} />, slug: "diffusion-models" },
-    { label: "Mixture of Experts", icon: <Layers size={16} />, slug: "mixture-of-experts-moe" },
+    { label: "Mixture of Experts", icon: <Layers size={16} />, slug: "mixture-of-experts" },
     { label: "Reinforcement Learning", icon: <BarChart2 size={16} />, slug: "policy-learning" },
     { label: "Chain-of-Thought", icon: <LinkIcon size={16} />, slug: "chain-of-thought" },
     { label: "RAG", icon: <Search size={16} />, slug: "retrieval-augmented-generation" },
@@ -199,7 +199,7 @@ export default function Sidebar({
       "/tasks/automatic-speech-recognition", "/tasks/robotics", "/tasks",
       // Methods
       "/methods/transformer", "/methods/diffusion-models",
-      "/methods/mixture-of-experts-moe", "/methods/policy-learning",
+      "/methods/mixture-of-experts", "/methods/policy-learning",
       "/methods/chain-of-thought", "/methods/retrieval-augmented-generation", "/methods/model-context-protocol-mcp",
       "/methods/lora", "/methods/rlhf", "/methods",
     ];
