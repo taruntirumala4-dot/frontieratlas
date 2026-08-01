@@ -16,20 +16,30 @@ export default function TaskDetailClient({ slug, initialPapers }: Props) {
     "popular" | "latest" | "citations"
   >("popular");
 
+  const [period, setPeriod] = useState<string>("Today");
+
+  const mappedPeriod = {
+    Today: "today",
+    "This Week": "week",
+    "This Month": "month",
+    "All time": "all",
+  }[period] || "today";
+
   return (
     <>
       <TaskFilterBar
         selectedSort={sort}
         onSortChange={setSort}
       />
-      <PaperTabs />
+      <PaperTabs selectedPeriod={period} onPeriodSelect={setPeriod} />
 
       <PaperList
         filterParams={{
           task: slug,
           sort,
         }}
-        initialPapers={sort === "popular" ? initialPapers : null}
+        period={mappedPeriod}
+        initialPapers={sort === "popular" && period === "Today" ? initialPapers : null}
       />
     </>
   );
