@@ -361,35 +361,36 @@ export const getPapers = async (
   const orderBy =
     sort === "latest"
       ? [
-          { publicationDate: "desc" as const },
+        { publicationDate: "desc" as const },
+        { githubStars: "desc" as const },
+        { slug: "asc" as const },
+      ]
+      : sort === "citations"
+        ? [
+          { citationCount: "desc" as const },
           { githubStars: "desc" as const },
+          { publicationDate: "desc" as const },
           { slug: "asc" as const },
         ]
-      : sort === "stars"
-        ? [
+        : sort === "trending" || sort === "popular" || sort === "stars"
+          ? [
             { githubStars: "desc" as const },
             { citationCount: "desc" as const },
             { publicationDate: "desc" as const },
             { slug: "asc" as const },
           ]
-      // Order by Publication Date FIRST so new papers (2026) are displayed above old papers (2025)
-      : sort === "trending" || sort === "citations"
-        ? [
-            { publicationDate: "desc" as const },
-            { citationCount: "desc" as const },
-            { githubStars: "desc" as const },
-            { slug: "asc" as const },
-          ]
-      : sort === "alphabetical"
-        ? [
-            { title: "asc" as const }, 
-            { slug: "asc" as const }
-          ]
-        : [
-            // Failsafe Default
-            { publicationDate: "desc" as const },
-            { slug: "asc" as const },
-          ];
+          : sort === "alphabetical"
+            ? [
+              { title: "asc" as const },
+              { slug: "asc" as const }
+            ]
+            : [
+              // Failsafe Default (Popularity oriented)
+              { githubStars: "desc" as const },
+              { citationCount: "desc" as const },
+              { publicationDate: "desc" as const },
+              { slug: "asc" as const },
+            ];
   let papers = await queryRouter.routeQuery<any>(
     async (prisma: PrismaClient) => {
       return prisma.paper.findMany({
@@ -411,7 +412,7 @@ export const getPapers = async (
       fallbackCutoff.setDate(fallbackCutoff.getDate() - lookbackDays);
 
       const fallbackWhere = { ...where, publicationDate: { gte: fallbackCutoff } };
-      
+
       papers = await queryRouter.routeQuery<any>(
         async (prisma: PrismaClient) => {
           return prisma.paper.findMany({

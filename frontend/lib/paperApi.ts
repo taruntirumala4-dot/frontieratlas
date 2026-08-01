@@ -164,7 +164,7 @@ function mapBackendPaper(raw: Record<string, unknown>): Paper {
     // If it's a huge base64 image from the DB, format it properly
     if (rawThumb.startsWith("/9j/") || rawThumb.startsWith("iVBORw0KGgo")) {
       finalThumbnail = `data:image/jpeg;base64,${rawThumb}`;
-    } 
+    }
     // If it's a valid local path, http URL, or ALREADY a formatted data URL, keep it
     else if (rawThumb.startsWith("/") || rawThumb.startsWith("http") || rawThumb.startsWith("data:")) {
       finalThumbnail = rawThumb;
@@ -176,7 +176,7 @@ function mapBackendPaper(raw: Record<string, unknown>): Paper {
   const computedArxivUrl = getArxivAbsUrl(cleanArxivId, raw.paperUrl as string) || undefined;
   const computedPdfUrl = getArxivPdfUrl(raw.pdfUrl as string, raw.paperUrl as string, cleanArxivId) || undefined;
 
-    return {
+  return {
     id: Number(raw.id) || String(raw.id),
     slug: String(raw.slug || raw.id || ""),
     title: String(raw.title || "Untitled Paper"),
@@ -239,6 +239,11 @@ function readCache<T>(key: string): { data: T; timestamp: number } | null {
 }
 
 function findFuzzyCache(params: GetPapersParams): GetPapersResult | null {
+  // Never use fuzzy matching if the user explicitly requested a specific sort or period
+  // Otherwise, they will never see the new sorted/filtered response unless they refresh.
+  if (params.sort && params.sort !== "trending" && params.sort !== "popular") return null;
+  if (params.period && params.period !== "all" && params.period !== "today") return null;
+
   const targetTask = params.task ? params.task.toLowerCase().replace(/-/g, " ") : null;
   const targetMethod = params.method ? params.method.toLowerCase().replace(/-/g, " ") : null;
 
@@ -262,7 +267,7 @@ function findFuzzyCache(params: GetPapersParams): GetPapersResult | null {
         if (item?.data?.papers?.length) return item.data;
       }
     }
-  } catch {}
+  } catch { }
 
   // Instant fallback: filter existing stored papers by task/method/tag
   const searchFilter = targetTask || targetMethod;
@@ -328,9 +333,11 @@ export async function getPapers(params: GetPapersParams = {}): Promise<GetPapers
     return existingInFlight;
   }
 
-  // 3. Instant Fuzzy Stale-While-Revalidate fallback for chips/filters
-  const fuzzy = findFuzzyCache(params);
-  if (fuzzy && fuzzy.papers.length > 0) {
+  // 3. (Disabled) Instant Fuzzy Stale-While-Revalidate fallback
+  // This was causing severe UI locking behaviors when changing sorting tabs because 
+  // the stale paper array was returned instantly but never updated with the background response.
+  const fuzzy = null; // findFuzzyCache(params);
+  if (fuzzy && (fuzzy as any).papers.length > 0) {
     // Revalidate in background without blocking
     const bgFetch = (async () => {
       try {
@@ -368,9 +375,9 @@ export async function getPapers(params: GetPapersParams = {}): Promise<GetPapers
     try {
       const start = performance.now();
       if (process.env.NODE_ENV === "development") console.log(`[paperApi] getPapers called with params:`, params);
-      
+
       const query = new URLSearchParams();
-      
+
       if (params.page !== undefined) query.append("page", params.page.toString());
       if (params.limit !== undefined) query.append("limit", params.limit.toString());
       if (params.task) query.append("task", params.task);
@@ -382,12 +389,12 @@ export async function getPapers(params: GetPapersParams = {}): Promise<GetPapers
       const response = await fetchApi<PapersResponse>(
         `/api/v1/research-papers?${query.toString()}`
       );
-      
+
       const mapStart = performance.now();
       const mappedPapers = response.data.papers.map(mapBackendPaper);
       const mapDuration = performance.now() - mapStart;
       const totalDuration = performance.now() - start;
-      
+
       if (process.env.NODE_ENV === "development") console.log(`[paperApi] getPapers complete in ${totalDuration.toFixed(2)}ms (mapping took ${mapDuration.toFixed(2)}ms)`);
 
       const validPapers = mappedPapers.filter(p => p.authors.length > 0 && p.date !== "Unknown Date");
@@ -416,17 +423,17 @@ export async function getPapers(params: GetPapersParams = {}): Promise<GetPapers
 
 export async function searchPapers(query: string): Promise<Paper[]> {
   if (!query.trim()) return [];
-  
+
   try {
     // Try backend search first
-   const response = await fetchApi<{
-  status: string;
-  data: {
-    papers: Record<string, unknown>[];
-  };
-}>(
-  `/api/v1/research-papers/search?q=${encodeURIComponent(query)}`
-);
+    const response = await fetchApi<{
+      status: string;
+      data: {
+        papers: Record<string, unknown>[];
+      };
+    }>(
+      `/api/v1/research-papers/search?q=${encodeURIComponent(query)}`
+    );
     return response.data.papers.map(mapBackendPaper);
   } catch (error) {
     console.warn('Backend search unavailable, falling back to client-side filtering', error);
