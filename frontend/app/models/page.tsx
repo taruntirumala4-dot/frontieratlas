@@ -12,6 +12,7 @@ import {
   getCachedModels,
   getCachedTrendingModels,
   getCachedModelFacets,
+  prefetchModelBySlug,
   type ModelItem,
   type ModelFacets
 } from "@/lib/models";import Navbar from "@/components/Navbar";
@@ -905,7 +906,7 @@ highlight="Models"
                       </thead>
                       <tbody>
                         {filteredCatalogModels.map((model, idx) => (
-                          <tr key={model.id} onClick={() => router.push(`/models/${model.slug || model.id}`)} style={{ borderBottom: "1px solid #EAE9E4", cursor: "pointer", transition: "background 0.15s ease" }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#FFF8F6"; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}>
+                          <tr key={model.id} onClick={() => router.push(`/models/${model.slug || model.id}`)} style={{ borderBottom: "1px solid #EAE9E4", cursor: "pointer", transition: "background 0.15s ease" }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#FFF8F6"; prefetchModelBySlug(model.slug); }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}>
                             <td style={{ padding: "12px 12px", fontFamily: "monospace", fontSize: "11px", fontWeight: 400, color: "#8B8B8B", width: "1%", whiteSpace: "nowrap", verticalAlign: "middle", lineHeight: "1.3", paddingRight: "12px" }}>{(idx + 1).toString().padStart(3, "0")}</td>
                             <td style={{ padding: "12px 12px", fontWeight: 400, fontSize: "12.5px", color: "#111111", minWidth: "160px", whiteSpace: "nowrap", wordBreak: "normal", verticalAlign: "middle", lineHeight: "1.3", paddingLeft: "12px", paddingRight: "8px" }}>
                               <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
