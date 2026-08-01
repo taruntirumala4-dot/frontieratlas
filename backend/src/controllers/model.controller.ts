@@ -3,6 +3,27 @@ import * as modelService from '../services/model.service.js';
 import { QueryRouter } from '../routing/index.js';
 import { redisManager } from '../lib/redis.js';
 
+const memoryCache = new Map<string, { data: any; timestamp: number }>();
+const MEMORY_CACHE_TTL_MS = 15 * 60 * 1000; // 15 minutes TTL
+
+function getFromMemoryCache(key: string): any | null {
+  const item = memoryCache.get(key);
+  if (!item) return null;
+  if (Date.now() - item.timestamp > MEMORY_CACHE_TTL_MS) {
+    memoryCache.delete(key);
+    return null;
+  }
+  return item.data;
+}
+
+function setToMemoryCache(key: string, data: any) {
+  memoryCache.set(key, { data, timestamp: Date.now() });
+  if (memoryCache.size > 3000) {
+    const firstKey = memoryCache.keys().next().value;
+    if (firstKey) memoryCache.delete(firstKey);
+  }
+}
+
 export const getModels = async (c: Context) => {
   const queryRouter = c.var.queryRouter as QueryRouter;
 
@@ -35,6 +56,11 @@ export const getModels = async (c: Context) => {
   ].join(':');
 
   try {
+    const memCached = getFromMemoryCache(cacheKey);
+    if (memCached) {
+      return c.json(memCached, 200);
+    }
+
     const redis = redisManager.getClient();
     let cached = null;
 
@@ -45,6 +71,7 @@ export const getModels = async (c: Context) => {
     }
 
     if (cached) {
+      setToMemoryCache(cacheKey, cached);
       return c.json(cached as any, 200);
     }
 
@@ -68,6 +95,8 @@ export const getModels = async (c: Context) => {
       count: models.length,
       data: models,
     };
+
+    setToMemoryCache(cacheKey, response);
 
     try {
       await redis.set(cacheKey, response, { ex: 900 });
@@ -94,6 +123,11 @@ export const getModelFacets = async (c: Context) => {
   const cacheKey = 'models:facets';
 
   try {
+    const memCached = getFromMemoryCache(cacheKey);
+    if (memCached) {
+      return c.json(memCached, 200);
+    }
+
     const redis = redisManager.getClient();
     let cached = null;
 
@@ -104,6 +138,7 @@ export const getModelFacets = async (c: Context) => {
     }
 
     if (cached) {
+      setToMemoryCache(cacheKey, cached);
       return c.json(cached as any, 200);
     }
 
@@ -113,6 +148,8 @@ export const getModelFacets = async (c: Context) => {
       status: 'success',
       data: facets,
     };
+
+    setToMemoryCache(cacheKey, response);
 
     try {
       await redis.set(cacheKey, response, { ex: 900 });
@@ -141,6 +178,11 @@ export const getModelBySlug = async (c: Context) => {
   const cacheKey = `model:${slug}`;
 
   try {
+    const memCached = getFromMemoryCache(cacheKey);
+    if (memCached) {
+      return c.json(memCached, 200);
+    }
+
     const redis = redisManager.getClient();
     let cached = null;
 
@@ -151,6 +193,7 @@ export const getModelBySlug = async (c: Context) => {
     }
 
     if (cached) {
+      setToMemoryCache(cacheKey, cached);
       return c.json(cached as any, 200);
     }
 
@@ -170,6 +213,8 @@ export const getModelBySlug = async (c: Context) => {
       status: 'success',
       data: model,
     };
+
+    setToMemoryCache(cacheKey, response);
 
     try {
       await redis.set(cacheKey, response, { ex: 600 });

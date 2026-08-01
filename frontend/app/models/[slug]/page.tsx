@@ -7,10 +7,83 @@ import {
   Sparkles, BookOpen, Zap, 
   Activity, Box, BarChart3,
 } from "lucide-react";
-import { fetchApi } from "@/lib/api";
-import { type ModelItem } from "@/lib/models";
+import { type ModelItem, type ModelDetail, getCachedModelBySlug, getModelBySlug } from "@/lib/models";
 import PaperList from "@/components/PaperFeed";
 import Navbar from "@/components/Navbar";
+
+function ModelDetailSkeleton() {
+  return (
+    <div className="min-h-screen bg-[#FAFAFA] pb-24">
+      <Navbar />
+
+      <div className="max-w-7xl mx-auto px-4 md:px-8 pt-6">
+        <div className="flex items-center gap-2 mb-6">
+          <div className="h-4 w-12 bg-[#EAE9E4] rounded animate-pulse" />
+          <span className="text-[#CCCCCC]">/</span>
+          <div className="h-4 w-16 bg-[#EAE9E4] rounded animate-pulse" />
+          <span className="text-[#CCCCCC]">/</span>
+          <div className="h-4 w-32 bg-[#EAE9E4] rounded animate-pulse" />
+        </div>
+      </div>
+
+      <section className="max-w-7xl mx-auto px-4 md:px-8 mt-2">
+        <div className="bg-white rounded-[12px] border border-[#F0F0F0] p-6 md:p-10 shadow-sm flex flex-col md:flex-row gap-8 justify-between">
+          <div className="flex-1">
+            <div className="h-8 w-64 bg-[#EAE9E4] rounded-md mb-4 animate-pulse" />
+            <div className="space-y-2 mb-8">
+              <div className="h-4 w-full max-w-2xl bg-[#EAE9E4] rounded animate-pulse" />
+              <div className="h-4 w-4/5 max-w-xl bg-[#EAE9E4] rounded animate-pulse" />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="bg-[#F8F7F2] border border-[#EAE9E4] rounded-[8px] p-3">
+                  <div className="h-3 w-20 bg-[#EAE9E4] rounded mb-2 animate-pulse" />
+                  <div className="h-5 w-28 bg-[#E5E5E0] rounded animate-pulse" />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="hidden md:flex shrink-0">
+            <div className="w-24 h-24 rounded-[12px] bg-[#F8F7F2] border border-[#EAE9E4] p-3 flex items-center justify-center">
+              <div className="w-12 h-12 bg-[#EAE9E4] rounded-lg animate-pulse" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="max-w-7xl mx-auto px-4 md:px-8 mt-8">
+        <div className="bg-white p-5 rounded-[12px] border border-[#F0F0F0] mb-8 flex items-center gap-4">
+          <div className="w-12 h-12 rounded-full bg-[#FFF6F3] flex items-center justify-center shrink-0">
+            <BarChart3 size={24} className="text-[#FF5A1F]" />
+          </div>
+          <div className="space-y-2">
+            <div className="h-5 w-56 bg-[#EAE9E4] rounded animate-pulse" />
+            <div className="h-3 w-80 bg-[#EAE9E4] rounded animate-pulse" />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="bg-white rounded-[12px] border border-[#F0F0F0] p-5">
+              <div className="flex justify-between items-start mb-4">
+                <div className="space-y-2">
+                  <div className="h-4 w-32 bg-[#EAE9E4] rounded animate-pulse" />
+                  <div className="h-3 w-40 bg-[#EAE9E4] rounded animate-pulse" />
+                </div>
+                <div className="h-6 w-12 bg-[#EAE9E4] rounded animate-pulse" />
+              </div>
+              <div className="w-full h-3 bg-[#F0F0F0] rounded-full overflow-hidden">
+                <div className="h-full bg-[#EAE9E4] w-2/3 animate-pulse" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
 
 export default function ModelDetailPage({
   params,
@@ -18,30 +91,35 @@ export default function ModelDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const resolvedParams = use(params);
-  const [model, setModel] = useState<ModelItem | null>(null);
-  const [loading, setLoading] = useState(true);
+  const cleanId = resolvedParams?.slug ? resolvedParams.slug.toLowerCase().trim() : "";
+
+  const [model, setModel] = useState<ModelItem | ModelDetail | null>(() => cleanId ? getCachedModelBySlug(cleanId) : null);
+  const [loading, setLoading] = useState<boolean>(() => !model);
   const [logoError, setLogoError] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
     setLogoError(false);
-    if (resolvedParams?.slug) {
-      const cleanId = resolvedParams.slug.toLowerCase().trim();
-      fetchApi<{ status: string, data: any }>(`/api/v1/models/${cleanId}`)
-        .then(response => {
-          if (response.status === "success" && response.data) {
-            setModel(response.data);
-          } else {
-            setModel(null);
-          }
-          setLoading(false);
-        })
-        .catch(err => {
+    if (!cleanId) return;
+
+    const cachedData = getCachedModelBySlug(cleanId);
+    if (cachedData) {
+      setModel(cachedData);
+      setLoading(false);
+    }
+
+    getModelBySlug(cleanId)
+      .then((data) => {
+        if (data) {
+          setModel(data);
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
         console.error("Failed to load model:", err);
         setLoading(false);
       });
-    }
-  }, [resolvedParams?.slug]);
+  }, [cleanId]);
   
   const benchmarkArray = useMemo(() => {
     if (!model || !model.benchmarkScore) return [];
@@ -50,22 +128,13 @@ export default function ModelDetailPage({
         name: key.toUpperCase(),
         score: typeof value === 'number' ? value.toFixed(1) : value,
         value: Number(value) || 0,
-        color: "#FF5A1F" // fallback brand color
+        color: "#FF5A1F"
       };
     });
   }, [model]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
-        <div className="text-center p-10">
-          <div className="w-12 h-12 rounded-full bg-[#111111] flex items-center justify-center mx-auto mb-4 animate-pulse">
-            <Cpu size={24} className="text-[#FF5A1F]" />
-          </div>
-          <div className="text-[13px] font-bold text-[#8B8B8B] uppercase tracking-wider animate-pulse">Loading Architecture Profile...</div>
-        </div>
-      </div>
-    );
+  if (loading && !model) {
+    return <ModelDetailSkeleton />;
   }
 
   if (!model) {
