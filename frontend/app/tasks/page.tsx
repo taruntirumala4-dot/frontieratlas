@@ -55,6 +55,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import bgImage from "@/public/bg-image.png";
 import { getTaskPaperCounts } from "@/lib/tasks";
+import { getPapers } from "@/lib/paperApi";
 // ----------------------------------------------------------------------
 //  Types
 // ----------------------------------------------------------------------
@@ -813,10 +814,27 @@ const FrontierAtlas: React.FC = () => {
   const mainContainerRef = useRef<HTMLDivElement>(null);
   const [paperCounts, setPaperCounts] = useState<Record<string, number>>({});
   useEffect(() => {
-  getTaskPaperCounts()
-    .then(setPaperCounts)
-    .catch(console.error);
-}, []);
+    getTaskPaperCounts()
+      .then(setPaperCounts)
+      .catch(console.error);
+
+    // Pre-fetch top task paper feeds in background for 0ms instant loading
+    const topTasks = [
+      "large-language-models",
+      "agents",
+      "vision-language-models",
+      "multimodal-models",
+      "small-language-models",
+      "reasoning-models",
+      "world-models",
+      "reinforcement-learning"
+    ];
+    topTasks.forEach((slug, idx) => {
+      setTimeout(() => {
+        getPapers({ page: 1, task: slug, sort: "popular" }).catch(() => {});
+      }, idx * 120);
+    });
+  }, []);
   const handleDomainClick = (domain: string) => {
     setActiveDomain(domain);
     const el = document.getElementById(`section-${domain}`);
@@ -842,6 +860,9 @@ const FrontierAtlas: React.FC = () => {
     return (
       <div
         onClick={() => handleItemClick(item.slug)}
+        onMouseEnter={() => {
+          getPapers({ page: 1, task: item.slug, sort: "popular" }).catch(() => {});
+        }}
         className="bg-white rounded-md border border-[#ECECEC] p-5 min-h-[150px] flex flex-col hover:shadow-md transition-shadow duration-200 group cursor-pointer"
       >
         <div className="flex items-start gap-2.5 mb-2">

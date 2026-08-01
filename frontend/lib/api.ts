@@ -1,17 +1,39 @@
-const defaultApiUrl = "https://frontieratlas-backend.morningsignal-india.workers.dev";
+const defaultApiUrl = process.env.NODE_ENV === "development"
+  ? "http://localhost:8787"
+  : "https://frontieratlas-backend.morningsignal-india.workers.dev";
 const API_BASE = (process.env.NEXT_PUBLIC_API_URL || defaultApiUrl).replace(/\/$/, "");
 export async function fetchApi<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-  const url = `${API_BASE}${path}`;
-  const response = await fetch(url, {
-    ...options,
-     credentials: "include",
-    next: { revalidate: 120 },
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  } as any);
+  let url = `${API_BASE}${path}`;
+  
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      ...options,
+      credentials: "include",
+      next: { revalidate: 120 },
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    } as any);
+  } catch (fetchErr) {
+    // If local dev server was not reachable, fallback to production backend worker
+    if (API_BASE.includes("localhost")) {
+      url = `https://frontieratlas-backend.morningsignal-india.workers.dev${path}`;
+      response = await fetch(url, {
+        ...options,
+        credentials: "include",
+        next: { revalidate: 120 },
+        headers: {
+          'Content-Type': 'application/json',
+          ...options.headers,
+        },
+      } as any);
+    } else {
+      throw fetchErr;
+    }
+  }
 
   if (!response.ok) {
     let errorDetail = '';

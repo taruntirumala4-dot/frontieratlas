@@ -27,6 +27,9 @@ const bumpMethodsVersion = async (): Promise<void> => {
   }
 };
 
+const localMethodCache = new Map<string, { data: any; expiresAt: number }>();
+const LOCAL_METHOD_TTL = 15 * 60 * 1000; // 15 minutes
+
 // ---------------------------------------------------------------------------
 // Read handlers
 // ---------------------------------------------------------------------------
@@ -39,11 +42,17 @@ export const getMethods = async (c: Context) => {
   const limit = Number(c.req.query('limit')) || 20;
 
   try {
-    const redis = redisManager.getClient();
-
     const version = await getMethodsVersion();
     const cacheKey = `methods:v${version}:list:${sort}:${search}:${page}:${limit}`;
 
+    // 1. Instant local memory hit (0.1ms)
+    const localHit = localMethodCache.get(cacheKey);
+    if (localHit && Date.now() < localHit.expiresAt) {
+      return c.json(localHit.data, 200);
+    }
+
+    // 2. Redis hit
+    const redis = redisManager.getClient();
     let cached = null;
     try {
       cached = await redis.get(cacheKey);
@@ -52,6 +61,7 @@ export const getMethods = async (c: Context) => {
     }
 
     if (cached) {
+      localMethodCache.set(cacheKey, { data: cached, expiresAt: Date.now() + LOCAL_METHOD_TTL });
       return c.json(cached as any, 200);
     }
 
@@ -68,6 +78,8 @@ export const getMethods = async (c: Context) => {
       data: result,
     };
 
+    localMethodCache.set(cacheKey, { data: response, expiresAt: Date.now() + LOCAL_METHOD_TTL });
+
     try {
       await redis.set(cacheKey, response, { ex: 900 }); // 15 minutes
     } catch (err) {
@@ -82,11 +94,14 @@ export const getMethods = async (c: Context) => {
 
 export const getGroupedMethods = async (c: Context) => {
   const queryRouter = c.var.queryRouter as any;
-  // Grouped methods is a single stable key — no versioning needed here,
-  // we delete it explicitly on every mutation.
   const cacheKey = 'methods:grouped';
 
   try {
+    const localHit = localMethodCache.get(cacheKey);
+    if (localHit && Date.now() < localHit.expiresAt) {
+      return c.json(localHit.data, 200);
+    }
+
     const redis = redisManager.getClient();
     let cached = null;
 
@@ -97,6 +112,7 @@ export const getGroupedMethods = async (c: Context) => {
     }
 
     if (cached) {
+      localMethodCache.set(cacheKey, { data: cached, expiresAt: Date.now() + LOCAL_METHOD_TTL });
       return c.json(cached as any, 200);
     }
 
@@ -106,8 +122,10 @@ export const getGroupedMethods = async (c: Context) => {
       data: grouped,
     };
 
+    localMethodCache.set(cacheKey, { data: response, expiresAt: Date.now() + LOCAL_METHOD_TTL });
+
     try {
-      await redis.set(cacheKey, response, { ex: 1800 }); // 30 minutes — grouping is very stable
+      await redis.set(cacheKey, response, { ex: 1800 });
     } catch (err) {
       console.error('Redis SET failed:', err);
     }
@@ -124,6 +142,11 @@ export const getMethodBySlug = async (c: Context) => {
   const cacheKey = `method:${slug}`;
 
   try {
+    const localHit = localMethodCache.get(cacheKey);
+    if (localHit && Date.now() < localHit.expiresAt) {
+      return c.json(localHit.data, 200);
+    }
+
     const redis = redisManager.getClient();
     let cached = null;
 
@@ -134,6 +157,7 @@ export const getMethodBySlug = async (c: Context) => {
     }
 
     if (cached) {
+      localMethodCache.set(cacheKey, { data: cached, expiresAt: Date.now() + LOCAL_METHOD_TTL });
       return c.json(cached as any, 200);
     }
 
@@ -142,8 +166,10 @@ export const getMethodBySlug = async (c: Context) => {
 
     const response = { status: 'success', data: method };
 
+    localMethodCache.set(cacheKey, { data: response, expiresAt: Date.now() + LOCAL_METHOD_TTL });
+
     try {
-      await redis.set(cacheKey, response, { ex: 600 }); // 10 minutes
+      await redis.set(cacheKey, response, { ex: 600 });
     } catch (err) {
       console.error('Redis SET failed:', err);
     }

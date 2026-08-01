@@ -206,7 +206,7 @@ function mapBackendPaper(raw: Record<string, unknown>): Paper {
   };
 }
 
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL = 15 * 60 * 1000; // 15 minutes
 
 function getCacheKey(params: GetPapersParams): string {
   return `papers:${params.page ?? 1}:${params.sort ?? "none"}:${params.period ?? "all"}:${params.task ?? "none"}:${params.method ?? "none"}:${params.model ?? "none"}`;
@@ -230,31 +230,65 @@ function readCache<T>(key: string): { data: T; timestamp: number } | null {
     // Warm memory cache from localStorage hit
     if (parsed && Date.now() - parsed.timestamp < CACHE_TTL) {
       memoryCache.set(key, parsed);
+      return parsed;
     }
-    return parsed;
+    return null;
   } catch {
     return null;
   }
 }
 
 function findFuzzyCache(params: GetPapersParams): GetPapersResult | null {
-  const page = params.page ?? 1;
-  const targetTask = params.task ? `:${params.task}:` : null;
-  const targetMethod = params.method ? `:${params.method}:` : null;
+  const targetTask = params.task ? params.task.toLowerCase().replace(/-/g, " ") : null;
+  const targetMethod = params.method ? params.method.toLowerCase().replace(/-/g, " ") : null;
 
   for (const [key, entry] of memoryCache.entries()) {
-    if (!key.startsWith(`papers:${page}:`)) continue;
     if (!entry.data?.papers?.length) continue;
 
-    if (targetTask) {
-      if (key.includes(targetTask)) return entry.data as GetPapersResult;
-    } else if (targetMethod) {
-      if (key.includes(targetMethod)) return entry.data as GetPapersResult;
-    } else if (!params.task && !params.method && !params.model) {
-      // For general feed period/sort switching, return any existing page 1 paper cache
+    if (params.task && key.toLowerCase().includes(params.task.toLowerCase())) {
+      return entry.data as GetPapersResult;
+    } else if (params.method && key.toLowerCase().includes(params.method.toLowerCase())) {
       return entry.data as GetPapersResult;
     }
   }
+
+  // Check localStorage if memoryCache miss
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k || !k.startsWith("papers:")) continue;
+      if (params.task && k.toLowerCase().includes(params.task.toLowerCase())) {
+        const item = readCache<GetPapersResult>(k);
+        if (item?.data?.papers?.length) return item.data;
+      }
+    }
+  } catch {}
+
+  // Instant fallback: filter existing stored papers by task/method/tag
+  const searchFilter = targetTask || targetMethod;
+  if (searchFilter) {
+    const allStoredPapers: Paper[] = [];
+    for (const entry of memoryCache.values()) {
+      if (entry.data?.papers) {
+        allStoredPapers.push(...entry.data.papers);
+      }
+    }
+    const matched = allStoredPapers.filter(p => {
+      const text = [...(p.tags || []), ...(p.additionalTags || []), p.title].join(" ").toLowerCase();
+      return text.includes(searchFilter);
+    });
+    if (matched.length > 0) {
+      const uniqueMap = new Map<string, Paper>();
+      matched.forEach(p => uniqueMap.set(p.slug, p));
+      return {
+        papers: Array.from(uniqueMap.values()),
+        total: uniqueMap.size,
+        page: 1,
+        hasMore: false,
+      };
+    }
+  }
+
   return null;
 }
 
@@ -267,7 +301,7 @@ export function getPapersSync(params: GetPapersParams = {}): GetPapersResult | n
   return findFuzzyCache(params);
 }
 
-function writeCache<T>(key: string, data: T): void {
+export function writeCache<T>(key: string, data: T): void {
   const entry = { data, timestamp: Date.now() };
   // Write to memory (instant)
   memoryCache.set(key, entry);

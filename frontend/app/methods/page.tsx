@@ -13,12 +13,24 @@ export default async function MethodsPage() {
   let taxonomy = staticTaxonomy;
 
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://frontieratlas-backend.morningsignal-india.workers.dev';
-    const res = await fetch(`${apiUrl}/api/v1/methods/taxonomy`, {
-      next: { revalidate: 60 },
-      signal: AbortSignal.timeout(5000)
-    });
-    if (res.ok) {
+    const defaultUrl = process.env.NODE_ENV === "development"
+      ? "http://localhost:8787"
+      : "https://frontieratlas-backend.morningsignal-india.workers.dev";
+    const apiUrl = (process.env.NEXT_PUBLIC_API_URL || defaultUrl).replace(/\/$/, "");
+    let res = await fetch(`${apiUrl}/api/v1/methods/taxonomy`, {
+      next: { revalidate: 300 },
+      signal: AbortSignal.timeout(2000)
+    }).catch(() => null);
+
+    if (!res || !res.ok) {
+      if (apiUrl.includes("localhost")) {
+        res = await fetch("https://frontieratlas-backend.morningsignal-india.workers.dev/api/v1/methods/taxonomy", {
+          next: { revalidate: 300 },
+          signal: AbortSignal.timeout(3000)
+        }).catch(() => null);
+      }
+    }
+    if (res?.ok) {
       const data = await res.json();
 
       if (data?.data && Array.isArray(data.data)) {
