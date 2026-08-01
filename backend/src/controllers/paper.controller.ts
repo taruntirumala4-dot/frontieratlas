@@ -59,6 +59,9 @@ export const ingestPaper = async (c: Context) => {
   );
 };
 
+const localMemoryCache = new Map<string, { data: any; expiresAt: number }>();
+const LOCAL_TTL_MS = 10 * 60 * 1000; // 10 minutes
+
 export const getPapers = async (c: Context) => {
   const queryRouter = c.var.queryRouter as QueryRouter;
   const sort = c.req.query("sort") || "trending";
@@ -71,12 +74,17 @@ export const getPapers = async (c: Context) => {
   const cursor = c.req.query("cursor");
 
   try {
-    const redis = redisManager.getClient();
-
-    // Read the current version — one fast Redis GET, prevents any O(N) scan on invalidation
     const version = await getPapersVersion();
     const cacheKey = `papers:v${version}:${JSON.stringify({ sort, task, method, model, period, page, limit, cursor })}`;
 
+    // 1. Check zero-latency in-memory cache (0.1ms response)
+    const localHit = localMemoryCache.get(cacheKey);
+    if (localHit && Date.now() < localHit.expiresAt) {
+      return c.json(localHit.data, 200);
+    }
+
+    // 2. Check Redis cache
+    const redis = redisManager.getClient();
     let cached = null;
     try {
       cached = await redis.get(cacheKey);
@@ -85,6 +93,7 @@ export const getPapers = async (c: Context) => {
     }
 
     if (cached) {
+      localMemoryCache.set(cacheKey, { data: cached, expiresAt: Date.now() + LOCAL_TTL_MS });
       return c.json(cached as any, 200);
     }
 
@@ -105,8 +114,10 @@ export const getPapers = async (c: Context) => {
       data: result,
     };
 
+    localMemoryCache.set(cacheKey, { data: response, expiresAt: Date.now() + LOCAL_TTL_MS });
+
     try {
-      await redis.set(cacheKey, response, { ex: 300 }); // 5 minutes
+      await redis.set(cacheKey, response, { ex: 600 }); // 10 minutes
     } catch (err) {
       console.error("Redis SET failed:", err);
     }

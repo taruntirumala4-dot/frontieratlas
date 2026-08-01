@@ -1023,15 +1023,11 @@ export default function PaperList({
       period,
     };
 
-    // Default home feed with SSR initialPapers
+    // Use SSR initialPapers whenever provided (home feed, task pages, category pages)
     if (
       initialPapers &&
-      !selectedTag &&
-      !filterParams?.task &&
-      !filterParams?.method &&
-      !filterParams?.model &&
-      (!filterParams?.sort || filterParams.sort === "trending") &&
-      (!period || period === "today") &&
+      initialPapers.papers &&
+      initialPapers.papers.length > 0 &&
       !normalizedSearchQuery
     ) {
       cacheRef.current.set(getCacheKey(initialPapers.page), initialPapers);
