@@ -66,13 +66,7 @@ export default async function MethodsPage() {
       {/* Same container width/padding rhythm as the Tasks page (HomeContent) */}
       <div className="w-full max-w-[1370px] mx-auto px-5 md:px-10 lg:px-16 xl:px-24 pt-6 pb-12">
 
-        <nav className="flex items-center gap-2 text-[13px] text-[#8B8B8B] mb-6">
-          <Link href="/" className="hover:text-[#F55036] transition-colors no-underline">
-            Home
-          </Link>
-          <span>/</span>
-          <span className="text-[#555555] font-medium">Methods</span>
-        </nav>
+        
         <TaxonomyView initialTaxonomy={taxonomy} />
       </div>
     </div>

@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import SectionSidebar from "@/components/shared/SectionSidebar";
 import PageHero from "@/components/shared/PageHero";
 import {
   Search,
@@ -934,7 +935,7 @@ const Section = ({
           ref={mainContainerRef}
           className="flex-1 overflow-y-auto overflow-x-hidden hide-scroll"
         >
-          <div className="max-w-[1240px] mx-auto px-5 py-6 w-full">
+          <div className="w-full max-w-[1370px] mx-auto px-5 md:px-10 lg:px-16 xl:px-24 pt-6 pb-12">
 
   <PageHero
   breadcrumb="Tasks"
@@ -945,52 +946,30 @@ highlight="Tasks"
 />
 
       {/* Main layout: sidebar + content */}
-<div className="flex gap-8 mt-12">
+<main className="flex flex-col md:grid md:grid-cols-[220px_minmax(0,1fr)] gap-6 md:gap-8 mt-6 md:mt-10">
   {/* Sidebar with domain filters */}
-  <aside
-    className="hidden lg:block w-[220px] shrink-0 sticky top-24 h-fit border-r border-[#ECECEC] pr-6"
-    aria-label="Domain navigation"
-  >
-    <h3 className="text-[#F55036] font-bold uppercase text-lg mb-4">
-      Task Domains
-    </h3>
-
-    <nav className="overflow-y-auto" aria-label="Domains">
-      <ul className="space-y-3" role="list">
-        {domainList
-          .filter((domain) =>
-            domain.toLowerCase().includes(searchQuery.toLowerCase())
-          )
-          .map((domain) => (
-            <li key={domain}>
-              <button
-                onClick={() => handleDomainClick(domain)}
-                aria-current={
-                  activeDomain === domain ? "true" : undefined
-                }
-                className={`block w-full text-left text-[15px] transition-colors ${
-                  activeDomain === domain
-                    ? "text-[#F55036] font-medium"
-                    : "text-[#555555] hover:text-[#F55036]"
-                }`}
-              >
-                {domain}
-              </button>
-            </li>
-          ))}
-      </ul>
-
-      {domainList.filter((d) =>
-        d.toLowerCase().includes(searchQuery.toLowerCase())
-      ).length === 0 && (
-        <p className="text-[15px] text-[#555555] py-2">
-          No domains found
-        </p>
-      )}
-    </nav>
-  </aside>
+  <SectionSidebar
+  title="Task Domains"
+  items={domainList
+    .filter((domain) =>
+      domain.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .map((domain) => ({
+      label: domain,
+      active: activeDomain === domain,
+      onClick: () => handleDomainClick(domain),
+    }))}
+>
+  {domainList.filter((domain) =>
+    domain.toLowerCase().includes(searchQuery.toLowerCase())
+  ).length === 0 && (
+    <p className="text-[15px] text-[#555555] py-2">
+      No domains found
+    </p>
+  )}
+</SectionSidebar>
               {/* Sections list */}
-<div className="flex-1 min-w-0">
+<div>
   {domainList.map((domain) => (
     <Section
       key={domain}
@@ -999,7 +978,7 @@ highlight="Tasks"
     />
   ))}
 </div>
-            </div>
+            </main>
           </div>
         </main>
       </div>

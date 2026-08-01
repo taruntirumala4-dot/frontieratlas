@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo, Suspense } from "react";
 import Link from "next/link";
 import PageHero from "@/components/shared/PageHero";
 import { useRouter } from "next/navigation";
+import SectionSidebar from "@/components/shared/SectionSidebar";
 import { Search, Trophy, Cpu, Layers, ExternalLink, Code2, Check, Copy, X, ArrowRight, Zap, Calendar, BookOpen, Building2, Brain, Monitor, Globe, FileText, Link as LinkIcon, Volume2, ImageIcon, Video, Bot, Sparkles, TrendingUp, Eye, Puzzle, Network, Database, Shield, Terminal, Activity, GitBranch, BarChart3, Radio, Mic, Share2, ChevronRight } from "lucide-react";
 import {
   getModels,
@@ -467,44 +468,61 @@ highlight="Models"
 />
         <div className="flex gap-6">
 
-          {/* LEFT SIDEBAR WITH SEARCH & NAVIGATION OPTIONS EXACT TO reference */}
-          <aside className="w-[240px] shrink-0 sticky top-24 h-fit border-r border-[#ececec] pr-6 hidden lg:block" aria-label="Domain navigation">
-            <div className="sticky top-20 flex flex-col h-[calc(100vh-5rem)] overflow-y-auto">
-              <h3 className="text-[#FF5A1F] font-bold uppercase text-lg mb-4 px-2">
-                Models
-              </h3>
-
-              <nav className="overflow-y-auto px-2 pb-4" aria-label="Domains">
-                <ul className="space-y-0.5" role="list">
-                  {[
-                    { id: "section-capability", label: "Browse by Capability" },
-                    { id: "section-family", label: "Browse by Model Family" },
-                    { id: "section-organization", label: "Browse by Organization" },
-                    { id: "section-research", label: "Browse by Research Area" },
-                    { id: "section-trending", label: "Trending Models" },
-                    { id: "section-recently-released", label: "Recently Released" },
-                    { id: "model-directory", label: "Model Directory Table" }
-                  ].map((item) => {
-                    return (
-                      <li key={item.id}>
-                        <button
-                          onClick={() => {
-                            const el = document.getElementById(item.id);
-                            if (el) el.scrollIntoView({ behavior: "smooth" });
-                          }}
-                          className="block w-full text-left text-[15px] transition-colors mb-3 text-[#555] hover:text-[#FF5A1F]"
-                        >
-                          {item.label}
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </nav>
-
-
-            </div>
-          </aside>
+          {/* LEFT SIDEBAR WITH NAVIGATION OPTIONS EXACT TO reference */}
+          <SectionSidebar
+  title="Models"
+  items={[
+    {
+      label: "Browse by Capability",
+      onClick: () =>
+        document
+          .getElementById("section-capability")
+          ?.scrollIntoView({ behavior: "smooth" }),
+    },
+    {
+      label: "Browse by Model Family",
+      onClick: () =>
+        document
+          .getElementById("section-family")
+          ?.scrollIntoView({ behavior: "smooth" }),
+    },
+    {
+      label: "Browse by Organization",
+      onClick: () =>
+        document
+          .getElementById("section-organization")
+          ?.scrollIntoView({ behavior: "smooth" }),
+    },
+    {
+      label: "Browse by Research Area",
+      onClick: () =>
+        document
+          .getElementById("section-research")
+          ?.scrollIntoView({ behavior: "smooth" }),
+    },
+    {
+      label: "Trending Models",
+      onClick: () =>
+        document
+          .getElementById("section-trending")
+          ?.scrollIntoView({ behavior: "smooth" }),
+    },
+    {
+      label: "Recently Released",
+      onClick: () =>
+        document
+          .getElementById("section-recently-released")
+          ?.scrollIntoView({ behavior: "smooth" }),
+    },
+    {
+      label: "Model Directory Table",
+      onClick: () =>
+        document
+          .getElementById("model-directory")
+          ?.scrollIntoView({ behavior: "smooth" }),
+    },
+  ]}
+/>
 
           {/* RIGHT CONTENT AREA CONTAINING ALL SECTIONS & EXACT CARDS */}
           <div className="flex-1 min-w-0">

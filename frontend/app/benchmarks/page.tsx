@@ -3,6 +3,7 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import PageHero from "@/components/shared/PageHero";
 import { Suspense, useState, useEffect, useMemo, useRef } from "react";
+import SectionSidebar from "@/components/shared/SectionSidebar";
 import {
   Search,
   ArrowUpRight,
@@ -600,7 +601,7 @@ function BenchmarksContent() {
           id="scroll-container"
           className="flex-1 overflow-y-auto overflow-x-hidden hide-scroll scroll-smooth"
         >
-          <div className="max-w-7xl mx-auto px-6 py-4 w-full">
+          <div className="w-full max-w-[1370px] mx-auto px-5 md:px-10 lg:px-16 xl:px-24 pt-6 pb-12">
             
             {/* ══ HERO SECTION — responsive image scales to ~1/3 hero height ══ */}
             <PageHero
@@ -634,41 +635,18 @@ function BenchmarksContent() {
 />
 
             {/* ══ CONTENT TWO-COLUMN LAYOUT (Preserved sidebar layout) ══ */}
-            <div className="flex gap-6">
+            <div className="flex gap-8 mt-6 md:mt-10">
               
               {/* Left Sticky Sidebar (w-64) */}
-              <aside
-                className="w-64 flex-shrink-0 hidden lg:block backdrop-blur-sm"
-                aria-label="Benchmark navigation"
-              >
-                <div className="sticky top-0 flex flex-col h-[calc(100vh-10rem)]">
-                  <h3 className="text-[15px] font-semibold uppercase text-[#FF5A1F] mb-3">
-                      Browse Benchmarks
-                    </h3>
-
-                  <nav className="overflow-y-auto px-2 pb-4 flex-1 hide-scroll" aria-label="Domains">
-                    <ul className="space-y-0.5" role="list">
-                      {DOMAINS.map((domain) => {
-                        const isActive = domainFilter === domain.label;
-                        return (
-                          <li key={domain.label}>
-                            <button
-                              onClick={() => router.push(`/benchmarks?domain=${encodeURIComponent(domain.label)}`)}
-                              className={`w-full text-left px-3 py-2 text-sm rounded-sm transition-all duration-200 hover:scale-[1.02] ${
-                                isActive
-                                  ? "bg-[#e11d48]/10 text-[#e11d48] font-semibold border-l-2 border-[#e11d48]"
-                                  : "text-gray-600 hover:text-gray-900"
-                              }`}
-                            >
-                              {domain.label}
-                            </button>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </nav>
-                </div>
-              </aside>
+              <SectionSidebar
+  title="Benchmarks"
+  items={DOMAINS.map((domain) => ({
+    label: domain.label,
+    active: domainFilter === domain.label,
+    onClick: () =>
+      router.push(`/benchmarks?domain=${encodeURIComponent(domain.label)}`),
+  }))}
+/>
 
               {/* Right Scrolling Content */}
               <div className="flex-1 min-w-0 space-y-8">
@@ -679,7 +657,7 @@ function BenchmarksContent() {
                     {/* ══ 2. BROWSE BY DOMAIN ══ */}
                     <section>
                       <div className="flex items-center justify-between mb-3">
-                        <h2 className="text-xl font-bold text-gray-800">Browse by Domain</h2>
+                        <h2 className="text-xl font-bold text-gray-800">Domains</h2>
                       </div>
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                         {DOMAINS.map(({ label, icon: Icon, color, desc }) => (
@@ -703,7 +681,7 @@ function BenchmarksContent() {
                     {/* ══ 3. BROWSE BY TASK ══ */}
                     <section>
                       <div className="flex items-center justify-between mb-3">
-                        <h2 className="text-xl font-bold text-gray-800">Browse by Task</h2>
+                        <h2 className="text-xl font-bold text-gray-800">Tasks</h2>
                       </div>
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                         {TASKS.map(({ label, icon: Icon, color, bg, desc }) => (
