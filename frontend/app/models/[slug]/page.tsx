@@ -481,18 +481,6 @@ export default function ModelDetailPage({
                     </section>
                   )}
 
-                  {model.tasks && model.tasks.length > 0 && (
-                    <section className="rounded-[10px] border border-[#E5E5E0] bg-white p-5">
-                      <h2 className="text-[14px] font-semibold text-[#111111] mb-3">
-                        Related Tasks
-                      </h2>
-                      <div className="flex flex-wrap gap-2">
-                        {model.tasks.slice(0, 8).map((task) => (
-                          <Tag key={task.id}>{task.name}</Tag>
-                        ))}
-                      </div>
-                    </section>
-                  )}
                 </div>
               </div>
             </div>
