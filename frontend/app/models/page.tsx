@@ -333,35 +333,59 @@ const [loading, setLoading] = useState(
 
   const activeFilterLabel = selectedVendor || selectedDomain || selectedCapability || selectedFamily || selectedCollection || null;
 
+function matchesArrayItem(list: unknown, target: string): boolean {
+  if (!list || !target) return false;
+  const t = target.toLowerCase();
+  if (Array.isArray(list)) {
+    return list.some(item => typeof item === 'string' && item.toLowerCase().includes(t));
+  }
+  if (typeof list === 'string') {
+    return list.toLowerCase().includes(t);
+  }
+  return false;
+}
+
   const filteredCatalogModels = useMemo(() => {
     return allModels.filter(m => {
       if (searchQuery.trim() !== "") {
         const q = searchQuery.toLowerCase();
-        const matches = m.name.toLowerCase().includes(q) || (m.vendor ?? "").toLowerCase().includes(q) || (m.description && m.description.toLowerCase().includes(q)) || (m.capabilities && m.capabilities.some(t => t.toLowerCase().includes(q)));
+        const matches =
+          (m.name ?? "").toLowerCase().includes(q) ||
+          (m.vendor ?? "").toLowerCase().includes(q) ||
+          ((m.description ?? "").toLowerCase().includes(q)) ||
+          matchesArrayItem(m.capabilities, q);
         if (!matches) return false;
       }
       if (selectedVendor) {
-  const vendor = (m.vendor ?? "").toLowerCase();
-
-  if (vendor !== selectedVendor.toLowerCase()) {
-    return false;
-  }
-}
+        const vendor = (m.vendor ?? "").toLowerCase();
+        if (vendor !== selectedVendor.toLowerCase()) {
+          return false;
+        }
+      }
       if (selectedFamily) {
         const fLower = selectedFamily.toLowerCase();
-        if (m.modelFamily?.toLowerCase() !== fLower && !m.name.toLowerCase().includes(fLower)) return false;
+        if ((m.modelFamily ?? "").toLowerCase() !== fLower && !(m.name ?? "").toLowerCase().includes(fLower)) return false;
       }
       if (selectedCapability) {
         const cLower = selectedCapability.toLowerCase();
-        if (m.category?.toLowerCase() !== cLower && !(m.capabilities && m.capabilities.some(t => t.toLowerCase().includes(cLower))) && !(m.researchAreas && m.researchAreas.some(t => t.toLowerCase().includes(cLower)))) return false;
+        const matchCategory = (m.category ?? "").toLowerCase().includes(cLower);
+        const matchCap = matchesArrayItem(m.capabilities, cLower);
+        const matchResearch = matchesArrayItem(m.researchAreas, cLower);
+        if (!matchCategory && !matchCap && !matchResearch) return false;
       }
       if (selectedDomain) {
         const dLower = selectedDomain.toLowerCase();
-        if (!(m.researchAreas && m.researchAreas.some(t => t.toLowerCase().includes(dLower))) && !(m.capabilities && m.capabilities.some(t => t.toLowerCase().includes(dLower))) && !(m.description && m.description.toLowerCase().includes(dLower))) return false;
+        const matchResearch = matchesArrayItem(m.researchAreas, dLower);
+        const matchCap = matchesArrayItem(m.capabilities, dLower);
+        const matchDesc = (m.description ?? "").toLowerCase().includes(dLower);
+        if (!matchResearch && !matchCap && !matchDesc) return false;
       }
       if (selectedCollection) {
         const colLower = selectedCollection.toLowerCase().replace(" models", "").trim();
-        if (!(m.capabilities && m.capabilities.some(t => t.toLowerCase().includes(colLower))) && !(m.researchAreas && m.researchAreas.some(t => t.toLowerCase().includes(colLower))) && m.category?.toLowerCase() !== colLower) return false;
+        const matchCap = matchesArrayItem(m.capabilities, colLower);
+        const matchResearch = matchesArrayItem(m.researchAreas, colLower);
+        const matchCategory = (m.category ?? "").toLowerCase().includes(colLower);
+        if (!matchCap && !matchResearch && !matchCategory) return false;
       }
       return true;
     });
