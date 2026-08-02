@@ -359,7 +359,7 @@ export const getPapers = async (
   }
 
   const orderBy =
-    sort === "latest"
+    sort === "latest" || sort === "recent"
       ? [
         { publicationDate: "desc" as const },
         { githubStars: "desc" as const },

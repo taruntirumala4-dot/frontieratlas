@@ -262,14 +262,24 @@ export function getCachedModelBySlug(slug: string): ModelDetail | null {
   return null;
 }
 
-export async function getModels(params?: string): Promise<ModelItem[]> {
-  const query = params ? `?${params}` : '?limit=10000';
-  const cacheKey = `models_${query}`;
+export async function getModels(params?: string | Record<string, any>): Promise<ModelItem[]> {
+  let queryString = '?limit=10000';
+  if (typeof params === 'string') {
+    queryString = params.startsWith('?') ? params : `?${params}`;
+  } else if (params && typeof params === 'object') {
+    const searchParams = new URLSearchParams();
+    Object.entries(params).forEach(([k, v]) => {
+      if (v !== undefined && v !== null) searchParams.set(k, String(v));
+    });
+    queryString = `?${searchParams.toString()}`;
+  }
+
+  const cacheKey = `models_${queryString}`;
   
   const cached = getCached<ModelItem[]>(cacheKey);
   if (cached) return cached;
 
-  const response = await fetchApi<GetModelsResponse>(`/api/v1/models${query}`);
+  const response = await fetchApi<GetModelsResponse>(`/api/v1/models${queryString}`);
   const items = Array.isArray(response?.data) ? response.data : [];
   const result = items.map(mapModelItem);
   

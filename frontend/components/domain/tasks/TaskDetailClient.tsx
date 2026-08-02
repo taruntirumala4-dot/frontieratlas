@@ -16,14 +16,14 @@ export default function TaskDetailClient({ slug, initialPapers }: Props) {
     "popular" | "latest" | "citations"
   >("popular");
 
-  const [period, setPeriod] = useState<string>("Today");
+  const [period, setPeriod] = useState<string>("All time");
 
   const mappedPeriod = {
     Today: "today",
     "This Week": "week",
     "This Month": "month",
     "All time": "all",
-  }[period] || "today";
+  }[period] || "all";
 
   return (
     <>
@@ -39,7 +39,7 @@ export default function TaskDetailClient({ slug, initialPapers }: Props) {
           sort,
         }}
         period={mappedPeriod}
-        initialPapers={sort === "popular" && period === "Today" ? initialPapers : null}
+        initialPapers={sort === "popular" && period === "All time" ? initialPapers : null}
       />
     </>
   );

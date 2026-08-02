@@ -303,7 +303,7 @@ export function getPapersSync(params: GetPapersParams = {}): GetPapersResult | n
   if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
     return cached.data;
   }
-  return findFuzzyCache(params);
+  return null;
 }
 
 export function writeCache<T>(key: string, data: T): void {
