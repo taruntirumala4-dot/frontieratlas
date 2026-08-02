@@ -4,11 +4,8 @@ import React, { useEffect, useMemo, useState, use } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
-  ArrowUpRight,
   BookOpen,
-  Cpu,
   ExternalLink,
-  FileText,
   Github,
   Layers3,
   Sparkles,
@@ -21,6 +18,7 @@ import {
 } from "@/lib/models";
 import PaperList from "@/components/PaperFeed";
 import Navbar from "@/components/Navbar";
+import TaskFilterBar from "@/components/domain/tasks/TaskFilterBar";
 
 function formatNumber(value: number | null | undefined) {
   if (value === null || value === undefined) return null;
@@ -205,13 +203,12 @@ function ExternalResourceLink({
       href={href}
       target="_blank"
       rel="noreferrer"
-      className="flex items-center justify-between gap-3 rounded-[8px] border border-[#E5E5E0] bg-[#FAFAF8] px-3 py-2.5 text-[13px] text-[#222222] transition-colors hover:border-[#D9D7D0] hover:bg-white"
+      className="inline-flex items-center justify-center gap-1.5 rounded-full border-[1.5px] border-[#E0DDD6] bg-transparent px-5 py-2 text-[13px] font-medium text-[#444444] no-underline transition-all hover:bg-[rgba(255,90,31,0.06)] hover:text-[#FF5A1F] hover:border-[rgba(255,90,31,0.3)] active:scale-[0.97]"
     >
-      <span className="flex items-center gap-2">
-        <span className="text-[#8B8B8B]">{icon}</span>
+      <span className="flex items-center gap-1.5">
+        <span className="text-current">{icon}</span>
         <span>{label}</span>
       </span>
-      <ArrowUpRight size={14} className="text-[#8B8B8B]" />
     </a>
   );
 }
@@ -221,6 +218,20 @@ function BenchmarksIcon() {
     <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#FFF6F3] text-[#FF5A1F]">
       <Layers3 size={16} />
     </span>
+  );
+}
+
+function ArxivIcon({ size }: { size: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M3.8423 0a1.0037 1.0037 0 0 0-.922.6078c-.1536.3687-.0438.6275.2938 1.1113l6.9185 8.3597-1.0223 1.1058a1.0393 1.0393 0 0 0 .003 1.4229l1.2292 1.3135-5.4391 6.4444c-.2803.299-.4538.823-.2971 1.1986a1.0253 1.0253 0 0 0 .9585.635.9133.9133 0 0 0 .6891-.3405l5.783-6.126 7.4902 8.0051a.8527.8527 0 0 0 .6835.2597.9575.9575 0 0 0 .8777-.6138c.1577-.377-.017-.7502-.306-1.1407l-7.0518-8.3418 1.0632-1.13a.9626.9626 0 0 0 .0089-1.3165L4.6336.4639s-.3733-.4535-.768-.463zm0 .272h.0166c.2179.0052.4874.2715.5644.3639l.005.006.0052.0055 10.169 10.9905a.6915.6915 0 0 1-.0072.945l-1.0666 1.133-1.4982-1.7724-8.5994-10.39c-.3286-.472-.352-.6183-.2592-.841a.7307.7307 0 0 1 .6704-.4401Zm14.341 1.5701a.877.877 0 0 0-.6554.2418l-5.6962 6.1584 1.6944 1.8319 5.3089-6.5138c.3251-.4335.479-.6603.3247-1.0292a1.1205 1.1205 0 0 0-.9763-.689zm-7.6557 12.2823 1.3186 1.4135-5.7864 6.1295a.6494.6494 0 0 1-.4959.26.7516.7516 0 0 1-.706-.4669c-.1119-.2682.0359-.6864.2442-.9083l.0051-.0055.0047-.0055z" />
+    </svg>
   );
 }
 
@@ -237,6 +248,7 @@ export default function ModelDetailPage({
   );
   const [loading, setLoading] = useState<boolean>(() => !model);
   const [logoError, setLogoError] = useState(false);
+  const [paperSort, setPaperSort] = useState<"popular" | "latest" | "citations">("popular");
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -305,26 +317,20 @@ export default function ModelDetailPage({
       {
         key: "repository",
         href: source.repositoryUrl,
-        label: "GitHub Repository",
-        icon: <Github size={14} />,
-      },
-      {
-        key: "huggingface",
-        href: source.huggingFaceUrl,
-        label: "Hugging Face",
-        icon: <Cpu size={14} />,
+        label: "Code",
+        icon: <Github size={18} />,
       },
       {
         key: "paper",
         href: source.paperUrl,
-        label: "Primary Paper",
-        icon: <FileText size={14} />,
+        label: "arXiv",
+        icon: <ArxivIcon size={18} />,
       },
       {
         key: "api",
         href: source.apiUrl,
-        label: "API Documentation",
-        icon: <ExternalLink size={14} />,
+        label: "API",
+        icon: <ExternalLink size={18} />,
       },
     ].filter((item) => item.href);
   }, [model]);
@@ -390,31 +396,47 @@ export default function ModelDetailPage({
                   {model.vendor || "Model"}
                 </div>
 
-                <div className="flex items-start gap-4 mb-4">
-                  <div className="w-16 h-16 shrink-0 rounded-[10px] border border-[#E5E5E0] bg-[#FAFAF8] flex items-center justify-center overflow-hidden">
-                    {model.vendorLogoUrl && !logoError ? (
-                      <img
-                        src={model.vendorLogoUrl}
-                        alt={model.vendor}
-                        onError={() => setLogoError(true)}
-                        className="w-full h-full object-contain p-2"
-                      />
-                    ) : (
-                      <span className="text-[18px] font-semibold text-[#777777]">
-                        {getInitials(model.name || model.vendor || "M")}
-                      </span>
-                    )}
-                  </div>
+                <div className="flex items-start justify-between gap-6 mb-4">
+  <div className="flex items-start gap-4 min-w-0 flex-1">
+    <div className="w-16 h-16 shrink-0 rounded-[10px] border border-[#E5E5E0] bg-[#FAFAF8] flex items-center justify-center overflow-hidden">
+      {model.vendorLogoUrl && !logoError ? (
+        <img
+          src={model.vendorLogoUrl}
+          alt={model.vendor}
+          onError={() => setLogoError(true)}
+          className="w-full h-full object-contain p-2"
+        />
+      ) : (
+        <span className="text-[18px] font-semibold text-[#777777]">
+          {getInitials(model.name || model.vendor || "M")}
+        </span>
+      )}
+    </div>
 
-                  <div className="min-w-0">
-                    <h1 className="text-[30px] md:text-[36px] leading-tight font-semibold tracking-[-0.03em] text-[#111111]">
-                      {model.name}
-                    </h1>
-                    <div className="mt-1 text-[15px] text-[#666666]">
-                      {model.vendor}
-                    </div>
-                  </div>
-                </div>
+    <div className="min-w-0">
+      <h1 className="text-[30px] md:text-[36px] leading-tight font-semibold tracking-[-0.03em] text-[#111111]">
+        {model.name}
+      </h1>
+
+      <div className="mt-1 text-[15px] text-[#666666]">
+        {model.vendor}
+      </div>
+    </div>
+  </div>
+
+  {externalLinks.length > 0 && (
+    <div className="flex flex-wrap items-center justify-end gap-3 shrink-0">
+      {externalLinks.map((link) => (
+        <ExternalResourceLink
+          key={link.key}
+          href={link.href as string}
+          label={link.label}
+          icon={link.icon}
+        />
+      ))}
+    </div>
+  )}
+</div>
 
                 {model.description && (
                   <p className="max-w-3xl text-[15px] leading-7 text-[#4B5563] mb-5">
@@ -450,23 +472,6 @@ export default function ModelDetailPage({
 
               <div className="min-w-0">
                 <div className="space-y-4">
-                  {externalLinks.length > 0 && (
-                    <section className="rounded-[10px] border border-[#E5E5E0] bg-white p-5">
-                      <h2 className="text-[14px] font-semibold text-[#111111] mb-4">
-                        External Links
-                      </h2>
-                      <div className="space-y-2">
-                        {externalLinks.map((link) => (
-                          <ExternalResourceLink
-                            key={link.key}
-                            href={link.href as string}
-                            label={link.label}
-                            icon={link.icon}
-                          />
-                        ))}
-                      </div>
-                    </section>
-                  )}
 
                   {overviewRows.length > 0 && (
                     <section className="rounded-[10px] border border-[#E5E5E0] bg-white p-5">
@@ -542,12 +547,18 @@ export default function ModelDetailPage({
                 </p>
               </div>
             ) : (
-              <PaperList
-                filterParams={{
-                  model: resolvedParams.slug.toLowerCase().trim(),
-                  sort: "citations",
-                }}
-              />
+              <>
+                <TaskFilterBar
+                  selectedSort={paperSort}
+                  onSortChange={setPaperSort}
+                />
+                <PaperList
+                  filterParams={{
+                    model: resolvedParams.slug.toLowerCase().trim(),
+                    sort: paperSort,
+                  }}
+                />
+              </>
             )}
           </section>
         </div>

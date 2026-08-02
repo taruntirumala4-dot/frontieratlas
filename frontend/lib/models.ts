@@ -76,6 +76,9 @@ export interface ModelItem {
   architecture: string | null;
   contextWindow: string | null;
   license: string | null;
+  paperUrl: string | null;
+repositoryUrl: string | null;
+apiUrl: string | null;
   createdAt: string;
   paperCount: number;
   citationCount: number;
@@ -107,6 +110,9 @@ export interface ModelDetail {
   architecture: string | null;
   contextWindow: string | null;
   license: string | null;
+  paperUrl: string | null;
+repositoryUrl: string | null;
+apiUrl: string | null;
   createdAt: string;
   paperCount: number;
   citationCount: number;
@@ -169,6 +175,9 @@ function mapModelItem(m: BackendModelItem): ModelItem {
     architecture: m.architecture,
     contextWindow: m.contextWindow,
     license: m.license,
+    paperUrl: m.paperUrl,
+repositoryUrl: m.repositoryUrl,
+apiUrl: m.apiUrl,
     createdAt: m.createdAt,
     paperCount: m.paperCount,
     citationCount: m.citationCount,
@@ -248,6 +257,9 @@ export function getCachedModelBySlug(slug: string): ModelDetail | null {
         architecture: item.architecture,
         contextWindow: item.contextWindow,
         license: item.license,
+        paperUrl: item.paperUrl,
+        repositoryUrl: item.repositoryUrl,
+        apiUrl: item.apiUrl,
         createdAt: item.createdAt,
         paperCount: item.paperCount,
         citationCount: item.citationCount,
@@ -343,6 +355,9 @@ export async function getModelBySlug(slug: string): Promise<ModelDetail> {
       architecture: data.architecture,
       contextWindow: data.contextWindow,
       license: data.license,
+      paperUrl: data.paperUrl,
+      repositoryUrl: data.repositoryUrl,
+      apiUrl: data.apiUrl,
       createdAt: data.createdAt,
       paperCount: data.paperCount,
       citationCount: data.citationCount,
