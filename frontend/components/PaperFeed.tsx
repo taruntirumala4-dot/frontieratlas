@@ -1,5 +1,5 @@
 "use client";
- 
+import Image from "next/image";
 import {
   useState,
   useEffect,
@@ -11,12 +11,9 @@ import {
   Fragment,
 } from "react";
 import {
-  Github,
   ArrowUpRight,
   ArrowUp,
   FileText,
-  FileCode2,
-  Star,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -32,7 +29,6 @@ import {
 import { prefetchPaperBySlug } from "@/lib/papers";
 import { prefetchBenchmarkDetail } from "@/lib/benchmarks";
 import { getTaxonomyHref } from "@/lib/taxonomy";
-import Image from "next/image";
  
 // --- Performance Logger ---
 const logRender = (
@@ -780,6 +776,42 @@ function sortAndFilterLocalPapers(
   return result;
 }
  
+function sortAndFilterLocalPapers(
+  papers: Paper[],
+  sort?: string,
+  period?: string
+): Paper[] {
+  if (!papers.length) return [];
+  let result = [...papers];
+
+  if (period && period !== "all") {
+    const now = new Date();
+    const cutoff = new Date();
+    if (period === "today") cutoff.setDate(now.getDate() - 2);
+    else if (period === "week") cutoff.setDate(now.getDate() - 7);
+    else if (period === "month") cutoff.setDate(now.getDate() - 30);
+
+    const filtered = result.filter((p) => {
+      if (!p.date || p.date === "Unknown Date") return true;
+      const d = new Date(p.date);
+      return !isNaN(d.getTime()) ? d >= cutoff : true;
+    });
+    if (filtered.length > 0) {
+      result = filtered;
+    }
+  }
+
+  if (sort === "citations") {
+    result.sort((a, b) => (b.citations || 0) - (a.citations || 0));
+  } else if (sort === "latest" || sort === "recent") {
+    result.sort((a, b) => new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime());
+  } else if (sort === "stars" || sort === "popular" || sort === "trending") {
+    result.sort((a, b) => (Number(b.upvotes) || 0) - (Number(a.upvotes) || 0));
+  }
+
+  return result;
+}
+
 export default function PaperList({
   selectedTag,
   filterParams,
@@ -1250,8 +1282,8 @@ export default function PaperList({
               No Papers Found
             </h3>
             <p className="text-[14px] text-[#666666] max-w-[320px] leading-relaxed">
-              We couldn't find any papers matching your selected time period or
-              category. Try clearing your filters or selecting "All time".
+              We couldn&apos;t find any papers matching your selected time period or
+              category. Try clearing your filters or selecting &quot;All time&quot;.
             </p>
           </div>
         )}
