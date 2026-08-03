@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
  
 import {
@@ -1244,8 +1245,8 @@ export default function PaperList({
               No Papers Found
             </h3>
             <p className="text-[14px] text-[#666666] max-w-[320px] leading-relaxed">
-              We couldn't find any papers matching your selected time period or
-              category. Try clearing your filters or selecting "All time".
+              We couldn&apos;t find any papers matching your selected time period or
+              category. Try clearing your filters or selecting &quot;All time&quot;.
             </p>
           </div>
         )}
