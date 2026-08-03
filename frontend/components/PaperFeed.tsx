@@ -744,6 +744,42 @@ interface PaperListProps {
   onFilterDone?: () => void;
 }
  
+function sortAndFilterLocalPapers(
+  papers: Paper[],
+  sort?: string,
+  period?: string
+): Paper[] {
+  if (!papers.length) return [];
+  let result = [...papers];
+
+  if (period && period !== "all") {
+    const now = new Date();
+    const cutoff = new Date();
+    if (period === "today") cutoff.setDate(now.getDate() - 2);
+    else if (period === "week") cutoff.setDate(now.getDate() - 7);
+    else if (period === "month") cutoff.setDate(now.getDate() - 30);
+
+    const filtered = result.filter((p) => {
+      if (!p.date || p.date === "Unknown Date") return true;
+      const d = new Date(p.date);
+      return !isNaN(d.getTime()) ? d >= cutoff : true;
+    });
+    if (filtered.length > 0) {
+      result = filtered;
+    }
+  }
+
+  if (sort === "citations") {
+    result.sort((a, b) => (b.citations || 0) - (a.citations || 0));
+  } else if (sort === "latest" || sort === "recent") {
+    result.sort((a, b) => new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime());
+  } else if (sort === "stars" || sort === "popular" || sort === "trending") {
+    result.sort((a, b) => (Number(b.upvotes) || 0) - (Number(a.upvotes) || 0));
+  }
+
+  return result;
+}
+
 export default function PaperList({
   selectedTag,
   filterParams,
@@ -1012,6 +1048,9 @@ export default function PaperList({
       prefetchPage,
     ],
   );
+  const isInitialMount = useRef(true);
+  const prevTaskRef = useRef(task);
+  const prevMethodRef = useRef(method);
 
   useEffect(() => {
     const currentParams: GetPapersParams = {
@@ -1023,8 +1062,18 @@ export default function PaperList({
       period,
     };
 
-    // Use SSR initialPapers whenever provided (home feed, task pages, category pages)
+    const wasInitialMount = isInitialMount.current;
+    isInitialMount.current = false;
+
+    const taskChanged = prevTaskRef.current !== task;
+    const methodChanged = prevMethodRef.current !== method;
+
+    prevTaskRef.current = task;
+    prevMethodRef.current = method;
+
+    // RULE 1: Use SSR initialPapers ONLY on the very first mount
     if (
+      wasInitialMount &&
       initialPapers &&
       initialPapers.papers &&
       initialPapers.papers.length > 0 &&
@@ -1045,7 +1094,7 @@ export default function PaperList({
       return;
     }
 
-    // Check synchronous cache hit for this specific chip or filter (0ms instant render)
+    // RULE 2: Check synchronous cache hit for instant render (0ms response)
     const syncHit = getPapersSync(currentParams);
     if (syncHit && syncHit.papers.length > 0) {
       const visible = normalizedSearchQuery ? syncHit.papers.filter(matchesSearch) : syncHit.papers;
@@ -1063,13 +1112,21 @@ export default function PaperList({
       return;
     }
 
-    // NEVER show stale papers: clear papers array immediately and show skeleton loading
-    setPapers([]);
-    setLoading(true);
+    // Instant local fallback: if we already have papers, re-sort & filter them immediately (0ms response)
+    if (papers.length > 0) {
+      const locallySorted = sortAndFilterLocalPapers(papers, filterParams?.sort, period);
+      if (locallySorted.length > 0) {
+        setPapers(locallySorted);
+      }
+    } else {
+      setPapers([]);
+      setLoading(true);
+    }
     setPage(1);
     setHasMore(true);
     nextPageRef.current = 1;
     void loadPage(1, true);
+    
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     filterParams?.method,

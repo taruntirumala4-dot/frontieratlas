@@ -82,9 +82,21 @@ export default function HomeContent({
     return () => clearTimeout(timer);
   }, []);
 
+  // --- FILTER HANDLERS ---
   const handleSidebarSelect = (label: string) => {
     setIsFilterChanging(true);
     setActiveSort(label);
+  };
+
+  const handlePeriodSelect = (period: string) => {
+    setIsFilterChanging(true);
+    setSelectedPeriod(period);
+  };
+
+  // Custom handler to ensure `isFilterChanging` triggers when a pill is clicked
+  const handleTagSelect = (tag: string | undefined | ((prev: string | undefined) => string | undefined)) => {
+    setIsFilterChanging(true);
+    setSelectedTag(tag);
   };
 
   // Map the UI tab to API parameters
@@ -93,19 +105,20 @@ export default function HomeContent({
       selectedPeriod === "This Week" ? "week" :
         selectedPeriod === "This Month" ? "month" : "all";
 
-const apiSort = activeSort === "Trending Papers" ? "trending" : activeSort === "Most GitHub Stars" ? "stars" : "latest";
+  const apiSort = activeSort === "Trending Papers" ? "trending" : activeSort === "Most GitHub Stars" ? "stars" : "latest";
 
-// ADDED: Distinguish methods from tasks
-const isMethod = selectedTag === "mcp"; 
-const dynamicFilterParams: Record<string, string> = { sort: apiSort };
+  // Distinguish methods from tasks and ensure case-insensitivity
+  const isMethod = selectedTag?.toLowerCase() === "mcp"; 
+  const dynamicFilterParams: Record<string, string> = { sort: apiSort };
 
-if (selectedTag) {
-  if (isMethod) {
-    dynamicFilterParams.method = selectedTag;
-  } else {
-    dynamicFilterParams.task = selectedTag; // This is what was missing!
+  if (selectedTag) {
+    if (isMethod) {
+      dynamicFilterParams.method = selectedTag.toLowerCase();
+    } else {
+      dynamicFilterParams.task = selectedTag.toLowerCase(); 
+    }
   }
-}
+
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-[#F8F7F2] text-[#111111]">
       <Navbar activeSort={activeSort} onItemSelect={handleSidebarSelect} />
@@ -117,7 +130,7 @@ if (selectedTag) {
         <div className="w-full max-w-[1600px] mx-auto px-4 md:px-8 xl:px-10 pt-3">
           <HeroSection
             selectedTag={selectedTag}
-            setSelectedTag={setSelectedTag}
+            setSelectedTag={handleTagSelect as any}
           />
         </div>
 
@@ -128,7 +141,7 @@ if (selectedTag) {
           </div>
 
           <main className="flex-1 min-w-0 max-w-[1380px]">
-            <PaperTabs selectedPeriod={selectedPeriod} onPeriodSelect={setSelectedPeriod} />
+            <PaperTabs selectedPeriod={selectedPeriod} onPeriodSelect={handlePeriodSelect} />
             <PaperList
               selectedTag={isMethod ? undefined : selectedTag}
               period={apiPeriod}
