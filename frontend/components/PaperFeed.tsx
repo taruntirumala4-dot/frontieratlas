@@ -11,12 +11,9 @@ import {
   Fragment,
 } from "react";
 import {
-  Github,
   ArrowUpRight,
   ArrowUp,
   FileText,
-  FileCode2,
-  Star,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -32,7 +29,6 @@ import {
 import { prefetchPaperBySlug } from "@/lib/papers";
 import { prefetchBenchmarkDetail } from "@/lib/benchmarks";
 import { getTaxonomyHref } from "@/lib/taxonomy";
-import Image from "next/image";
  
 // --- Performance Logger ---
 const logRender = (
