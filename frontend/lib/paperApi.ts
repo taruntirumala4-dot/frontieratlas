@@ -54,6 +54,7 @@ export interface GetPapersParams {
   task?: string;
   method?: string;
   model?: string;
+  organization?: string;
   sort?: 'trending' | 'latest' | string;
   period?: 'today' | 'week' | 'month' | 'all' | string;
   limit?: number;
@@ -209,7 +210,7 @@ function mapBackendPaper(raw: Record<string, unknown>): Paper {
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 function getCacheKey(params: GetPapersParams): string {
-  return `papers:${params.page ?? 1}:${params.sort ?? "none"}:${params.period ?? "all"}:${params.task ?? "none"}:${params.method ?? "none"}:${params.model ?? "none"}`;
+  return `papers:${params.page ?? 1}:${params.sort ?? "none"}:${params.period ?? "all"}:${params.task ?? "none"}:${params.method ?? "none"}:${params.model ?? "none"}:${params.organization ?? "none"}`;
 }
 
 // In-memory cache — fastest possible, zero deserialization cost
@@ -241,6 +242,7 @@ function findFuzzyCache(params: GetPapersParams): GetPapersResult | null {
   const page = params.page ?? 1;
   const targetTask = params.task ? `:${params.task}:` : null;
   const targetMethod = params.method ? `:${params.method}:` : null;
+  const targetOrganization = params.organization ? `:${params.organization}` : null;
 
   for (const [key, entry] of memoryCache.entries()) {
     if (!key.startsWith(`papers:${page}:`)) continue;
@@ -250,7 +252,9 @@ function findFuzzyCache(params: GetPapersParams): GetPapersResult | null {
       if (key.includes(targetTask)) return entry.data as GetPapersResult;
     } else if (targetMethod) {
       if (key.includes(targetMethod)) return entry.data as GetPapersResult;
-    } else if (!params.task && !params.method && !params.model) {
+    } else if (targetOrganization) {
+      if (key.endsWith(targetOrganization)) return entry.data as GetPapersResult;
+    } else if (!params.task && !params.method && !params.model && !params.organization) {
       // For general feed period/sort switching, return any existing page 1 paper cache
       return entry.data as GetPapersResult;
     }
@@ -306,6 +310,7 @@ export async function getPapers(params: GetPapersParams = {}): Promise<GetPapers
         if (params.task) query.append("task", params.task);
         if (params.method) query.append("method", params.method);
         if (params.model) query.append("model", params.model);
+        if (params.organization) query.append("organization", params.organization);
         if (params.sort) query.append("sort", params.sort);
         if (params.period) query.append("period", params.period);
 
@@ -342,6 +347,7 @@ export async function getPapers(params: GetPapersParams = {}): Promise<GetPapers
       if (params.task) query.append("task", params.task);
       if (params.method) query.append("method", params.method);
       if (params.model) query.append("model", params.model);
+      if (params.organization) query.append("organization", params.organization);
       if (params.sort) query.append("sort", params.sort);
       if (params.period) query.append("period", params.period);
 

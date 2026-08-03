@@ -39,7 +39,7 @@ export default function Navbar({
   const isTasksActive = pathname.startsWith("/tasks");
   const isBenchmarksActive = pathname.startsWith("/benchmarks");
   const isModelsActive = pathname.startsWith("/models");
-  //const isOrganizationsActive = pathname.startsWith("/organizations");
+  const isOrganizationsActive = pathname.startsWith("/organizations");
 
   const isHomePage = pathname === "/";
   const isCategoryPage = pathname.startsWith("/category/");
@@ -268,7 +268,7 @@ export default function Navbar({
           >
             Models
           </Link>
-          {/* <Link
+          <Link
   href="/organizations"
   data-text="Organizations"
   className={`text-[13px] transition-colors no-underline before:content-[attr(data-text)] before:block before:font-bold before:h-0 before:overflow-hidden before:invisible before:select-none text-center flex flex-col justify-center ${
@@ -278,7 +278,7 @@ export default function Navbar({
   }`}
 >
   Organizations
-</Link> */}
+</Link>
         </div>
 
         {/* Right (Desktop) */}

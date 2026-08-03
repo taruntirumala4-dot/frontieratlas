@@ -18,6 +18,7 @@ type GetPapersQuery = {
   task?: string;
   method?: string;
   model?: string;
+  organization?: string;
   period?: "today" | "week" | "month" | "all" | string;
   page?: number | string;
   limit?: number | string;
@@ -315,6 +316,12 @@ export const getPapers = async (
   if (query.method)
     where.methods = { some: { method: { slug: query.method } } };
   if (query.model) where.models = { some: { model: { slug: query.model } } };
+  if (query.organization) {
+    where.OR = [
+      { organization: { equals: query.organization, mode: "insensitive" } },
+      { models: { some: { model: { vendor: { equals: query.organization, mode: "insensitive" } } } } },
+    ];
+  }
 
   let baseDate = new Date();
   if (period !== "all") {
