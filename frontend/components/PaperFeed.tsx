@@ -740,41 +740,6 @@ interface PaperListProps {
   onFilterDone?: () => void;
 }
 
-function sortAndFilterLocalPapers(
-  papers: Paper[],
-  sort?: string,
-  period?: string
-): Paper[] {
-  if (!papers.length) return [];
-  let result = [...papers];
-
-  if (period && period !== "all") {
-    const now = new Date();
-    const cutoff = new Date();
-    if (period === "today") cutoff.setDate(now.getDate() - 2);
-    else if (period === "week") cutoff.setDate(now.getDate() - 7);
-    else if (period === "month") cutoff.setDate(now.getDate() - 30);
-
-    const filtered = result.filter((p) => {
-      if (!p.date || p.date === "Unknown Date") return true;
-      const d = new Date(p.date);
-      return !isNaN(d.getTime()) ? d >= cutoff : true;
-    });
-    if (filtered.length > 0) {
-      result = filtered;
-    }
-  }
-
-  if (sort === "citations") {
-    result.sort((a, b) => (b.citations || 0) - (a.citations || 0));
-  } else if (sort === "latest" || sort === "recent") {
-    result.sort((a, b) => new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime());
-  } else if (sort === "stars" || sort === "popular" || sort === "trending") {
-    result.sort((a, b) => (Number(b.upvotes) || 0) - (Number(a.upvotes) || 0));
-  }
-
-  return result;
-}
  
 function sortAndFilterLocalPapers(
   papers: Paper[],
@@ -1144,8 +1109,9 @@ export default function PaperList({
       return;
     }
 
-    // Instant local fallback: if we already have papers, re-sort & filter them immediately (0ms response)
-    if (papers.length > 0) {
+    // RULE 3: Instant local fallback (ONLY if task/method didn't change)
+    // If task/method changed, we clear papers to show skeletons instead of flashing wrong data.
+    if (papers.length > 0 && !taskChanged && !methodChanged) {
       const locallySorted = sortAndFilterLocalPapers(papers, filterParams?.sort, period);
       if (locallySorted.length > 0) {
         setPapers(locallySorted);
@@ -1154,6 +1120,7 @@ export default function PaperList({
       setPapers([]);
       setLoading(true);
     }
+    
     setPage(1);
     setHasMore(true);
     nextPageRef.current = 1;
