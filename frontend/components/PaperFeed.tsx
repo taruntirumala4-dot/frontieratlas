@@ -781,8 +781,10 @@ function sortAndFilterLocalPapers(
     result.sort((a, b) => (b.citations || 0) - (a.citations || 0));
   } else if (safeSort.includes("latest") || safeSort.includes("recent")) {
     result.sort((a, b) => new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime());
-  } else if (safeSort.includes("stars") || safeSort.includes("popular") || safeSort.includes("trending")) {
+  } else if (safeSort.includes("stars") || safeSort.includes("popular")) {
     result.sort((a, b) => (Number(b.upvotes) || 0) - (Number(a.upvotes) || 0));
+  } else if (safeSort.includes("trending")) {
+    result.sort((a, b) => (Number(b.github_hourly_increase) || 0) - (Number(a.github_hourly_increase) || 0));
   }
 
   return result;
