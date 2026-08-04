@@ -367,7 +367,7 @@ const PaperThumbnail = memo(
  
     return (
       <div className="w-[150px] sm:w-[180px] xl:w-[200px] aspect-[4/5] xl:aspect-auto xl:h-full shrink-0 bg-white border border-[#E5E5E0] shadow-sm relative mx-auto xl:mx-0 overflow-hidden">
-        {isValidImageSrc(thumbnail) && !hasError ? (
+        {isValidImageSrc(thumbnail) ? (
           <img
             src={thumbnail}
             alt={title || "Paper thumbnail"}
@@ -435,6 +435,7 @@ const Metric = memo(
 Metric.displayName = "Metric";
  
 export const PaperCard = memo(({ paper }: { paper: Paper }) => {
+  console.log("PAPER DATA:", paper.title, paper);
   const upvotesNum = parseFloat(paper.upvotes) || 0;
   const router = useRouter();
  
@@ -464,7 +465,10 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
         {/* PDF thumbnail */}
         <div className="order-first xl:order-last shrink-0 w-full xl:w-auto mx-auto xl:mx-0 xl:self-stretch border-b xl:border-b-0 border-[#E5E5E0] pb-3 xl:pb-0 mb-1 xl:mb-0">
           <Link href={`/papers/${paper.slug}`} className="block h-full group/thumb cursor-pointer">
-            <PaperThumbnail title={paper.title} thumbnail={paper.thumbnail} />
+            <PaperThumbnail 
+              title={paper.title} 
+              thumbnail={paper.thumbnail || (paper as any).thumbnailUrl || (paper as any).imageUrl || (paper as any).image_url || (paper as any).image || ""} 
+            />
           </Link>
         </div>
  
@@ -740,7 +744,6 @@ interface PaperListProps {
   onFilterDone?: () => void;
 }
 
- 
 function sortAndFilterLocalPapers(
   papers: Paper[],
   sort?: string,
@@ -749,29 +752,39 @@ function sortAndFilterLocalPapers(
   if (!papers.length) return [];
   let result = [...papers];
 
-  if (period && period !== "all") {
+  // Force strings to lowercase so "This Week" becomes "this week"
+  const safePeriod = period?.toLowerCase() || "all";
+
+  if (safePeriod !== "all" && !safePeriod.includes("all time")) {
     const now = new Date();
     const cutoff = new Date();
-    if (period === "today") cutoff.setDate(now.getDate() - 2);
-    else if (period === "week") cutoff.setDate(now.getDate() - 7);
-    else if (period === "month") cutoff.setDate(now.getDate() - 30);
 
-    const filtered = result.filter((p) => {
-      if (!p.date || p.date === "Unknown Date") return true;
+   // Catch all string variations the API or UI might send
+        if (safePeriod === "today" || safePeriod === "day" || safePeriod === "1d" || safePeriod.includes("today")) {
+          cutoff.setDate(now.getDate() - 1);
+        } else if (safePeriod.includes("week") || safePeriod === "7d") {
+          cutoff.setDate(now.getDate() - 14);
+        } else if (safePeriod.includes("month") || safePeriod === "30d") {
+          cutoff.setDate(now.getDate() - 30);
+        }
+
+    result = result.filter((p) => {
+      if (!p.date || p.date === "Unknown Date") return false;
       const d = new Date(p.date);
-      return !isNaN(d.getTime()) ? d >= cutoff : true;
+      return !isNaN(d.getTime()) ? d >= cutoff : false;
     });
-    if (filtered.length > 0) {
-      result = filtered;
-    }
   }
 
-  if (sort === "citations") {
+  const safeSort = sort?.toLowerCase() || "";
+
+  if (safeSort.includes("citations")) {
     result.sort((a, b) => (b.citations || 0) - (a.citations || 0));
-  } else if (sort === "latest" || sort === "recent") {
+  } else if (safeSort.includes("latest") || safeSort.includes("recent")) {
     result.sort((a, b) => new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime());
-  } else if (sort === "stars" || sort === "popular" || sort === "trending") {
+  } else if (safeSort.includes("stars") || safeSort.includes("popular")) {
     result.sort((a, b) => (Number(b.upvotes) || 0) - (Number(a.upvotes) || 0));
+  } else if (safeSort.includes("trending")) {
+    result.sort((a, b) => (Number(b.github_hourly_increase) || 0) - (Number(a.github_hourly_increase) || 0));
   }
 
   return result;
@@ -1000,9 +1013,11 @@ export default function PaperList({
         setError(null);
 
         const result = await fetchPage(pageNumber);
+        const dateFilteredPapers = sortAndFilterLocalPapers(result.papers, filterParams?.sort, period);
+
         const visiblePapers = normalizedSearchQuery
-          ? result.papers.filter(matchesSearch)
-          : result.papers;
+          ? dateFilteredPapers.filter(matchesSearch)
+          : dateFilteredPapers;
 
         setPage(result.page);
         setHasMore(result.hasMore);
@@ -1043,6 +1058,8 @@ export default function PaperList({
       matchesSearch,
       normalizedSearchQuery,
       prefetchPage,
+      filterParams?.sort, 
+      period,
     ],
   );
   const isInitialMount = useRef(true);
@@ -1077,7 +1094,9 @@ export default function PaperList({
       !normalizedSearchQuery
     ) {
       cacheRef.current.set(getCacheKey(initialPapers.page), initialPapers);
-      setPapers(initialPapers.papers);
+      // ADD THE FILTER HERE:
+      const initialFiltered = sortAndFilterLocalPapers(initialPapers.papers, filterParams?.sort, period);
+      setPapers(initialFiltered);
       setPage(initialPapers.page);
       setHasMore(initialPapers.hasMore);
       setError(initialError ?? null);
@@ -1091,10 +1110,12 @@ export default function PaperList({
       return;
     }
 
-    // RULE 2: Check synchronous cache hit for instant render (0ms response)
+// RULE 2: Check synchronous cache hit for instant render (0ms response)
     const syncHit = getPapersSync(currentParams);
     if (syncHit && syncHit.papers.length > 0) {
-      const visible = normalizedSearchQuery ? syncHit.papers.filter(matchesSearch) : syncHit.papers;
+      // ADD THE FILTER HERE:
+      const syncFiltered = sortAndFilterLocalPapers(syncHit.papers, filterParams?.sort, period);
+      const visible = normalizedSearchQuery ? syncFiltered.filter(matchesSearch) : syncFiltered;
       setPapers(visible);
       setPage(syncHit.page);
       setHasMore(syncHit.hasMore);
@@ -1113,9 +1134,7 @@ export default function PaperList({
     // If task/method changed, we clear papers to show skeletons instead of flashing wrong data.
     if (papers.length > 0 && !taskChanged && !methodChanged) {
       const locallySorted = sortAndFilterLocalPapers(papers, filterParams?.sort, period);
-      if (locallySorted.length > 0) {
-        setPapers(locallySorted);
-      }
+      setPapers(locallySorted);
     } else {
       setPapers([]);
       setLoading(true);
