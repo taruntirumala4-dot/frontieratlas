@@ -360,35 +360,35 @@ export const getPapers = async (
   const orderBy =
     sort === "latest"
       ? [
-          { publicationDate: "desc" as const },
-          { githubStars: "desc" as const },
-          { slug: "asc" as const },
-        ]
+        { publicationDate: "desc" as const },
+        { githubStars: "desc" as const },
+        { slug: "asc" as const },
+      ]
       : sort === "stars"
         ? [
-            { githubStars: "desc" as const },
+          { githubStars: "desc" as const },
+          { citationCount: "desc" as const },
+          { publicationDate: "desc" as const },
+          { slug: "asc" as const },
+        ]
+        // Order by Publication Date FIRST so new papers (2026) are displayed above old papers (2025)
+        : sort === "trending" || sort === "citations"
+          ? [
+            { publicationDate: "desc" as const },
             { citationCount: "desc" as const },
-            { publicationDate: "desc" as const },
-            { slug: "asc" as const },
-          ]
-      // Order by Publication Date FIRST so new papers (2026) are displayed above old papers (2025)
-      : sort === "trending" || sort === "citations"
-        ? [
-            { publicationDate: "desc" as const },
-            { citationCount: "desc" as const },
             { githubStars: "desc" as const },
             { slug: "asc" as const },
           ]
-      : sort === "alphabetical"
-        ? [
-            { title: "asc" as const }, 
-            { slug: "asc" as const }
-          ]
-        : [
-            // Failsafe Default
-            { publicationDate: "desc" as const },
-            { slug: "asc" as const },
-          ];
+          : sort === "alphabetical"
+            ? [
+              { title: "asc" as const },
+              { slug: "asc" as const }
+            ]
+            : [
+              // Failsafe Default
+              { publicationDate: "desc" as const },
+              { slug: "asc" as const },
+            ];
   let papers = await queryRouter.routeQuery<any>(
     async (prisma: PrismaClient) => {
       return prisma.paper.findMany({
@@ -410,7 +410,7 @@ export const getPapers = async (
       fallbackCutoff.setDate(fallbackCutoff.getDate() - lookbackDays);
 
       const fallbackWhere = { ...where, publicationDate: { gte: fallbackCutoff } };
-      
+
       papers = await queryRouter.routeQuery<any>(
         async (prisma: PrismaClient) => {
           return prisma.paper.findMany({
@@ -429,31 +429,6 @@ export const getPapers = async (
         async (prisma: PrismaClient) => {
           return prisma.paper.findMany({
             where: fallbackWhere,
-            orderBy,
-            take: limit + 1,
-            skip,
-            select: paperSelect,
-          });
-        },
-      );
-    }
-
-    // Fallback 2: If STILL empty (e.g., no papers for this specific tag), 
-    // remove tag filters but preserve recent date filter if a period was requested
-    if (papers.length === 0) {
-      const fallbackWhere2: any = {};
-      if (period !== "all") {
-        const monthCutoff = new Date(baseDate);
-        monthCutoff.setDate(monthCutoff.getDate() - 30);
-        fallbackWhere2.publicationDate = { gte: monthCutoff };
-      } else {
-        fallbackWhere2.publicationDate = { not: null };
-      }
-
-      papers = await queryRouter.routeQuery<any>(
-        async (prisma: PrismaClient) => {
-          return prisma.paper.findMany({
-            where: fallbackWhere2,
             orderBy,
             take: limit + 1,
             skip,
