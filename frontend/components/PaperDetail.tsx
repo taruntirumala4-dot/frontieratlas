@@ -1,5 +1,6 @@
 "use client";
-
+import { useRecentPapers } from '@/lib/useRecentPapers';
+import RecentlyViewed from '@/components/RecentlyViewed';
 import {
   ExternalLink,
   Share2,
@@ -706,6 +707,13 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
   const arxivUrl = getArxivAbsUrl(paper.arxivId, paper.paperUrl) || (paper.arxivId ? `https://arxiv.org/abs/${paper.arxivId}` : null);
   const pdfUrl = getArxivPdfUrl(paper.pdfUrl, paper.paperUrl, paper.arxivId);
   const doiUrl = paper.doi ? `https://doi.org/${paper.doi}` : null;
+const { addRecentPaper } = useRecentPapers();
+
+  useEffect(() => {
+    if (paper) {
+      addRecentPaper(paper); // Just pass the entire paper object directly!
+    }
+  }, [paper]);
   const huggingFaceRepo = paper.repositories?.find(
     (repo: any) => repo.url?.includes("huggingface.co")
   );
@@ -906,7 +914,7 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
                 {/* Authors */}
                 <div className="flex items-center flex-wrap">
                   <div className="flex flex-wrap items-center">
-                    {paper.authors
+                    {(paper.authors || [])
                       .slice(0, showAllAuthors ? paper.authors.length : 3)
                       .map((pa, i, arr) => (
                         <span key={pa.id || i} className="inline-flex items-center">
@@ -1162,9 +1170,9 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
                 <h3 className="text-[11px] font-black uppercase tracking-[0.1em] text-[#8B8B8B] m-0">MODELS</h3>
                 {(paper.models || []).length > 0 ? (
                   <div className="flex flex-wrap gap-1.5">
-                    {(paper.models || []).map((m) => (
-                      <Link
-                        key={m.id}
+                    {(paper.models || []).map((m, i) => (
+  <Link
+    key={m.id || m.slug || i}
                         href={`/models/${m.slug}`}
                         className="inline-flex items-center gap-1 rounded-[4px] border border-[#FDE4C8] bg-[#FFF8F0] px-2 py-0.5 text-[12.5px] font-medium text-[#A45C00] no-underline hover:opacity-80 transition-opacity"
                       >
@@ -1251,6 +1259,8 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
                 ) : null}
               </section>
             </div>
+
+            <RecentlyViewed />
 
             {/* Back link */}
             <Link
