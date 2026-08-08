@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { RelatedPaperCard } from "../../components/PaperDetail"; 
 
 const defaultApiUrl = "https://frontieratlas-backend.morningsignal-india.workers.dev";
-const API_BASE = "";
+const API_BASE = "https://frontieratlas-backend.morningsignal-india.workers.dev";
 export default function SavedPapersPage() {
   const router = useRouter();
   const [papers, setPapers] = useState<any[]>([]);
