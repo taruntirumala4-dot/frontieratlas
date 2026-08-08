@@ -7,6 +7,7 @@ import SearchBar from "@/components/SearchBar";
 import { usePathname, useRouter } from "next/navigation";
 import { useScrollThreshold } from "@/lib/useScroll";
 import Sidebar from "@/components/Sidebar";
+import { Bookmark } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 type CurrentUser = {
@@ -40,7 +41,6 @@ export default function Navbar({
   const isBenchmarksActive = pathname.startsWith("/benchmarks");
   const isModelsActive = pathname.startsWith("/models");
   const isOrganizationsActive = pathname.startsWith("/organizations");
-  //const isOrganizationsActive = pathname.startsWith("/organizations");
   const isSavedActive = pathname.startsWith("/saved");
 
   const isHomePage = pathname === "/";
@@ -110,8 +110,6 @@ export default function Navbar({
     return () => document.removeEventListener("mousedown", closeProfileOnOutsideClick);
   }, []);
 
-
-
   const closeMenu = () => setIsMenuOpen(false);
 
   const handleLogout = async () => {
@@ -146,12 +144,22 @@ export default function Navbar({
 
       {isProfileOpen && (
         <div className="absolute right-0 top-10 w-64 rounded-xl border border-[#E5E5E0] bg-[#F8F7F2] p-3 shadow-lg">
-          <p className="truncate text-[13px] font-medium text-[#555555]">{currentUser.email}</p>
+          <p className="truncate text-[13px] font-medium text-[#555555] px-2 pb-2 border-b border-[#E5E5E0] mb-2">{currentUser.email}</p>
+          
+          <Link
+            href="/saved"
+            onClick={() => setIsProfileOpen(false)}
+            className="flex items-center gap-2 px-2 py-2 rounded-lg text-[13px] font-medium text-[#444444] hover:bg-[rgba(255,90,31,0.06)] hover:text-[#FF5A1F] no-underline transition-colors"
+          >
+            <Bookmark size={16} />
+            Saved Papers
+          </Link>
+
           <button
             type="button"
             onClick={handleLogout}
             disabled={isLoggingOut}
-            className="mt-3 w-full rounded-lg bg-[#F55036] px-3 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#E0462D] disabled:cursor-not-allowed disabled:opacity-50"
+            className="mt-2 w-full rounded-lg bg-[#F55036] px-3 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#E0462D] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isLoggingOut ? "Logging out..." : "Log out"}
           </button>
@@ -206,7 +214,6 @@ export default function Navbar({
           <Link href="/" className="flex items-center justify-center xl:justify-start cursor-pointer absolute left-1/2 -translate-x-1/2 xl:relative xl:left-auto xl:-translate-x-0 w-[160px] sm:w-[200px] xl:w-[240px] h-12 xl:h-14">
             <Image src="/logo.png" alt="Frontier Atlas" fill className="object-contain object-center xl:object-left" sizes="(max-width: 1280px) 200px, 240px" />
           </Link>
-
         </div>
 
         {/* Center — Search Bar (Desktop) */}
@@ -279,27 +286,16 @@ export default function Navbar({
             Models
           </Link>
           <Link
-  href="/organizations"
-  data-text="Organizations"
-  className={`text-[13px] transition-colors no-underline before:content-[attr(data-text)] before:block before:font-bold before:h-0 before:overflow-hidden before:invisible before:select-none text-center flex flex-col justify-center ${
-    isOrganizationsActive
-      ? "text-[#F55036] font-bold"
-      : "text-[#555555] font-medium hover:text-[#F55036]"
-  }`}
->
-  Organizations
-</Link>
-<Link
-  href={currentUser ? "/saved" : "/login?redirect=/saved"}
-  data-text="Saved"
-  className={`text-[13px] transition-colors no-underline before:content-[attr(data-text)] before:block before:font-bold before:h-0 before:overflow-hidden before:invisible before:select-none text-center flex flex-col justify-center ${
-    isSavedActive
-      ? "text-[#F55036] font-bold"
-      : "text-[#555555] font-medium hover:text-[#F55036]"
-  }`}
->
-  Saved
-</Link>
+            href="/organizations"
+            data-text="Organizations"
+            className={`text-[13px] transition-colors no-underline before:content-[attr(data-text)] before:block before:font-bold before:h-0 before:overflow-hidden before:invisible before:select-none text-center flex flex-col justify-center ${
+              isOrganizationsActive
+                ? "text-[#F55036] font-bold"
+                : "text-[#555555] font-medium hover:text-[#F55036]"
+            }`}
+          >
+            Organizations
+          </Link>
         </div>
 
         {/* Right (Desktop) */}
@@ -365,5 +361,3 @@ export default function Navbar({
     </>
   );
 }
-
-

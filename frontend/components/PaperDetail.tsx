@@ -711,27 +711,29 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
 
   // Use the exact same API_BASE pattern as Navbar.tsx
   const defaultApiUrl = "https://frontieratlas-backend.morningsignal-india.workers.dev";
-  const API_BASE ="";
+  // Directly target your Cloudflare Worker backend so requests reach your database
+  const API_BASE = "https://frontieratlas-backend.morningsignal-india.workers.dev";
 
   // 1. Check if the paper is saved when the page loads
   useEffect(() => {
     async function checkSavedStatus() {
       try {
         const res = await fetch(`${API_BASE}/api/v1/research-papers/check-saved?paper_id=${paper.id}`, {
-          credentials: "include" // Keeps your auth cookie attached
+          credentials: "include"
         });
         if (res.ok) {
           const data = await res.json();
           setIsSaved(data.isSaved);
         }
-      } catch {
-        // Fail silently
+      } catch (err) {
+        console.error("Failed to check save status:", err);
       }
     }
     if (paper?.id) checkSavedStatus();
   }, [paper?.id]);
 
-const handleSaveClick = async () => {
+  // 2. Handle clicking the save button with visual toggle feedback
+  const handleSaveClick = async () => {
     setIsSaving(true);
     try {
       const response = await fetch(`${API_BASE}/api/v1/research-papers/save`, {
@@ -743,9 +745,8 @@ const handleSaveClick = async () => {
       
       if (response.ok) {
         const data = await response.json();
-        setIsSaved(data.isSaved); 
+        setIsSaved(data.isSaved); // Toggles true/false from backend
       } else if (response.status === 401) {
-        // Only redirect if explicitly unauthorized
         const currentUrl = encodeURIComponent(window.location.pathname);
         router.push(`/login?redirect=${currentUrl}`);
       } else {
