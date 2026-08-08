@@ -40,6 +40,8 @@ export default function Navbar({
   const isBenchmarksActive = pathname.startsWith("/benchmarks");
   const isModelsActive = pathname.startsWith("/models");
   const isOrganizationsActive = pathname.startsWith("/organizations");
+  //const isOrganizationsActive = pathname.startsWith("/organizations");
+  const isSavedActive = pathname.startsWith("/saved");
 
   const isHomePage = pathname === "/";
   const isCategoryPage = pathname.startsWith("/category/");
@@ -227,6 +229,8 @@ export default function Navbar({
           <Link
             href="/tasks"
             data-text="Tasks"
+            onMouseEnter={() => { import("@/lib/tasks").then(m => m.getTaskPaperCounts()).catch(() => {}); }}
+            onTouchStart={() => { import("@/lib/tasks").then(m => m.getTaskPaperCounts()).catch(() => {}); }}
             className={`text-[13px] transition-colors no-underline before:content-[attr(data-text)] before:block before:font-bold before:h-0 before:overflow-hidden before:invisible before:select-none text-center flex flex-col justify-center ${
               isTasksActive
                 ? "text-[#F55036] font-bold"
@@ -238,6 +242,8 @@ export default function Navbar({
           <Link
             href="/methods"
             data-text="Methods"
+            onMouseEnter={() => { import("@/lib/methodCache").then(m => m.prefetchMethods()).catch(() => {}); }}
+            onTouchStart={() => { import("@/lib/methodCache").then(m => m.prefetchMethods()).catch(() => {}); }}
             className={`text-[13px] transition-colors no-underline before:content-[attr(data-text)] before:block before:font-bold before:h-0 before:overflow-hidden before:invisible before:select-none text-center flex flex-col justify-center ${
               isMethodsActive
                 ? "text-[#F55036] font-bold"
@@ -249,6 +255,8 @@ export default function Navbar({
           <Link
             href="/benchmarks"
             data-text="Benchmarks"
+            onMouseEnter={() => { import("@/lib/benchmarks").then(m => m.getBenchmarks()).catch(() => {}); }}
+            onTouchStart={() => { import("@/lib/benchmarks").then(m => m.getBenchmarks()).catch(() => {}); }}
             className={`text-[13px] transition-colors no-underline before:content-[attr(data-text)] before:block before:font-bold before:h-0 before:overflow-hidden before:invisible before:select-none text-center flex flex-col justify-center ${
               isBenchmarksActive
                 ? "text-[#F55036] font-bold"
@@ -260,6 +268,8 @@ export default function Navbar({
           <Link
             href="/models"
             data-text="Models"
+            onMouseEnter={() => { import("@/lib/models").then(m => m.getModels({ limit: 50 })).catch(() => {}); }}
+            onTouchStart={() => { import("@/lib/models").then(m => m.getModels({ limit: 50 })).catch(() => {}); }}
             className={`text-[13px] transition-colors no-underline before:content-[attr(data-text)] before:block before:font-bold before:h-0 before:overflow-hidden before:invisible before:select-none text-center flex flex-col justify-center ${
               isModelsActive
                 ? "text-[#F55036] font-bold"
@@ -278,6 +288,17 @@ export default function Navbar({
   }`}
 >
   Organizations
+</Link>
+<Link
+  href={currentUser ? "/saved" : "/login?redirect=/saved"}
+  data-text="Saved"
+  className={`text-[13px] transition-colors no-underline before:content-[attr(data-text)] before:block before:font-bold before:h-0 before:overflow-hidden before:invisible before:select-none text-center flex flex-col justify-center ${
+    isSavedActive
+      ? "text-[#F55036] font-bold"
+      : "text-[#555555] font-medium hover:text-[#F55036]"
+  }`}
+>
+  Saved
 </Link>
         </div>
 

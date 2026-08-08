@@ -1,7 +1,7 @@
 "use client";
 
 import { FileText, MessageCircle, Star } from "lucide-react";
-import type { ModelItem, ModelTask } from "@/lib/models";
+import { type ModelItem, type ModelTask, prefetchModelBySlug } from "@/lib/models";
 import Link from "next/link";
 
 const TAG_COLORS: Record<string, { bg: string; text: string; dot: string }> = {
@@ -66,6 +66,7 @@ export default function ModelCard({ model, rank: _rank }: { model: ModelItem; ra
   return (
     <Link
       href={`/models/${model.slug}`}
+      onMouseEnter={() => prefetchModelBySlug(model.slug)}
       data-rank={_rank}
       className="ds-card p-4 md:p-5 flex flex-col gap-4 hover:shadow-soft transition-shadow duration-200 group no-underline h-full rounded-[24px]"
     >

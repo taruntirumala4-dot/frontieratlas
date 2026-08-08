@@ -165,7 +165,7 @@ function mapBackendPaper(raw: Record<string, unknown>): Paper {
     // If it's a huge base64 image from the DB, format it properly
     if (rawThumb.startsWith("/9j/") || rawThumb.startsWith("iVBORw0KGgo")) {
       finalThumbnail = `data:image/jpeg;base64,${rawThumb}`;
-    } 
+    }
     // If it's a valid local path, http URL, or ALREADY a formatted data URL, keep it
     else if (rawThumb.startsWith("/") || rawThumb.startsWith("http") || rawThumb.startsWith("data:")) {
       finalThumbnail = rawThumb;
@@ -177,7 +177,7 @@ function mapBackendPaper(raw: Record<string, unknown>): Paper {
   const computedArxivUrl = getArxivAbsUrl(cleanArxivId, raw.paperUrl as string) || undefined;
   const computedPdfUrl = getArxivPdfUrl(raw.pdfUrl as string, raw.paperUrl as string, cleanArxivId) || undefined;
 
-    return {
+  return {
     id: Number(raw.id) || String(raw.id),
     slug: String(raw.slug || raw.id || ""),
     title: String(raw.title || "Untitled Paper"),
@@ -207,7 +207,7 @@ function mapBackendPaper(raw: Record<string, unknown>): Paper {
   };
 }
 
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL = 15 * 60 * 1000; // 15 minutes
 
 function getCacheKey(params: GetPapersParams): string {
   return `papers:${params.page ?? 1}:${params.sort ?? "none"}:${params.period ?? "all"}:${params.task ?? "none"}:${params.method ?? "none"}:${params.model ?? "none"}:${params.organization ?? "none"}`;
@@ -231,34 +231,82 @@ function readCache<T>(key: string): { data: T; timestamp: number } | null {
     // Warm memory cache from localStorage hit
     if (parsed && Date.now() - parsed.timestamp < CACHE_TTL) {
       memoryCache.set(key, parsed);
+      return parsed;
     }
-    return parsed;
+    return null;
   } catch {
     return null;
   }
 }
 
 function findFuzzyCache(params: GetPapersParams): GetPapersResult | null {
-  const page = params.page ?? 1;
-  const targetTask = params.task ? `:${params.task}:` : null;
-  const targetMethod = params.method ? `:${params.method}:` : null;
-  const targetOrganization = params.organization ? `:${params.organization}` : null;
+
+ 
+  
+
+  // Never use fuzzy matching if the user explicitly requested a specific sort or period
+  // Otherwise, they will never see the new sorted/filtered response unless they refresh.
+  if (params.sort && params.sort !== "trending" && params.sort !== "popular") return null;
+  if (params.period && params.period !== "all" && params.period !== "today") return null;
+
+  const targetTask = params.task ? params.task.toLowerCase().replace(/-/g, " ") : null;
+  const targetMethod = params.method ? params.method.toLowerCase().replace(/-/g, " ") : null;
+  const targetOrganization = params.organization ? `:${params.organization}:`: null;
 
   for (const [key, entry] of memoryCache.entries()) {
-    if (!key.startsWith(`papers:${page}:`)) continue;
     if (!entry.data?.papers?.length) continue;
 
-    if (targetTask) {
-      if (key.includes(targetTask)) return entry.data as GetPapersResult;
-    } else if (targetMethod) {
-      if (key.includes(targetMethod)) return entry.data as GetPapersResult;
-    } else if (targetOrganization) {
-      if (key.endsWith(targetOrganization)) return entry.data as GetPapersResult;
-    } else if (!params.task && !params.method && !params.model && !params.organization) {
-      // For general feed period/sort switching, return any existing page 1 paper cache
+
+    if (params.task && key.toLowerCase().includes(params.task.toLowerCase())) {
+      return entry.data as GetPapersResult;
+    } else if (params.method && key.toLowerCase().includes(params.method.toLowerCase())) {
+
       return entry.data as GetPapersResult;
     }
+     else if (targetOrganization) {
+  if (key.endsWith(targetOrganization)) {
+    return entry.data as GetPapersResult;
   }
+  }
+}
+
+  // Check localStorage if memoryCache miss
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k || !k.startsWith("papers:")) continue;
+      if (params.task && k.toLowerCase().includes(params.task.toLowerCase())) {
+        const item = readCache<GetPapersResult>(k);
+        if (item?.data?.papers?.length) return item.data;
+      }
+    }
+  } catch { }
+
+  // Instant fallback: filter existing stored papers by task/method/tag
+  const searchFilter = targetTask || targetMethod;
+  if (searchFilter) {
+    const allStoredPapers: Paper[] = [];
+    for (const entry of memoryCache.values()) {
+      if (entry.data?.papers) {
+        allStoredPapers.push(...entry.data.papers);
+      }
+    }
+    const matched = allStoredPapers.filter(p => {
+      const text = [...(p.tags || []), ...(p.additionalTags || []), p.title].join(" ").toLowerCase();
+      return text.includes(searchFilter);
+    });
+    if (matched.length > 0) {
+      const uniqueMap = new Map<string, Paper>();
+      matched.forEach(p => uniqueMap.set(p.slug, p));
+      return {
+        papers: Array.from(uniqueMap.values()),
+        total: uniqueMap.size,
+        page: 1,
+        hasMore: false,
+      };
+    }
+  }
+
   return null;
 }
 
@@ -268,10 +316,10 @@ export function getPapersSync(params: GetPapersParams = {}): GetPapersResult | n
   if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
     return cached.data;
   }
-  return findFuzzyCache(params);
+  return null;
 }
 
-function writeCache<T>(key: string, data: T): void {
+export function writeCache<T>(key: string, data: T): void {
   const entry = { data, timestamp: Date.now() };
   // Write to memory (instant)
   memoryCache.set(key, entry);
@@ -298,9 +346,11 @@ export async function getPapers(params: GetPapersParams = {}): Promise<GetPapers
     return existingInFlight;
   }
 
-  // 3. Instant Fuzzy Stale-While-Revalidate fallback for chips/filters
-  const fuzzy = findFuzzyCache(params);
-  if (fuzzy && fuzzy.papers.length > 0) {
+  // 3. (Disabled) Instant Fuzzy Stale-While-Revalidate fallback
+  // This was causing severe UI locking behaviors when changing sorting tabs because 
+  // the stale paper array was returned instantly but never updated with the background response.
+  const fuzzy = null; // findFuzzyCache(params);
+  if (fuzzy && (fuzzy as any).papers.length > 0) {
     // Revalidate in background without blocking
     const bgFetch = (async () => {
       try {
@@ -339,9 +389,9 @@ export async function getPapers(params: GetPapersParams = {}): Promise<GetPapers
     try {
       const start = performance.now();
       if (process.env.NODE_ENV === "development") console.log(`[paperApi] getPapers called with params:`, params);
-      
+
       const query = new URLSearchParams();
-      
+
       if (params.page !== undefined) query.append("page", params.page.toString());
       if (params.limit !== undefined) query.append("limit", params.limit.toString());
       if (params.task) query.append("task", params.task);
@@ -354,12 +404,12 @@ export async function getPapers(params: GetPapersParams = {}): Promise<GetPapers
       const response = await fetchApi<PapersResponse>(
         `/api/v1/research-papers?${query.toString()}`
       );
-      
+
       const mapStart = performance.now();
       const mappedPapers = response.data.papers.map(mapBackendPaper);
       const mapDuration = performance.now() - mapStart;
       const totalDuration = performance.now() - start;
-      
+
       if (process.env.NODE_ENV === "development") console.log(`[paperApi] getPapers complete in ${totalDuration.toFixed(2)}ms (mapping took ${mapDuration.toFixed(2)}ms)`);
 
       const validPapers = mappedPapers.filter(p => p.authors.length > 0 && p.date !== "Unknown Date");
@@ -388,17 +438,17 @@ export async function getPapers(params: GetPapersParams = {}): Promise<GetPapers
 
 export async function searchPapers(query: string): Promise<Paper[]> {
   if (!query.trim()) return [];
-  
+
   try {
     // Try backend search first
-   const response = await fetchApi<{
-  status: string;
-  data: {
-    papers: Record<string, unknown>[];
-  };
-}>(
-  `/api/v1/research-papers/search?q=${encodeURIComponent(query)}`
-);
+    const response = await fetchApi<{
+      status: string;
+      data: {
+        papers: Record<string, unknown>[];
+      };
+    }>(
+      `/api/v1/research-papers/search?q=${encodeURIComponent(query)}`
+    );
     return response.data.papers.map(mapBackendPaper);
   } catch (error) {
     console.warn('Backend search unavailable, falling back to client-side filtering', error);

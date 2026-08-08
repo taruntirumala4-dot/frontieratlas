@@ -1,9 +1,6 @@
 export const runtime = "edge";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
-import PaperList from "@/components/PaperFeed";
-import PaperTabs from "@/components/PaperTabs";
-import TaskFilterBar from "@/components/domain/tasks/TaskFilterBar";
 import TaskDetailClient from "@/components/domain/tasks/TaskDetailClient";
 
 type TaskPageProps = {

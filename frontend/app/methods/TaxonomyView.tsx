@@ -2,8 +2,9 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { CategoryRow } from "@/components/CategoryRow";
-import { MethodsHero } from "@/components/MethodsHero";
+import PageHero from "@/components/shared/PageHero";
 import { prefetchTaxonomyMethods } from "@/lib/methodCache";
+import SectionSidebar from "@/components/shared/SectionSidebar";
 
 export function TaxonomyView({ initialTaxonomy }: { initialTaxonomy: any[] }) {
   const [taxonomy] = useState(initialTaxonomy);
@@ -21,29 +22,45 @@ export function TaxonomyView({ initialTaxonomy }: { initialTaxonomy: any[] }) {
     ),
   }))
   .filter((category: any) => category.methods.length > 0);
+  const totalMethods = taxonomy.reduce(
+  (sum, category) => sum + category.methods.length,
+  0
+);
+
+const totalCategories = taxonomy.length;
+
+const totalPapers = taxonomy.reduce(
+  (sum, category) =>
+    sum +
+    category.methods.reduce(
+      (methodSum: number, method: any) =>
+        methodSum + (method.paperCount || 0),
+      0
+    ),
+  0
+);
   return (
   <>
-    <MethodsHero taxonomy={taxonomy} />
+    <PageHero
+  breadcrumb="Methods"
+  title="All"
+  highlight="Methods"
+  description="Discover the complete landscape of AI methods powering modern research, grouped into categories and linked to research papers."
+  stats={[
+    { value: totalCategories, label: "Categories" },
+    { value: totalMethods, label: "Methods" },
+    { value: totalPapers.toLocaleString(), label: "Papers" },
+  ]}
+/>
 
     <main className="flex flex-col md:grid md:grid-cols-[220px_minmax(0,1fr)] gap-6 md:gap-8 mt-6 md:mt-10">
-      <aside className="hidden md:block w-[220px] shrink-0 sticky top-24 h-fit border-r border-[#ececec] pr-6">
-  <h3 className="text-[#F55036] font-bold uppercase text-lg mb-4">
-  Methods
-</h3>
-
-
-<div className="space-y-3">
-  {filteredTaxonomy.map((category: any) => (
-    <a
-  key={category.id}
-  href={`#${category.id}`}
-  className="block text-[15px] text-[#555] hover:text-[#F55036] transition-colors"
->
-  {category.name}
-</a>
-  ))}
-</div>
-</aside>
+      <SectionSidebar
+  title="Methods"
+  items={filteredTaxonomy.map((category: any) => ({
+    label: category.name,
+    href: `#${category.id}`,
+  }))}
+/>
 
       <div>
         {filteredTaxonomy.length > 0 ? (

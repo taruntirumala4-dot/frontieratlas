@@ -290,6 +290,8 @@ export const ingestPaper = async (queryRouter: QueryRouter, data: any) => {
   );
 };
 
+let cachedLatestPaperDate: { date: Date; timestamp: number } | null = null;
+
 export const getPapers = async (
   queryRouter: QueryRouter,
   queryOrLimit: GetPapersQuery | number = {},
@@ -325,17 +327,23 @@ export const getPapers = async (
 
   let baseDate = new Date();
   if (period !== "all") {
-    const latestPaper = await queryRouter.routeQuery<any>(async (prisma: PrismaClient) => {
-      return prisma.paper.findFirst({
-        where: { publicationDate: { not: null } },
-        orderBy: { publicationDate: "desc" },
-        select: { publicationDate: true },
+    let latestDbDate = new Date();
+    if (cachedLatestPaperDate && Date.now() - cachedLatestPaperDate.timestamp < 3600000) {
+      latestDbDate = cachedLatestPaperDate.date;
+    } else {
+      const latestPaper = await queryRouter.routeQuery<any>(async (prisma: PrismaClient) => {
+        return prisma.paper.findFirst({
+          where: { publicationDate: { not: null } },
+          orderBy: { publicationDate: "desc" },
+          select: { publicationDate: true },
+        });
       });
-    });
-
-    const now = new Date();
-    const latestDbDate = latestPaper?.publicationDate ? new Date(latestPaper.publicationDate) : now;
-    baseDate = (latestDbDate.getTime() > 0 && latestDbDate.getTime() <= now.getTime()) ? latestDbDate : now;
+      const now = new Date();
+      const rawDate = latestPaper?.publicationDate ? new Date(latestPaper.publicationDate) : now;
+      latestDbDate = (rawDate.getTime() > 0 && rawDate.getTime() <= now.getTime()) ? rawDate : now;
+      cachedLatestPaperDate = { date: latestDbDate, timestamp: Date.now() };
+    }
+    baseDate = latestDbDate;
 
     const publicationCutoff = new Date(baseDate);
 
@@ -358,25 +366,24 @@ export const getPapers = async (
   }
 
   const orderBy =
-    sort === "latest"
+    sort === "latest" || sort === "recent"
       ? [
         { publicationDate: "desc" as const },
         { githubStars: "desc" as const },
         { slug: "asc" as const },
       ]
-      : sort === "stars"
+      : sort === "citations"
         ? [
-          { githubStars: "desc" as const },
           { citationCount: "desc" as const },
+          { githubStars: "desc" as const },
           { publicationDate: "desc" as const },
           { slug: "asc" as const },
         ]
-        // Order by Publication Date FIRST so new papers (2026) are displayed above old papers (2025)
-        : sort === "trending" || sort === "citations"
+        : sort === "trending" || sort === "popular" || sort === "stars"
           ? [
-            { publicationDate: "desc" as const },
-            { citationCount: "desc" as const },
             { githubStars: "desc" as const },
+            { citationCount: "desc" as const },
+            { publicationDate: "desc" as const },
             { slug: "asc" as const },
           ]
           : sort === "alphabetical"
@@ -385,7 +392,9 @@ export const getPapers = async (
               { slug: "asc" as const }
             ]
             : [
-              // Failsafe Default
+              // Failsafe Default (Popularity oriented)
+              { githubStars: "desc" as const },
+              { citationCount: "desc" as const },
               { publicationDate: "desc" as const },
               { slug: "asc" as const },
             ];

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import type { MethodDetail } from "@/lib/methods";
 
 const METHOD_CACHE = new Map<string, { data: MethodDetail; timestamp: number }>();
-const METHOD_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const METHOD_CACHE_TTL = 15 * 60 * 1000; // 15 minutes
 const IN_FLIGHT = new Map<string, Promise<MethodDetail>>();
 
 /**
@@ -39,31 +39,47 @@ export async function fetchMethodCached(slug: string): Promise<MethodDetail> {
     return IN_FLIGHT.get(cacheKey)!;
   }
 
-  // 4. Fetch from API
-  const defaultApiUrl = "https://frontieratlas-backend.morningsignal-india.workers.dev";
+  // 4. Fetch from API (default to local dev server http://localhost:8787 in development)
+  const defaultApiUrl = process.env.NODE_ENV === "development"
+    ? "http://localhost:8787"
+    : "https://frontieratlas-backend.morningsignal-india.workers.dev";
   const API_BASE = (process.env.NEXT_PUBLIC_API_URL || defaultApiUrl).replace(/\/$/, "");
 
-  const request = fetch(`${API_BASE}/api/v1/methods/${encodeURIComponent(slug)}`, {
-    headers: { "Content-Type": "application/json" },
-    signal: AbortSignal.timeout(5000),
-  })
-    .then(async (res) => {
-      if (!res.ok) throw new Error(`API error: ${res.status}`);
-      const json = await res.json();
-      const data = json.data as MethodDetail;
+  const executeFetch = async () => {
+    let url = `${API_BASE}/api/v1/methods/${encodeURIComponent(slug)}`;
+    let res: Response;
+    try {
+      res = await fetch(url, {
+        headers: { "Content-Type": "application/json" },
+        signal: AbortSignal.timeout(3000),
+      });
+    } catch (err) {
+      if (API_BASE.includes("localhost")) {
+        url = `https://frontieratlas-backend.morningsignal-india.workers.dev/api/v1/methods/${encodeURIComponent(slug)}`;
+        res = await fetch(url, {
+          headers: { "Content-Type": "application/json" },
+          signal: AbortSignal.timeout(5000),
+        });
+      } else {
+        throw err;
+      }
+    }
+    if (!res.ok) throw new Error(`API error: ${res.status}`);
+    const json = await res.json();
+    const data = json.data as MethodDetail;
 
-      // Write to both caches
-      const entry = { data, timestamp: Date.now() };
-      METHOD_CACHE.set(cacheKey, entry);
-      try {
-        localStorage.setItem(cacheKey, JSON.stringify(entry));
-      } catch { }
+    const entry = { data, timestamp: Date.now() };
+    METHOD_CACHE.set(cacheKey, entry);
+    try {
+      localStorage.setItem(cacheKey, JSON.stringify(entry));
+    } catch { }
 
-      return data;
-    })
-    .finally(() => {
-      IN_FLIGHT.delete(cacheKey);
-    });
+    return data;
+  };
+
+  const request = executeFetch().finally(() => {
+    IN_FLIGHT.delete(cacheKey);
+  });
 
   IN_FLIGHT.set(cacheKey, request);
   return request;
@@ -110,7 +126,7 @@ export function prefetchTaxonomyMethods(taxonomy: any[]) {
  */
 export function prefetchMethods() {
   const slugs = [
-    "transformer", "diffusion-models", "mixture-of-experts-moe",
+    "transformer", "diffusion-models", "mixture-of-experts",
     "policy-learning", "chain-of-thought", "retrieval-augmented-generation", "model-context-protocol-mcp", "lora", "rlhf",
   ];
   slugs.forEach((slug) => {

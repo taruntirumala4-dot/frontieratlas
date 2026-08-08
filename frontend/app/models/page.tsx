@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo, Suspense } from "react";
 import Link from "next/link";
 import PageHero from "@/components/shared/PageHero";
 import { useRouter } from "next/navigation";
+import SectionSidebar from "@/components/shared/SectionSidebar";
 import { Search, Trophy, Cpu, Layers, ExternalLink, Code2, Check, Copy, X, ArrowRight, Zap, Calendar, BookOpen, Building2, Brain, Monitor, Globe, FileText, Link as LinkIcon, Volume2, ImageIcon, Video, Bot, Sparkles, TrendingUp, Eye, Puzzle, Network, Database, Shield, Terminal, Activity, GitBranch, BarChart3, Radio, Mic, Share2, ChevronRight } from "lucide-react";
 import {
   getModels,
@@ -12,6 +13,7 @@ import {
   getCachedModels,
   getCachedTrendingModels,
   getCachedModelFacets,
+  prefetchModelBySlug,
   type ModelItem,
   type ModelFacets
 } from "@/lib/models";import Navbar from "@/components/Navbar";
@@ -226,6 +228,72 @@ const [loading, setLoading] = useState(
   const [selectedCapability, setSelectedCapability] = useState<string | null>(null);
   const [selectedFamily, setSelectedFamily] = useState<string | null>(null);
   const [selectedCollection, setSelectedCollection] = useState<string | null>(null);
+  // Per-section "See all / Show less" toggle states (independent)
+  const [showAllCapabilities, setShowAllCapabilities] = useState(false);
+  const [showAllFamilies, setShowAllFamilies] = useState(false);
+  const [showAllVendors, setShowAllVendors] = useState(false);
+  const [showAllResearch, setShowAllResearch] = useState(false);
+  // Toggle helpers that scroll to section heading when collapsing
+  const toggleShowAllCapabilities = () => {
+    setShowAllCapabilities((prev) => {
+      const next = !prev;
+      if (prev) {
+        // was expanded, now collapsing -> ensure section header stays visible (instant)
+        if (typeof window !== "undefined") {
+          requestAnimationFrame(() => {
+            const el = document.getElementById("section-capability");
+            if (el) el.scrollIntoView({ behavior: "auto", block: "start" });
+          });
+        }
+      }
+      return next;
+    });
+  };
+
+  const toggleShowAllFamilies = () => {
+    setShowAllFamilies((prev) => {
+      const next = !prev;
+      if (prev) {
+        if (typeof window !== "undefined") {
+          requestAnimationFrame(() => {
+            const el = document.getElementById("section-family");
+            if (el) el.scrollIntoView({ behavior: "auto", block: "start" });
+          });
+        }
+      }
+      return next;
+    });
+  };
+
+  const toggleShowAllVendors = () => {
+    setShowAllVendors((prev) => {
+      const next = !prev;
+      if (prev) {
+        if (typeof window !== "undefined") {
+          requestAnimationFrame(() => {
+            const el = document.getElementById("section-organization");
+            if (el) el.scrollIntoView({ behavior: "auto", block: "start" });
+          });
+        }
+      }
+      return next;
+    });
+  };
+
+  const toggleShowAllResearch = () => {
+    setShowAllResearch((prev) => {
+      const next = !prev;
+      if (prev) {
+        if (typeof window !== "undefined") {
+          requestAnimationFrame(() => {
+            const el = document.getElementById("section-research");
+            if (el) el.scrollIntoView({ behavior: "auto", block: "start" });
+          });
+        }
+      }
+      return next;
+    });
+  };
   const [searchQuery, setSearchQuery] = useState("");
   const [inspectedModel, setInspectedModel] = useState<ModelItem | null>(null);
   const [copied, setCopied] = useState(false);
@@ -331,35 +399,59 @@ const [loading, setLoading] = useState(
 
   const activeFilterLabel = selectedVendor || selectedDomain || selectedCapability || selectedFamily || selectedCollection || null;
 
+function matchesArrayItem(list: unknown, target: string): boolean {
+  if (!list || !target) return false;
+  const t = target.toLowerCase();
+  if (Array.isArray(list)) {
+    return list.some(item => typeof item === 'string' && item.toLowerCase().includes(t));
+  }
+  if (typeof list === 'string') {
+    return list.toLowerCase().includes(t);
+  }
+  return false;
+}
+
   const filteredCatalogModels = useMemo(() => {
     return allModels.filter(m => {
       if (searchQuery.trim() !== "") {
         const q = searchQuery.toLowerCase();
-        const matches = m.name.toLowerCase().includes(q) || (m.vendor ?? "").toLowerCase().includes(q) || (m.description && m.description.toLowerCase().includes(q)) || (m.capabilities && m.capabilities.some(t => t.toLowerCase().includes(q)));
+        const matches =
+          (m.name ?? "").toLowerCase().includes(q) ||
+          (m.vendor ?? "").toLowerCase().includes(q) ||
+          ((m.description ?? "").toLowerCase().includes(q)) ||
+          matchesArrayItem(m.capabilities, q);
         if (!matches) return false;
       }
       if (selectedVendor) {
-  const vendor = (m.vendor ?? "").toLowerCase();
-
-  if (vendor !== selectedVendor.toLowerCase()) {
-    return false;
-  }
-}
+        const vendor = (m.vendor ?? "").toLowerCase();
+        if (vendor !== selectedVendor.toLowerCase()) {
+          return false;
+        }
+      }
       if (selectedFamily) {
         const fLower = selectedFamily.toLowerCase();
-        if (m.modelFamily?.toLowerCase() !== fLower && !m.name.toLowerCase().includes(fLower)) return false;
+        if ((m.modelFamily ?? "").toLowerCase() !== fLower && !(m.name ?? "").toLowerCase().includes(fLower)) return false;
       }
       if (selectedCapability) {
         const cLower = selectedCapability.toLowerCase();
-        if (m.category?.toLowerCase() !== cLower && !(m.capabilities && m.capabilities.some(t => t.toLowerCase().includes(cLower))) && !(m.researchAreas && m.researchAreas.some(t => t.toLowerCase().includes(cLower)))) return false;
+        const matchCategory = (m.category ?? "").toLowerCase().includes(cLower);
+        const matchCap = matchesArrayItem(m.capabilities, cLower);
+        const matchResearch = matchesArrayItem(m.researchAreas, cLower);
+        if (!matchCategory && !matchCap && !matchResearch) return false;
       }
       if (selectedDomain) {
         const dLower = selectedDomain.toLowerCase();
-        if (!(m.researchAreas && m.researchAreas.some(t => t.toLowerCase().includes(dLower))) && !(m.capabilities && m.capabilities.some(t => t.toLowerCase().includes(dLower))) && !(m.description && m.description.toLowerCase().includes(dLower))) return false;
+        const matchResearch = matchesArrayItem(m.researchAreas, dLower);
+        const matchCap = matchesArrayItem(m.capabilities, dLower);
+        const matchDesc = (m.description ?? "").toLowerCase().includes(dLower);
+        if (!matchResearch && !matchCap && !matchDesc) return false;
       }
       if (selectedCollection) {
         const colLower = selectedCollection.toLowerCase().replace(" models", "").trim();
-        if (!(m.capabilities && m.capabilities.some(t => t.toLowerCase().includes(colLower))) && !(m.researchAreas && m.researchAreas.some(t => t.toLowerCase().includes(colLower))) && m.category?.toLowerCase() !== colLower) return false;
+        const matchCap = matchesArrayItem(m.capabilities, colLower);
+        const matchResearch = matchesArrayItem(m.researchAreas, colLower);
+        const matchCategory = (m.category ?? "").toLowerCase().includes(colLower);
+        if (!matchCap && !matchResearch && !matchCategory) return false;
       }
       return true;
     });
@@ -367,8 +459,52 @@ const [loading, setLoading] = useState(
 
   const topModelForSelection = useMemo(() => {
     if (!activeFilterLabel || !filteredCatalogModels.length) return null;
-    return filteredCatalogModels[0];
+    // Rank models by average benchmark score (higher is better), then paperCount, then original order.
+    const enriched = filteredCatalogModels.map((m, i) => {
+      const scores = m.benchmarkScore && typeof m.benchmarkScore === 'object' ? Object.values(m.benchmarkScore).filter(v => typeof v === 'number' && !isNaN(v)) as number[] : [];
+      const hasBenchmark = scores.length > 0;
+      const avg = hasBenchmark ? scores.reduce((a, b) => a + b, 0) / scores.length : -Infinity;
+      return { model: m, avg, hasBenchmark, paperCount: m.paperCount || 0, index: i };
+    });
+
+    enriched.sort((a, b) => {
+      // models with benchmarks rank above those without
+      if (a.hasBenchmark && !b.hasBenchmark) return -1;
+      if (!a.hasBenchmark && b.hasBenchmark) return 1;
+      // both have or both don't have benchmarks
+      if (a.hasBenchmark && b.hasBenchmark) {
+        if (b.avg !== a.avg) return b.avg - a.avg; // higher avg first
+      }
+      // tie-breaker: higher paperCount
+      if (b.paperCount !== a.paperCount) return b.paperCount - a.paperCount;
+      // final tie-breaker: preserve original order
+      return a.index - b.index;
+    });
+
+    return enriched.length ? enriched[0].model : null;
   }, [activeFilterLabel, filteredCatalogModels]);
+
+  // Ranked catalog models: sort by average benchmark score desc, then paperCount desc, then original order
+  const rankedCatalogModels = useMemo(() => {
+    const enriched = filteredCatalogModels.map((m, i) => {
+      const scores = m.benchmarkScore && typeof m.benchmarkScore === 'object' ? Object.values(m.benchmarkScore).filter(v => typeof v === 'number' && !isNaN(v)) as number[] : [];
+      const hasBenchmark = scores.length > 0;
+      const avg = hasBenchmark ? scores.reduce((a, b) => a + b, 0) / scores.length : -Infinity;
+      return { model: m, avg, hasBenchmark, paperCount: m.paperCount || 0, index: i };
+    });
+
+    enriched.sort((a, b) => {
+      if (a.hasBenchmark && !b.hasBenchmark) return -1;
+      if (!a.hasBenchmark && b.hasBenchmark) return 1;
+      if (a.hasBenchmark && b.hasBenchmark) {
+        if (b.avg !== a.avg) return b.avg - a.avg;
+      }
+      if (b.paperCount !== a.paperCount) return b.paperCount - a.paperCount;
+      return a.index - b.index;
+    });
+
+    return enriched.map(e => e.model);
+  }, [filteredCatalogModels]);
 
   const filteredCapabilities = useMemo(() => {
     if (!facets?.capabilities) return [];
@@ -466,44 +602,61 @@ highlight="Models"
 />
         <div className="flex gap-6">
 
-          {/* LEFT SIDEBAR WITH SEARCH & NAVIGATION OPTIONS EXACT TO reference */}
-          <aside className="w-[240px] shrink-0 sticky top-24 h-fit border-r border-[#ececec] pr-6 hidden lg:block" aria-label="Domain navigation">
-            <div className="sticky top-20 flex flex-col h-[calc(100vh-5rem)] overflow-y-auto">
-              <h3 className="text-[#FF5A1F] font-bold uppercase text-lg mb-4 px-2">
-                Models
-              </h3>
-
-              <nav className="overflow-y-auto px-2 pb-4" aria-label="Domains">
-                <ul className="space-y-0.5" role="list">
-                  {[
-                    { id: "section-capability", label: "Browse by Capability" },
-                    { id: "section-family", label: "Browse by Model Family" },
-                    { id: "section-organization", label: "Browse by Organization" },
-                    { id: "section-research", label: "Browse by Research Area" },
-                    { id: "section-trending", label: "Trending Models" },
-                    { id: "section-recently-released", label: "Recently Released" },
-                    { id: "model-directory", label: "Model Directory Table" }
-                  ].map((item) => {
-                    return (
-                      <li key={item.id}>
-                        <button
-                          onClick={() => {
-                            const el = document.getElementById(item.id);
-                            if (el) el.scrollIntoView({ behavior: "smooth" });
-                          }}
-                          className="block w-full text-left text-[15px] transition-colors mb-3 text-[#555] hover:text-[#FF5A1F]"
-                        >
-                          {item.label}
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </nav>
-
-
-            </div>
-          </aside>
+          {/* LEFT SIDEBAR WITH NAVIGATION OPTIONS EXACT TO reference */}
+          <SectionSidebar
+  title="Models"
+  items={[
+    {
+      label: "Browse by Capability",
+      onClick: () =>
+        document
+          .getElementById("section-capability")
+          ?.scrollIntoView({ behavior: "smooth" }),
+    },
+    {
+      label: "Browse by Model Family",
+      onClick: () =>
+        document
+          .getElementById("section-family")
+          ?.scrollIntoView({ behavior: "smooth" }),
+    },
+    {
+      label: "Browse by Organization",
+      onClick: () =>
+        document
+          .getElementById("section-organization")
+          ?.scrollIntoView({ behavior: "smooth" }),
+    },
+    {
+      label: "Browse by Research Area",
+      onClick: () =>
+        document
+          .getElementById("section-research")
+          ?.scrollIntoView({ behavior: "smooth" }),
+    },
+    {
+      label: "Trending Models",
+      onClick: () =>
+        document
+          .getElementById("section-trending")
+          ?.scrollIntoView({ behavior: "smooth" }),
+    },
+    {
+      label: "Recently Released",
+      onClick: () =>
+        document
+          .getElementById("section-recently-released")
+          ?.scrollIntoView({ behavior: "smooth" }),
+    },
+    {
+      label: "Model Directory Table",
+      onClick: () =>
+        document
+          .getElementById("model-directory")
+          ?.scrollIntoView({ behavior: "smooth" }),
+    },
+  ]}
+/>
 
           {/* RIGHT CONTENT AREA CONTAINING ALL SECTIONS & EXACT CARDS */}
           <div className="flex-1 min-w-0">
@@ -521,7 +674,7 @@ highlight="Models"
                   ? Array.from({ length: 8 }).map((_, i) => (
                     <CapabilitySkeleton key={i} />
                   ))
-                  : (() => { const getIcon = dedupedIcons(0); return filteredCapabilities.map((cap, idx) => {
+                  : (() => { const getIcon = dedupedIcons(0); const caps = (!showAllCapabilities && filteredCapabilities.length > 40) ? filteredCapabilities.slice(0,40) : filteredCapabilities; return caps.map((cap, idx) => {
                     const { Icon: SkeletalIcon, color: strokeColor } = getIcon(idx, cap.name);
                     const isActive = selectedCapability === cap.name;
                     return (
@@ -546,6 +699,16 @@ highlight="Models"
                     );
                   }); })()}
               </div>
+              {filteredCapabilities.length > 40 && (
+                <div className="mt-4 flex justify-center">
+                  <button
+                    onClick={toggleShowAllCapabilities}
+                    className="text-[13px] font-medium text-[#FF5A1F] bg-transparent border-none"
+                  >
+                    {showAllCapabilities ? "Show less" : "See all"}
+                  </button>
+                </div>
+              )}
             </section>
               
 
@@ -557,7 +720,7 @@ highlight="Models"
                   <span className="models-block-count text-[11px] font-normal uppercase tracking-wider text-gray-400">{facets?.modelFamilies?.length ?? "—"} Model Families</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                  {(() => { const getIcon = dedupedIcons(3); return filteredModelFamilies.map((fam, idx) => {
+                  {(() => { const getIcon = dedupedIcons(3); const fams = (!showAllFamilies && filteredModelFamilies.length > 40) ? filteredModelFamilies.slice(0,40) : filteredModelFamilies; return fams.map((fam, idx) => {
                     const isActive = selectedFamily === fam.name;
                     const familyLogo = allModels.find(
                       (m) => m.modelFamily?.toLowerCase() === fam.name.toLowerCase() && m.vendorLogoUrl
@@ -589,6 +752,16 @@ highlight="Models"
                     );
                   }); })()}
                 </div>
+                {filteredModelFamilies.length > 40 && (
+                  <div className="mt-4 flex justify-center">
+                    <button
+                      onClick={toggleShowAllFamilies}
+                      className="text-[13px] font-medium text-[#FF5A1F] bg-transparent border-none"
+                    >
+                      {showAllFamilies ? "Show less" : "See all"}
+                    </button>
+                  </div>
+                )}
               </section>
             )}
 
@@ -600,7 +773,7 @@ highlight="Models"
                   <span className="models-block-count text-[11px] font-normal uppercase tracking-wider text-gray-400">{facets?.vendors?.length} Leading Labs</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                  {(() => { const getIcon = dedupedIcons(7); return filteredVendors.map((v, idx) => {
+                  {(() => { const getIcon = dedupedIcons(7); const vendors = (!showAllVendors && filteredVendors.length > 40) ? filteredVendors.slice(0,40) : filteredVendors; return vendors.map((v, idx) => {
                     const { Icon: SkeletalIcon, color: strokeColor } = getIcon(idx, "");
                     const isActive = selectedVendor === v.name;
                     const vendorModel = allModels.find(
@@ -643,6 +816,16 @@ highlight="Models"
                     );
                   }); })()}
                 </div>
+                {filteredVendors.length > 40 && (
+                  <div className="mt-4 flex justify-center">
+                    <button
+                      onClick={toggleShowAllVendors}
+                      className="text-[13px] font-medium text-[#FF5A1F] bg-transparent border-none"
+                    >
+                      {showAllVendors ? "Show less" : "See all"}
+                    </button>
+                  </div>
+                )}
               </section>
             )}
 
@@ -654,7 +837,7 @@ highlight="Models"
                   <span className="models-block-count text-[11px] font-normal uppercase tracking-wider text-gray-400">{facets?.researchAreas?.length} Modalities &amp; Domains</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                  {(() => { const getIcon = dedupedIcons(11); return filteredResearchAreas.map((d, idx) => {
+                  {(() => { const getIcon = dedupedIcons(11); const areas = (!showAllResearch && filteredResearchAreas.length > 40) ? filteredResearchAreas.slice(0,40) : filteredResearchAreas; return areas.map((d, idx) => {
                     const { Icon: SkeletalIcon, color: strokeColor } = getIcon(idx, d.name);
                     const isActive = selectedDomain === d.name;
                     return (
@@ -679,6 +862,16 @@ highlight="Models"
                     );
                   }); })()}
                 </div>
+                {filteredResearchAreas.length > 40 && (
+                  <div className="mt-4 flex justify-center">
+                    <button
+                      onClick={toggleShowAllResearch}
+                      className="text-[13px] font-medium text-[#FF5A1F] bg-transparent border-none"
+                    >
+                      {showAllResearch ? "Show less" : "See all"}
+                    </button>
+                  </div>
+                )}
               </section>
             )}
 
@@ -904,8 +1097,8 @@ highlight="Models"
                         </tr>
                       </thead>
                       <tbody>
-                        {filteredCatalogModels.map((model, idx) => (
-                          <tr key={model.id} onClick={() => router.push(`/models/${model.slug || model.id}`)} style={{ borderBottom: "1px solid #EAE9E4", cursor: "pointer", transition: "background 0.15s ease" }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#FFF8F6"; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}>
+                        {rankedCatalogModels.map((model, idx) => (
+                          <tr key={model.id} onClick={() => router.push(`/models/${model.slug || model.id}`)} style={{ borderBottom: "1px solid #EAE9E4", cursor: "pointer", transition: "background 0.15s ease" }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#FFF8F6"; prefetchModelBySlug(model.slug); }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}>
                             <td style={{ padding: "12px 12px", fontFamily: "monospace", fontSize: "11px", fontWeight: 400, color: "#8B8B8B", width: "1%", whiteSpace: "nowrap", verticalAlign: "middle", lineHeight: "1.3", paddingRight: "12px" }}>{(idx + 1).toString().padStart(3, "0")}</td>
                             <td style={{ padding: "12px 12px", fontWeight: 400, fontSize: "12.5px", color: "#111111", minWidth: "160px", whiteSpace: "nowrap", wordBreak: "normal", verticalAlign: "middle", lineHeight: "1.3", paddingLeft: "12px", paddingRight: "8px" }}>
                               <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>

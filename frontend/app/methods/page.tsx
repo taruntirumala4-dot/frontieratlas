@@ -13,12 +13,24 @@ export default async function MethodsPage() {
   let taxonomy = staticTaxonomy;
 
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://frontieratlas-backend.morningsignal-india.workers.dev';
-    const res = await fetch(`${apiUrl}/api/v1/methods/taxonomy`, {
-      next: { revalidate: 60 },
-      signal: AbortSignal.timeout(5000)
-    });
-    if (res.ok) {
+    const defaultUrl = process.env.NODE_ENV === "development"
+      ? "http://localhost:8787"
+      : "https://frontieratlas-backend.morningsignal-india.workers.dev";
+    const apiUrl = (process.env.NEXT_PUBLIC_API_URL || defaultUrl).replace(/\/$/, "");
+    let res = await fetch(`${apiUrl}/api/v1/methods/taxonomy`, {
+      next: { revalidate: 300 },
+      signal: AbortSignal.timeout(2000)
+    }).catch(() => null);
+
+    if (!res || !res.ok) {
+      if (apiUrl.includes("localhost")) {
+        res = await fetch("https://frontieratlas-backend.morningsignal-india.workers.dev/api/v1/methods/taxonomy", {
+          next: { revalidate: 300 },
+          signal: AbortSignal.timeout(3000)
+        }).catch(() => null);
+      }
+    }
+    if (res?.ok) {
       const data = await res.json();
 
       if (data?.data && Array.isArray(data.data)) {
@@ -54,13 +66,7 @@ export default async function MethodsPage() {
       {/* Same container width/padding rhythm as the Tasks page (HomeContent) */}
       <div className="w-full max-w-[1370px] mx-auto px-5 md:px-10 lg:px-16 xl:px-24 pt-6 pb-12">
 
-        <nav className="flex items-center gap-2 text-[13px] text-[#8B8B8B] mb-6">
-          <Link href="/" className="hover:text-[#F55036] transition-colors no-underline">
-            Home
-          </Link>
-          <span>/</span>
-          <span className="text-[#555555] font-medium">Methods</span>
-        </nav>
+        
         <TaxonomyView initialTaxonomy={taxonomy} />
       </div>
     </div>

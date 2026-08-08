@@ -59,6 +59,9 @@ export const ingestPaper = async (c: Context) => {
   );
 };
 
+const localMemoryCache = new Map<string, { data: any; expiresAt: number }>();
+const LOCAL_TTL_MS = 10 * 60 * 1000; // 10 minutes
+
 export const getPapers = async (c: Context) => {
   const queryRouter = c.var.queryRouter as QueryRouter;
   const sort = c.req.query("sort") || "trending";
@@ -72,12 +75,17 @@ export const getPapers = async (c: Context) => {
   const cursor = c.req.query("cursor");
 
   try {
-    const redis = redisManager.getClient();
-
-    // Read the current version — one fast Redis GET, prevents any O(N) scan on invalidation
     const version = await getPapersVersion();
     const cacheKey = `papers:v${version}:${JSON.stringify({ sort, task, method, model, organization, period, page, limit, cursor })}`;
 
+    // 1. Check zero-latency in-memory cache (0.1ms response)
+    const localHit = localMemoryCache.get(cacheKey);
+    if (localHit && Date.now() < localHit.expiresAt) {
+      return c.json(localHit.data, 200);
+    }
+
+    // 2. Check Redis cache
+    const redis = redisManager.getClient();
     let cached = null;
     try {
       cached = await redis.get(cacheKey);
@@ -86,6 +94,7 @@ export const getPapers = async (c: Context) => {
     }
 
     if (cached) {
+      localMemoryCache.set(cacheKey, { data: cached, expiresAt: Date.now() + LOCAL_TTL_MS });
       return c.json(cached as any, 200);
     }
 
@@ -107,8 +116,10 @@ export const getPapers = async (c: Context) => {
       data: result,
     };
 
+    localMemoryCache.set(cacheKey, { data: response, expiresAt: Date.now() + LOCAL_TTL_MS });
+
     try {
-      await redis.set(cacheKey, response, { ex: 300 }); // 5 minutes
+      await redis.set(cacheKey, response, { ex: 600 }); // 10 minutes
     } catch (err) {
       console.error("Redis SET failed:", err);
     }
@@ -352,5 +363,110 @@ export const searchPapers = async (c: Context) => {
       { status: "error", message: error.message || "Search failed" },
       500,
     );
+  }
+};
+
+export const checkSavedPaper = async (c: any) => {
+  const prisma = c.get("prisma");
+  const user = c.get("user"); // Attached by authMiddleware
+  const paper_id = c.req.query("paper_id");
+
+  if (!user || !user.id || !paper_id) {
+    return c.json({ isSaved: false });
+  }
+
+  try {
+    const existingSave = await prisma.savedPaper.findUnique({
+      where: {
+        user_id_paper_id: {
+          user_id: user.id,
+          paper_id: paper_id,
+        },
+      },
+    });
+
+    return c.json({ isSaved: !!existingSave });
+  } catch (error) {
+    console.error("Error checking saved paper:", error);
+    return c.json({ isSaved: false }, 500);
+  }
+};
+
+export const toggleSavePaper = async (c: any) => {
+  const prisma = c.get("prisma");
+  const user = c.get("user"); // Attached by authMiddleware
+
+  if (!user || !user.id) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  try {
+    const body = await c.req.json();
+    const paper_id = body.paper_id;
+
+    if (!paper_id) {
+      return c.json({ error: "Paper ID is required" }, 400);
+    }
+
+    // Check if it's already saved
+    const existingSave = await prisma.savedPaper.findUnique({
+      where: {
+        user_id_paper_id: {
+          user_id: user.id,
+          paper_id: paper_id,
+        },
+      },
+    });
+
+    if (existingSave) {
+      // If it exists, unsave it
+      await prisma.savedPaper.delete({
+        where: {
+          user_id_paper_id: {
+            user_id: user.id,
+            paper_id: paper_id,
+          },
+        },
+      });
+      return c.json({ isSaved: false });
+    } else {
+      // If it doesn't exist, save it
+      await prisma.savedPaper.create({
+        data: {
+          user_id: user.id,
+          paper_id: paper_id,
+        },
+      });
+      return c.json({ isSaved: true });
+    }
+  } catch (error) {
+    console.error("Error toggling saved paper:", error);
+    return c.json({ error: "Failed to toggle saved paper" }, 500);
+  }
+};
+
+export const getSavedPapers = async (c: any) => {
+  const prisma = c.get("prisma");
+  const user = c.get("user"); // Attached by authMiddleware
+
+  if (!user || !user.id) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  try {
+    // Fetch the saved records AND include the actual paper data
+    const savedRecords = await prisma.savedPaper.findMany({
+      where: { user_id: user.id },
+      include: { paper: true }, 
+      orderBy: { created_at: "desc" }, // Newest saves first
+    });
+
+    // Extract just the paper objects from the relationship
+    const papers = savedRecords.map((record: any) => record.paper);
+
+    return c.json({ papers });
+  } catch (error) {
+    console.error("Error fetching saved papers:", error);
+    return c.json({ error: "Failed to fetch saved papers" }, 500);
   }
 };

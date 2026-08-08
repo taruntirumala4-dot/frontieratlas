@@ -76,6 +76,9 @@ export interface ModelItem {
   architecture: string | null;
   contextWindow: string | null;
   license: string | null;
+  paperUrl: string | null;
+repositoryUrl: string | null;
+apiUrl: string | null;
   createdAt: string;
   paperCount: number;
   citationCount: number;
@@ -107,6 +110,9 @@ export interface ModelDetail {
   architecture: string | null;
   contextWindow: string | null;
   license: string | null;
+  paperUrl: string | null;
+repositoryUrl: string | null;
+apiUrl: string | null;
   createdAt: string;
   paperCount: number;
   citationCount: number;
@@ -169,6 +175,9 @@ function mapModelItem(m: BackendModelItem): ModelItem {
     architecture: m.architecture,
     contextWindow: m.contextWindow,
     license: m.license,
+    paperUrl: m.paperUrl,
+repositoryUrl: m.repositoryUrl,
+apiUrl: m.apiUrl,
     createdAt: m.createdAt,
     paperCount: m.paperCount,
     citationCount: m.citationCount,
@@ -190,7 +199,7 @@ function getCached<T>(key: string): T | null {
       const cached = localStorage.getItem(`atlas_cache_${key}`);
       if (cached) {
         const { data, timestamp } = JSON.parse(cached);
-        if (Date.now() - timestamp < 5 * 60 * 1000) { // 5 min TTL
+        if (Date.now() - timestamp < 15 * 60 * 1000) { // 15 min TTL
           modelsCache.set(key, data);
           return data as T;
         }
@@ -212,14 +221,77 @@ function setCached(key: string, data: any) {
   }
 }
 
-export async function getModels(params?: string): Promise<ModelItem[]> {
-  const query = params ? `?${params}` : '?limit=10000';
-  const cacheKey = `models_${query}`;
+export function saveCachedModelDetail(slug: string, detail: ModelDetail) {
+  const cleanSlug = slug.toLowerCase().trim();
+  setCached(`model_detail_${cleanSlug}`, detail);
+}
+
+export function getCachedModelBySlug(slug: string): ModelDetail | null {
+  const cleanSlug = slug.toLowerCase().trim();
+  // 1. Check direct detail cache
+  const cachedDetail = getCached<ModelDetail>(`model_detail_${cleanSlug}`);
+  if (cachedDetail) return cachedDetail;
+
+  // 2. Check catalog list cache for instant preview
+  const catalog = getCachedModels();
+  if (catalog && Array.isArray(catalog)) {
+    const item = catalog.find((m) => m.slug.toLowerCase() === cleanSlug || m.id === cleanSlug);
+    if (item) {
+      return {
+        id: item.id,
+        name: item.name,
+        slug: item.slug,
+        vendor: item.vendor,
+        vendorLogoUrl: item.vendorLogoUrl,
+        releaseDate: item.releaseDate,
+        parameterCount: item.parameterCount,
+        modality: item.modality,
+        accessType: item.accessType,
+        opennessType: item.opennessType,
+        description: item.description,
+        benchmarkScore: item.benchmarkScore,
+        modelFamily: item.modelFamily,
+        category: item.category,
+        capabilities: item.capabilities,
+        researchAreas: item.researchAreas,
+        architecture: item.architecture,
+        contextWindow: item.contextWindow,
+        license: item.license,
+        paperUrl: item.paperUrl,
+        repositoryUrl: item.repositoryUrl,
+        apiUrl: item.apiUrl,
+        createdAt: item.createdAt,
+        paperCount: item.paperCount,
+        citationCount: item.citationCount,
+        githubStars: item.githubStars,
+        trendingScore: item.trendingScore,
+        papers: [],
+        tasks: item.tasks || [],
+      };
+    }
+  }
+
+  return null;
+}
+
+export async function getModels(params?: string | Record<string, any>): Promise<ModelItem[]> {
+  let queryString = '?limit=10000';
+  if (typeof params === 'string') {
+    queryString = params.startsWith('?') ? params : `?${params}`;
+  } else if (params && typeof params === 'object') {
+    const searchParams = new URLSearchParams();
+    Object.entries(params).forEach(([k, v]) => {
+      if (v !== undefined && v !== null) searchParams.set(k, String(v));
+    });
+    queryString = `?${searchParams.toString()}`;
+  }
+
+  const cacheKey = `models_${queryString}`;
   
   const cached = getCached<ModelItem[]>(cacheKey);
   if (cached) return cached;
 
-  const response = await fetchApi<GetModelsResponse>(`/api/v1/models${query}`);
+  const response = await fetchApi<GetModelsResponse>(`/api/v1/models${queryString}`);
   const items = Array.isArray(response?.data) ? response.data : [];
   const result = items.map(mapModelItem);
   
@@ -256,36 +328,58 @@ export function getCachedModelFacets(): ModelFacets | null {
 }
 
 export async function getModelBySlug(slug: string): Promise<ModelDetail> {
-  const response = await fetchApi<GetModelBySlugResponse>(`/api/v1/models/${encodeURIComponent(slug)}`);
-  const data = response.data;
-  return {
-    id: data.id,
-    name: data.name,
-    slug: data.slug,
-    vendor: data.vendor,
-    vendorLogoUrl: data.vendorLogoUrl,
-    releaseDate: data.releaseDate,
-    parameterCount: data.parameterCount,
-    modality: data.modality,
-    accessType: data.accessType,
-    opennessType: data.opennessType,
-    description: data.description,
-    benchmarkScore: data.benchmarkScore,
-    modelFamily: data.modelFamily,
-    category: data.category,
-    capabilities: data.capabilities,
-    researchAreas: data.researchAreas,
-    architecture: data.architecture,
-    contextWindow: data.contextWindow,
-    license: data.license,
-    createdAt: data.createdAt,
-    paperCount: data.paperCount,
-    citationCount: data.citationCount,
-    githubStars: data.githubStars,
-    trendingScore: data.trendingScore,
-    papers: (data.papers ?? []).map((item: any) => item?.paper || item).filter(Boolean),
-    tasks: data.tasks ?? [],
-  };
+  const cleanSlug = slug.toLowerCase().trim();
+  const cached = getCachedModelBySlug(cleanSlug);
+  
+  // Make API call to fetch full fresh data with benchmarks & papers
+  try {
+    const response = await fetchApi<GetModelBySlugResponse>(`/api/v1/models/${encodeURIComponent(cleanSlug)}`);
+    const data = response.data;
+    const detail: ModelDetail = {
+      id: data.id,
+      name: data.name,
+      slug: data.slug,
+      vendor: data.vendor,
+      vendorLogoUrl: data.vendorLogoUrl,
+      releaseDate: data.releaseDate,
+      parameterCount: data.parameterCount,
+      modality: data.modality,
+      accessType: data.accessType,
+      opennessType: data.opennessType,
+      description: data.description,
+      benchmarkScore: data.benchmarkScore,
+      modelFamily: data.modelFamily,
+      category: data.category,
+      capabilities: data.capabilities,
+      researchAreas: data.researchAreas,
+      architecture: data.architecture,
+      contextWindow: data.contextWindow,
+      license: data.license,
+      paperUrl: data.paperUrl,
+      repositoryUrl: data.repositoryUrl,
+      apiUrl: data.apiUrl,
+      createdAt: data.createdAt,
+      paperCount: data.paperCount,
+      citationCount: data.citationCount,
+      githubStars: data.githubStars,
+      trendingScore: data.trendingScore,
+      papers: (data.papers ?? []).map((item: any) => item?.paper || item).filter(Boolean),
+      tasks: data.tasks ?? [],
+    };
+    saveCachedModelDetail(cleanSlug, detail);
+    return detail;
+  } catch (err) {
+    if (cached) return cached;
+    throw err;
+  }
+}
+
+export function prefetchModelBySlug(slug: string) {
+  if (typeof window === "undefined" || !slug) return;
+  const cleanSlug = slug.toLowerCase().trim();
+  if (!modelsCache.has(`model_detail_${cleanSlug}`)) {
+    getModelBySlug(cleanSlug).catch(() => {});
+  }
 }
 
 if (typeof window !== "undefined") {
@@ -301,8 +395,8 @@ if (typeof window !== "undefined") {
     }
   };
   if ("requestIdleCallback" in window) {
-    (window as any).requestIdleCallback(() => setTimeout(prefetchModels, 1200));
+    (window as any).requestIdleCallback(() => setTimeout(prefetchModels, 100));
   } else {
-    setTimeout(prefetchModels, 2000);
+    setTimeout(prefetchModels, 500);
   }
 }

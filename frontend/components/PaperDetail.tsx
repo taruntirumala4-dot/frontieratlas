@@ -1,5 +1,6 @@
 "use client";
-
+import { useRecentPapers } from '@/lib/useRecentPapers';
+import RecentlyViewed from '@/components/RecentlyViewed';
 import {
   ExternalLink,
   Share2,
@@ -11,10 +12,12 @@ import {
   BookOpen,
   Quote,
   Star,
+  Bookmark,
   GitBranch,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useState, useCallback, useEffect, type ReactNode } from "react";
 import type { PaperDetail as PaperDetailType, PaperRanking, PaperSotaClaim } from "@/lib/papers";
 import { getPapers, getArxivAbsUrl, getArxivPdfUrl, type Paper } from "@/lib/paperApi";
@@ -702,10 +705,69 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
   const [relatedLoading, setRelatedLoading] = useState(true);
   const [showAllAuthors, setShowAllAuthors] = useState(false);
   const [deferred, setDeferred] = useState(false);
+  const router = useRouter();
+  const [isSaved, setIsSaved] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Set up your API Base exactly like Navbar.tsx does
+  const API_BASE = process.env.NODE_ENV === "development" 
+    ? "" 
+    : (process.env.NEXT_PUBLIC_API_URL || "https://frontieratlas-backend.morningsignal-india.workers.dev").replace(/\/$/, "");
+
+  // 1. Check if the paper is saved when the page loads
+  useEffect(() => {
+    async function checkSavedStatus() {
+      try {
+        const res = await fetch(`${API_BASE}/api/v1/research-papers/check-saved?paper_id=${paper.id}`, {
+          credentials: "include" // <--- This tells it to use your secure cookies!
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setIsSaved(data.isSaved);
+        }
+      } catch {
+        // Fail silently
+      }
+    }
+    if (paper?.id) checkSavedStatus();
+  }, [paper?.id]);
+
+  // 2. Handle clicking the save button
+  const handleSaveClick = async () => {
+    setIsSaving(true);
+    try {
+      const response = await fetch(`${API_BASE}/api/v1/research-papers/save`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: "include", // <--- Send cookies to verify the user
+        body: JSON.stringify({ paper_id: paper.id })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setIsSaved(data.isSaved); 
+      } else if (response.status === 401 || response.status === 403) {
+        // If the backend rejects the cookie, they aren't logged in. Redirect them.
+        const currentUrl = encodeURIComponent(window.location.pathname);
+        router.push(`/login?redirect=${currentUrl}`);
+      }
+    } catch (error) {
+      console.error("Failed to save paper");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const arxivUrl = getArxivAbsUrl(paper.arxivId, paper.paperUrl) || (paper.arxivId ? `https://arxiv.org/abs/${paper.arxivId}` : null);
   const pdfUrl = getArxivPdfUrl(paper.pdfUrl, paper.paperUrl, paper.arxivId);
   const doiUrl = paper.doi ? `https://doi.org/${paper.doi}` : null;
+const { addRecentPaper } = useRecentPapers();
+
+  useEffect(() => {
+    if (paper) {
+      addRecentPaper(paper); // Just pass the entire paper object directly!
+    }
+  }, [paper]);
   const huggingFaceRepo = paper.repositories?.find(
     (repo: any) => repo.url?.includes("huggingface.co")
   );
@@ -883,7 +945,7 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
         <div className="grid grid-cols-1 gap-8 xl:grid-cols-[1fr_320px] xl:gap-10">
 
           {/* ===== MAIN CONTENT ===== */}
-          <main className="space-y-8 lg:space-y-10 min-w-0">
+          <main className="space-y-8 lg:space-y-10 min-w-0 order-1">
 
             {/* HEADER */}
             <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
@@ -906,7 +968,7 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
                 {/* Authors */}
                 <div className="flex items-center flex-wrap">
                   <div className="flex flex-wrap items-center">
-                    {paper.authors
+                    {(paper.authors || [])
                       .slice(0, showAllAuthors ? paper.authors.length : 3)
                       .map((pa, i, arr) => (
                         <span key={pa.id || i} className="inline-flex items-center">
@@ -1021,6 +1083,18 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
                     >
                       <Share2 size={18} />
                     </button>
+                  <button
+                  type="button"
+                  onClick={handleSaveClick}
+                  disabled={isSaving}
+                  className="ds-button-ghost inline-flex items-center justify-center gap-1.5 rounded-full border-[1.5px] border-[#E0DDD6] bg-transparent px-5 py-2 text-[13px] font-medium text-[#444444] no-underline transition-all hover:bg-[rgba(255,90,31,0.06)] hover:text-[#FF5A1F] hover:border-[rgba(255,90,31,0.3)] active:scale-[0.97] disabled:opacity-50"
+                >
+                  <Bookmark 
+                    size={18} 
+                    className={isSaved ? "fill-[#FF5A1F] text-[#FF5A1F]" : ""} 
+                  />
+                  {isSaved ? "Saved" : "Save"}
+                </button>
 
                   </div>
                 </div>
@@ -1162,9 +1236,9 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
                 <h3 className="text-[11px] font-black uppercase tracking-[0.1em] text-[#8B8B8B] m-0">MODELS</h3>
                 {(paper.models || []).length > 0 ? (
                   <div className="flex flex-wrap gap-1.5">
-                    {(paper.models || []).map((m) => (
-                      <Link
-                        key={m.id}
+                    {(paper.models || []).map((m, i) => (
+  <Link
+    key={m.id || m.slug || i}
                         href={`/models/${m.slug}`}
                         className="inline-flex items-center gap-1 rounded-[4px] border border-[#FDE4C8] bg-[#FFF8F0] px-2 py-0.5 text-[12.5px] font-medium text-[#A45C00] no-underline hover:opacity-80 transition-opacity"
                       >
@@ -1223,48 +1297,14 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
                   </div>
                 </div>
               )}
-
-              {/* RELATED PAPERS */}
-              <section className="border-t border-[#ECE7DD] pt-6">
-                <h2 className="section-label mb-3.5">RELATED PAPERS</h2>
-                {relatedLoading ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
-                    {Array.from({ length: 4 }).map((_, i) => (
-                      <div key={i} className="flex flex-col border border-[#EDE8DF] bg-white overflow-hidden animate-pulse">
-                        <div className="w-full aspect-[3/2] bg-[#EFECE6]" />
-                        <div className="p-3.5 space-y-2">
-                          <div className="h-3 bg-[#E8E5DD] rounded w-full" />
-                          <div className="h-3 bg-[#E8E5DD] rounded w-3/4" />
-                          <div className="h-2.5 bg-[#E8E5DD] rounded w-1/2" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : relatedPapers.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
-                    {relatedPapers.map((relatedPaper) => (
-                      <RelatedPaperCard key={relatedPaper.slug || relatedPaper.id} paper={relatedPaper} />
-                    ))}
-                  </div>
-                ) : !relatedLoading ? (
-                  <span className="text-[13px] text-[#999] italic">Not available</span>
-                ) : null}
-              </section>
             </div>
-
-            {/* Back link */}
-            <Link
-              href="/"
-              className="hover-dim inline-flex items-center gap-1.5 text-[12.5px] font-medium text-[#8B8B8B] no-underline border-t border-[#E5E5E0] pt-3.5 transition-colors hover:text-[#FF5A1F]"
-            >
-              <ArrowLeft size={13} />
-              Back to Home
-            </Link>
           </main>
 
           {/* ===== SIDEBAR ===== */}
+          {/* On mobile (below xl): order-2 so it appears after main content but before related papers */}
+          {/* On desktop (xl+): stays in the right column via grid placement */}
           {deferred ? (
-            <aside className="space-y-5 xl:sticky xl:top-6 self-start">
+            <aside className="space-y-5 xl:sticky xl:top-6 self-start order-2 xl:row-span-2">
               <RepositoryPanel paper={paper} resolvedGithubUrl={resolvedGithubUrl} />
               {hfResolvedUrl && <HuggingFacePanel paper={paper} hfUrl={hfResolvedUrl} />}
               <CitationPanel
@@ -1277,7 +1317,7 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
               <PaperMetadataPanel paper={paper} arxivUrl={arxivUrl} doiUrl={doiUrl} />
             </aside>
           ) : (
-            <aside className="space-y-5 xl:sticky xl:top-6 self-start">
+            <aside className="space-y-5 xl:sticky xl:top-6 self-start order-2 xl:row-span-2">
               <div className="border border-[#EDE8DF] rounded-lg bg-white p-4 space-y-3">
                 <div className="h-[14px] w-28 bg-[#E4E0D8] rounded animate-pulse" />
                 <div className="space-y-1.5">
@@ -1303,6 +1343,47 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
               </div>
             </aside>
           )}
+
+          {/* ===== RELATED PAPERS + FOOTER (after sidebar on mobile) ===== */}
+          <div className="order-3 xl:col-start-1 space-y-8 lg:space-y-10">
+            {/* RELATED PAPERS */}
+            <section className="border-t border-[#ECE7DD] pt-6">
+              <h2 className="section-label mb-3.5">RELATED PAPERS</h2>
+              {relatedLoading ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="flex flex-col border border-[#EDE8DF] bg-white overflow-hidden animate-pulse">
+                      <div className="w-full aspect-[3/2] bg-[#EFECE6]" />
+                      <div className="p-3.5 space-y-2">
+                        <div className="h-3 bg-[#E8E5DD] rounded w-full" />
+                        <div className="h-3 bg-[#E8E5DD] rounded w-3/4" />
+                        <div className="h-2.5 bg-[#E8E5DD] rounded w-1/2" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : relatedPapers.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+                  {relatedPapers.map((relatedPaper) => (
+                    <RelatedPaperCard key={relatedPaper.slug || relatedPaper.id} paper={relatedPaper} />
+                  ))}
+                </div>
+              ) : !relatedLoading ? (
+                <span className="text-[13px] text-[#999] italic">Not available</span>
+              ) : null}
+            </section>
+
+            <RecentlyViewed />
+
+            {/* Back link */}
+            <Link
+              href="/"
+              className="hover-dim inline-flex items-center gap-1.5 text-[12.5px] font-medium text-[#8B8B8B] no-underline border-t border-[#E5E5E0] pt-3.5 transition-colors hover:text-[#FF5A1F]"
+            >
+              <ArrowLeft size={13} />
+              Back to Home
+            </Link>
+          </div>
         </div>
       </div>
     </div>
