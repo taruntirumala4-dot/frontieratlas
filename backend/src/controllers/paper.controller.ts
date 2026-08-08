@@ -68,6 +68,7 @@ export const getPapers = async (c: Context) => {
   const task = c.req.query("task");
   const method = c.req.query("method");
   const model = c.req.query("model");
+  const organization = c.req.query("organization");
   const period = c.req.query("period") || "all";
   const page = Number(c.req.query("page")) || 1;
   const limit = Number(c.req.query("limit")) || 20;
@@ -75,7 +76,7 @@ export const getPapers = async (c: Context) => {
 
   try {
     const version = await getPapersVersion();
-    const cacheKey = `papers:v${version}:${JSON.stringify({ sort, task, method, model, period, page, limit, cursor })}`;
+    const cacheKey = `papers:v${version}:${JSON.stringify({ sort, task, method, model, organization, period, page, limit, cursor })}`;
 
     // 1. Check zero-latency in-memory cache (0.1ms response)
     const localHit = localMemoryCache.get(cacheKey);
@@ -102,6 +103,7 @@ export const getPapers = async (c: Context) => {
       task,
       method,
       model,
+      organization,
       period,
       page,
       limit,

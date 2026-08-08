@@ -27,6 +27,10 @@ function organizationDescription(name: string) {
   return descriptions[hash % descriptions.length];
 }
 
+function organizationSlug(name: string) {
+  return name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+
 function OrganizationCard({
   name,
   count,
@@ -42,7 +46,7 @@ function OrganizationCard({
 }) {
   return (
     <Link
-      href={`/models?vendor=${encodeURIComponent(name)}`}
+      href={`/organizations/${organizationSlug(name)}`}
       className="group flex h-[224px] flex-col overflow-hidden rounded-md border border-[#E7E4DD] bg-white no-underline shadow-[0_2px_12px_rgba(24,24,20,0.035)] transition-all duration-200 hover:-translate-y-1 hover:border-[#FFB098] hover:shadow-[0_12px_30px_rgba(255,90,31,0.1)]"
     >
       <div className="flex items-start gap-2.5 border-b border-[#EEECE6] bg-[#FBFAF7] p-3">

@@ -39,6 +39,7 @@ export default function Navbar({
   const isTasksActive = pathname.startsWith("/tasks");
   const isBenchmarksActive = pathname.startsWith("/benchmarks");
   const isModelsActive = pathname.startsWith("/models");
+  const isOrganizationsActive = pathname.startsWith("/organizations");
   //const isOrganizationsActive = pathname.startsWith("/organizations");
   const isSavedActive = pathname.startsWith("/saved");
 
@@ -278,16 +279,27 @@ export default function Navbar({
             Models
           </Link>
           <Link
-            href={currentUser ? "/saved" : "/login?redirect=/saved"}
-            data-text="Saved"
-            className={`text-[13px] transition-colors no-underline before:content-[attr(data-text)] before:block before:font-bold before:h-0 before:overflow-hidden before:invisible before:select-none text-center flex flex-col justify-center ${
-              isSavedActive
-                ? "text-[#F55036] font-bold"
-                : "text-[#555555] font-medium hover:text-[#F55036]"
-            }`}
-          >
-            Saved
-          </Link>
+  href="/organizations"
+  data-text="Organizations"
+  className={`text-[13px] transition-colors no-underline before:content-[attr(data-text)] before:block before:font-bold before:h-0 before:overflow-hidden before:invisible before:select-none text-center flex flex-col justify-center ${
+    isOrganizationsActive
+      ? "text-[#F55036] font-bold"
+      : "text-[#555555] font-medium hover:text-[#F55036]"
+  }`}
+>
+  Organizations
+</Link>
+<Link
+  href={currentUser ? "/saved" : "/login?redirect=/saved"}
+  data-text="Saved"
+  className={`text-[13px] transition-colors no-underline before:content-[attr(data-text)] before:block before:font-bold before:h-0 before:overflow-hidden before:invisible before:select-none text-center flex flex-col justify-center ${
+    isSavedActive
+      ? "text-[#F55036] font-bold"
+      : "text-[#555555] font-medium hover:text-[#F55036]"
+  }`}
+>
+  Saved
+</Link>
         </div>
 
         {/* Right (Desktop) */}
