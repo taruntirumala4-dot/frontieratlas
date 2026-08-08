@@ -228,6 +228,72 @@ const [loading, setLoading] = useState(
   const [selectedCapability, setSelectedCapability] = useState<string | null>(null);
   const [selectedFamily, setSelectedFamily] = useState<string | null>(null);
   const [selectedCollection, setSelectedCollection] = useState<string | null>(null);
+  // Per-section "See all / Show less" toggle states (independent)
+  const [showAllCapabilities, setShowAllCapabilities] = useState(false);
+  const [showAllFamilies, setShowAllFamilies] = useState(false);
+  const [showAllVendors, setShowAllVendors] = useState(false);
+  const [showAllResearch, setShowAllResearch] = useState(false);
+  // Toggle helpers that scroll to section heading when collapsing
+  const toggleShowAllCapabilities = () => {
+    setShowAllCapabilities((prev) => {
+      const next = !prev;
+      if (prev) {
+        // was expanded, now collapsing -> ensure section header stays visible (instant)
+        if (typeof window !== "undefined") {
+          requestAnimationFrame(() => {
+            const el = document.getElementById("section-capability");
+            if (el) el.scrollIntoView({ behavior: "auto", block: "start" });
+          });
+        }
+      }
+      return next;
+    });
+  };
+
+  const toggleShowAllFamilies = () => {
+    setShowAllFamilies((prev) => {
+      const next = !prev;
+      if (prev) {
+        if (typeof window !== "undefined") {
+          requestAnimationFrame(() => {
+            const el = document.getElementById("section-family");
+            if (el) el.scrollIntoView({ behavior: "auto", block: "start" });
+          });
+        }
+      }
+      return next;
+    });
+  };
+
+  const toggleShowAllVendors = () => {
+    setShowAllVendors((prev) => {
+      const next = !prev;
+      if (prev) {
+        if (typeof window !== "undefined") {
+          requestAnimationFrame(() => {
+            const el = document.getElementById("section-organization");
+            if (el) el.scrollIntoView({ behavior: "auto", block: "start" });
+          });
+        }
+      }
+      return next;
+    });
+  };
+
+  const toggleShowAllResearch = () => {
+    setShowAllResearch((prev) => {
+      const next = !prev;
+      if (prev) {
+        if (typeof window !== "undefined") {
+          requestAnimationFrame(() => {
+            const el = document.getElementById("section-research");
+            if (el) el.scrollIntoView({ behavior: "auto", block: "start" });
+          });
+        }
+      }
+      return next;
+    });
+  };
   const [searchQuery, setSearchQuery] = useState("");
   const [inspectedModel, setInspectedModel] = useState<ModelItem | null>(null);
   const [copied, setCopied] = useState(false);
@@ -393,8 +459,52 @@ function matchesArrayItem(list: unknown, target: string): boolean {
 
   const topModelForSelection = useMemo(() => {
     if (!activeFilterLabel || !filteredCatalogModels.length) return null;
-    return filteredCatalogModels[0];
+    // Rank models by average benchmark score (higher is better), then paperCount, then original order.
+    const enriched = filteredCatalogModels.map((m, i) => {
+      const scores = m.benchmarkScore && typeof m.benchmarkScore === 'object' ? Object.values(m.benchmarkScore).filter(v => typeof v === 'number' && !isNaN(v)) as number[] : [];
+      const hasBenchmark = scores.length > 0;
+      const avg = hasBenchmark ? scores.reduce((a, b) => a + b, 0) / scores.length : -Infinity;
+      return { model: m, avg, hasBenchmark, paperCount: m.paperCount || 0, index: i };
+    });
+
+    enriched.sort((a, b) => {
+      // models with benchmarks rank above those without
+      if (a.hasBenchmark && !b.hasBenchmark) return -1;
+      if (!a.hasBenchmark && b.hasBenchmark) return 1;
+      // both have or both don't have benchmarks
+      if (a.hasBenchmark && b.hasBenchmark) {
+        if (b.avg !== a.avg) return b.avg - a.avg; // higher avg first
+      }
+      // tie-breaker: higher paperCount
+      if (b.paperCount !== a.paperCount) return b.paperCount - a.paperCount;
+      // final tie-breaker: preserve original order
+      return a.index - b.index;
+    });
+
+    return enriched.length ? enriched[0].model : null;
   }, [activeFilterLabel, filteredCatalogModels]);
+
+  // Ranked catalog models: sort by average benchmark score desc, then paperCount desc, then original order
+  const rankedCatalogModels = useMemo(() => {
+    const enriched = filteredCatalogModels.map((m, i) => {
+      const scores = m.benchmarkScore && typeof m.benchmarkScore === 'object' ? Object.values(m.benchmarkScore).filter(v => typeof v === 'number' && !isNaN(v)) as number[] : [];
+      const hasBenchmark = scores.length > 0;
+      const avg = hasBenchmark ? scores.reduce((a, b) => a + b, 0) / scores.length : -Infinity;
+      return { model: m, avg, hasBenchmark, paperCount: m.paperCount || 0, index: i };
+    });
+
+    enriched.sort((a, b) => {
+      if (a.hasBenchmark && !b.hasBenchmark) return -1;
+      if (!a.hasBenchmark && b.hasBenchmark) return 1;
+      if (a.hasBenchmark && b.hasBenchmark) {
+        if (b.avg !== a.avg) return b.avg - a.avg;
+      }
+      if (b.paperCount !== a.paperCount) return b.paperCount - a.paperCount;
+      return a.index - b.index;
+    });
+
+    return enriched.map(e => e.model);
+  }, [filteredCatalogModels]);
 
   const filteredCapabilities = useMemo(() => {
     if (!facets?.capabilities) return [];
@@ -564,7 +674,7 @@ highlight="Models"
                   ? Array.from({ length: 8 }).map((_, i) => (
                     <CapabilitySkeleton key={i} />
                   ))
-                  : (() => { const getIcon = dedupedIcons(0); return filteredCapabilities.map((cap, idx) => {
+                  : (() => { const getIcon = dedupedIcons(0); const caps = (!showAllCapabilities && filteredCapabilities.length > 40) ? filteredCapabilities.slice(0,40) : filteredCapabilities; return caps.map((cap, idx) => {
                     const { Icon: SkeletalIcon, color: strokeColor } = getIcon(idx, cap.name);
                     const isActive = selectedCapability === cap.name;
                     return (
@@ -589,6 +699,16 @@ highlight="Models"
                     );
                   }); })()}
               </div>
+              {filteredCapabilities.length > 40 && (
+                <div className="mt-4 flex justify-center">
+                  <button
+                    onClick={toggleShowAllCapabilities}
+                    className="text-[13px] font-medium text-[#FF5A1F] bg-transparent border-none"
+                  >
+                    {showAllCapabilities ? "Show less" : "See all"}
+                  </button>
+                </div>
+              )}
             </section>
               
 
@@ -600,7 +720,7 @@ highlight="Models"
                   <span className="models-block-count text-[11px] font-normal uppercase tracking-wider text-gray-400">{facets?.modelFamilies?.length ?? "—"} Model Families</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                  {(() => { const getIcon = dedupedIcons(3); return filteredModelFamilies.map((fam, idx) => {
+                  {(() => { const getIcon = dedupedIcons(3); const fams = (!showAllFamilies && filteredModelFamilies.length > 40) ? filteredModelFamilies.slice(0,40) : filteredModelFamilies; return fams.map((fam, idx) => {
                     const isActive = selectedFamily === fam.name;
                     const familyLogo = allModels.find(
                       (m) => m.modelFamily?.toLowerCase() === fam.name.toLowerCase() && m.vendorLogoUrl
@@ -632,6 +752,16 @@ highlight="Models"
                     );
                   }); })()}
                 </div>
+                {filteredModelFamilies.length > 40 && (
+                  <div className="mt-4 flex justify-center">
+                    <button
+                      onClick={toggleShowAllFamilies}
+                      className="text-[13px] font-medium text-[#FF5A1F] bg-transparent border-none"
+                    >
+                      {showAllFamilies ? "Show less" : "See all"}
+                    </button>
+                  </div>
+                )}
               </section>
             )}
 
@@ -643,7 +773,7 @@ highlight="Models"
                   <span className="models-block-count text-[11px] font-normal uppercase tracking-wider text-gray-400">{facets?.vendors?.length} Leading Labs</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                  {(() => { const getIcon = dedupedIcons(7); return filteredVendors.map((v, idx) => {
+                  {(() => { const getIcon = dedupedIcons(7); const vendors = (!showAllVendors && filteredVendors.length > 40) ? filteredVendors.slice(0,40) : filteredVendors; return vendors.map((v, idx) => {
                     const { Icon: SkeletalIcon, color: strokeColor } = getIcon(idx, "");
                     const isActive = selectedVendor === v.name;
                     const vendorModel = allModels.find(
@@ -686,6 +816,16 @@ highlight="Models"
                     );
                   }); })()}
                 </div>
+                {filteredVendors.length > 40 && (
+                  <div className="mt-4 flex justify-center">
+                    <button
+                      onClick={toggleShowAllVendors}
+                      className="text-[13px] font-medium text-[#FF5A1F] bg-transparent border-none"
+                    >
+                      {showAllVendors ? "Show less" : "See all"}
+                    </button>
+                  </div>
+                )}
               </section>
             )}
 
@@ -697,7 +837,7 @@ highlight="Models"
                   <span className="models-block-count text-[11px] font-normal uppercase tracking-wider text-gray-400">{facets?.researchAreas?.length} Modalities &amp; Domains</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                  {(() => { const getIcon = dedupedIcons(11); return filteredResearchAreas.map((d, idx) => {
+                  {(() => { const getIcon = dedupedIcons(11); const areas = (!showAllResearch && filteredResearchAreas.length > 40) ? filteredResearchAreas.slice(0,40) : filteredResearchAreas; return areas.map((d, idx) => {
                     const { Icon: SkeletalIcon, color: strokeColor } = getIcon(idx, d.name);
                     const isActive = selectedDomain === d.name;
                     return (
@@ -722,6 +862,16 @@ highlight="Models"
                     );
                   }); })()}
                 </div>
+                {filteredResearchAreas.length > 40 && (
+                  <div className="mt-4 flex justify-center">
+                    <button
+                      onClick={toggleShowAllResearch}
+                      className="text-[13px] font-medium text-[#FF5A1F] bg-transparent border-none"
+                    >
+                      {showAllResearch ? "Show less" : "See all"}
+                    </button>
+                  </div>
+                )}
               </section>
             )}
 
@@ -947,7 +1097,7 @@ highlight="Models"
                         </tr>
                       </thead>
                       <tbody>
-                        {filteredCatalogModels.map((model, idx) => (
+                        {rankedCatalogModels.map((model, idx) => (
                           <tr key={model.id} onClick={() => router.push(`/models/${model.slug || model.id}`)} style={{ borderBottom: "1px solid #EAE9E4", cursor: "pointer", transition: "background 0.15s ease" }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#FFF8F6"; prefetchModelBySlug(model.slug); }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}>
                             <td style={{ padding: "12px 12px", fontFamily: "monospace", fontSize: "11px", fontWeight: 400, color: "#8B8B8B", width: "1%", whiteSpace: "nowrap", verticalAlign: "middle", lineHeight: "1.3", paddingRight: "12px" }}>{(idx + 1).toString().padStart(3, "0")}</td>
                             <td style={{ padding: "12px 12px", fontWeight: 400, fontSize: "12.5px", color: "#111111", minWidth: "160px", whiteSpace: "nowrap", wordBreak: "normal", verticalAlign: "middle", lineHeight: "1.3", paddingLeft: "12px", paddingRight: "8px" }}>
