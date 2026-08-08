@@ -2,7 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { RelatedPaperCard } from "../../components/PaperDetail";
+import { RelatedPaperCard } from "../../components/PaperDetail"; 
+
+const API_BASE = process.env.NODE_ENV === "development" 
+  ? "" 
+  : (process.env.NEXT_PUBLIC_API_URL || "https://frontieratlas-backend.morningsignal-india.workers.dev").replace(/\/$/, "");
 
 export default function SavedPapersPage() {
   const router = useRouter();
@@ -10,24 +14,17 @@ export default function SavedPapersPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("token") || localStorage.getItem("access_token") || localStorage.getItem("auth_token");
-    if (!token) {
-      router.push("/login?redirect=/saved");
-      return;
-    }
-
     async function fetchSavedPapers() {
-     try {
-        // @ts-ignore
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-        const res = await fetch(`${apiUrl}/api/v1/research-papers/saved`, {
-          headers: { Authorization: `Bearer ${token}` },
+      try {
+        const res = await fetch(`${API_BASE}/api/v1/research-papers/saved`, {
+          credentials: "include", // <--- Send cookies to verify the user
         });
 
         if (res.ok) {
           const data = await res.json();
           setPapers(data.papers);
-        } else if (res.status === 401) {
+        } else if (res.status === 401 || res.status === 403) {
+          // Not logged in
           router.push("/login?redirect=/saved");
         }
       } catch (error) {
