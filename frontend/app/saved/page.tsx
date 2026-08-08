@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { RelatedPaperCard } from "../../components/PaperDetail"; 
 
-const API_BASE = process.env.NODE_ENV === "development" 
-  ? "" 
-  : (process.env.NEXT_PUBLIC_API_URL || "https://frontieratlas-backend.morningsignal-india.workers.dev").replace(/\/$/, "");
+const defaultApiUrl = "https://frontieratlas-backend.morningsignal-india.workers.dev";
+const API_BASE = process.env.NODE_ENV === "development"
+  ? ""
+  : (process.env.NEXT_PUBLIC_API_URL || defaultApiUrl).replace(/\/$/, "");
 
 export default function SavedPapersPage() {
   const router = useRouter();
@@ -17,14 +18,13 @@ export default function SavedPapersPage() {
     async function fetchSavedPapers() {
       try {
         const res = await fetch(`${API_BASE}/api/v1/research-papers/saved`, {
-          credentials: "include", // <--- Send cookies to verify the user
+          credentials: "include", // Keeps your auth cookie attached
         });
 
         if (res.ok) {
           const data = await res.json();
           setPapers(data.papers);
         } else if (res.status === 401 || res.status === 403) {
-          // Not logged in
           router.push("/login?redirect=/saved");
         }
       } catch (error) {

@@ -709,17 +709,18 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
   const [isSaved, setIsSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Set up your API Base exactly like Navbar.tsx does
-  const API_BASE = process.env.NODE_ENV === "development" 
-    ? "" 
-    : (process.env.NEXT_PUBLIC_API_URL || "https://frontieratlas-backend.morningsignal-india.workers.dev").replace(/\/$/, "");
+  // Use the exact same API_BASE pattern as Navbar.tsx
+  const defaultApiUrl = "https://frontieratlas-backend.morningsignal-india.workers.dev";
+  const API_BASE = process.env.NODE_ENV === "development"
+    ? ""
+    : (process.env.NEXT_PUBLIC_API_URL || defaultApiUrl).replace(/\/$/, "");
 
   // 1. Check if the paper is saved when the page loads
   useEffect(() => {
     async function checkSavedStatus() {
       try {
         const res = await fetch(`${API_BASE}/api/v1/research-papers/check-saved?paper_id=${paper.id}`, {
-          credentials: "include" // <--- This tells it to use your secure cookies!
+          credentials: "include" // Keeps your auth cookie attached
         });
         if (res.ok) {
           const data = await res.json();
@@ -739,7 +740,7 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
       const response = await fetch(`${API_BASE}/api/v1/research-papers/save`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: "include", // <--- Send cookies to verify the user
+        credentials: "include", // Keeps your auth cookie attached
         body: JSON.stringify({ paper_id: paper.id })
       });
       
@@ -747,7 +748,6 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
         const data = await response.json();
         setIsSaved(data.isSaved); 
       } else if (response.status === 401 || response.status === 403) {
-        // If the backend rejects the cookie, they aren't logged in. Redirect them.
         const currentUrl = encodeURIComponent(window.location.pathname);
         router.push(`/login?redirect=${currentUrl}`);
       }
@@ -757,7 +757,6 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
       setIsSaving(false);
     }
   };
-
   const arxivUrl = getArxivAbsUrl(paper.arxivId, paper.paperUrl) || (paper.arxivId ? `https://arxiv.org/abs/${paper.arxivId}` : null);
   const pdfUrl = getArxivPdfUrl(paper.pdfUrl, paper.paperUrl, paper.arxivId);
   const doiUrl = paper.doi ? `https://doi.org/${paper.doi}` : null;
