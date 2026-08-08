@@ -368,8 +368,7 @@ export const searchPapers = async (c: Context) => {
 
 export const checkSavedPaper = async (c: any) => {
   const prisma = c.get("prisma");
-  const user = c.get("user"); // Change to c.get("userId") if your middleware stores just the ID string
-  const userId = user?.id || user; // Handles both object { id: "..." } and string ID formats safely
+  const userId = c.get("userId") || c.get("user")?.id || c.get("user");
   const paper_id = c.req.query("paper_id");
 
   if (!userId || !paper_id) {
@@ -395,8 +394,7 @@ export const checkSavedPaper = async (c: any) => {
 
 export const toggleSavePaper = async (c: any) => {
   const prisma = c.get("prisma");
-  const user = c.get("user"); 
-  const userId = user?.id || user;
+  const userId = c.get("userId") || c.get("user")?.id || c.get("user");
 
   if (!userId) {
     return c.json({ error: "Unauthorized" }, 401);
@@ -409,8 +407,6 @@ export const toggleSavePaper = async (c: any) => {
     if (!paper_id) {
       return c.json({ error: "Paper ID is required" }, 400);
     }
-
-    // Check if it's already saved
     const existingSave = await prisma.savedPaper.findUnique({
       where: {
         user_id_paper_id: {
@@ -421,7 +417,6 @@ export const toggleSavePaper = async (c: any) => {
     });
 
     if (existingSave) {
-      // If it exists, unsave it
       await prisma.savedPaper.delete({
         where: {
           user_id_paper_id: {
@@ -449,8 +444,7 @@ export const toggleSavePaper = async (c: any) => {
 
 export const getSavedPapers = async (c: any) => {
   const prisma = c.get("prisma");
-  const user = c.get("user"); 
-  const userId = user?.id || user;
+  const userId = c.get("userId") || c.get("user")?.id || c.get("user");
 
   if (!userId) {
     return c.json({ error: "Unauthorized" }, 401);
