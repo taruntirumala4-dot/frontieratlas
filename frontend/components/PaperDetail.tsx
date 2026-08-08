@@ -709,24 +709,24 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
   const [isSaved, setIsSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
+  // Set up your API Base exactly like Navbar.tsx does
+  const API_BASE = process.env.NODE_ENV === "development" 
+    ? "" 
+    : (process.env.NEXT_PUBLIC_API_URL || "https://frontieratlas-backend.morningsignal-india.workers.dev").replace(/\/$/, "");
+
   // 1. Check if the paper is saved when the page loads
   useEffect(() => {
     async function checkSavedStatus() {
-      // Look for the auth token your teammate's login system saves
-      const token = localStorage.getItem("token") || localStorage.getItem("access_token") || localStorage.getItem("auth_token");
-      if (!token) return; // Don't check if not logged in
-
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-        const res = await fetch(`${apiUrl}/api/v1/research-papers/check-saved?paper_id=${paper.id}`, {
-          headers: { 'Authorization': `Bearer ${token}` }
+        const res = await fetch(`${API_BASE}/api/v1/research-papers/check-saved?paper_id=${paper.id}`, {
+          credentials: "include" // <--- This tells it to use your secure cookies!
         });
         if (res.ok) {
           const data = await res.json();
           setIsSaved(data.isSaved);
         }
       } catch {
-        // Fail silently if there's a network issue
+        // Fail silently
       }
     }
     if (paper?.id) checkSavedStatus();
@@ -734,38 +734,22 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
 
   // 2. Handle clicking the save button
   const handleSaveClick = async () => {
-    const token = localStorage.getItem("token") || localStorage.getItem("access_token") || localStorage.getItem("auth_token");
-
-    if (!token) {
-      // Not logged in? Redirect to login, but remember this page's URL to return later
-      const currentUrl = encodeURIComponent(window.location.pathname);
-      router.push(`/login?redirect=${currentUrl}`);
-      return;
-    }
-
-    // Logged in? Tell the backend to save the paper
     setIsSaving(true);
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-      const response = await fetch(`${apiUrl}/api/v1/research-papers/save`, {
+      const response = await fetch(`${API_BASE}/api/v1/research-papers/save`, {
         method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}` 
-        },
+        headers: { 'Content-Type': 'application/json' },
+        credentials: "include", // <--- Send cookies to verify the user
         body: JSON.stringify({ paper_id: paper.id })
       });
       
       if (response.ok) {
-        // Instantly turn the bookmark icon orange (or off if unsaving)!
         const data = await response.json();
         setIsSaved(data.isSaved); 
-      } else {
-          // Handle cases where the token might be invalid or expired
-          if(response.status === 401) {
-             const currentUrl = encodeURIComponent(window.location.pathname);
-             router.push(`/login?redirect=${currentUrl}`);
-          }
+      } else if (response.status === 401 || response.status === 403) {
+        // If the backend rejects the cookie, they aren't logged in. Redirect them.
+        const currentUrl = encodeURIComponent(window.location.pathname);
+        router.push(`/login?redirect=${currentUrl}`);
       }
     } catch (error) {
       console.error("Failed to save paper");
