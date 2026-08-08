@@ -366,10 +366,11 @@ export const searchPapers = async (c: Context) => {
 
 export const checkSavedPaper = async (c: any) => {
   const prisma = c.get("prisma");
-  const user = c.get("user"); // Attached by authMiddleware
+  const user = c.get("user"); // Change to c.get("userId") if your middleware stores just the ID string
+  const userId = user?.id || user; // Handles both object { id: "..." } and string ID formats safely
   const paper_id = c.req.query("paper_id");
 
-  if (!user || !user.id || !paper_id) {
+  if (!userId || !paper_id) {
     return c.json({ isSaved: false });
   }
 
@@ -377,7 +378,7 @@ export const checkSavedPaper = async (c: any) => {
     const existingSave = await prisma.savedPaper.findUnique({
       where: {
         user_id_paper_id: {
-          user_id: user.id,
+          user_id: userId,
           paper_id: paper_id,
         },
       },
@@ -392,9 +393,10 @@ export const checkSavedPaper = async (c: any) => {
 
 export const toggleSavePaper = async (c: any) => {
   const prisma = c.get("prisma");
-  const user = c.get("user"); // Attached by authMiddleware
+  const user = c.get("user"); 
+  const userId = user?.id || user;
 
-  if (!user || !user.id) {
+  if (!userId) {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
@@ -410,7 +412,7 @@ export const toggleSavePaper = async (c: any) => {
     const existingSave = await prisma.savedPaper.findUnique({
       where: {
         user_id_paper_id: {
-          user_id: user.id,
+          user_id: userId,
           paper_id: paper_id,
         },
       },
@@ -421,7 +423,7 @@ export const toggleSavePaper = async (c: any) => {
       await prisma.savedPaper.delete({
         where: {
           user_id_paper_id: {
-            user_id: user.id,
+            user_id: userId,
             paper_id: paper_id,
           },
         },
@@ -431,7 +433,7 @@ export const toggleSavePaper = async (c: any) => {
       // If it doesn't exist, save it
       await prisma.savedPaper.create({
         data: {
-          user_id: user.id,
+          user_id: userId,
           paper_id: paper_id,
         },
       });
@@ -445,16 +447,17 @@ export const toggleSavePaper = async (c: any) => {
 
 export const getSavedPapers = async (c: any) => {
   const prisma = c.get("prisma");
-  const user = c.get("user"); // Attached by authMiddleware
+  const user = c.get("user"); 
+  const userId = user?.id || user;
 
-  if (!user || !user.id) {
+  if (!userId) {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
   try {
     // Fetch the saved records AND include the actual paper data
     const savedRecords = await prisma.savedPaper.findMany({
-      where: { user_id: user.id },
+      where: { user_id: userId },
       include: { paper: true }, 
       orderBy: { created_at: "desc" }, // Newest saves first
     });
