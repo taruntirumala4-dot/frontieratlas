@@ -12,10 +12,12 @@ import {
   BookOpen,
   Quote,
   Star,
+  Bookmark,
   GitBranch,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useState, useCallback, useEffect, type ReactNode } from "react";
 import type { PaperDetail as PaperDetailType, PaperRanking, PaperSotaClaim } from "@/lib/papers";
 import { getPapers, getArxivAbsUrl, getArxivPdfUrl, type Paper } from "@/lib/paperApi";
@@ -703,6 +705,74 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
   const [relatedLoading, setRelatedLoading] = useState(true);
   const [showAllAuthors, setShowAllAuthors] = useState(false);
   const [deferred, setDeferred] = useState(false);
+  const router = useRouter();
+  const [isSaved, setIsSaved] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // 1. Check if the paper is saved when the page loads
+  useEffect(() => {
+    async function checkSavedStatus() {
+      // Look for the auth token your teammate's login system saves
+      const token = localStorage.getItem("token") || localStorage.getItem("access_token") || localStorage.getItem("auth_token");
+      if (!token) return; // Don't check if not logged in
+
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+        const res = await fetch(`${apiUrl}/api/v1/research-papers/check-saved?paper_id=${paper.id}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setIsSaved(data.isSaved);
+        }
+      } catch {
+        // Fail silently if there's a network issue
+      }
+    }
+    if (paper?.id) checkSavedStatus();
+  }, [paper?.id]);
+
+  // 2. Handle clicking the save button
+  const handleSaveClick = async () => {
+    const token = localStorage.getItem("token") || localStorage.getItem("access_token") || localStorage.getItem("auth_token");
+
+    if (!token) {
+      // Not logged in? Redirect to login, but remember this page's URL to return later
+      const currentUrl = encodeURIComponent(window.location.pathname);
+      router.push(`/login?redirect=${currentUrl}`);
+      return;
+    }
+
+    // Logged in? Tell the backend to save the paper
+    setIsSaving(true);
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const response = await fetch(`${apiUrl}/api/v1/research-papers/save`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify({ paper_id: paper.id })
+      });
+      
+      if (response.ok) {
+        // Instantly turn the bookmark icon orange (or off if unsaving)!
+        const data = await response.json();
+        setIsSaved(data.isSaved); 
+      } else {
+          // Handle cases where the token might be invalid or expired
+          if(response.status === 401) {
+             const currentUrl = encodeURIComponent(window.location.pathname);
+             router.push(`/login?redirect=${currentUrl}`);
+          }
+      }
+    } catch (error) {
+      console.error("Failed to save paper");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const arxivUrl = getArxivAbsUrl(paper.arxivId, paper.paperUrl) || (paper.arxivId ? `https://arxiv.org/abs/${paper.arxivId}` : null);
   const pdfUrl = getArxivPdfUrl(paper.pdfUrl, paper.paperUrl, paper.arxivId);
@@ -1029,6 +1099,18 @@ const { addRecentPaper } = useRecentPapers();
                     >
                       <Share2 size={18} />
                     </button>
+                  <button
+                  type="button"
+                  onClick={handleSaveClick}
+                  disabled={isSaving}
+                  className="ds-button-ghost inline-flex items-center justify-center gap-1.5 rounded-full border-[1.5px] border-[#E0DDD6] bg-transparent px-5 py-2 text-[13px] font-medium text-[#444444] no-underline transition-all hover:bg-[rgba(255,90,31,0.06)] hover:text-[#FF5A1F] hover:border-[rgba(255,90,31,0.3)] active:scale-[0.97] disabled:opacity-50"
+                >
+                  <Bookmark 
+                    size={18} 
+                    className={isSaved ? "fill-[#FF5A1F] text-[#FF5A1F]" : ""} 
+                  />
+                  {isSaved ? "Saved" : "Save"}
+                </button>
 
                   </div>
                 </div>
