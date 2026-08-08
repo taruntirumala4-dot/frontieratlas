@@ -709,7 +709,7 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
   const [isSaved, setIsSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const defaultApiUrl = "https://frontieratlas-backend.morningsignal-india.workers.dev";
-  const API_BASE = "";
+  const API_BASE = (process.env.NEXT_PUBLIC_API_URL || defaultApiUrl).replace(/\/$/, "");
 
   // 1. Check if the paper is saved when the page loads
   useEffect(() => {

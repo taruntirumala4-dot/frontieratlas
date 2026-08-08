@@ -35,10 +35,17 @@ type Env = {
 const app = new Hono<Env>();
 
 // Configure CORS
+// Configure CORS
 app.use(
   "*",
   cors({
-    origin: (origin) => origin || "http://localhost:3000",
+    origin: (origin) => {
+      // Allow local development and your production domain
+      if (!origin || origin.includes("localhost") || origin === "https://frontieratlas.co") {
+        return origin;
+      }
+      return "https://frontieratlas.co";
+    },
     allowHeaders: ["Content-Type", "Authorization"],
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     exposeHeaders: ["Content-Length", "X-Kuma-Revision"],
