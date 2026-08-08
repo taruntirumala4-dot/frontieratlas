@@ -711,9 +711,7 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
 
   // Use the exact same API_BASE pattern as Navbar.tsx
   const defaultApiUrl = "https://frontieratlas-backend.morningsignal-india.workers.dev";
-  const API_BASE = process.env.NODE_ENV === "development"
-    ? ""
-    : (process.env.NEXT_PUBLIC_API_URL || defaultApiUrl).replace(/\/$/, "");
+  const API_BASE ="";
 
   // 1. Check if the paper is saved when the page loads
   useEffect(() => {
@@ -759,7 +757,7 @@ const handleSaveClick = async () => {
       setIsSaving(false);
     }
   };
-  
+
   const arxivUrl = getArxivAbsUrl(paper.arxivId, paper.paperUrl) || (paper.arxivId ? `https://arxiv.org/abs/${paper.arxivId}` : null);
   const pdfUrl = getArxivPdfUrl(paper.pdfUrl, paper.paperUrl, paper.arxivId);
   const doiUrl = paper.doi ? `https://doi.org/${paper.doi}` : null;

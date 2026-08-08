@@ -5,10 +5,7 @@ import { useRouter } from "next/navigation";
 import { RelatedPaperCard } from "../../components/PaperDetail"; 
 
 const defaultApiUrl = "https://frontieratlas-backend.morningsignal-india.workers.dev";
-const API_BASE = process.env.NODE_ENV === "development"
-  ? ""
-  : (process.env.NEXT_PUBLIC_API_URL || defaultApiUrl).replace(/\/$/, "");
-
+const API_BASE = "";
 export default function SavedPapersPage() {
   const router = useRouter();
   const [papers, setPapers] = useState<any[]>([]);
