@@ -733,30 +733,33 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
     if (paper?.id) checkSavedStatus();
   }, [paper?.id]);
 
-  // 2. Handle clicking the save button
-  const handleSaveClick = async () => {
+const handleSaveClick = async () => {
     setIsSaving(true);
     try {
       const response = await fetch(`${API_BASE}/api/v1/research-papers/save`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: "include", // Keeps your auth cookie attached
+        credentials: "include",
         body: JSON.stringify({ paper_id: paper.id })
       });
       
       if (response.ok) {
         const data = await response.json();
         setIsSaved(data.isSaved); 
-      } else if (response.status === 401 || response.status === 403) {
+      } else if (response.status === 401) {
+        // Only redirect if explicitly unauthorized
         const currentUrl = encodeURIComponent(window.location.pathname);
         router.push(`/login?redirect=${currentUrl}`);
+      } else {
+        console.error("Server error while saving, status:", response.status);
       }
     } catch (error) {
-      console.error("Failed to save paper");
+      console.error("Failed to connect to backend:", error);
     } finally {
       setIsSaving(false);
     }
   };
+  
   const arxivUrl = getArxivAbsUrl(paper.arxivId, paper.paperUrl) || (paper.arxivId ? `https://arxiv.org/abs/${paper.arxivId}` : null);
   const pdfUrl = getArxivPdfUrl(paper.pdfUrl, paper.paperUrl, paper.arxivId);
   const doiUrl = paper.doi ? `https://doi.org/${paper.doi}` : null;
