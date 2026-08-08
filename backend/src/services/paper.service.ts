@@ -18,6 +18,7 @@ type GetPapersQuery = {
   task?: string;
   method?: string;
   model?: string;
+  organization?: string;
   period?: "today" | "week" | "month" | "all" | string;
   page?: number | string;
   limit?: number | string;
@@ -317,6 +318,12 @@ export const getPapers = async (
   if (query.method)
     where.methods = { some: { method: { slug: query.method } } };
   if (query.model) where.models = { some: { model: { slug: query.model } } };
+  if (query.organization) {
+    where.OR = [
+      { organization: { equals: query.organization, mode: "insensitive" } },
+      { models: { some: { model: { vendor: { equals: query.organization, mode: "insensitive" } } } } },
+    ];
+  }
 
   let baseDate = new Date();
   if (period !== "all") {
@@ -431,31 +438,6 @@ export const getPapers = async (
         async (prisma: PrismaClient) => {
           return prisma.paper.findMany({
             where: fallbackWhere,
-            orderBy,
-            take: limit + 1,
-            skip,
-            select: paperSelect,
-          });
-        },
-      );
-    }
-
-    // Fallback 2: If STILL empty (e.g., no papers for this specific tag), 
-    // remove tag filters but preserve recent date filter if a period was requested
-    if (papers.length === 0) {
-      const fallbackWhere2: any = {};
-      if (period !== "all") {
-        const monthCutoff = new Date(baseDate);
-        monthCutoff.setDate(monthCutoff.getDate() - 30);
-        fallbackWhere2.publicationDate = { gte: monthCutoff };
-      } else {
-        fallbackWhere2.publicationDate = { not: null };
-      }
-
-      papers = await queryRouter.routeQuery<any>(
-        async (prisma: PrismaClient) => {
-          return prisma.paper.findMany({
-            where: fallbackWhere2,
             orderBy,
             take: limit + 1,
             skip,

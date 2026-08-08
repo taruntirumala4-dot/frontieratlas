@@ -54,6 +54,7 @@ export interface GetPapersParams {
   task?: string;
   method?: string;
   model?: string;
+  organization?: string;
   sort?: 'trending' | 'latest' | string;
   period?: 'today' | 'week' | 'month' | 'all' | string;
   limit?: number;
@@ -209,7 +210,7 @@ function mapBackendPaper(raw: Record<string, unknown>): Paper {
 const CACHE_TTL = 15 * 60 * 1000; // 15 minutes
 
 function getCacheKey(params: GetPapersParams): string {
-  return `papers:${params.page ?? 1}:${params.sort ?? "none"}:${params.period ?? "all"}:${params.task ?? "none"}:${params.method ?? "none"}:${params.model ?? "none"}`;
+  return `papers:${params.page ?? 1}:${params.sort ?? "none"}:${params.period ?? "all"}:${params.task ?? "none"}:${params.method ?? "none"}:${params.model ?? "none"}:${params.organization ?? "none"}`;
 }
 
 // In-memory cache — fastest possible, zero deserialization cost
@@ -239,6 +240,10 @@ function readCache<T>(key: string): { data: T; timestamp: number } | null {
 }
 
 function findFuzzyCache(params: GetPapersParams): GetPapersResult | null {
+
+ 
+  
+
   // Never use fuzzy matching if the user explicitly requested a specific sort or period
   // Otherwise, they will never see the new sorted/filtered response unless they refresh.
   if (params.sort && params.sort !== "trending" && params.sort !== "popular") return null;
@@ -246,16 +251,24 @@ function findFuzzyCache(params: GetPapersParams): GetPapersResult | null {
 
   const targetTask = params.task ? params.task.toLowerCase().replace(/-/g, " ") : null;
   const targetMethod = params.method ? params.method.toLowerCase().replace(/-/g, " ") : null;
+  const targetOrganization = params.organization ? `:${params.organization}:`: null;
 
   for (const [key, entry] of memoryCache.entries()) {
     if (!entry.data?.papers?.length) continue;
 
+
     if (params.task && key.toLowerCase().includes(params.task.toLowerCase())) {
       return entry.data as GetPapersResult;
     } else if (params.method && key.toLowerCase().includes(params.method.toLowerCase())) {
+
       return entry.data as GetPapersResult;
     }
+     else if (targetOrganization) {
+  if (key.endsWith(targetOrganization)) {
+    return entry.data as GetPapersResult;
   }
+  }
+}
 
   // Check localStorage if memoryCache miss
   try {
@@ -347,6 +360,7 @@ export async function getPapers(params: GetPapersParams = {}): Promise<GetPapers
         if (params.task) query.append("task", params.task);
         if (params.method) query.append("method", params.method);
         if (params.model) query.append("model", params.model);
+        if (params.organization) query.append("organization", params.organization);
         if (params.sort) query.append("sort", params.sort);
         if (params.period) query.append("period", params.period);
 
@@ -383,6 +397,7 @@ export async function getPapers(params: GetPapersParams = {}): Promise<GetPapers
       if (params.task) query.append("task", params.task);
       if (params.method) query.append("method", params.method);
       if (params.model) query.append("model", params.model);
+      if (params.organization) query.append("organization", params.organization);
       if (params.sort) query.append("sort", params.sort);
       if (params.period) query.append("period", params.period);
 

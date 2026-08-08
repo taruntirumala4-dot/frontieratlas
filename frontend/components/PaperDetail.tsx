@@ -946,7 +946,7 @@ const { addRecentPaper } = useRecentPapers();
         <div className="grid grid-cols-1 gap-8 xl:grid-cols-[1fr_320px] xl:gap-10">
 
           {/* ===== MAIN CONTENT ===== */}
-          <main className="space-y-8 lg:space-y-10 min-w-0">
+          <main className="space-y-8 lg:space-y-10 min-w-0 order-1">
 
             {/* HEADER */}
             <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
@@ -1298,50 +1298,14 @@ const { addRecentPaper } = useRecentPapers();
                   </div>
                 </div>
               )}
-
-              {/* RELATED PAPERS */}
-              <section className="border-t border-[#ECE7DD] pt-6">
-                <h2 className="section-label mb-3.5">RELATED PAPERS</h2>
-                {relatedLoading ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
-                    {Array.from({ length: 4 }).map((_, i) => (
-                      <div key={i} className="flex flex-col border border-[#EDE8DF] bg-white overflow-hidden animate-pulse">
-                        <div className="w-full aspect-[3/2] bg-[#EFECE6]" />
-                        <div className="p-3.5 space-y-2">
-                          <div className="h-3 bg-[#E8E5DD] rounded w-full" />
-                          <div className="h-3 bg-[#E8E5DD] rounded w-3/4" />
-                          <div className="h-2.5 bg-[#E8E5DD] rounded w-1/2" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : relatedPapers.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
-                    {relatedPapers.map((relatedPaper) => (
-                      <RelatedPaperCard key={relatedPaper.slug || relatedPaper.id} paper={relatedPaper} />
-                    ))}
-                  </div>
-                ) : !relatedLoading ? (
-                  <span className="text-[13px] text-[#999] italic">Not available</span>
-                ) : null}
-              </section>
             </div>
-
-            <RecentlyViewed />
-
-            {/* Back link */}
-            <Link
-              href="/"
-              className="hover-dim inline-flex items-center gap-1.5 text-[12.5px] font-medium text-[#8B8B8B] no-underline border-t border-[#E5E5E0] pt-3.5 transition-colors hover:text-[#FF5A1F]"
-            >
-              <ArrowLeft size={13} />
-              Back to Home
-            </Link>
           </main>
 
           {/* ===== SIDEBAR ===== */}
+          {/* On mobile (below xl): order-2 so it appears after main content but before related papers */}
+          {/* On desktop (xl+): stays in the right column via grid placement */}
           {deferred ? (
-            <aside className="space-y-5 xl:sticky xl:top-6 self-start">
+            <aside className="space-y-5 xl:sticky xl:top-6 self-start order-2 xl:row-span-2">
               <RepositoryPanel paper={paper} resolvedGithubUrl={resolvedGithubUrl} />
               {hfResolvedUrl && <HuggingFacePanel paper={paper} hfUrl={hfResolvedUrl} />}
               <CitationPanel
@@ -1354,7 +1318,7 @@ const { addRecentPaper } = useRecentPapers();
               <PaperMetadataPanel paper={paper} arxivUrl={arxivUrl} doiUrl={doiUrl} />
             </aside>
           ) : (
-            <aside className="space-y-5 xl:sticky xl:top-6 self-start">
+            <aside className="space-y-5 xl:sticky xl:top-6 self-start order-2 xl:row-span-2">
               <div className="border border-[#EDE8DF] rounded-lg bg-white p-4 space-y-3">
                 <div className="h-[14px] w-28 bg-[#E4E0D8] rounded animate-pulse" />
                 <div className="space-y-1.5">
@@ -1380,6 +1344,47 @@ const { addRecentPaper } = useRecentPapers();
               </div>
             </aside>
           )}
+
+          {/* ===== RELATED PAPERS + FOOTER (after sidebar on mobile) ===== */}
+          <div className="order-3 xl:col-start-1 space-y-8 lg:space-y-10">
+            {/* RELATED PAPERS */}
+            <section className="border-t border-[#ECE7DD] pt-6">
+              <h2 className="section-label mb-3.5">RELATED PAPERS</h2>
+              {relatedLoading ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="flex flex-col border border-[#EDE8DF] bg-white overflow-hidden animate-pulse">
+                      <div className="w-full aspect-[3/2] bg-[#EFECE6]" />
+                      <div className="p-3.5 space-y-2">
+                        <div className="h-3 bg-[#E8E5DD] rounded w-full" />
+                        <div className="h-3 bg-[#E8E5DD] rounded w-3/4" />
+                        <div className="h-2.5 bg-[#E8E5DD] rounded w-1/2" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : relatedPapers.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+                  {relatedPapers.map((relatedPaper) => (
+                    <RelatedPaperCard key={relatedPaper.slug || relatedPaper.id} paper={relatedPaper} />
+                  ))}
+                </div>
+              ) : !relatedLoading ? (
+                <span className="text-[13px] text-[#999] italic">Not available</span>
+              ) : null}
+            </section>
+
+            <RecentlyViewed />
+
+            {/* Back link */}
+            <Link
+              href="/"
+              className="hover-dim inline-flex items-center gap-1.5 text-[12.5px] font-medium text-[#8B8B8B] no-underline border-t border-[#E5E5E0] pt-3.5 transition-colors hover:text-[#FF5A1F]"
+            >
+              <ArrowLeft size={13} />
+              Back to Home
+            </Link>
+          </div>
         </div>
       </div>
     </div>
