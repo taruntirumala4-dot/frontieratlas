@@ -27,13 +27,10 @@ const nextConfig = {
   },
 
   async rewrites() {
-    if (process.env.NODE_ENV !== "development") {
-      return [];
-    }
     return [
       {
         source: "/api/:path*",
-        destination: `${process.env.NEXT_PUBLIC_API_URL || "https://frontieratlas-backend.morningsignal-india.workers.dev"}/api/:path*`, // Proxy to backend
+        destination: `${process.env.NEXT_PUBLIC_API_URL || "https://frontieratlas-backend.morningsignal-india.workers.dev"}/api/:path*`,
       },
     ];
   },
