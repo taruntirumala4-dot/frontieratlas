@@ -708,11 +708,8 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
   const router = useRouter();
   const [isSaved, setIsSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-
-  // Use the exact same API_BASE pattern as Navbar.tsx
   const defaultApiUrl = "https://frontieratlas-backend.morningsignal-india.workers.dev";
-  // Directly target your Cloudflare Worker backend so requests reach your database
-  const API_BASE = "https://frontieratlas-backend.morningsignal-india.workers.dev";
+  const API_BASE = "";
 
   // 1. Check if the paper is saved when the page loads
   useEffect(() => {
