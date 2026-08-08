@@ -363,3 +363,108 @@ export const searchPapers = async (c: Context) => {
     );
   }
 };
+
+export const checkSavedPaper = async (c: any) => {
+  const prisma = c.get("prisma");
+  const user = c.get("user"); // Attached by authMiddleware
+  const paper_id = c.req.query("paper_id");
+
+  if (!user || !user.id || !paper_id) {
+    return c.json({ isSaved: false });
+  }
+
+  try {
+    const existingSave = await prisma.savedPaper.findUnique({
+      where: {
+        user_id_paper_id: {
+          user_id: user.id,
+          paper_id: paper_id,
+        },
+      },
+    });
+
+    return c.json({ isSaved: !!existingSave });
+  } catch (error) {
+    console.error("Error checking saved paper:", error);
+    return c.json({ isSaved: false }, 500);
+  }
+};
+
+export const toggleSavePaper = async (c: any) => {
+  const prisma = c.get("prisma");
+  const user = c.get("user"); // Attached by authMiddleware
+
+  if (!user || !user.id) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  try {
+    const body = await c.req.json();
+    const paper_id = body.paper_id;
+
+    if (!paper_id) {
+      return c.json({ error: "Paper ID is required" }, 400);
+    }
+
+    // Check if it's already saved
+    const existingSave = await prisma.savedPaper.findUnique({
+      where: {
+        user_id_paper_id: {
+          user_id: user.id,
+          paper_id: paper_id,
+        },
+      },
+    });
+
+    if (existingSave) {
+      // If it exists, unsave it
+      await prisma.savedPaper.delete({
+        where: {
+          user_id_paper_id: {
+            user_id: user.id,
+            paper_id: paper_id,
+          },
+        },
+      });
+      return c.json({ isSaved: false });
+    } else {
+      // If it doesn't exist, save it
+      await prisma.savedPaper.create({
+        data: {
+          user_id: user.id,
+          paper_id: paper_id,
+        },
+      });
+      return c.json({ isSaved: true });
+    }
+  } catch (error) {
+    console.error("Error toggling saved paper:", error);
+    return c.json({ error: "Failed to toggle saved paper" }, 500);
+  }
+};
+
+export const getSavedPapers = async (c: any) => {
+  const prisma = c.get("prisma");
+  const user = c.get("user"); // Attached by authMiddleware
+
+  if (!user || !user.id) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  try {
+    // Fetch the saved records AND include the actual paper data
+    const savedRecords = await prisma.savedPaper.findMany({
+      where: { user_id: user.id },
+      include: { paper: true }, 
+      orderBy: { created_at: "desc" }, // Newest saves first
+    });
+
+    // Extract just the paper objects from the relationship
+    const papers = savedRecords.map((record: any) => record.paper);
+
+    return c.json({ papers });
+  } catch (error) {
+    console.error("Error fetching saved papers:", error);
+    return c.json({ error: "Failed to fetch saved papers" }, 500);
+  }
+};
