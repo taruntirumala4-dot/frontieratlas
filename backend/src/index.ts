@@ -40,12 +40,18 @@ app.use(
   "*",
   cors({
     origin: (origin) => {
-      // Allow local development and your production domain
-      if (!origin || origin.includes("localhost") || origin === "https://frontieratlas.co") {
-        return origin;
-      }
-      return "https://frontieratlas.co";
-    },
+  // Allow local development, production, and Cloudflare Pages previews
+  if (
+    !origin ||
+    origin.includes("localhost") ||
+    origin === "https://frontieratlas.co" ||
+    /^https:\/\/[a-z0-9-]+\.frontieratlas\.pages\.dev$/.test(origin)
+  ) {
+    return origin;
+  }
+
+  return "https://frontieratlas.co";
+},
     allowHeaders: ["Content-Type", "Authorization"],
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     exposeHeaders: ["Content-Length", "X-Kuma-Revision"],
