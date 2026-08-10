@@ -31,6 +31,22 @@ function organizationSlug(name: string) {
   return name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
+function organizationLogoUrl(logo?: string) {
+  if (!logo) return undefined;
+
+  try {
+    const url = new URL(logo);
+    if (url.hostname === "logo.clearbit.com") {
+      const domain = url.pathname.replace(/^\//, "");
+      return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=128`;
+    }
+  } catch {
+    return logo;
+  }
+
+  return logo;
+}
+
 function OrganizationCard({
   name,
   count,
@@ -120,7 +136,7 @@ export default function OrganizationsPage() {
         const organizationModels = grouped.get(organization.name) ?? [];
         return {
           ...organization,
-          logo: organizationModels.find((model) => model.vendorLogoUrl)?.vendorLogoUrl,
+          logo: organizationLogoUrl(organizationModels.find((model) => model.vendorLogoUrl)?.vendorLogoUrl),
           featuredModel: [...organizationModels].sort((a, b) => b.trendingScore - a.trendingScore)[0],
           momentum: organizationModels.reduce((total, model) => total + (model.trendingScore || 0), 0),
         };

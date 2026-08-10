@@ -34,6 +34,22 @@ import {
 
 // Popular collections will be derived from backend data
 
+function modelLogoUrl(logo?: string) {
+  if (!logo) return undefined;
+
+  try {
+    const url = new URL(logo);
+    if (url.hostname === "logo.clearbit.com") {
+      const domain = url.pathname.replace(/^\//, "");
+      return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=128`;
+    }
+  } catch {
+    return logo;
+  }
+
+  return logo;
+}
+
 
 function getSkeletalIcon(index: number, name: string = "") {
   const icons = [
@@ -722,9 +738,9 @@ highlight="Models"
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                   {(() => { const getIcon = dedupedIcons(3); const fams = (!showAllFamilies && filteredModelFamilies.length > 40) ? filteredModelFamilies.slice(0,40) : filteredModelFamilies; return fams.map((fam, idx) => {
                     const isActive = selectedFamily === fam.name;
-                    const familyLogo = allModels.find(
+                    const familyLogo = modelLogoUrl(allModels.find(
                       (m) => m.modelFamily?.toLowerCase() === fam.name.toLowerCase() && m.vendorLogoUrl
-                    )?.vendorLogoUrl;
+                    )?.vendorLogoUrl);
                     const { Icon: SkeletalIcon, color: strokeColor } = getIcon(idx, "");
 
                     return (
@@ -780,7 +796,7 @@ highlight="Models"
   (model) => model.vendor?.toLowerCase() === v.name.toLowerCase()
 );
 
-                    const vendorLogo = vendorModel?.vendorLogoUrl;
+                    const vendorLogo = modelLogoUrl(vendorModel?.vendorLogoUrl);
 
                     return (
                       <div
@@ -893,8 +909,8 @@ highlight="Models"
                       >
                         <div className="flex items-start gap-4">
                           <div className="flex items-center justify-center transition-transform duration-200 group-hover:scale-125 w-[30px] h-[30px]">
-                            {m.vendorLogoUrl ? (
-                              <img src={m.vendorLogoUrl} alt={m.vendor} className="w-full h-full object-contain" />
+                            {modelLogoUrl(m.vendorLogoUrl) ? (
+                              <img src={modelLogoUrl(m.vendorLogoUrl)} alt={m.vendor} className="w-full h-full object-contain" />
                             ) : (
                               <SkeletalIcon size={22} strokeWidth={2.2} style={{ color: strokeColor }} />
                             )}
