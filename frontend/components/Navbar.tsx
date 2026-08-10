@@ -190,12 +190,12 @@ export default function Navbar({
     <>
       <nav className="font-sans sticky top-0 h-[56px] xl:h-[52px] w-full bg-[#F8F7F2]/80 backdrop-blur-md border-b border-[#E5E5E0] flex items-center justify-between px-4 md:px-8 xl:px-12 gap-3 xl:gap-4 shrink-0 z-50 transition-all duration-300">
         {/* Mobile Left (Hamburger + Logo) */}
-        <div className="flex items-center gap-1 xl:gap-0 xl:w-[240px] shrink-0">
+        <div className="flex items-center gap-1 lg:gap-0 lg:w-[240px] shrink-0">
           <button 
             onClick={() => setIsMenuOpen(true)}
             aria-label="Open menu"
             aria-expanded={isMenuOpen}
-            className="xl:hidden w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#EBEBE6] transition-colors"
+            className="lg:hidden w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#EBEBE6] transition-colors"
           >
             <svg
               width="20"
@@ -211,17 +211,17 @@ export default function Navbar({
               <line x1="4" y1="18" x2="20" y2="18" />
             </svg>
           </button>
-          <Link href="/" className="flex items-center justify-center xl:justify-start cursor-pointer absolute left-1/2 -translate-x-1/2 xl:relative xl:left-auto xl:-translate-x-0 w-[160px] sm:w-[200px] xl:w-[240px] h-12 xl:h-14">
-            <Image src="/logo.png" alt="Frontier Atlas" fill className="object-contain object-center xl:object-left" sizes="(max-width: 1280px) 200px, 240px" />
+          <Link href="/" className="flex items-center justify-center lg:justify-start cursor-pointer absolute left-1/2 -translate-x-1/2 lg:relative lg:left-auto lg:-translate-x-0 w-[160px] sm:w-[200px] xl:w-[240px] h-12 xl:h-14">
+            <Image src="/logo.png" alt="Frontier Atlas" fill className="object-contain object-center lg:object-left" sizes="(max-width: 1280px) 200px, 240px" />
           </Link>
         </div>
 
         {/* Center — Search Bar (Desktop) */}
-        <div className={`hidden lg:flex absolute left-1/2 -translate-x-1/2 items-center justify-center ${
-          usesHomepageSearchPresentation ? "w-[360px]" : "w-[240px] xl:w-[400px]"
-        }`}>
+        <div className="hidden lg:flex flex-1 items-center justify-center px-4 min-w-0 transition-all">
           {shouldShowSearch && (
-            <div className="w-full">
+            <div className={`w-full flex justify-center ${
+              usesHomepageSearchPresentation ? "max-w-[360px]" : "max-w-[400px] xl:max-w-[480px]"
+            }`}>
               <SearchBar
                 variant={usesHomepageSearchPresentation ? "homepage" : "compact"}
                 placeholder="Search..."
@@ -231,81 +231,79 @@ export default function Navbar({
           )}
         </div>
 
-        {/* Center — Nav Links (Desktop) */}
-        <div className="hidden lg:flex items-center gap-6 ml-auto">
-          <Link
-            href="/tasks"
-            data-text="Tasks"
-            onMouseEnter={() => { import("@/lib/tasks").then(m => m.getTaskPaperCounts()).catch(() => {}); }}
-            onTouchStart={() => { import("@/lib/tasks").then(m => m.getTaskPaperCounts()).catch(() => {}); }}
-            className={`text-[13px] transition-colors no-underline before:content-[attr(data-text)] before:block before:font-bold before:h-0 before:overflow-hidden before:invisible before:select-none text-center flex flex-col justify-center ${
-              isTasksActive
-                ? "text-[#F55036] font-bold"
-                : "text-[#555555] font-medium hover:text-[#F55036]"
-            }`}
-          >
-            Tasks
-          </Link>
-          <Link
-            href="/methods"
-            data-text="Methods"
-            onMouseEnter={() => { import("@/lib/methodCache").then(m => m.prefetchMethods()).catch(() => {}); }}
-            onTouchStart={() => { import("@/lib/methodCache").then(m => m.prefetchMethods()).catch(() => {}); }}
-            className={`text-[13px] transition-colors no-underline before:content-[attr(data-text)] before:block before:font-bold before:h-0 before:overflow-hidden before:invisible before:select-none text-center flex flex-col justify-center ${
-              isMethodsActive
-                ? "text-[#F55036] font-bold"
-                : "text-[#555555] font-medium hover:text-[#F55036]"
-            }`}
-          >
-            Methods
-          </Link>
-          <Link
-            href="/benchmarks"
-            data-text="Benchmarks"
-            onMouseEnter={() => { import("@/lib/benchmarks").then(m => m.getBenchmarks()).catch(() => {}); }}
-            onTouchStart={() => { import("@/lib/benchmarks").then(m => m.getBenchmarks()).catch(() => {}); }}
-            className={`text-[13px] transition-colors no-underline before:content-[attr(data-text)] before:block before:font-bold before:h-0 before:overflow-hidden before:invisible before:select-none text-center flex flex-col justify-center ${
-              isBenchmarksActive
-                ? "text-[#F55036] font-bold"
-                : "text-[#555555] font-medium hover:text-[#F55036]"
-            }`}
-          >
-            Benchmarks
-          </Link>
-          <Link
-            href="/models"
-            data-text="Models"
-            onMouseEnter={() => { import("@/lib/models").then(m => m.getModels({ limit: 50 })).catch(() => {}); }}
-            onTouchStart={() => { import("@/lib/models").then(m => m.getModels({ limit: 50 })).catch(() => {}); }}
-            className={`text-[13px] transition-colors no-underline before:content-[attr(data-text)] before:block before:font-bold before:h-0 before:overflow-hidden before:invisible before:select-none text-center flex flex-col justify-center ${
-              isModelsActive
-                ? "text-[#F55036] font-bold"
-                : "text-[#555555] font-medium hover:text-[#F55036]"
-            }`}
-          >
-            Models
-          </Link>
-          <Link
-            href="/organizations"
-            data-text="Organizations"
-            className={`text-[13px] transition-colors no-underline before:content-[attr(data-text)] before:block before:font-bold before:h-0 before:overflow-hidden before:invisible before:select-none text-center flex flex-col justify-center ${
-              isOrganizationsActive
-                ? "text-[#F55036] font-bold"
-                : "text-[#555555] font-medium hover:text-[#F55036]"
-            }`}
-          >
-            Organizations
-          </Link>
-        </div>
+        {/* Right Section (Nav Links + Profile) */}
+        <div className="flex items-center shrink-0">
+          {/* Nav Links (Desktop) */}
+          <div className="hidden lg:flex items-center gap-4 xl:gap-6 mr-4">
+            <Link
+              href="/tasks"
+              data-text="Tasks"
+              onMouseEnter={() => { import("@/lib/tasks").then(m => m.getTaskPaperCounts()).catch(() => {}); }}
+              onTouchStart={() => { import("@/lib/tasks").then(m => m.getTaskPaperCounts()).catch(() => {}); }}
+              className={`text-[13px] transition-colors no-underline before:content-[attr(data-text)] before:block before:font-bold before:h-0 before:overflow-hidden before:invisible before:select-none text-center flex flex-col justify-center ${
+                isTasksActive
+                  ? "text-[#F55036] font-bold"
+                  : "text-[#555555] font-medium hover:text-[#F55036]"
+              }`}
+            >
+              Tasks
+            </Link>
+            <Link
+              href="/methods"
+              data-text="Methods"
+              onMouseEnter={() => { import("@/lib/methodCache").then(m => m.prefetchMethods()).catch(() => {}); }}
+              onTouchStart={() => { import("@/lib/methodCache").then(m => m.prefetchMethods()).catch(() => {}); }}
+              className={`text-[13px] transition-colors no-underline before:content-[attr(data-text)] before:block before:font-bold before:h-0 before:overflow-hidden before:invisible before:select-none text-center flex flex-col justify-center ${
+                isMethodsActive
+                  ? "text-[#F55036] font-bold"
+                  : "text-[#555555] font-medium hover:text-[#F55036]"
+              }`}
+            >
+              Methods
+            </Link>
+            <Link
+              href="/benchmarks"
+              data-text="Benchmarks"
+              onMouseEnter={() => { import("@/lib/benchmarks").then(m => m.getBenchmarks()).catch(() => {}); }}
+              onTouchStart={() => { import("@/lib/benchmarks").then(m => m.getBenchmarks()).catch(() => {}); }}
+              className={`text-[13px] transition-colors no-underline before:content-[attr(data-text)] before:block before:font-bold before:h-0 before:overflow-hidden before:invisible before:select-none text-center flex flex-col justify-center ${
+                isBenchmarksActive
+                  ? "text-[#F55036] font-bold"
+                  : "text-[#555555] font-medium hover:text-[#F55036]"
+              }`}
+            >
+              Benchmarks
+            </Link>
+            <Link
+              href="/models"
+              data-text="Models"
+              onMouseEnter={() => { import("@/lib/models").then(m => m.getModels({ limit: 50 })).catch(() => {}); }}
+              onTouchStart={() => { import("@/lib/models").then(m => m.getModels({ limit: 50 })).catch(() => {}); }}
+              className={`text-[13px] transition-colors no-underline before:content-[attr(data-text)] before:block before:font-bold before:h-0 before:overflow-hidden before:invisible before:select-none text-center flex flex-col justify-center ${
+                isModelsActive
+                  ? "text-[#F55036] font-bold"
+                  : "text-[#555555] font-medium hover:text-[#F55036]"
+              }`}
+            >
+              Models
+            </Link>
+            <Link
+              href="/organizations"
+              data-text="Organizations"
+              className={`text-[13px] transition-colors no-underline before:content-[attr(data-text)] before:block before:font-bold before:h-0 before:overflow-hidden before:invisible before:select-none text-center flex flex-col justify-center ${
+                isOrganizationsActive
+                  ? "text-[#F55036] font-bold"
+                  : "text-[#555555] font-medium hover:text-[#F55036]"
+              }`}
+            >
+              Organizations
+            </Link>
+          </div>
 
-        {/* Right (Desktop) */}
-        <div className="hidden xl:flex items-center gap-4 border-l border-[#E5E5E0] pl-4 shrink-0">
-          {profileControl(0)}
-        </div>
-
-        {/* Mobile Right (CTA) */}
-        <div className="flex xl:hidden items-center shrink-0">
-          {profileControl(1)}
+          {/* Profile Control */}
+          <div className="flex items-center gap-4 lg:border-l lg:border-[#E5E5E0] lg:pl-4 shrink-0">
+            {profileControl(0)}
+          </div>
         </div>
       </nav>
 
