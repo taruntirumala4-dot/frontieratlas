@@ -190,7 +190,7 @@ export default function Navbar({
     <>
       <nav className="font-sans sticky top-0 h-[56px] xl:h-[52px] w-full bg-[#F8F7F2]/80 backdrop-blur-md border-b border-[#E5E5E0] flex items-center justify-between px-4 md:px-8 xl:px-12 gap-3 xl:gap-4 shrink-0 z-50 transition-all duration-300">
         {/* Mobile Left (Hamburger + Logo) */}
-        <div className="flex items-center gap-1 lg:gap-0 lg:w-[240px] shrink-0">
+        <div className="flex items-center gap-1 lg:gap-0 lg:flex-1 lg:max-w-[440px] xl:max-w-[470px] min-w-0 shrink-0">
           <button 
             onClick={() => setIsMenuOpen(true)}
             aria-label="Open menu"
