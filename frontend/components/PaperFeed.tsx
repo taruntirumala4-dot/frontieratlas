@@ -1073,27 +1073,32 @@ const isInitialMount = useRef(true);
     const currentParamsStr = `${task ?? "all"}:${method ?? "none"}:${filterParams?.model ?? "none"}:${filterParams?.sort ?? "none"}:${period ?? "all"}:${normalizedSearchQuery}`;
 
 // RULE 1: Handle the very first mount (Do absolutely nothing to state, it's already perfect!)
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      prevParamsStr.current = currentParamsStr;
+   if (isInitialMount.current) {
+  isInitialMount.current = false;
+  prevParamsStr.current = currentParamsStr;
 
-      // Just setup the background cache and prefetch, no UI updates!
-      if (
-        initialPapers &&
-        initialPapers.papers &&
-        initialPapers.papers.length > 0 &&
-        !normalizedSearchQuery
-      ) {
-        cacheRef.current.set(getCacheKey(initialPapers.page), initialPapers);
-        if (initialPapers.hasMore) {
-          nextPageRef.current = initialPapers.page + 1;
-          prefetchPage(initialPapers.page + 1);
-        } else {
-          nextPageRef.current = 0;
-        }
-      }
-      return;
+  if (
+    initialPapers &&
+    initialPapers.papers &&
+    initialPapers.papers.length > 0 &&
+    !normalizedSearchQuery
+  ) {
+    cacheRef.current.set(getCacheKey(initialPapers.page), initialPapers);
+
+    if (initialPapers.hasMore) {
+      nextPageRef.current = initialPapers.page + 1;
+      prefetchPage(initialPapers.page + 1);
+    } else {
+      nextPageRef.current = 0;
     }
+
+    return;
+  }
+
+  // No initial papers were provided, so fetch the first page.
+  void loadPage(1, true);
+  return;
+}
 
     // RULE 2: GUARD AGAINST EXTRA FETCHES
     // If the component re-renders but filters haven't actually changed, DO NOTHING.

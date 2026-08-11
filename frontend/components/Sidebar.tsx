@@ -127,7 +127,7 @@ export default function Sidebar({
   const tasks = [
     { label: "Large Language Models", icon: <MessageSquare size={16} />, slug: "large-language-models" },
     { label: "Agents", icon: <Bot size={16} />, slug: "agents" },
-    { label: "Reasoning", icon: <Brain size={16} />, slug: "reasoning" },
+{ label: "Reasoning", icon: <Brain size={16} />, slug: "reasoning-models" },
     { label: "Vision-Language Models", icon: <ImageIcon size={16} />, slug: "vision-language-models" },
     { label: "Multimodal Models", icon: <Layers size={16} />, slug: "multimodal-models" },
     { label: "World Models", icon: <Globe size={16} />, slug: "world-models" },
@@ -193,7 +193,7 @@ export default function Sidebar({
     const routes = [
       "/", "/category/latest", "/category/github-stars",
       // Tasks
-      "/tasks/large-language-models", "/tasks/agents", "/tasks/reasoning",
+      "/tasks/large-language-models", "/tasks/agents", "/tasks/reasoning-models",
       "/tasks/vision-language-models", "/tasks/multimodal-models",
       "/tasks/world-models", "/tasks/image-generation",
       "/tasks/automatic-speech-recognition", "/tasks/robotics", "/tasks",
