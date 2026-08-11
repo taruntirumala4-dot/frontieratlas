@@ -69,8 +69,8 @@ export default function HeroSection({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
   const tags = [
-    { label: "Agents", slug: "agents", icon: Bot },
-    { label: "Reasoning", slug: "reasoning", icon: Brain },
+  { label: "Agents", slug: "agents", icon: Bot },
+  { label: "Reasoning", slug: "reasoning-models", icon: Brain },
     { label: "Vision", slug: "vision-language-models", icon: Eye },
     { label: "Coding", slug: "coding-agents", icon: Code2 },
     { label: "Robotics", slug: "robotics", icon: Cpu },

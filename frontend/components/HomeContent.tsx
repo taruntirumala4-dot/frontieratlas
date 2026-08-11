@@ -42,7 +42,11 @@ export default function HomeContent({
       });
 
       // Lazy pre-warm key hero chips
-      const heroChips = [{ task: "agents" }, { task: "reasoning" }, { method: "mcp" }];
+      const heroChips = [
+  { task: "agents" },
+  { task: "reasoning-models" },
+  { method: "model-context-protocol-mcp" },
+];
       heroChips.forEach((chip) => {
         setTimeout(() => prefetch({ sort: "trending", period: "today", page: 1, ...chip }), delay);
         delay += 100;
@@ -80,7 +84,8 @@ export default function HomeContent({
   const apiSort = activeSort === "Trending Papers" ? "trending" : activeSort === "Most GitHub Stars" ? "stars" : "latest";
 
   // Distinguish methods from tasks and ensure case-insensitivity
-  const isMethod = selectedTag?.toLowerCase() === "mcp"; 
+ const isMethod =
+  selectedTag?.toLowerCase() === "model-context-protocol-mcp";
   const dynamicFilterParams: Record<string, string> = { sort: apiSort };
 
   if (selectedTag) {
