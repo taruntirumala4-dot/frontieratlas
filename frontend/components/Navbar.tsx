@@ -146,14 +146,14 @@ export default function Navbar({
         <div className="absolute right-0 top-10 w-64 rounded-xl border border-[#E5E5E0] bg-[#F8F7F2] p-3 shadow-lg">
           <p className="truncate text-[13px] font-medium text-[#555555] px-2 pb-2 border-b border-[#E5E5E0] mb-2">{currentUser.email}</p>
           
-          <Link
+          <a
             href="/saved"
             onClick={() => setIsProfileOpen(false)}
             className="flex items-center gap-2 px-2 py-2 rounded-lg text-[13px] font-medium text-[#444444] hover:bg-[rgba(255,90,31,0.06)] hover:text-[#FF5A1F] no-underline transition-colors"
           >
             <Bookmark size={16} />
             Saved Papers
-          </Link>
+          </a>
 
           <button
             type="button"
@@ -212,7 +212,7 @@ export default function Navbar({
             </svg>
           </button>
           <Link href="/" className="flex items-center justify-center xl:justify-start cursor-pointer absolute left-1/2 -translate-x-1/2 xl:relative xl:left-auto xl:-translate-x-0 w-[160px] sm:w-[200px] xl:w-[240px] h-12 xl:h-14">
-            <Image src="/logo.png" alt="Frontier Atlas" fill className="object-contain object-center xl:object-left" sizes="(max-width: 1280px) 200px, 240px" />
+            <img src="https://frontieratlas.pages.dev/logo.png" alt="Frontier Atlas" className="w-full h-full object-contain object-center xl:object-left" />
           </Link>
         </div>
 
@@ -233,7 +233,7 @@ export default function Navbar({
 
         {/* Center — Nav Links (Desktop) */}
         <div className="hidden lg:flex items-center gap-6 ml-auto">
-          <Link
+          <a
             href="/tasks"
             data-text="Tasks"
             onMouseEnter={() => { import("@/lib/tasks").then(m => m.getTaskPaperCounts()).catch(() => {}); }}
@@ -245,8 +245,8 @@ export default function Navbar({
             }`}
           >
             Tasks
-          </Link>
-          <Link
+          </a>
+          <a
             href="/methods"
             data-text="Methods"
             onMouseEnter={() => { import("@/lib/methodCache").then(m => m.prefetchMethods()).catch(() => {}); }}
@@ -258,8 +258,8 @@ export default function Navbar({
             }`}
           >
             Methods
-          </Link>
-          <Link
+          </a>
+          <a
             href="/benchmarks"
             data-text="Benchmarks"
             onMouseEnter={() => { import("@/lib/benchmarks").then(m => m.getBenchmarks()).catch(() => {}); }}
@@ -271,8 +271,8 @@ export default function Navbar({
             }`}
           >
             Benchmarks
-          </Link>
-          <Link
+          </a>
+          <a
             href="/models"
             data-text="Models"
             onMouseEnter={() => { import("@/lib/models").then(m => m.getModels({ limit: 50 })).catch(() => {}); }}
@@ -284,8 +284,8 @@ export default function Navbar({
             }`}
           >
             Models
-          </Link>
-          <Link
+          </a>
+          <a
             href="/organizations"
             data-text="Organizations"
             className={`text-[13px] transition-colors no-underline before:content-[attr(data-text)] before:block before:font-bold before:h-0 before:overflow-hidden before:invisible before:select-none text-center flex flex-col justify-center ${
@@ -295,7 +295,7 @@ export default function Navbar({
             }`}
           >
             Organizations
-          </Link>
+          </a>
         </div>
 
         {/* Right (Desktop) */}
@@ -325,13 +325,11 @@ export default function Navbar({
         {/* Drawer Header */}
         <div className="h-[52px] border-b border-[#E5E5E0] flex items-center justify-between px-4 shrink-0">
           <Link href="/" onClick={closeMenu} className="relative block w-[170px] h-10 cursor-pointer">
-            <Image
-              src="/logo.png"
-              alt="Frontier Atlas"
-              fill
-              className="object-contain object-left"
-              sizes="170px"
-            />
+              <img
+                src="https://frontieratlas.pages.dev/logo.png"
+                alt="Frontier Atlas"
+                className="w-full h-full object-contain object-left"
+              />
           </Link>
           <button
             onClick={closeMenu}

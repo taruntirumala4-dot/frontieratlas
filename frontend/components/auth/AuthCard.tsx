@@ -14,12 +14,11 @@ export default function AuthCard() {
     <div className="mx-auto flex w-full max-w-[400px] flex-col items-center">
       {/* Logo */}
       <div className="mb-0 flex justify-center">
-        <Image
-          src="/logo.png"
+        <img
+          src="https://frontieratlas.pages.dev/logo.png"
           alt="FrontierAtlas"
           width={165}
           height={34}
-          priority
         />
       </div>
 
