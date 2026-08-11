@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Building2, Sparkles } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import { getPapers } from "@/lib/paperApi";
 import {
   getCachedModelFacets,
   getCachedModels,
@@ -31,18 +32,36 @@ function organizationSlug(name: string) {
   return name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
+function organizationLogoUrl(logo?: string) {
+  if (!logo) return undefined;
+
+  try {
+    const url = new URL(logo);
+    if (url.hostname === "logo.clearbit.com") {
+      const domain = url.pathname.replace(/^\//, "");
+      return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=128`;
+    }
+  } catch {
+    return logo;
+  }
+
+  return logo;
+}
+
 function OrganizationCard({
   name,
   count,
   rank,
   logo,
   featuredModel,
+  paperCount,
 }: {
   name: string;
   count: number;
   rank: number;
   logo?: string;
   featuredModel?: ModelItem;
+  paperCount: number;
 }) {
   return (
     <Link
@@ -70,8 +89,8 @@ function OrganizationCard({
         <p className="line-clamp-2 text-[11px] leading-4 text-[#69645C]">{organizationDescription(name)}</p>
         <div className="mt-2 flex items-end justify-between border-t border-[#F0EEE9] pt-2">
           <div>
-            <span className="block text-[20px] font-semibold leading-none tracking-[-0.04em] text-[#171717]">{count}</span>
-            <span className="mt-0.5 block font-mono text-[8px] uppercase tracking-[0.1em] text-[#8C877E]">Models</span>
+            <span className="block text-[20px] font-semibold leading-none tracking-[-0.04em] text-[#171717]">{paperCount}</span>
+            <span className="mt-0.5 block font-mono text-[8px] uppercase tracking-[0.1em] text-[#8C877E]">Papers</span>
           </div>
           <span className="rounded-full bg-[#FFF0EB] px-2 py-0.5 font-mono text-[9px] font-medium text-[#E74B1D]">#{rank}</span>
         </div>
@@ -89,6 +108,7 @@ export default function OrganizationsPage() {
   const cachedFacets = getCachedModelFacets();
   const [models, setModels] = useState<ModelItem[]>(cachedModels ?? []);
   const [facets, setFacets] = useState<ModelFacets | null>(cachedFacets);
+  const [paperCounts, setPaperCounts] = useState<Record<string, number>>({});
   const [sort, setSort] = useState<SortMode>("trending");
   const [loading, setLoading] = useState(!(cachedModels && cachedFacets));
 
@@ -101,6 +121,29 @@ export default function OrganizationsPage() {
       .catch((error) => console.error("Unable to load organizations", error))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    const organizationNames = facets?.vendors?.map((vendor) => vendor.name)
+      ?? [...new Set(models.map((model) => model.vendor).filter(Boolean))];
+
+    if (!organizationNames.length) return;
+
+    let cancelled = false;
+    Promise.all(
+      organizationNames.map(async (organization) => [
+        organization,
+        (await getPapers({ organization, limit: 50, sort: "latest" })).papers.length,
+      ] as const),
+    )
+      .then((counts) => {
+        if (!cancelled) setPaperCounts(Object.fromEntries(counts));
+      })
+      .catch((error) => console.error("Unable to load organization paper counts", error));
+
+    return () => {
+      cancelled = true;
+    };
+  }, [facets?.vendors, models]);
 
   const organizations = useMemo(() => {
     const grouped = new Map<string, ModelItem[]>();
@@ -120,8 +163,9 @@ export default function OrganizationsPage() {
         const organizationModels = grouped.get(organization.name) ?? [];
         return {
           ...organization,
-          logo: organizationModels.find((model) => model.vendorLogoUrl)?.vendorLogoUrl,
+          logo: organizationLogoUrl(organizationModels.find((model) => model.vendorLogoUrl)?.vendorLogoUrl),
           featuredModel: [...organizationModels].sort((a, b) => b.trendingScore - a.trendingScore)[0],
+          paperCount: paperCounts[organization.name] ?? 0,
           momentum: organizationModels.reduce((total, model) => total + (model.trendingScore || 0), 0),
         };
       })
@@ -130,7 +174,7 @@ export default function OrganizationsPage() {
         if (sort === "models") return b.count - a.count || a.name.localeCompare(b.name);
         return b.momentum - a.momentum || b.count - a.count;
       });
-  }, [facets?.vendors, models, sort]);
+  }, [facets?.vendors, models, paperCounts, sort]);
 
   return (
     <div className="min-h-screen bg-[#F8F7F2] text-[#171717]">
