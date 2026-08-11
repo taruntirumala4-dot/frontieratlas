@@ -801,9 +801,12 @@ export default function PaperList({
   isFilterChanging,
   onFilterDone,
 }: PaperListProps) {
-  const [papers, setPapers] = useState<Paper[]>(
-    () => initialPapers?.papers ?? [],
-  );
+  const [papers, setPapers] = useState<Paper[]>(() => {
+    if (initialPapers?.papers) {
+      return sortAndFilterLocalPapers(initialPapers.papers, filterParams?.sort, period);
+    }
+    return [];
+  });
 
   const [page, setPage] = useState(() => initialPapers?.page ?? 1);
   const [loading, setLoading] = useState(false);
@@ -1062,89 +1065,53 @@ export default function PaperList({
       period,
     ],
   );
-  const isInitialMount = useRef(true);
-  const prevTaskRef = useRef(task);
-  const prevMethodRef = useRef(method);
+const isInitialMount = useRef(true);
+  const isInitialTransition = useRef(true);
+  const prevParamsStr = useRef<string>("");
 
   useEffect(() => {
-    const currentParams: GetPapersParams = {
-      page: 1,
-      task,
-      method,
-      model: filterParams?.model,
-      sort: filterParams?.sort,
-      period,
-    };
+    const currentParamsStr = `${task ?? "all"}:${method ?? "none"}:${filterParams?.model ?? "none"}:${filterParams?.sort ?? "none"}:${period ?? "all"}:${normalizedSearchQuery}`;
 
-    const wasInitialMount = isInitialMount.current;
-    isInitialMount.current = false;
+// RULE 1: Handle the very first mount (Do absolutely nothing to state, it's already perfect!)
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      prevParamsStr.current = currentParamsStr;
 
-    const taskChanged = prevTaskRef.current !== task;
-    const methodChanged = prevMethodRef.current !== method;
-
-    prevTaskRef.current = task;
-    prevMethodRef.current = method;
-
-    // RULE 1: Use SSR initialPapers ONLY on the very first mount
-    if (
-      wasInitialMount &&
-      initialPapers &&
-      initialPapers.papers &&
-      initialPapers.papers.length > 0 &&
-      !normalizedSearchQuery
-    ) {
-      cacheRef.current.set(getCacheKey(initialPapers.page), initialPapers);
-      // ADD THE FILTER HERE:
-      const initialFiltered = sortAndFilterLocalPapers(initialPapers.papers, filterParams?.sort, period);
-      setPapers(initialFiltered);
-      setPage(initialPapers.page);
-      setHasMore(initialPapers.hasMore);
-      setError(initialError ?? null);
-      setLoading(false);
-      if (initialPapers.hasMore) {
-        nextPageRef.current = initialPapers.page + 1;
-        prefetchPage(initialPapers.page + 1);
-      } else {
-        nextPageRef.current = 0;
+      // Just setup the background cache and prefetch, no UI updates!
+      if (
+        initialPapers &&
+        initialPapers.papers &&
+        initialPapers.papers.length > 0 &&
+        !normalizedSearchQuery
+      ) {
+        cacheRef.current.set(getCacheKey(initialPapers.page), initialPapers);
+        if (initialPapers.hasMore) {
+          nextPageRef.current = initialPapers.page + 1;
+          prefetchPage(initialPapers.page + 1);
+        } else {
+          nextPageRef.current = 0;
+        }
       }
       return;
     }
 
-// RULE 2: Check synchronous cache hit for instant render (0ms response)
-    const syncHit = getPapersSync(currentParams);
-    if (syncHit && syncHit.papers.length > 0) {
-      // ADD THE FILTER HERE:
-      const syncFiltered = sortAndFilterLocalPapers(syncHit.papers, filterParams?.sort, period);
-      const visible = normalizedSearchQuery ? syncFiltered.filter(matchesSearch) : syncFiltered;
-      setPapers(visible);
-      setPage(syncHit.page);
-      setHasMore(syncHit.hasMore);
-      if (syncHit.hasMore) {
-        nextPageRef.current = syncHit.page + 1;
-        prefetchPage(syncHit.page + 1);
-      } else {
-        nextPageRef.current = 0;
-      }
-      setLoading(false);
-      onFilterDoneRef.current?.();
+    // RULE 2: GUARD AGAINST EXTRA FETCHES
+    // If the component re-renders but filters haven't actually changed, DO NOTHING.
+    // This completely stops the double-loading flicker and prevents overriding server data.
+    if (prevParamsStr.current === currentParamsStr) {
       return;
     }
 
-    // RULE 3: Instant local fallback (ONLY if task/method didn't change)
-    // If task/method changed, we clear papers to show skeletons instead of flashing wrong data.
-    if (papers.length > 0 && !taskChanged && !methodChanged) {
-      const locallySorted = sortAndFilterLocalPapers(papers, filterParams?.sort, period);
-      setPapers(locallySorted);
-    } else {
-      setPapers([]);
-      setLoading(true);
-    }
-    
+    prevParamsStr.current = currentParamsStr;
+
+    // RULE 3: Only when filters ACTUALLY change, clear the feed and fetch fresh data
+    setPapers([]);
+    setLoading(true);
     setPage(1);
     setHasMore(true);
     nextPageRef.current = 1;
     void loadPage(1, true);
-    
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     filterParams?.method,
@@ -1155,18 +1122,22 @@ export default function PaperList({
     initialError,
     initialPapers,
     loadPage,
-    matchesSearch,
     method,
     normalizedSearchQuery,
     period,
     prefetchPage,
-    selectedTag,
     task,
   ]);
 
   const [isTransitioning, setIsTransitioning] = useState(false);
 
   useEffect(() => {
+    // Prevent the artificial skeleton flash on the very first page load
+    if (isInitialTransition.current) {
+      isInitialTransition.current = false;
+      return;
+    }
+
     setIsTransitioning(true);
     const timer = setTimeout(() => {
       setIsTransitioning(false);
@@ -1180,7 +1151,6 @@ export default function PaperList({
     period,
     selectedTag,
   ]);
- 
   useEffect(() => {
     const sentinel = sentinelRef.current;
     if (!sentinel || !hasMore) return;
