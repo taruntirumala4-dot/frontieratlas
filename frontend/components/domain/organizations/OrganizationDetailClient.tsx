@@ -10,6 +10,22 @@ import { getPapers, type Paper } from "@/lib/paperApi";
 
 const toSlug = (value: string) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
+function organizationLogoUrl(logo?: string) {
+  if (!logo) return undefined;
+
+  try {
+    const url = new URL(logo);
+    if (url.hostname === "logo.clearbit.com") {
+      const domain = url.pathname.replace(/^\//, "");
+      return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=128`;
+    }
+  } catch {
+    return logo;
+  }
+
+  return logo;
+}
+
 const ORGANIZATION_WEBSITES: Record<string, string> = {
   "Adobe": "https://www.adobe.com/",
   "Amazon": "https://www.amazon.com/",
@@ -44,7 +60,7 @@ export default function OrganizationDetailClient({ slug }: { slug: string }) {
       const organization = facets.vendors.find((vendor) => toSlug(vendor.name) === slug);
       const organizationName = organization?.name ?? slug.replace(/-/g, " ");
       setName(organizationName);
-      setLogo(models.find((model) => model.vendor === organizationName && model.vendorLogoUrl)?.vendorLogoUrl);
+      setLogo(organizationLogoUrl(models.find((model) => model.vendor === organizationName && model.vendorLogoUrl)?.vendorLogoUrl));
       return getPapers({ organization: organizationName, limit: 50, sort: "latest" });
     }).then((result) => setPapers(result.papers)).catch((error) => console.error("Unable to load organization papers", error)).finally(() => setLoading(false));
   }, [slug]);
