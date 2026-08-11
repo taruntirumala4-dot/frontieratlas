@@ -22,34 +22,6 @@ export default function HomeContent({
   const [selectedPeriod, setSelectedPeriod] = useState<string>("all");
   const [isFilterChanging, setIsFilterChanging] = useState(false);
 
-  const isMounted = useRef(false);
-
-  // Stealthy Memory Check: Restore filters from sessionStorage if they exist
-  useEffect(() => {
-    const savedSort = sessionStorage.getItem("atlas_activeSort");
-    const savedPeriod = sessionStorage.getItem("atlas_selectedPeriod");
-    if (savedSort && savedSort !== "undefined" && savedSort !== "null") setActiveSort(savedSort);
-    if (savedPeriod && savedPeriod !== "undefined" && savedPeriod !== "null") setSelectedPeriod(savedPeriod);
-
-    // Mark as mounted after we've read the saved values
-    setTimeout(() => {
-      isMounted.current = true;
-    }, 0);
-  }, []);
-
-  // Save user preferences to memory when they change
-  useEffect(() => {
-    if (isMounted.current) {
-      sessionStorage.setItem("atlas_activeSort", activeSort);
-    }
-  }, [activeSort]);
-
-  useEffect(() => {
-    if (isMounted.current) {
-      sessionStorage.setItem("atlas_selectedPeriod", selectedPeriod);
-    }
-  }, [selectedPeriod]);
-
   // Defer speculative background prefetching so initial feed & infinite scroll get 100% network bandwidth
   useEffect(() => {
     const timer = setTimeout(() => {
