@@ -19,7 +19,7 @@ export default function HomeContent({
 }) {
   const [selectedTag, setSelectedTag] = useState<string | undefined>(undefined);
   const [activeSort, setActiveSort] = useState<string>("Trending Papers");
-  const [selectedPeriod, setSelectedPeriod] = useState<string>("all");
+  const [selectedPeriod, setSelectedPeriod] = useState<string>("All Time");
   const [isFilterChanging, setIsFilterChanging] = useState(false);
 
   // Defer speculative background prefetching so initial feed & infinite scroll get 100% network bandwidth
