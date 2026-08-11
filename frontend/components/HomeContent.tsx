@@ -53,7 +53,7 @@ export default function HomeContent({
       });
 
       setTimeout(() => prefetchMethods(), delay);
-    }, 2500);
+    }, 300);
 
     return () => clearTimeout(timer);
   }, []);
