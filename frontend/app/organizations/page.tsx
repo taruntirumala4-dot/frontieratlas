@@ -11,7 +11,7 @@ import {
   type ModelFacets,
   type ModelItem,
 } from "@/lib/models";
-import { getOrganizationDirectory, getOrganizationFacets } from "@/lib/organizations";
+import { getOrganizationDirectory } from "@/lib/organizations";
 
 type SortMode = "trending" | "models" | "az";
 
@@ -60,7 +60,7 @@ function OrganizationCard({
   rank: number;
   logo?: string;
   featuredModel?: ModelItem;
-  paperCount?: number;
+  paperCount: number;
 }) {
   return (
     <Link
@@ -88,11 +88,7 @@ function OrganizationCard({
         <p className="line-clamp-2 text-[11px] leading-4 text-[#69645C]">{organizationDescription(name)}</p>
         <div className="mt-2 flex items-end justify-between border-t border-[#F0EEE9] pt-2">
           <div>
-            {paperCount === undefined ? (
-              <span aria-label="Loading paper count" className="mt-1 block h-5 w-9 animate-pulse rounded bg-[#EEECE6]" />
-            ) : (
-              <span className="block text-[20px] font-semibold leading-none tracking-[-0.04em] text-[#171717]">{paperCount}</span>
-            )}
+            <span className="block text-[20px] font-semibold leading-none tracking-[-0.04em] text-[#171717]">{paperCount}</span>
             <span className="mt-0.5 block font-mono text-[8px] uppercase tracking-[0.1em] text-[#8C877E]">Papers</span>
           </div>
           <span className="rounded-full bg-[#FFF0EB] px-2 py-0.5 font-mono text-[9px] font-medium text-[#E74B1D]">#{rank}</span>
@@ -113,32 +109,22 @@ export default function OrganizationsPage() {
   const [facets, setFacets] = useState<ModelFacets | null>(cachedFacets);
   const [paperCounts, setPaperCounts] = useState<Record<string, number>>({});
   const [sort, setSort] = useState<SortMode>("trending");
-  const [loading, setLoading] = useState(!(cachedModels && cachedFacets));
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
 
-    getOrganizationFacets()
-      .then((facetData) => {
+    getOrganizationDirectory()
+      .then((directory) => {
         if (cancelled) return;
-        setFacets(facetData);
+        setModels(directory.models);
+        setFacets(directory.facets);
+        setPaperCounts(directory.paperCounts);
       })
       .catch((error) => console.error("Unable to load organizations", error))
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
-
-    getModels()
-      .then((modelData) => {
-        if (!cancelled) setModels(modelData);
-      })
-      .catch((error) => console.error("Unable to load organization models", error));
-
-    getOrganizationDirectory()
-      .then((directory) => {
-        if (!cancelled) setPaperCounts(directory.paperCounts);
-      })
-      .catch((error) => console.error("Unable to load organization paper counts", error));
 
     return () => {
       cancelled = true;
@@ -165,7 +151,7 @@ export default function OrganizationsPage() {
           ...organization,
           logo: organizationLogoUrl(organizationModels.find((model) => model.vendorLogoUrl)?.vendorLogoUrl),
           featuredModel: [...organizationModels].sort((a, b) => b.trendingScore - a.trendingScore)[0],
-          paperCount: paperCounts[organization.name],
+          paperCount: paperCounts[organization.name] ?? 0,
           momentum: organizationModels.reduce((total, model) => total + (model.trendingScore || 0), 0),
         };
       })

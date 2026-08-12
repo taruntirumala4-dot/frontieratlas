@@ -67,7 +67,7 @@ export function getOrganizationDirectory(): Promise<OrganizationDirectoryData> {
       const facets = await getOrganizationFacets();
       const modelsPromise = getModels();
       const organizationNames = facets.vendors.map((vendor) => vendor.name);
-      const counts = await mapWithConcurrency(organizationNames, 10, async (organization) => {
+      const counts = await mapWithConcurrency(organizationNames, 20, async (organization) => {
         const result = await getPapers({ organization, limit: 50, sort: "latest" });
         return [organization, result.total] as const;
       });
