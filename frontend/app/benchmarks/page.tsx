@@ -103,28 +103,92 @@ const COMPARABLE_BENCHMARKS = [
 function getMeta(name: string) {
   const n = (name || "").toLowerCase();
 
-  // ── 1. Coding (Expanded to catch all variations) ──
-  if (n.includes("swe-bench") || n.includes("terminal") || n.includes("code") || n.includes("human") || n.includes("mbpp") || n.includes("livecode"))  
-        return { task: "Software Engineering", metric: "resolve-rate", status: "Active", category: "Coding", year: "2024" };
+  // ── 1. Robotics & Navigation ──
+  if (n.includes("nav") || n.includes("habitat") || n.includes("eqa") || n.includes("touch") || n.includes("spatial"))
+    return { task: "Navigation", metric: "SPL", status: "Active", category: "Robotics", year: "2023", collection: "Robotics" };
+  if (n.includes("robot") || n.includes("manipulation") || n.includes("grasp") || n.includes("dexter"))
+    return { task: "Planning", metric: "success rate", status: "Active", category: "Robotics", year: "2024", collection: "Robotics" };
 
-  // ── 2. Mathematics ──
-  if (n.includes("math") || n.includes("gsm8k") || n.includes("theoremqa") || n.includes("aime"))  
-        return { task: "Mathematical Reasoning", metric: "accuracy", status: "Active", category: "Mathematics", year: "2023" };
+  // ── 2. Scientific AI ──
+  if (n.includes("science") || n.includes("physics") || n.includes("chem") || n.includes("bio") || n.includes("protein") || n.includes("genomics"))
+    return { task: "Question Answering", metric: "accuracy", status: "Active", category: "Scientific AI", year: "2024", collection: "Science" };
 
-  // ── 3. Reasoning ──
-  if (n.includes("gpqa") || n.includes("humanity") || n.includes("big-bench") || n.includes("arc") || n.includes("hellaswag") || n.includes("truthfulqa") || n.includes("bbh"))  
-        return { task: "Reasoning", metric: "accuracy", status: "Active", category: "Reasoning", year: "2023" };
+  // ── 3. Time Series ──
+  if (n.includes("time") || n.includes("series") || n.includes("forecast") || n.includes("anomaly") || n.includes("etth") || n.includes("ettm") || n.includes("weather") || n.includes("traffic") || n.includes("electricity"))
+    return { task: "Time Series", metric: "MSE", status: "Active", category: "Time Series", year: "2023", collection: "Time Series" };
 
-  // ── 4. Document AI & OCR ──
-  if (n.includes("ocr") || n.includes("parse") || n.includes("olmocr") || n.includes("omnidoc") || n.includes("chart"))  
-        return { task: "Document OCR", metric: "score", status: "Active", category: "OCR & Document AI", year: "2024" };
+  // ── 4. Graphs ──
+  if (n.includes("graph") || n.includes("node") || n.includes("link") || n.includes("cora") || n.includes("citeseer") || n.includes("pubmed"))
+    return { task: "Question Answering", metric: "accuracy", status: "Active", category: "Graphs", year: "2022", collection: "Graphs" };
 
-  // ── 5. Question Answering & Language ──
-  if (n.includes("qa") || n.includes("mmlu") || n.includes("glue") || n.includes("squad") || n.includes("trivia") || n.includes("winogrande") || n.includes("drop") || n.includes("piqa") || n.includes("agieval") || n.includes("language") || n.includes("text"))  
-        return { task: "Question Answering", metric: "accuracy", status: "Active", category: "Language", year: "2021" };
+  // ── 5. Audio & Speech ──
+  if (n.includes("tts") || n.includes("synthesis") || n.includes("voicegen") || n.includes("ljspeech") || n.includes("vctk") || n.includes("fastspeech"))
+    return { task: "Speech Synthesis", metric: "MOS", status: "Active", category: "Audio & Speech", year: "2024", collection: "Audio" };
+  if (n.includes("audio class") || n.includes("sound") || n.includes("esc-50") || n.includes("audioset") || n.includes("urbansound"))
+    return { task: "Audio Classification", metric: "accuracy", status: "Active", category: "Audio & Speech", year: "2023", collection: "Audio" };
+  if (n.includes("audio") || n.includes("speech") || n.includes("voice") || n.includes("librispeech") || n.includes("whisper") || n.includes("asr"))
+    return { task: "Speech Recognition", metric: "WER", status: "Active", category: "Audio & Speech", year: "2023", collection: "Audio" };
 
-  // ── 6. General AI Catch-All ──
-  return { task: "General ML Evaluation", metric: "accuracy", status: "Active", category: "General AI", year: "2024" };
+  // ── 6. Computer Vision ──
+  if (n.includes("detect") || n.includes("yolo") || n.includes("bbox") || n.includes("voc"))
+    return { task: "Object Detection", metric: "mAP", status: "Active", category: "Computer Vision", year: "2023", collection: "Vision" };
+  if (n.includes("segment") || n.includes("ade20k") || n.includes("cityscapes") || n.includes("mask"))
+    return { task: "Semantic Segmentation", metric: "mIoU", status: "Active", category: "Computer Vision", year: "2023", collection: "Vision" };
+  if (n.includes("caption") || n.includes("flickr") || n.includes("nocaps") || n.includes("mscoco") || n.includes("vizwiz"))
+    return { task: "Image Captioning", metric: "CIDEr", status: "Active", category: "Computer Vision", year: "2022", collection: "Vision" };
+  if (n.includes("imagenet") || n.includes("coco") || n.includes("vision") || n.includes("image"))
+    return { task: "Image Classification", metric: "accuracy", status: "Active", category: "Computer Vision", year: "2023", collection: "Vision" };
+
+  // ── 7. Video ──
+  if (n.includes("video") || n.includes("kinetics") || n.includes("ucf") || n.includes("activitynet"))
+    return { task: "Video Understanding", metric: "accuracy", status: "Active", category: "Video", year: "2023", collection: "Video" };
+
+  // ── 8. Multimodal ──
+  if (n.includes("multimodal") || n.includes("mmmu") || n.includes("mm-") || n.includes("llava") || n.includes("vl") || n.includes("vqa"))
+    return { task: "Visual Question Answering", metric: "accuracy", status: "Active", category: "Multimodal", year: "2024", collection: "Multimodal" };
+
+  // ── 9. OCR & Document AI ──
+  if (n.includes("ocrbench") || n.includes("textvqa") || n.includes("docvqa") || n.includes("ocr"))
+    return { task: "OCR", metric: "accuracy", status: "Active", category: "OCR & Document AI", year: "2024", collection: "Document AI" };
+  if (n.includes("parse") || n.includes("olmocr") || n.includes("omnidoc") || n.includes("chart") || n.includes("doc"))
+    return { task: "Document Parsing", metric: "f1-score", status: "Active", category: "OCR & Document AI", year: "2024", collection: "Document AI" };
+
+  // ── 10. Coding ──
+  if (n.includes("swe-bench") || n.includes("swe") || n.includes("issue") || n.includes("resolve"))
+    return { task: "Software Engineering", metric: "resolve-rate", status: "Active", category: "Coding", year: "2024", collection: "Coding" };
+  if (n.includes("terminal") || n.includes("code") || n.includes("human") || n.includes("mbpp") || n.includes("livecode") || n.includes("ds-1000"))
+    return { task: "Code Generation", metric: "pass@1", status: "Active", category: "Coding", year: "2023", collection: "Coding" };
+
+  // ── 11. Mathematics ──
+  if (n.includes("math") || n.includes("gsm") || n.includes("theoremqa") || n.includes("aime"))
+    return { task: "Mathematical Reasoning", metric: "accuracy", status: "Active", category: "Mathematics", year: "2023", collection: "Mathematics" };
+
+  // ── 12. Reasoning ──
+  if (n.includes("arc") || n.includes("hellaswag") || n.includes("piqa") || n.includes("boolq") || n.includes("truthfulqa") || n.includes("bbh") || n.includes("gpqa") || n.includes("humanity") || n.includes("big-bench"))
+    return { task: "Reasoning", metric: "accuracy", status: "Saturated", category: "Reasoning", year: "2019", collection: "Reasoning" };
+
+  // ── 13. Healthcare ──
+  if (n.includes("medqa") || n.includes("pubmed") || n.includes("clinical") || n.includes("med"))
+    return { task: "Question Answering", metric: "accuracy", status: "Active", category: "Healthcare", year: "2023", collection: "Healthcare" };
+
+  // ── 14. Language & NLP ──
+  if (n.includes("retrieval") || n.includes("rag") || n.includes("msmarco") || n.includes("nq") || n.includes("beir"))
+    return { task: "Retrieval", metric: "NDCG", status: "Active", category: "Language", year: "2023", collection: "Language" };
+  if (n.includes("summar") || n.includes("xsum") || n.includes("cnn") || n.includes("rouge") || n.includes("samsum") || n.includes("gigaword") || n.includes("aeslc"))
+    return { task: "Summarization", metric: "ROUGE", status: "Active", category: "Language", year: "2022", collection: "Language" };
+  if (n.includes("translat") || n.includes("wmt") || n.includes("bleu") || n.includes("comet") || n.includes("flores"))
+    return { task: "Machine Translation", metric: "BLEU", status: "Active", category: "Language", year: "2022", collection: "Language" };
+  if (n.includes("gen") || n.includes("story") || n.includes("dialog"))
+    return { task: "Text Generation", metric: "score", status: "Active", category: "Language", year: "2022", collection: "Language" };
+  if (n.includes("qa") || n.includes("mmlu") || n.includes("glue") || n.includes("squad") || n.includes("trivia") || n.includes("winogrande") || n.includes("drop") || n.includes("agieval") || n.includes("language") || n.includes("text"))
+    return { task: "Question Answering", metric: "accuracy", status: "Active", category: "Language", year: "2021", collection: "Language" };
+
+  // ── 15. Agents ──
+  if (n.includes("agent") || n.includes("tool") || n.includes("webarena") || n.includes("alfworld") || n.includes("gym") || n.includes("env"))
+    return { task: "Planning", metric: "success rate", status: "Active", category: "Agents", year: "2024", collection: "Agents" };
+
+  // ── 16. General AI Catch-All ──
+  return { task: "General ML Evaluation", metric: "accuracy", status: "Active", category: "General AI", year: "2024", collection: "General" };
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -154,7 +218,6 @@ const DOMAINS = [
 const TASKS = [
   { label: "Question Answering", icon: MessageSquare, color: "#9333ea", bg: "#f3e8ff", desc: "Comprehension & factual recall evaluated on open-domain and reading-comprehension datasets" },
   { label: "Text Generation", icon: Puzzle, color: "#0284c7", bg: "#e0f2fe", desc: "Producing coherent, fluent text from prompts, dialogue history or structured inputs" },
-  { label: "Summarization", icon: Zap, color: "#16a34a", bg: "#dcfce7", desc: "Condense long documents into concise, accurate summaries scored by ROUGE & BERTScore" },
   { label: "Machine Translation", icon: Languages, color: "#d97706", bg: "#fef3c7", desc: "Translate text across language pairs and evaluate fidelity using BLEU & COMET scores" },
   { label: "Reasoning", icon: Shield, color: "#7c3aed", bg: "#ede9fe", desc: "Multi-step logical & commonsense inference evaluated on chains of thought and proofs" },
   { label: "Mathematical Reasoning", icon: Binary, color: "#1d4ed8", bg: "#dbeafe", desc: "Arithmetic word problems to olympiad-level formal proofs across difficulty tiers" },
