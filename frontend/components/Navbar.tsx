@@ -100,6 +100,20 @@ export default function Navbar({
   }, []);
 
   useEffect(() => {
+    const prefetch = () => {
+      import("@/lib/organizations").then((module) => module.prefetchOrganizationDirectory()).catch(() => {});
+    };
+
+    if ("requestIdleCallback" in window) {
+      const idleId = window.requestIdleCallback(prefetch, { timeout: 1500 });
+      return () => window.cancelIdleCallback(idleId);
+    }
+
+    const timeoutId = globalThis.setTimeout(prefetch, 500);
+    return () => globalThis.clearTimeout(timeoutId);
+  }, []);
+
+  useEffect(() => {
     const closeProfileOnOutsideClick = (event: MouseEvent) => {
       if (!profileRefs.current.some((profile) => profile?.contains(event.target as Node))) {
         setIsProfileOpen(false);
@@ -289,6 +303,8 @@ export default function Navbar({
             <a
               href="/organizations"
               data-text="Organizations"
+              onMouseEnter={() => { import("@/lib/organizations").then(m => m.prefetchOrganizationDirectory()).catch(() => {}); }}
+              onTouchStart={() => { import("@/lib/organizations").then(m => m.prefetchOrganizationDirectory()).catch(() => {}); }}
               className={`text-[13px] transition-colors no-underline before:content-[attr(data-text)] before:block before:font-bold before:h-0 before:overflow-hidden before:invisible before:select-none text-center flex flex-col justify-center ${
                 isOrganizationsActive
                   ? "text-[#F55036] font-bold"

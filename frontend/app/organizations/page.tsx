@@ -4,15 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Building2, Sparkles } from "lucide-react";
 import Navbar from "@/components/Navbar";
-import { getPapers } from "@/lib/paperApi";
 import {
   getCachedModelFacets,
   getCachedModels,
-  getModelFacets,
-  getModels,
   type ModelFacets,
   type ModelItem,
 } from "@/lib/models";
+import { getOrganizationDirectory } from "@/lib/organizations";
 
 type SortMode = "trending" | "models" | "az";
 
@@ -110,40 +108,27 @@ export default function OrganizationsPage() {
   const [facets, setFacets] = useState<ModelFacets | null>(cachedFacets);
   const [paperCounts, setPaperCounts] = useState<Record<string, number>>({});
   const [sort, setSort] = useState<SortMode>("trending");
-  const [loading, setLoading] = useState(!(cachedModels && cachedFacets));
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([getModels(), getModelFacets()])
-      .then(([modelData, facetData]) => {
-        setModels(modelData);
-        setFacets(facetData);
+    let cancelled = false;
+
+    getOrganizationDirectory()
+      .then((directory) => {
+        if (cancelled) return;
+        setModels(directory.models);
+        setFacets(directory.facets);
+        setPaperCounts(directory.paperCounts);
       })
       .catch((error) => console.error("Unable to load organizations", error))
-      .finally(() => setLoading(false));
-  }, []);
-
-  useEffect(() => {
-    const organizationNames = facets?.vendors?.map((vendor) => vendor.name)
-      ?? [...new Set(models.map((model) => model.vendor).filter(Boolean))];
-
-    if (!organizationNames.length) return;
-
-    let cancelled = false;
-    Promise.all(
-      organizationNames.map(async (organization) => [
-        organization,
-        (await getPapers({ organization, limit: 50, sort: "latest" })).papers.length,
-      ] as const),
-    )
-      .then((counts) => {
-        if (!cancelled) setPaperCounts(Object.fromEntries(counts));
-      })
-      .catch((error) => console.error("Unable to load organization paper counts", error));
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
 
     return () => {
       cancelled = true;
     };
-  }, [facets?.vendors, models]);
+  }, []);
 
   const organizations = useMemo(() => {
     const grouped = new Map<string, ModelItem[]>();
