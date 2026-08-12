@@ -59,10 +59,16 @@ export default function HomeContent({
   }, []);
 
   // --- FILTER HANDLERS ---
-  const handleSidebarSelect = (label: string) => {
+ const handleSidebarSelect = (label: string) => {
+  if (
+    label === "Trending Papers" ||
+    label === "Latest Papers" ||
+    label === "Most GitHub Stars"
+  ) {
     setIsFilterChanging(true);
     setActiveSort(label);
-  };
+  }
+};
 
   const handlePeriodSelect = (period: string) => {
     setIsFilterChanging(true);

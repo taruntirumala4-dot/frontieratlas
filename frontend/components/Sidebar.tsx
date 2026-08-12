@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { getPapers } from "@/lib/paperApi";
 import {
   Flame,
   Clock,
@@ -52,16 +53,19 @@ const NavItem = ({
   isActive = false,
   onClick,
   href,
+  onMouseEnter,
 }: {
   icon?: React.ReactNode;
   label: string;
   isActive?: boolean;
   onClick: () => void;
   href?: string;
+  onMouseEnter?: () => void;
 }) => {
   const content = (
     <div
       onClick={onClick}
+      onMouseEnter={onMouseEnter}
       className={cn(
         "flex items-center gap-2.5 px-3 py-1 mx-1 cursor-pointer transition-colors rounded-md text-[13px] font-medium leading-snug",
         isActive
@@ -237,15 +241,24 @@ export default function Sidebar({
           <SectionLabel title="Tasks" />
           <div className="flex flex-col gap-0">
             {tasks.map((item) => (
-              <NavItem
-                key={item.label}
-                icon={item.icon}
-                label={item.label}
-                isActive={activeItem === item.label}
-                onClick={() => handleItemClick(item.label)}
-                href={item.slug ? `/tasks/${item.slug}` : `/tasks`}
-              />
-            ))}
+  <NavItem
+    key={item.label}
+    icon={item.icon}
+    label={item.label}
+    isActive={activeItem === item.label}
+    onClick={() => handleItemClick(item.label)}
+    onMouseEnter={() => {
+      if (item.slug) {
+        void getPapers({
+          page: 1,
+          task: item.slug,
+          sort: "popular",
+        });
+      }
+    }}
+    href={item.slug ? `/tasks/${item.slug}` : `/tasks`}
+  />
+))}
           </div>
         </div>
 
