@@ -300,7 +300,7 @@ export default function Navbar({
             >
               Models
             </a>
-            <a
+            <Link
               href="/organizations"
               data-text="Organizations"
               onMouseEnter={() => { import("@/lib/organizations").then(m => m.prefetchOrganizationDirectory()).catch(() => {}); }}
@@ -312,7 +312,7 @@ export default function Navbar({
               }`}
             >
               Organizations
-            </a>
+            </Link>
           </div>
 
           {/* Profile Control */}

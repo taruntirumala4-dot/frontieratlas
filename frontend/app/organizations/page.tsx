@@ -7,10 +7,11 @@ import Navbar from "@/components/Navbar";
 import {
   getCachedModelFacets,
   getCachedModels,
+  getModels,
   type ModelFacets,
   type ModelItem,
 } from "@/lib/models";
-import { getOrganizationDirectory } from "@/lib/organizations";
+import { getOrganizationDirectory, getOrganizationFacets } from "@/lib/organizations";
 
 type SortMode = "trending" | "models" | "az";
 
@@ -108,22 +109,32 @@ export default function OrganizationsPage() {
   const [facets, setFacets] = useState<ModelFacets | null>(cachedFacets);
   const [paperCounts, setPaperCounts] = useState<Record<string, number>>({});
   const [sort, setSort] = useState<SortMode>("trending");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!(cachedModels && cachedFacets));
 
   useEffect(() => {
     let cancelled = false;
 
-    getOrganizationDirectory()
-      .then((directory) => {
+    getOrganizationFacets()
+      .then((facetData) => {
         if (cancelled) return;
-        setModels(directory.models);
-        setFacets(directory.facets);
-        setPaperCounts(directory.paperCounts);
+        setFacets(facetData);
       })
       .catch((error) => console.error("Unable to load organizations", error))
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
+
+    getModels()
+      .then((modelData) => {
+        if (!cancelled) setModels(modelData);
+      })
+      .catch((error) => console.error("Unable to load organization models", error));
+
+    getOrganizationDirectory()
+      .then((directory) => {
+        if (!cancelled) setPaperCounts(directory.paperCounts);
+      })
+      .catch((error) => console.error("Unable to load organization paper counts", error));
 
     return () => {
       cancelled = true;
