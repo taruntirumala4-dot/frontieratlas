@@ -19,6 +19,7 @@ import {
 import PaperList from "@/components/PaperFeed";
 import Navbar from "@/components/Navbar";
 import TaskFilterBar from "@/components/domain/tasks/TaskFilterBar";
+import PaperTabs from "@/components/PaperTabs";
 
 function formatNumber(value: number | null | undefined) {
   if (value === null || value === undefined) return null;
@@ -249,6 +250,13 @@ export default function ModelDetailPage({
   const [loading, setLoading] = useState<boolean>(() => !model);
   const [logoError, setLogoError] = useState(false);
   const [paperSort, setPaperSort] = useState<"popular" | "latest" | "citations">("popular");
+  const [period, setPeriod] = useState<string>("All time");
+  const mappedPeriod = {
+  Today: "today",
+  "This Week": "week",
+  "This Month": "month",
+  "All time": "all",
+}[period] || "all";
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -524,17 +532,19 @@ export default function ModelDetailPage({
           )}
 
           <section className="rounded-[10px] border border-[#E5E5E0] bg-white p-6 md:p-7 w-full">
-            <div className="flex items-center gap-2 mb-6">
-              <BookOpen size={18} className="text-[#FF5A1F]" />
-              <div>
-                <h2 className="text-[18px] font-semibold tracking-tight text-[#111111]">
-                  Papers
-                </h2>
-                <p className="text-[13px] text-[#666666]">
-                  Research papers citing, evaluating, or comparing {model.name}.
-                </p>
-              </div>
-            </div>
+            <div className="mb-6">
+  <div className="flex items-center gap-2">
+    <BookOpen size={18} className="text-[#FF5A1F]" />
+
+    <h2 className="text-[18px] font-semibold tracking-tight text-[#111111]">
+      Papers
+    </h2>
+  </div>
+
+  <p className="text-[13px] text-[#666666] ml-7">
+    Research papers citing, evaluating, or comparing {model.name}.
+  </p>
+</div>
 
             {model.paperCount === 0 ? (
               <div className="rounded-[8px] border border-dashed border-[#E5E5E0] bg-[#FAFAF8] p-10 text-center">
@@ -549,15 +559,22 @@ export default function ModelDetailPage({
             ) : (
               <>
                 <TaskFilterBar
-                  selectedSort={paperSort}
-                  onSortChange={setPaperSort}
-                />
-                <PaperList
-                  filterParams={{
-                    model: resolvedParams.slug.toLowerCase().trim(),
-                    sort: paperSort,
-                  }}
-                />
+  selectedSort={paperSort}
+  onSortChange={setPaperSort}
+/>
+
+<PaperTabs
+  selectedPeriod={period}
+  onPeriodSelect={setPeriod}
+/>
+
+<PaperList
+  filterParams={{
+    model: resolvedParams.slug.toLowerCase().trim(),
+    sort: paperSort,
+  }}
+  period={mappedPeriod}
+/>
               </>
             )}
           </section>
