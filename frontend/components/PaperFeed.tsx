@@ -364,12 +364,14 @@ const isValidImageSrc = (src: string) => {
 const PaperThumbnail = memo(
   ({ title, thumbnail }: { title: string; thumbnail: string }) => {
     const [hasError, setHasError] = useState(false);
- 
+    const isExternal = thumbnail && thumbnail.startsWith("http");
+    const imageSource = isExternal ? `/api/proxy-image?url=${encodeURIComponent(thumbnail)}` : thumbnail;
+
     return (
       <div className="w-[150px] sm:w-[180px] xl:w-[200px] aspect-[4/5] xl:aspect-auto xl:h-full shrink-0 bg-white border border-[#E5E5E0] shadow-sm relative mx-auto xl:mx-0 overflow-hidden">
-        {isValidImageSrc(thumbnail) ? (
+        {isValidImageSrc(thumbnail) && !hasError ? (
           <img
-            src={thumbnail}
+            src={imageSource}
             alt={title || "Paper thumbnail"}
             loading="lazy"
             className="absolute inset-0 w-full h-full object-contain object-center transition-transform duration-300 group-hover/thumb:scale-[1.03]"
