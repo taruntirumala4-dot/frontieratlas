@@ -12,8 +12,9 @@ export class ArxivCollector implements PaperCollector {
     logger.info(`Fetching arXiv papers between ${startTime.toISOString()} and ${endTime.toISOString()}`);
     const startStr = startTime.toISOString().replace(/[-:T]/g, '').slice(0, 12);
     const endStr = endTime.toISOString().replace(/[-:T]/g, '').slice(0, 12);
-    const query = `lastUpdatedDate:[${startStr} TO ${endStr}]`;
+    const query = `(cat:cs.AI OR cat:cs.LG OR cat:cs.CL OR cat:cs.CV OR cat:cs.NE OR cat:cs.RO OR cat:cs.IR OR cat:cs.MA OR cat:stat.ML) AND lastUpdatedDate:[${startStr} TO ${endStr}]`;
     const url = `http://export.arxiv.org/api/query?search_query=${encodeURIComponent(query)}&sortBy=lastUpdatedDate&sortOrder=descending&max_results=500`;
+    logger.info(`arXiv URL: ${url}`);
 
     try {
       const xml = await defaultHttpClient.getText(url);
