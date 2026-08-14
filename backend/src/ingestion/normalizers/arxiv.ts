@@ -25,7 +25,7 @@ export function normalizeArxiv(raw: ArxivRawModel): NormalizedPaper {
     }
   }
 
-  let arxivId = null;
+  let arxivId: string | null = null;
   const match = idStr.match(/abs\/(.+)$/);
   if (match) {
     arxivId = match[1];

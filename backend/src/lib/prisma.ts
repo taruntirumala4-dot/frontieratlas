@@ -4,6 +4,11 @@ import { PrismaClient } from "../generated/prisma/client";
 import { PrismaNeon } from "@prisma/adapter-neon";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
+import { neonConfig } from "@neondatabase/serverless";
+
+if (typeof WebSocket !== "undefined") {
+  neonConfig.webSocketConstructor = WebSocket;
+}
 
 const connectionString = process.env.DATABASE_URL;
 

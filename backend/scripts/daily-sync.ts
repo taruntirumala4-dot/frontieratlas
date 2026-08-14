@@ -20,24 +20,40 @@ async function runDailySync(customStartTime?: Date, customEndTime?: Date) {
   try {
     const rawPapers = await fetchPapers(startTime, endTime);
     
-    const newPapers = await processPapers(rawPapers, prisma);
-    
-    const insertedCount = await syncPapers(newPapers, prisma);
+    if (rawPapers.length === 0) {
+      throw new Error('0 papers fetched from any source for the given time window.');
+    }
 
-    logger.info('--- DAILY SYNC COMPLETED SUCCESSFULLY ---');
+    const mergedPapers = await processPapers(rawPapers);
+    const intraBatchDuplicates = rawPapers.length - mergedPapers.length;
+    
+    const stats = await syncPapers(mergedPapers, prisma);
+
+    logger.info('--- DAILY SYNC COMPLETED ---');
     logger.info(`Stats:
       Window: ${startTime.toISOString()} to ${endTime.toISOString()}
       Raw Valid Fetched: ${rawPapers.length}
-      New Unique Papers Inserted: ${insertedCount}
+      Intra-batch Duplicates Collapsed: ${intraBatchDuplicates}
+      Merged Unique Papers: ${mergedPapers.length}
+      New Papers Inserted: ${stats.inserted}
+      Existing Papers Updated (Written): ${stats.updated}
+      Existing Papers Skipped (No New Data): ${stats.skipped}
+      Failed: ${stats.failed}
     `);
+
+    if (stats.total > 0 && (stats.failed / stats.total) > 0.25) {
+      throw new Error(`More than 25% of papers failed to persist (${stats.failed}/${stats.total} failed).`);
+    }
   } catch (error) {
     logger.error('--- DAILY SYNC FAILED ---', error);
-    process.exit(1);
+    process.exitCode = 1;
   } finally {
     await prisma.$disconnect();
     defaultHttpClient.stop();
   }
 }
+
+
 
 const args = process.argv.slice(2);
 let customStart: Date | undefined;
