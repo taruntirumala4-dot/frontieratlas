@@ -278,19 +278,18 @@ export default function Navbar({
             >
               Benchmarks
             </a>
-            <a
+            <Link
               href="/models"
               data-text="Models"
-              onMouseEnter={() => { import("@/lib/models").then(m => m.getModels({ limit: 50 })).catch(() => {}); }}
-              onTouchStart={() => { import("@/lib/models").then(m => m.getModels({ limit: 50 })).catch(() => {}); }}
-              className={`text-[13px] transition-colors no-underline before:content-[attr(data-text)] before:block before:font-bold before:h-0 before:overflow-hidden before:invisible before:select-none text-center flex flex-col justify-center ${
-                isModelsActive
+              onMouseEnter={() => { import("@/lib/models").then(m => m.getModels({ limit: 50 })).catch(() => { }); }}
+              onTouchStart={() => { import("@/lib/models").then(m => m.getModels({ limit: 50 })).catch(() => { }); }}
+              className={`text-[13px] transition-colors no-underline before:content-[attr(data-text)] before:block before:font-bold before:h-0 before:overflow-hidden before:invisible before:select-none text-center flex flex-col justify-center ${isModelsActive
                   ? "text-[#F55036] font-bold"
                   : "text-[#555555] font-medium hover:text-[#F55036]"
-              }`}
+                }`}
             >
               Models
-            </a>
+            </Link>
             <Link
               href="/organizations"
               data-text="Organizations"
