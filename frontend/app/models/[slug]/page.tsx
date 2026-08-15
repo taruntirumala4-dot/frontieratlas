@@ -16,6 +16,7 @@ import {
   getCachedModelBySlug,
   getModelBySlug,
 } from "@/lib/models";
+import { getPapers, type GetPapersResult } from "@/lib/paperApi";
 import PaperList from "@/components/PaperFeed";
 import Navbar from "@/components/Navbar";
 import TaskFilterBar from "@/components/domain/tasks/TaskFilterBar";
@@ -245,10 +246,11 @@ export default function ModelDetailPage({
   const cleanId = resolvedParams?.slug ? resolvedParams.slug.toLowerCase().trim() : "";
 
   const [model, setModel] = useState<ModelItem | ModelDetail | null>(() =>
-    cleanId ? getCachedModelBySlug(cleanId) : null,
-  );
-  const [loading, setLoading] = useState<boolean>(() => !model);
-  const [logoError, setLogoError] = useState(false);
+  cleanId ? getCachedModelBySlug(cleanId) : null,
+);
+const [initialPapers, setInitialPapers] = useState<GetPapersResult | null>(null);
+const [loading, setLoading] = useState<boolean>(() => !model);
+const [logoError, setLogoError] = useState(false);
   const [paperSort, setPaperSort] = useState<"popular" | "latest" | "citations">("popular");
   const [period, setPeriod] = useState<string>("All time");
   const mappedPeriod = {
@@ -259,28 +261,41 @@ export default function ModelDetailPage({
 }[period] || "all";
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-    setLogoError(false);
-    if (!cleanId) return;
+  window.scrollTo(0, 0);
+  setLogoError(false);
+  setInitialPapers(null);
 
-    const cachedData = getCachedModelBySlug(cleanId);
-    if (cachedData) {
-      setModel(cachedData);
+  if (!cleanId) return;
+
+  const cachedData = getCachedModelBySlug(cleanId);
+
+  if (cachedData) {
+    setModel(cachedData);
+    setLoading(false);
+  }
+
+  Promise.all([
+    getModelBySlug(cleanId),
+    getPapers({
+      page: 1,
+      model: cleanId,
+      sort: "popular",
+      period: "all",
+    }),
+  ])
+    .then(([modelData, papersData]) => {
+      if (modelData) {
+        setModel(modelData);
+      }
+
+      setInitialPapers(papersData);
       setLoading(false);
-    }
-
-    getModelBySlug(cleanId)
-      .then((data) => {
-        if (data) {
-          setModel(data);
-        }
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Failed to load model:", err);
-        setLoading(false);
-      });
-  }, [cleanId]);
+    })
+    .catch((err) => {
+      console.error("Failed to load model page:", err);
+      setLoading(false);
+    });
+}, [cleanId]);
 
   const benchmarkArray = useMemo(() => {
     if (!model?.benchmarkScore) return [];
@@ -574,6 +589,7 @@ export default function ModelDetailPage({
     sort: paperSort,
   }}
   period={mappedPeriod}
+  initialPapers={initialPapers}
 />
               </>
             )}
