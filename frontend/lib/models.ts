@@ -1,4 +1,5 @@
 import { fetchApi } from './api';
+import { getPapers } from './paperApi';
 
 export interface BackendModelItem {
   id: string;
@@ -376,10 +377,19 @@ export async function getModelBySlug(slug: string): Promise<ModelDetail> {
 
 export function prefetchModelBySlug(slug: string) {
   if (typeof window === "undefined" || !slug) return;
+
   const cleanSlug = slug.toLowerCase().trim();
+
   if (!modelsCache.has(`model_detail_${cleanSlug}`)) {
     getModelBySlug(cleanSlug).catch(() => {});
   }
+
+  getPapers({
+    page: 1,
+    model: cleanSlug,
+    sort: "popular",
+    period: "all",
+  }).catch(() => {});
 }
 
 if (typeof window !== "undefined") {
