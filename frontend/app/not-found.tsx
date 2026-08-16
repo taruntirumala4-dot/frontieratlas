@@ -8,7 +8,7 @@ import { atlasUiFont } from "@/lib/fonts";
 
 export default function NotFound() {
   const router = useRouter();
-  const [countdown, setCountdown] = useState(5);
+  const [countdown, setCountdown] = useState(2);
 
   useEffect(() => {
     // Decrease the countdown every second
