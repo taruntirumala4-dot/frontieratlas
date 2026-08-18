@@ -390,6 +390,9 @@ function ModelsContent() {
   const [selectedFamily, setSelectedFamily] = useState<string | null>(null);
   const [selectedCollection, setSelectedCollection] =
     useState<string | null>(null);
+  const MODELS_PER_PAGE = 20;
+  const [currentPage, setCurrentPage] = useState(1);
+
 
   // Per-section "See all / Show less" toggle states
   const [showAllCapabilities, setShowAllCapabilities] = useState(false);
@@ -913,6 +916,31 @@ function ModelsContent() {
 
     return enriched.map((e) => e.model);
   }, [filteredCatalogModels]);
+
+  const totalPages = Math.ceil(
+  rankedCatalogModels.length / MODELS_PER_PAGE
+);
+
+const paginatedCatalogModels = useMemo(() => {
+  const startIndex =
+    (currentPage - 1) * MODELS_PER_PAGE;
+
+  return rankedCatalogModels.slice(
+    startIndex,
+    startIndex + MODELS_PER_PAGE
+  );
+}, [rankedCatalogModels, currentPage]);
+
+useEffect(() => {
+  setCurrentPage(1);
+}, [
+  selectedVendor,
+  selectedDomain,
+  selectedCapability,
+  selectedFamily,
+  selectedCollection,
+  searchQuery,
+]);
 
   const filteredCapabilities = useMemo(() => {
     if (!facets?.capabilities) return [];
@@ -2052,13 +2080,12 @@ function ModelsContent() {
                                 }}
                               >
                                 {(
-                                  idx + 1
+                                  (currentPage - 1) * MODELS_PER_PAGE +
+                                  idx +
+                                  1
                                 )
                                   .toString()
-                                  .padStart(
-                                    3,
-                                    "0"
-                                  )}
+                                  .padStart(3, "0")}
                               </td>
 
                               <td
@@ -2977,7 +3004,7 @@ function ModelsContent() {
                       </thead>
 
                       <tbody>
-                        {rankedCatalogModels.map(
+                        {paginatedCatalogModels.map(
                           (model, idx) => (
                             <tr
                               key={model.id}
@@ -3311,6 +3338,76 @@ function ModelsContent() {
                         )}
                       </tbody>
                     </table>
+                    {totalPages > 1 && (
+  <div
+    style={{
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: "16px",
+      marginTop: "20px",
+      paddingTop: "16px",
+      borderTop: "1px solid #EAE9E4",
+      flexWrap: "wrap",
+    }}
+  >
+    <span
+      style={{
+        fontSize: "12px",
+        color: "#777777",
+      }}
+    >
+      Showing{" "}
+      {(currentPage - 1) * MODELS_PER_PAGE + 1}
+      {"–"}
+      {Math.min(
+        currentPage * MODELS_PER_PAGE,
+        rankedCatalogModels.length
+      )}{" "}
+      of {rankedCatalogModels.length} models
+    </span>
+
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "6px",
+      }}
+    >
+      <button
+        onClick={() =>
+          setCurrentPage((page) =>
+            Math.max(1, page - 1)
+          )
+        }
+        disabled={currentPage === 1}
+      >
+        ← Previous
+      </button>
+
+      <span
+        style={{
+          fontSize: "12px",
+          color: "#555555",
+          padding: "0 8px",
+        }}
+      >
+        Page {currentPage} of {totalPages}
+      </span>
+
+      <button
+        onClick={() =>
+          setCurrentPage((page) =>
+            Math.min(totalPages, page + 1)
+          )
+        }
+        disabled={currentPage === totalPages}
+      >
+        Next →
+      </button>
+    </div>
+  </div>
+)}
                   </div>
                 )}
               </div>

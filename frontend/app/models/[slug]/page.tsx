@@ -274,27 +274,27 @@ const [logoError, setLogoError] = useState(false);
     setLoading(false);
   }
 
-  Promise.all([
-    getModelBySlug(cleanId),
-    getPapers({
-      page: 1,
-      model: cleanId,
-      sort: "popular",
-      period: "all",
-    }),
-  ])
-    .then(([modelData, papersData]) => {
-      if (modelData) {
-        setModel(modelData);
-      }
+  Promise.allSettled([
+  getModelBySlug(cleanId),
+  getPapers({
+    page: 1,
+    model: cleanId,
+    sort: "popular",
+    period: "all",
+  }),
+]).then(([modelResult, papersResult]) => {
+  if (modelResult.status === "fulfilled" && modelResult.value) {
+    setModel(modelResult.value);
+  }
 
-      setInitialPapers(papersData);
-      setLoading(false);
-    })
-    .catch((err) => {
-      console.error("Failed to load model page:", err);
-      setLoading(false);
-    });
+  if (papersResult.status === "fulfilled") {
+    setInitialPapers(papersResult.value);
+  } else {
+    console.error("Failed to load model papers:", papersResult.reason);
+  }
+
+  setLoading(false);
+});
 }, [cleanId]);
 
   const benchmarkArray = useMemo(() => {
@@ -529,7 +529,6 @@ const [logoError, setLogoError] = useState(false);
                     <tr className="text-left text-[12px] uppercase tracking-[0.08em] text-[#8B8B8B]">
                       <th className="px-4 py-3 font-medium">Benchmark</th>
                       <th className="px-4 py-3 font-medium">Score</th>
-                      <th className="px-4 py-3 font-medium">Rank</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#F0F0EC] bg-white">
@@ -537,7 +536,7 @@ const [logoError, setLogoError] = useState(false);
                       <tr key={benchmark.name} className="text-[14px] text-[#222222]">
                         <td className="px-4 py-3 font-medium">{benchmark.name}</td>
                         <td className="px-4 py-3">{benchmark.score}</td>
-                        <td className="px-4 py-3 text-[#8B8B8B]">—</td>
+                        
                       </tr>
                     ))}
                   </tbody>
