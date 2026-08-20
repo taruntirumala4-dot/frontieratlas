@@ -47,7 +47,7 @@ export default function PaperTabs({
             onTouchStart={() => handleTabHover(tab)}
             onClick={() => handleTabClick(tab)}
             className={`py-3.5 sm:py-3 text-[14px] sm:text-[13px] border-b-2 transition-all duration-200 cursor-pointer whitespace-nowrap snap-start sm:snap-none
-              ${activeTab === tab
+              ${activeTab.toLowerCase() === tab.toLowerCase()
                 ? "text-[#111111] border-[#F55036] font-semibold"
                 : "text-[#8B8B8B] border-transparent hover:text-[#555555] hover:border-[#E5E5E0] font-normal"
               }`}

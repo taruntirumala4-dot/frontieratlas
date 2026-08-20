@@ -174,6 +174,15 @@ function mapBackendPaper(raw: Record<string, unknown>): Paper {
   }
 
   const cleanArxivId = extractArxivId(raw.arxivId as string) || extractArxivId(raw.paperUrl as string) || extractArxivId(raw.pdfUrl as string) || undefined;
+
+  if (!finalThumbnail) {
+    if (raw.slug) {
+      finalThumbnail = `/thumbnails/${raw.slug}.jpg`;
+    } else if (cleanArxivId) {
+      const hfCleanId = cleanArxivId.replace(/v\d+$/i, "");
+      finalThumbnail = `https://cdn-thumbnails.huggingface.co/social-thumbnails/papers/${hfCleanId}.png`;
+    }
+  }
   const computedArxivUrl = getArxivAbsUrl(cleanArxivId, raw.paperUrl as string) || undefined;
   const computedPdfUrl = getArxivPdfUrl(raw.pdfUrl as string, raw.paperUrl as string, cleanArxivId) || undefined;
 
@@ -366,7 +375,7 @@ export async function getPapers(params: GetPapersParams = {}): Promise<GetPapers
 
         const response = await fetchApi<PapersResponse>(`/api/v1/research-papers?${query.toString()}`);
         const mappedPapers = response.data.papers.map(mapBackendPaper);
-        const validPapers = mappedPapers.filter(p => p.authors.length > 0 && p.date !== "Unknown Date");
+        const validPapers = mappedPapers.filter(p => Boolean(p.title && p.slug));
         const freshResult: GetPapersResult = {
           papers: validPapers,
           total: response.data.total,
@@ -412,7 +421,7 @@ export async function getPapers(params: GetPapersParams = {}): Promise<GetPapers
 
       if (process.env.NODE_ENV === "development") console.log(`[paperApi] getPapers complete in ${totalDuration.toFixed(2)}ms (mapping took ${mapDuration.toFixed(2)}ms)`);
 
-      const validPapers = mappedPapers.filter(p => p.authors.length > 0 && p.date !== "Unknown Date");
+      const validPapers = mappedPapers.filter(p => Boolean(p.title && p.slug));
 
       const result: GetPapersResult = {
         papers: validPapers,
