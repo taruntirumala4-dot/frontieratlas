@@ -40,7 +40,7 @@ export function normalizeArxiv(raw: ArxivRawModel): NormalizedPaper {
     publicationDate: new Date(publishedStr),
     paperUrl,
     pdfUrl,
-    thumbnailUrl: null,
+    thumbnailUrl: `/thumbnails/${slugify.default(title, { lower: true, strict: true }).slice(0, 100)}.jpg`,
     sourceUrl: paperUrl,
     projectUrl: null,
     githubUrl: null,

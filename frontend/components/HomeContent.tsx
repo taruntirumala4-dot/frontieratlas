@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import PaperList from "@/components/PaperFeed";
@@ -13,13 +13,15 @@ import { prefetchMethods } from "@/lib/methodCache";
 export default function HomeContent({
   initialPapers,
   initialError,
+  initialPeriod = "Today",
 }: {
   initialPapers: GetPapersResult | null;
   initialError?: string;
+  initialPeriod?: string;
 }) {
   const [selectedTag, setSelectedTag] = useState<string | undefined>(undefined);
   const [activeSort, setActiveSort] = useState<string>("Trending Papers");
-  const [selectedPeriod, setSelectedPeriod] = useState<string>("All Time");
+  const [selectedPeriod, setSelectedPeriod] = useState<string>(initialPeriod);
   const [isFilterChanging, setIsFilterChanging] = useState(false);
 
   // Defer speculative background prefetching so initial feed & infinite scroll get 100% network bandwidth

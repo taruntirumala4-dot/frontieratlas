@@ -15,7 +15,7 @@ export function normalizeHuggingFace(raw: HuggingFaceRawModel): NormalizedPaper 
     publicationDate: new Date(raw.publishedAt),
     paperUrl,
     pdfUrl,
-    thumbnailUrl: null,
+    thumbnailUrl: raw.id ? `https://cdn-thumbnails.huggingface.co/social-thumbnails/papers/${raw.id}.png` : null,
     sourceUrl: `https://huggingface.co/papers/${raw.id}`,
     projectUrl: null,
     githubUrl: null,

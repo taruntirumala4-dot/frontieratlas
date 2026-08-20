@@ -362,20 +362,48 @@ const isValidImageSrc = (src: string) => {
 };
  
 const PaperThumbnail = memo(
-  ({ title, thumbnail }: { title: string; thumbnail: string }) => {
-    const [hasError, setHasError] = useState(false);
-    const isExternal = thumbnail && thumbnail.startsWith("http");
-    const imageSource = isExternal ? `/api/proxy-image?url=${encodeURIComponent(thumbnail)}` : thumbnail;
+  ({ title, thumbnail, slug, arxivId }: { title: string; thumbnail?: string; slug?: string; arxivId?: string }) => {
+    const [srcIndex, setSrcIndex] = useState(0);
+
+    const cleanArxiv = useMemo(() => {
+      if (!arxivId) return null;
+      const match = arxivId.match(/(?:arxiv\.org\/(?:abs|pdf)\/|arxiv:\s*|^)([a-z\-]+(?:\.[a-z\-]+)?\/\d+|\d{4}\.\d{4,5}(?:v\d+)?)/i);
+      const rawId = match && match[1] ? match[1].replace(/\.pdf$/i, "") : arxivId.replace(/^arxiv:/i, "");
+      return rawId.replace(/v\d+$/i, "");
+    }, [arxivId]);
+
+    const candidates = useMemo(() => {
+      const list: string[] = [];
+      if (isValidImageSrc(thumbnail || "")) list.push(thumbnail!);
+      if (slug) list.push(`/thumbnails/${slug}.jpg`);
+      if (cleanArxiv) list.push(`https://cdn-thumbnails.huggingface.co/social-thumbnails/papers/${cleanArxiv}.png`);
+      return list;
+    }, [thumbnail, slug, cleanArxiv]);
+
+    const currentSrc = candidates[srcIndex];
+    const isExternal = currentSrc && currentSrc.startsWith("http");
+    const imageSource = isExternal ? `/api/proxy-image?url=${encodeURIComponent(currentSrc)}` : currentSrc;
+
+    const handleImgError = () => {
+      if (srcIndex + 1 < candidates.length) {
+        setSrcIndex(prev => prev + 1);
+      } else {
+        setSrcIndex(candidates.length);
+      }
+    };
+
+    const showImg = currentSrc && srcIndex < candidates.length;
 
     return (
       <div className="w-[150px] sm:w-[180px] xl:w-[200px] aspect-[4/5] xl:aspect-auto xl:h-full shrink-0 bg-white border border-[#E5E5E0] shadow-sm relative mx-auto xl:mx-0 overflow-hidden">
-        {isValidImageSrc(thumbnail) && !hasError ? (
+        {showImg ? (
           <img
+            key={imageSource}
             src={imageSource}
             alt={title || "Paper thumbnail"}
             loading="lazy"
             className="absolute inset-0 w-full h-full object-contain object-center transition-transform duration-300 group-hover/thumb:scale-[1.03]"
-            onError={() => setHasError(true)}
+            onError={handleImgError}
           />
         ) : (
           <div className="absolute inset-0 w-full h-full transition-transform duration-300 group-hover/thumb:scale-[1.03]">
@@ -470,6 +498,8 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
             <PaperThumbnail 
               title={paper.title} 
               thumbnail={paper.thumbnail || (paper as any).thumbnailUrl || (paper as any).imageUrl || (paper as any).image_url || (paper as any).image || ""} 
+              slug={paper.slug}
+              arxivId={paper.arxivId}
             />
           </Link>
         </div>
@@ -746,52 +776,6 @@ interface PaperListProps {
   onFilterDone?: () => void;
 }
 
-function sortAndFilterLocalPapers(
-  papers: Paper[],
-  sort?: string,
-  period?: string
-): Paper[] {
-  if (!papers.length) return [];
-  let result = [...papers];
-
-  // Force strings to lowercase so "This Week" becomes "this week"
-  const safePeriod = period?.toLowerCase() || "all";
-
-  if (safePeriod !== "all" && !safePeriod.includes("all time")) {
-    const now = new Date();
-    const cutoff = new Date();
-
-   // Catch all string variations the API or UI might send
-        if (safePeriod === "today" || safePeriod === "day" || safePeriod === "1d" || safePeriod.includes("today")) {
-          cutoff.setDate(now.getDate() - 1);
-        } else if (safePeriod.includes("week") || safePeriod === "7d") {
-          cutoff.setDate(now.getDate() - 14);
-        } else if (safePeriod.includes("month") || safePeriod === "30d") {
-          cutoff.setDate(now.getDate() - 30);
-        }
-
-    result = result.filter((p) => {
-      if (!p.date || p.date === "Unknown Date") return false;
-      const d = new Date(p.date);
-      return !isNaN(d.getTime()) ? d >= cutoff : false;
-    });
-  }
-
-  const safeSort = sort?.toLowerCase() || "";
-
-  if (safeSort.includes("citations")) {
-    result.sort((a, b) => (b.citations || 0) - (a.citations || 0));
-  } else if (safeSort.includes("latest") || safeSort.includes("recent")) {
-    result.sort((a, b) => new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime());
-  } else if (safeSort.includes("stars") || safeSort.includes("popular")) {
-    result.sort((a, b) => (Number(b.upvotes) || 0) - (Number(a.upvotes) || 0));
-  } else if (safeSort.includes("trending")) {
-    result.sort((a, b) => (Number(b.github_hourly_increase) || 0) - (Number(a.github_hourly_increase) || 0));
-  }
-
-  return result;
-}
-
 export default function PaperList({
   selectedTag,
   filterParams,
@@ -805,7 +789,7 @@ export default function PaperList({
 }: PaperListProps) {
   const [papers, setPapers] = useState<Paper[]>(() => {
     if (initialPapers?.papers) {
-      return sortAndFilterLocalPapers(initialPapers.papers, filterParams?.sort, period);
+      return initialPapers.papers;
     }
     return [];
   });
@@ -1018,11 +1002,9 @@ export default function PaperList({
         setError(null);
 
         const result = await fetchPage(pageNumber);
-        const dateFilteredPapers = sortAndFilterLocalPapers(result.papers, filterParams?.sort, period);
-
         const visiblePapers = normalizedSearchQuery
-          ? dateFilteredPapers.filter(matchesSearch)
-          : dateFilteredPapers;
+          ? result.papers.filter(matchesSearch)
+          : result.papers;
 
         setPage(result.page);
         setHasMore(result.hasMore);
@@ -1063,8 +1045,6 @@ export default function PaperList({
       matchesSearch,
       normalizedSearchQuery,
       prefetchPage,
-      filterParams?.sort, 
-      period,
     ],
   );
 const isInitialMount = useRef(true);
