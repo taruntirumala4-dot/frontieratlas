@@ -14,6 +14,9 @@ import {
   ArrowUpRight,
   ArrowUp,
   FileText,
+  ChevronLeft,
+  ChevronRight,
+  ChevronDown,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -797,8 +800,9 @@ export default function PaperList({
   const [page, setPage] = useState(() => initialPapers?.page ?? 1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(initialError ?? null);
-  const [hasMore, setHasMore] = useState(() => initialPapers?.hasMore ?? true);
-  const [displayCount, setDisplayCount] = useState(() => initialPapers?.papers?.length ?? 20);
+  const [itemsPerPage, setItemsPerPage] = useState(25);
+  const [totalPapers, setTotalPapers] = useState(() => initialPapers?.total ?? 0);
+  const [displayCount, setDisplayCount] = useState(() => initialPapers?.papers?.length ?? 25);
   const cacheRef = useRef<Map<string, GetPapersResult>>(new Map());
   const inFlightRef = useRef<Map<string, Promise<GetPapersResult>>>(new Map());
   const loadingRef = useRef(false);
@@ -828,10 +832,7 @@ export default function PaperList({
       return text.includes(selectedFilter.toLowerCase());
     });
   }, [papers, selectedFilter]);
-  const sentinelRef = useRef<HTMLDivElement>(null);
-  const nextPageRef = useRef<number>(
-    initialPapers?.hasMore ? initialPapers.page + 1 : 0,
-  );
+  const totalPages = Math.max(1, Math.ceil(totalPapers / itemsPerPage));
  
   // Render all fetched cards immediately without artificial delay
   useEffect(() => {
@@ -927,15 +928,15 @@ export default function PaperList({
   }, [filterParams?.task, selectedTag]);
 
   const getCacheKey = useCallback(
-    (pageNumber: number) => {
-      return `${task ?? "all"}:${filterParams?.model ?? "none"}:${method ?? "none"}:${filterParams?.sort ?? "none"}:${period ?? "all"}:${pageNumber}`;
+    (pageNumber: number, limit: number) => {
+      return `${task ?? "all"}:${filterParams?.model ?? "none"}:${method ?? "none"}:${filterParams?.sort ?? "none"}:${period ?? "all"}:${limit}:${pageNumber}`;
     },
     [method, filterParams?.model, filterParams?.sort, period, task],
   );
 
   const fetchPage = useCallback(
-    (pageNumber: number): Promise<GetPapersResult> => {
-      const key = getCacheKey(pageNumber);
+    (pageNumber: number, limit: number): Promise<GetPapersResult> => {
+      const key = getCacheKey(pageNumber, limit);
       const cached = cacheRef.current.get(key);
       if (cached) {
         return Promise.resolve(cached);
@@ -946,6 +947,7 @@ export default function PaperList({
 
       const request = getPapers({
         page: pageNumber,
+        limit,
         task,
         model: filterParams?.model,
         method,
@@ -973,27 +975,17 @@ export default function PaperList({
     ],
   );
 
-  const appendPapers = useCallback((newPapers: Paper[]) => {
-    setPapers((prev) => {
-      const existingSlugs = new Set(prev.map((paper) => paper.slug));
-      const uniquePapers = newPapers.filter(
-        (paper) => !existingSlugs.has(paper.slug),
-      );
-      return uniquePapers.length ? [...prev, ...uniquePapers] : prev;
-    });
-  }, []);
-
   const prefetchPage = useCallback(
     (pageNumber: number) => {
-      void fetchPage(pageNumber).catch((err) => {
+      void fetchPage(pageNumber, itemsPerPage).catch((err) => {
         console.warn("Failed to prefetch papers:", err);
       });
     },
-    [fetchPage],
+    [fetchPage, itemsPerPage],
   );
 
   const loadPage = useCallback(
-    async (pageNumber: number, replace = false) => {
+    async (pageNumber: number, limit: number) => {
       if (loadingRef.current) return;
 
       try {
@@ -1001,34 +993,18 @@ export default function PaperList({
         setLoading(true);
         setError(null);
 
-        const result = await fetchPage(pageNumber);
+        const result = await fetchPage(pageNumber, limit);
         const visiblePapers = normalizedSearchQuery
           ? result.papers.filter(matchesSearch)
           : result.papers;
 
         setPage(result.page);
-        setHasMore(result.hasMore);
+        setTotalPapers(result.total);
+        setPapers(visiblePapers);
 
-        if (replace) {
-          setPapers(visiblePapers);
-        } else {
-          appendPapers(visiblePapers);
-        }
-
+        // Pre-fetch next page if possible
         if (result.hasMore) {
-          nextPageRef.current = result.page + 1;
-
-          if (visiblePapers.length === 0) {
-            setTimeout(() => {
-              if (nextPageRef.current > 0) {
-                void loadPage(nextPageRef.current, false);
-              }
-            }, 50);
-          } else {
-            prefetchPage(result.page + 1);
-          }
-        } else {
-          nextPageRef.current = 0;
+          prefetchPage(result.page + 1);
         }
       } catch (err) {
         console.error(err);
@@ -1040,7 +1016,6 @@ export default function PaperList({
       }
     },
     [
-      appendPapers,
       fetchPage,
       matchesSearch,
       normalizedSearchQuery,
@@ -1052,7 +1027,7 @@ const isInitialMount = useRef(true);
   const prevParamsStr = useRef<string>("");
 
   useEffect(() => {
-    const currentParamsStr = `${task ?? "all"}:${method ?? "none"}:${filterParams?.model ?? "none"}:${filterParams?.sort ?? "none"}:${period ?? "all"}:${normalizedSearchQuery}`;
+    const currentParamsStr = `${task ?? "all"}:${method ?? "none"}:${filterParams?.model ?? "none"}:${filterParams?.sort ?? "none"}:${period ?? "all"}:${normalizedSearchQuery}:${itemsPerPage}`;
 
 // RULE 1: Handle the very first mount (Do absolutely nothing to state, it's already perfect!)
    if (isInitialMount.current) {
@@ -1065,20 +1040,17 @@ const isInitialMount = useRef(true);
     initialPapers.papers.length > 0 &&
     !normalizedSearchQuery
   ) {
-    cacheRef.current.set(getCacheKey(initialPapers.page), initialPapers);
-
+    cacheRef.current.set(getCacheKey(initialPapers.page, itemsPerPage), initialPapers);
+    setTotalPapers(initialPapers.total);
     if (initialPapers.hasMore) {
-      nextPageRef.current = initialPapers.page + 1;
       prefetchPage(initialPapers.page + 1);
-    } else {
-      nextPageRef.current = 0;
     }
 
     return;
   }
 
   // No initial papers were provided, so fetch the first page.
-  void loadPage(1, true);
+  void loadPage(1, itemsPerPage);
   return;
 }
 
@@ -1095,9 +1067,7 @@ const isInitialMount = useRef(true);
     setPapers([]);
     setLoading(true);
     setPage(1);
-    setHasMore(true);
-    nextPageRef.current = 1;
-    void loadPage(1, true);
+    void loadPage(1, itemsPerPage);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -1114,6 +1084,7 @@ const isInitialMount = useRef(true);
     period,
     prefetchPage,
     task,
+    itemsPerPage,
   ]);
 
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -1138,26 +1109,6 @@ const isInitialMount = useRef(true);
     period,
     selectedTag,
   ]);
-  useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel || !hasMore) return;
-
-    const scrollRoot = document.getElementById("scroll-container") || null;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting && !loadingRef.current && hasMore) {
-          const nextPage = nextPageRef.current;
-          if (nextPage > 0) {
-            void loadPage(nextPage, false);
-          }
-        }
-      },
-      { root: scrollRoot, rootMargin: "600px" },
-    );
- 
-    observer.observe(sentinel);
-    return () => observer.disconnect();
-  }, [hasMore, loadPage]);
  
   if (error && papers.length === 0) {
     return (
@@ -1166,7 +1117,6 @@ const isInitialMount = useRef(true);
       </div>
     );
   }
- 
  
   return (
     <Profiler id="PaperList" onRender={logRender}>
@@ -1192,11 +1142,67 @@ const isInitialMount = useRef(true);
               </Fragment>
             ))
         )}
- 
-        <div ref={sentinelRef} className="h-px" />
- 
+  
+        {!loading && papers.length > 0 && (
+          <div className="flex justify-center w-full col-span-full mt-10 mb-6">
+            <div className="flex items-center bg-white border border-[#E5E5E0] shadow-sm rounded-full p-1.5 h-[48px]">
+              <div className="flex items-center px-2 gap-1">
+                <button
+                  onClick={() => {
+                    const newPage = Math.max(1, page - 1);
+                    void loadPage(newPage, itemsPerPage);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  disabled={page <= 1}
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-[#666] hover:text-[#111] hover:bg-[#F8F7F2] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronLeft size={18} />
+                </button>
+                
+                <div className="w-8 h-8 rounded-full bg-[#F55036] text-white flex items-center justify-center text-[14px] font-medium shadow-sm">
+                  {page}
+                </div>
+
+                <button
+                  onClick={() => {
+                    const maxPage = Math.max(1, Math.ceil((totalPapers || papers.length) / itemsPerPage));
+                    const newPage = Math.min(maxPage, page + 1);
+                    void loadPage(newPage, itemsPerPage);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  disabled={page >= Math.max(1, Math.ceil((totalPapers || papers.length) / itemsPerPage))}
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-[#666] hover:text-[#111] hover:bg-[#F8F7F2] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronRight size={18} />
+                </button>
+              </div>
+
+              <div className="w-px h-6 bg-[#E5E5E0] mx-1"></div>
+
+              <div className="relative flex items-center px-2">
+                <select
+                  value={itemsPerPage}
+                  onChange={(e) => {
+                    const newLimit = Number(e.target.value);
+                    setItemsPerPage(newLimit);
+                    setPage(1); // Reset to page 1 on limit change
+                  }}
+                  className="appearance-none bg-transparent text-[#111] text-[14px] font-medium py-1 pl-3 pr-7 rounded-full cursor-pointer hover:bg-[#F8F7F2] focus:outline-none transition-colors h-8"
+                >
+                  <option value={25}>25 / page</option>
+                  <option value={50}>50 / page</option>
+                  <option value={100}>100 / page</option>
+                </select>
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#666]">
+                  <ChevronDown size={14} />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {loading && papers.length > 0 && (
-          <div className="flex justify-center py-8">
+          <div className="flex justify-center py-8 w-full col-span-full">
             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#E5E5E0]" />
           </div>
         )}
