@@ -120,7 +120,7 @@ export default function HomeContent({
         </div>
 
         {/* 3-Column Layout */}
-        <div className="w-full max-w-[1600px] mx-auto px-4 md:px-8 xl:px-10 pt-4 pb-12 flex items-start gap-5 lg:gap-8 xl:gap-10">
+        <div className="w-full max-w-[1600px] mx-auto px-4 md:px-8 xl:px-10 pt-4 pb-2 flex items-start gap-5 lg:gap-8 xl:gap-10">
           <div className="hidden lg:block w-[240px] shrink-0 sticky top-3 h-[calc(100vh-80px)]">
             <Sidebar initialActive={activeSort} onItemSelect={handleSidebarSelect} />
           </div>

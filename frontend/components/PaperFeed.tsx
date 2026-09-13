@@ -1121,7 +1121,7 @@ const isInitialMount = useRef(true);
   return (
     <Profiler id="PaperList" onRender={logRender}>
       <div
-        className="pb-12 bg-transparent grid grid-cols-1 md:grid-cols-2 xl:flex xl:flex-col gap-8 md:gap-10 xl:gap-5"
+        className="bg-transparent grid grid-cols-1 md:grid-cols-2 xl:flex xl:flex-col gap-8 md:gap-10 xl:gap-5"
         data-page={page}
       >
         {isTransitioning || isFilterChanging || (loading && papers.length === 0) ? (
@@ -1144,7 +1144,7 @@ const isInitialMount = useRef(true);
         )}
   
         {!loading && papers.length > 0 && (
-          <div className="flex justify-center w-full col-span-full mt-10 mb-6">
+          <div className="flex justify-center w-full col-span-full mt-8 mb-2">
             <div className="flex items-center bg-white border border-[#E5E5E0] shadow-sm rounded-full p-1.5 h-[48px]">
               <div className="flex items-center px-2 gap-1">
                 <button
