@@ -1,10 +1,19 @@
 const defaultApiUrl = process.env.NODE_ENV === "development"
-  ? "http://localhost:8787"
+  ? "http://127.0.0.1:8787"
   : "https://frontieratlas-backend.morningsignal-india.workers.dev";
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || defaultApiUrl).replace(/\/$/, "");
+
+function getApiBase(): string {
+  // In development, directly connect to 127.0.0.1:8787 (avoids 5000ms Windows IPv6 localhost lag)
+  if (process.env.NODE_ENV === "development") {
+    return process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8787";
+  }
+  return (process.env.NEXT_PUBLIC_API_URL || defaultApiUrl).replace(/\/$/, "");
+}
+
 export async function fetchApi<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-  let url = `${API_BASE}${path}`;
+  const base = getApiBase();
+  let url = `${base}${path}`;
   
   let response: Response;
   try {
@@ -18,9 +27,10 @@ export async function fetchApi<T>(endpoint: string, options: RequestInit = {}): 
       },
     } as any);
   } catch (fetchErr) {
-    // If local dev server was not reachable, fallback to production backend worker
-    if (API_BASE.includes("localhost")) {
+    // Only fallback if NOT in development and on localhost
+    if (process.env.NODE_ENV === "production" && (base.includes("localhost") || base.includes("127.0.0.1"))) {
       url = `https://frontieratlas-backend.morningsignal-india.workers.dev${path}`;
+
       response = await fetch(url, {
         ...options,
         credentials: "include",

@@ -64,18 +64,28 @@ export function getOrganizationFacets(): Promise<ModelFacets> {
 export function getOrganizationDirectory(): Promise<OrganizationDirectoryData> {
   if (!directoryPromise) {
     directoryPromise = (async () => {
-      const facets = await getOrganizationFacets();
-      const modelsPromise = getModels();
-      const organizationNames = facets.vendors.map((vendor) => vendor.name);
-      const counts = await mapWithConcurrency(organizationNames, 20, async (organization) => {
-        const result = await getPapers({ organization, limit: 50, sort: "latest" });
-        return [organization, result.total] as const;
+      const [facets, models] = await Promise.all([
+        getOrganizationFacets().catch(() => ({ totalModels: 0, vendors: [], modalities: [], accessTypes: [], opennessTypes: [], modelFamilies: [], capabilities: [], researchAreas: [] })),
+        getModels().catch(() => []),
+      ]);
+
+      // Derive paper counts directly from models for instant, zero-latency rendering
+      const initialCounts: Record<string, number> = {};
+      models.forEach((m) => {
+        if (m.vendor) {
+          initialCounts[m.vendor] = (initialCounts[m.vendor] || 0) + (m.paperCount || 1);
+        }
+      });
+      facets.vendors.forEach((v) => {
+        if (!initialCounts[v.name]) {
+          initialCounts[v.name] = v.count;
+        }
       });
 
       return {
-        models: await modelsPromise,
+        models,
         facets,
-        paperCounts: Object.fromEntries(counts),
+        paperCounts: initialCounts,
       };
     })().catch((error) => {
       directoryPromise = null;

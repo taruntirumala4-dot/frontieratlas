@@ -5,6 +5,7 @@ import { Search, Bot, Brain, Eye, Code2, Cpu, Plug, Loader2, ChevronDown, Chevro
 import { searchPapers, getPapers, type Paper, type PaperAuthor } from "@/lib/paperApi";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useScrollThreshold } from "@/lib/useScroll";
 
 const formatAuthors = (authors: PaperAuthor[]) => {
@@ -23,6 +24,7 @@ export default function HeroSection({
   selectedTag?: string;
   setSelectedTag: React.Dispatch<React.SetStateAction<string | undefined>>;
 }) {
+  const router = useRouter();
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [results, setResults] = useState<Paper[]>([]);
@@ -30,6 +32,28 @@ export default function HeroSection({
   const [showDropdown, setShowDropdown] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
   const isScrolled = useScrollThreshold(50);
+
+  // Global Cmd+K / Ctrl+K keyboard shortcut
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        const heroInput = searchRef.current?.querySelector("input");
+        if (heroInput) {
+          heroInput.focus();
+          heroInput.select();
+        } else {
+          const navbarInput = document.querySelector('nav input[aria-label="Search"]') as HTMLInputElement | null;
+          if (navbarInput) {
+            navbarInput.focus();
+            navbarInput.select();
+          }
+        }
+      }
+    };
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -110,6 +134,13 @@ export default function HeroSection({
               setShowDropdown(true);
             }}
             onFocus={() => setShowDropdown(true)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && query.trim()) {
+                e.preventDefault();
+                setShowDropdown(false);
+                router.push(`/search?q=${encodeURIComponent(query.trim())}`);
+              }
+            }}
             placeholder="Search papers, authors, topics, methods"
             className="bg-transparent outline-none flex-1 text-[#111111] placeholder:text-[#737373] text-[13px] md:text-[15px] truncate mr-2 text-left w-full h-full"
           />
@@ -152,6 +183,16 @@ export default function HeroSection({
                       </div>
                     </Link>
                   ))}
+                  <div className="pt-2 px-4 pb-1 border-t border-[#E5E5E0] mt-1">
+                    <Link
+                      href={`/search?q=${encodeURIComponent(debouncedQuery.trim())}`}
+                      onClick={() => setShowDropdown(false)}
+                      className="text-[12px] font-medium text-[#F55036] hover:underline flex items-center justify-between"
+                    >
+                      <span>View all results for &quot;{debouncedQuery}&quot;</span>
+                      <span>→</span>
+                    </Link>
+                  </div>
                 </div>
               ) : (
                 <div className="py-8 text-center text-[#737373] text-[14px]">

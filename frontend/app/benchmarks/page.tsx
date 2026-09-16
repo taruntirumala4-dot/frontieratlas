@@ -726,7 +726,7 @@ function BenchmarksContent() {
                         {DOMAINS.map(({ label, icon: Icon, color, desc }) => (
                           <button
                             key={label}
-                            onClick={() => router.push(`/benchmark/${slugify(label)}`)}
+                            onClick={() => router.push(`/benchmarks?domain=${encodeURIComponent(label)}`)}
                             className="bg-white border border-gray-100 rounded-sm p-5 hover:shadow-md hover:border-gray-200 transition-all group text-left flex flex-col h-[180px] w-full cursor-pointer"
                           >
                             <div className="flex items-start gap-2.5 mb-2">
@@ -750,7 +750,7 @@ function BenchmarksContent() {
                         {TASKS.map(({ label, icon: Icon, color, bg, desc }) => (
                         <button
                           key={label}
-                          onClick={() => router.push(`/benchmark/${label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`)}
+                          onClick={() => router.push(`/benchmarks?task=${encodeURIComponent(label)}`)}
                           className="bg-white border border-gray-100 rounded-sm p-5 hover:shadow-md hover:border-gray-200 transition-all group text-left flex flex-col h-[180px] w-full cursor-pointer"
                         >
                             <div className="flex items-start gap-2.5 mb-2">
@@ -774,7 +774,7 @@ function BenchmarksContent() {
                         {COLLECTIONS.map(({ label, icon: Icon, color, bg, desc }) => (
                           <button
                             key={label}
-                            onClick={() => router.push(`/benchmark/${label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`)}
+                            onClick={() => router.push(`/benchmarks?domain=${encodeURIComponent(label)}`)}
                             className="bg-white border border-gray-100 rounded-sm p-5 hover:shadow-md hover:border-gray-200 transition-all group text-left flex flex-col h-[180px] w-full cursor-pointer"
                           >
                             <div className="flex items-start gap-2.5 mb-2">

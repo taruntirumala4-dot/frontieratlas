@@ -44,6 +44,7 @@ app.use(
   if (
     !origin ||
     origin.includes("localhost") ||
+    origin.includes("127.0.0.1") ||
     origin === "https://frontieratlas.co" ||
     /^https:\/\/[a-z0-9-]+\.frontieratlas\.pages\.dev$/.test(origin)
   ) {

@@ -109,7 +109,7 @@ export default function OrganizationsPage() {
   const [facets, setFacets] = useState<ModelFacets | null>(cachedFacets);
   const [paperCounts, setPaperCounts] = useState<Record<string, number>>({});
   const [sort, setSort] = useState<SortMode>("trending");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => !(cachedModels && cachedFacets));
 
   useEffect(() => {
     let cancelled = false;

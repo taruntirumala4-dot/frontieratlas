@@ -24,38 +24,13 @@ export default function HomeContent({
   const [selectedPeriod, setSelectedPeriod] = useState<string>(initialPeriod);
   const [isFilterChanging, setIsFilterChanging] = useState(false);
 
-  // Defer speculative background prefetching so initial feed & infinite scroll get 100% network bandwidth
+  // Idle prefetch for the most common alternate views so tab switching is instantaneous
   useEffect(() => {
     const timer = setTimeout(() => {
-      const prefetch = async (params: Parameters<typeof getPapers>[0]) => {
-        try { await getPapers(params); } catch {}
-      };
-      
-      // Warm main periods/sorts sequentially with small delays to keep network open
-      const periods = ["today", "week", "month", "all"];
-      const mainSorts = ["trending", "latest", "stars"];
-      let delay = 0;
-
-      mainSorts.forEach(sort => {
-        periods.forEach(period => {
-          setTimeout(() => prefetch({ sort, period, page: 1 }), delay);
-          delay += 100;
-        });
-      });
-
-      // Lazy pre-warm key hero chips
-      const heroChips = [
-  { task: "agents" },
-  { task: "reasoning-models" },
-  { method: "model-context-protocol-mcp" },
-];
-      heroChips.forEach((chip) => {
-        setTimeout(() => prefetch({ sort: "trending", period: "today", page: 1, ...chip }), delay);
-        delay += 100;
-      });
-
-      setTimeout(() => prefetchMethods(), delay);
-    }, 300);
+      getPapers({ page: 1, sort: "trending", period: "week" }).catch(() => {});
+      getPapers({ page: 1, sort: "trending", period: "all" }).catch(() => {});
+      prefetchMethods();
+    }, 1500);
 
     return () => clearTimeout(timer);
   }, []);

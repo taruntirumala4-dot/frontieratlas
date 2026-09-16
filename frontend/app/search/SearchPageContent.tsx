@@ -29,7 +29,7 @@ export default function SearchPageContent() {
         </div>
 
         <div className="mb-8">
-          <SearchBar autoFocus placeholder="Search..." />
+          <SearchBar key={query} autoFocus placeholder="Search..." initialQuery={query} />
         </div>
 
         <SearchResults query={query} />

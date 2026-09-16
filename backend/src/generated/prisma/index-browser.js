@@ -461,6 +461,12 @@ exports.Prisma.SummaryScalarFieldEnum = {
   updated_at: 'updated_at'
 };
 
+exports.Prisma.SavedPaperScalarFieldEnum = {
+  paper_id: 'paper_id',
+  user_id: 'user_id',
+  created_at: 'created_at'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -515,7 +521,8 @@ exports.Prisma.ModelName = {
   PaperRepository: 'PaperRepository',
   User: 'User',
   RefreshToken: 'RefreshToken',
-  Summary: 'Summary'
+  Summary: 'Summary',
+  SavedPaper: 'SavedPaper'
 };
 
 /**

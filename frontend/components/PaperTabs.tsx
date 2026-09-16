@@ -33,8 +33,6 @@ export default function PaperTabs({
   const handleTabHover = (tab: string) => {
     const period = TAB_TO_PERIOD[tab] || "all";
     getPapers({ page: 1, sort: "trending", period }).catch(() => {});
-    getPapers({ page: 1, sort: "latest", period }).catch(() => {});
-    getPapers({ page: 1, sort: "stars", period }).catch(() => {});
   };
 
   return (

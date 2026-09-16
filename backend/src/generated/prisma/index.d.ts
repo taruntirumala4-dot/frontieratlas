@@ -148,6 +148,11 @@ export type RefreshToken = $Result.DefaultSelection<Prisma.$RefreshTokenPayload>
  * 
  */
 export type Summary = $Result.DefaultSelection<Prisma.$SummaryPayload>
+/**
+ * Model SavedPaper
+ * 
+ */
+export type SavedPaper = $Result.DefaultSelection<Prisma.$SavedPaperPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -539,6 +544,16 @@ export class PrismaClient<
     * ```
     */
   get summary(): Prisma.SummaryDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.savedPaper`: Exposes CRUD operations for the **SavedPaper** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SavedPapers
+    * const savedPapers = await prisma.savedPaper.findMany()
+    * ```
+    */
+  get savedPaper(): Prisma.SavedPaperDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -999,7 +1014,8 @@ export namespace Prisma {
     PaperRepository: 'PaperRepository',
     User: 'User',
     RefreshToken: 'RefreshToken',
-    Summary: 'Summary'
+    Summary: 'Summary',
+    SavedPaper: 'SavedPaper'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1015,7 +1031,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "paper" | "entityRelationship" | "startup" | "task" | "paperTask" | "method" | "paperMethod" | "benchmark" | "sotaClaim" | "ranking" | "model" | "paperModel" | "dataset" | "paperDataset" | "lab" | "paperLab" | "university" | "paperUniversity" | "conference" | "paperConference" | "journal" | "paperJournal" | "repository" | "paperRepository" | "user" | "refreshToken" | "summary"
+      modelProps: "paper" | "entityRelationship" | "startup" | "task" | "paperTask" | "method" | "paperMethod" | "benchmark" | "sotaClaim" | "ranking" | "model" | "paperModel" | "dataset" | "paperDataset" | "lab" | "paperLab" | "university" | "paperUniversity" | "conference" | "paperConference" | "journal" | "paperJournal" | "repository" | "paperRepository" | "user" | "refreshToken" | "summary" | "savedPaper"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -3017,6 +3033,80 @@ export namespace Prisma {
           }
         }
       }
+      SavedPaper: {
+        payload: Prisma.$SavedPaperPayload<ExtArgs>
+        fields: Prisma.SavedPaperFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SavedPaperFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SavedPaperPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SavedPaperFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SavedPaperPayload>
+          }
+          findFirst: {
+            args: Prisma.SavedPaperFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SavedPaperPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SavedPaperFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SavedPaperPayload>
+          }
+          findMany: {
+            args: Prisma.SavedPaperFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SavedPaperPayload>[]
+          }
+          create: {
+            args: Prisma.SavedPaperCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SavedPaperPayload>
+          }
+          createMany: {
+            args: Prisma.SavedPaperCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SavedPaperCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SavedPaperPayload>[]
+          }
+          delete: {
+            args: Prisma.SavedPaperDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SavedPaperPayload>
+          }
+          update: {
+            args: Prisma.SavedPaperUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SavedPaperPayload>
+          }
+          deleteMany: {
+            args: Prisma.SavedPaperDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SavedPaperUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.SavedPaperUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SavedPaperPayload>[]
+          }
+          upsert: {
+            args: Prisma.SavedPaperUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SavedPaperPayload>
+          }
+          aggregate: {
+            args: Prisma.SavedPaperAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSavedPaper>
+          }
+          groupBy: {
+            args: Prisma.SavedPaperGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SavedPaperGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SavedPaperCountArgs<ExtArgs>
+            result: $Utils.Optional<SavedPaperCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -3152,6 +3242,7 @@ export namespace Prisma {
     user?: UserOmit
     refreshToken?: RefreshTokenOmit
     summary?: SummaryOmit
+    savedPaper?: SavedPaperOmit
   }
 
   /* Types for Logging */
@@ -3244,6 +3335,7 @@ export namespace Prisma {
     rankings: number
     sotaClaims: number
     summaries: number
+    savedPapers: number
   }
 
   export type PaperCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3259,6 +3351,7 @@ export namespace Prisma {
     rankings?: boolean | PaperCountOutputTypeCountRankingsArgs
     sotaClaims?: boolean | PaperCountOutputTypeCountSotaClaimsArgs
     summaries?: boolean | PaperCountOutputTypeCountSummariesArgs
+    savedPapers?: boolean | PaperCountOutputTypeCountSavedPapersArgs
   }
 
   // Custom InputTypes
@@ -3354,6 +3447,13 @@ export namespace Prisma {
    */
   export type PaperCountOutputTypeCountSummariesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SummaryWhereInput
+  }
+
+  /**
+   * PaperCountOutputType without action
+   */
+  export type PaperCountOutputTypeCountSavedPapersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SavedPaperWhereInput
   }
 
 
@@ -3683,11 +3783,13 @@ export namespace Prisma {
   export type UserCountOutputType = {
     refresh_tokens: number
     summaries: number
+    savedPapers: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     refresh_tokens?: boolean | UserCountOutputTypeCountRefresh_tokensArgs
     summaries?: boolean | UserCountOutputTypeCountSummariesArgs
+    savedPapers?: boolean | UserCountOutputTypeCountSavedPapersArgs
   }
 
   // Custom InputTypes
@@ -3713,6 +3815,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountSummariesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SummaryWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountSavedPapersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SavedPaperWhereInput
   }
 
 
@@ -4250,6 +4359,7 @@ export namespace Prisma {
     rankings?: boolean | Paper$rankingsArgs<ExtArgs>
     sotaClaims?: boolean | Paper$sotaClaimsArgs<ExtArgs>
     summaries?: boolean | Paper$summariesArgs<ExtArgs>
+    savedPapers?: boolean | Paper$savedPapersArgs<ExtArgs>
     _count?: boolean | PaperCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["paper"]>
 
@@ -4399,6 +4509,7 @@ export namespace Prisma {
     rankings?: boolean | Paper$rankingsArgs<ExtArgs>
     sotaClaims?: boolean | Paper$sotaClaimsArgs<ExtArgs>
     summaries?: boolean | Paper$summariesArgs<ExtArgs>
+    savedPapers?: boolean | Paper$savedPapersArgs<ExtArgs>
     _count?: boolean | PaperCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type PaperIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -4419,6 +4530,7 @@ export namespace Prisma {
       rankings: Prisma.$RankingPayload<ExtArgs>[]
       sotaClaims: Prisma.$SotaClaimPayload<ExtArgs>[]
       summaries: Prisma.$SummaryPayload<ExtArgs>[]
+      savedPapers: Prisma.$SavedPaperPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -4868,6 +4980,7 @@ export namespace Prisma {
     rankings<T extends Paper$rankingsArgs<ExtArgs> = {}>(args?: Subset<T, Paper$rankingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RankingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     sotaClaims<T extends Paper$sotaClaimsArgs<ExtArgs> = {}>(args?: Subset<T, Paper$sotaClaimsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SotaClaimPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     summaries<T extends Paper$summariesArgs<ExtArgs> = {}>(args?: Subset<T, Paper$summariesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SummaryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    savedPapers<T extends Paper$savedPapersArgs<ExtArgs> = {}>(args?: Subset<T, Paper$savedPapersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SavedPaperPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5616,6 +5729,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: SummaryScalarFieldEnum | SummaryScalarFieldEnum[]
+  }
+
+  /**
+   * Paper.savedPapers
+   */
+  export type Paper$savedPapersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SavedPaper
+     */
+    select?: SavedPaperSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SavedPaper
+     */
+    omit?: SavedPaperOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SavedPaperInclude<ExtArgs> | null
+    where?: SavedPaperWhereInput
+    orderBy?: SavedPaperOrderByWithRelationInput | SavedPaperOrderByWithRelationInput[]
+    cursor?: SavedPaperWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SavedPaperScalarFieldEnum | SavedPaperScalarFieldEnum[]
   }
 
   /**
@@ -31567,6 +31704,7 @@ export namespace Prisma {
     updated_at?: boolean
     refresh_tokens?: boolean | User$refresh_tokensArgs<ExtArgs>
     summaries?: boolean | User$summariesArgs<ExtArgs>
+    savedPapers?: boolean | User$savedPapersArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -31640,6 +31778,7 @@ export namespace Prisma {
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     refresh_tokens?: boolean | User$refresh_tokensArgs<ExtArgs>
     summaries?: boolean | User$summariesArgs<ExtArgs>
+    savedPapers?: boolean | User$savedPapersArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -31650,6 +31789,7 @@ export namespace Prisma {
     objects: {
       refresh_tokens: Prisma.$RefreshTokenPayload<ExtArgs>[]
       summaries: Prisma.$SummaryPayload<ExtArgs>[]
+      savedPapers: Prisma.$SavedPaperPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -32067,6 +32207,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     refresh_tokens<T extends User$refresh_tokensArgs<ExtArgs> = {}>(args?: Subset<T, User$refresh_tokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RefreshTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     summaries<T extends User$summariesArgs<ExtArgs> = {}>(args?: Subset<T, User$summariesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SummaryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    savedPapers<T extends User$savedPapersArgs<ExtArgs> = {}>(args?: Subset<T, User$savedPapersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SavedPaperPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -32553,6 +32694,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: SummaryScalarFieldEnum | SummaryScalarFieldEnum[]
+  }
+
+  /**
+   * User.savedPapers
+   */
+  export type User$savedPapersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SavedPaper
+     */
+    select?: SavedPaperSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SavedPaper
+     */
+    omit?: SavedPaperOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SavedPaperInclude<ExtArgs> | null
+    where?: SavedPaperWhereInput
+    orderBy?: SavedPaperOrderByWithRelationInput | SavedPaperOrderByWithRelationInput[]
+    cursor?: SavedPaperWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SavedPaperScalarFieldEnum | SavedPaperScalarFieldEnum[]
   }
 
   /**
@@ -34787,6 +34952,1051 @@ export namespace Prisma {
 
 
   /**
+   * Model SavedPaper
+   */
+
+  export type AggregateSavedPaper = {
+    _count: SavedPaperCountAggregateOutputType | null
+    _min: SavedPaperMinAggregateOutputType | null
+    _max: SavedPaperMaxAggregateOutputType | null
+  }
+
+  export type SavedPaperMinAggregateOutputType = {
+    paper_id: string | null
+    user_id: string | null
+    created_at: Date | null
+  }
+
+  export type SavedPaperMaxAggregateOutputType = {
+    paper_id: string | null
+    user_id: string | null
+    created_at: Date | null
+  }
+
+  export type SavedPaperCountAggregateOutputType = {
+    paper_id: number
+    user_id: number
+    created_at: number
+    _all: number
+  }
+
+
+  export type SavedPaperMinAggregateInputType = {
+    paper_id?: true
+    user_id?: true
+    created_at?: true
+  }
+
+  export type SavedPaperMaxAggregateInputType = {
+    paper_id?: true
+    user_id?: true
+    created_at?: true
+  }
+
+  export type SavedPaperCountAggregateInputType = {
+    paper_id?: true
+    user_id?: true
+    created_at?: true
+    _all?: true
+  }
+
+  export type SavedPaperAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SavedPaper to aggregate.
+     */
+    where?: SavedPaperWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SavedPapers to fetch.
+     */
+    orderBy?: SavedPaperOrderByWithRelationInput | SavedPaperOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SavedPaperWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SavedPapers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SavedPapers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned SavedPapers
+    **/
+    _count?: true | SavedPaperCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SavedPaperMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SavedPaperMaxAggregateInputType
+  }
+
+  export type GetSavedPaperAggregateType<T extends SavedPaperAggregateArgs> = {
+        [P in keyof T & keyof AggregateSavedPaper]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSavedPaper[P]>
+      : GetScalarType<T[P], AggregateSavedPaper[P]>
+  }
+
+
+
+
+  export type SavedPaperGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SavedPaperWhereInput
+    orderBy?: SavedPaperOrderByWithAggregationInput | SavedPaperOrderByWithAggregationInput[]
+    by: SavedPaperScalarFieldEnum[] | SavedPaperScalarFieldEnum
+    having?: SavedPaperScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SavedPaperCountAggregateInputType | true
+    _min?: SavedPaperMinAggregateInputType
+    _max?: SavedPaperMaxAggregateInputType
+  }
+
+  export type SavedPaperGroupByOutputType = {
+    paper_id: string
+    user_id: string
+    created_at: Date | null
+    _count: SavedPaperCountAggregateOutputType | null
+    _min: SavedPaperMinAggregateOutputType | null
+    _max: SavedPaperMaxAggregateOutputType | null
+  }
+
+  type GetSavedPaperGroupByPayload<T extends SavedPaperGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SavedPaperGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SavedPaperGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SavedPaperGroupByOutputType[P]>
+            : GetScalarType<T[P], SavedPaperGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SavedPaperSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    paper_id?: boolean
+    user_id?: boolean
+    created_at?: boolean
+    paper?: boolean | PaperDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["savedPaper"]>
+
+  export type SavedPaperSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    paper_id?: boolean
+    user_id?: boolean
+    created_at?: boolean
+    paper?: boolean | PaperDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["savedPaper"]>
+
+  export type SavedPaperSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    paper_id?: boolean
+    user_id?: boolean
+    created_at?: boolean
+    paper?: boolean | PaperDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["savedPaper"]>
+
+  export type SavedPaperSelectScalar = {
+    paper_id?: boolean
+    user_id?: boolean
+    created_at?: boolean
+  }
+
+  export type SavedPaperOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"paper_id" | "user_id" | "created_at", ExtArgs["result"]["savedPaper"]>
+  export type SavedPaperInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    paper?: boolean | PaperDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type SavedPaperIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    paper?: boolean | PaperDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type SavedPaperIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    paper?: boolean | PaperDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $SavedPaperPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "SavedPaper"
+    objects: {
+      paper: Prisma.$PaperPayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      paper_id: string
+      user_id: string
+      created_at: Date | null
+    }, ExtArgs["result"]["savedPaper"]>
+    composites: {}
+  }
+
+  type SavedPaperGetPayload<S extends boolean | null | undefined | SavedPaperDefaultArgs> = $Result.GetResult<Prisma.$SavedPaperPayload, S>
+
+  type SavedPaperCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<SavedPaperFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: SavedPaperCountAggregateInputType | true
+    }
+
+  export interface SavedPaperDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SavedPaper'], meta: { name: 'SavedPaper' } }
+    /**
+     * Find zero or one SavedPaper that matches the filter.
+     * @param {SavedPaperFindUniqueArgs} args - Arguments to find a SavedPaper
+     * @example
+     * // Get one SavedPaper
+     * const savedPaper = await prisma.savedPaper.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SavedPaperFindUniqueArgs>(args: SelectSubset<T, SavedPaperFindUniqueArgs<ExtArgs>>): Prisma__SavedPaperClient<$Result.GetResult<Prisma.$SavedPaperPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one SavedPaper that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {SavedPaperFindUniqueOrThrowArgs} args - Arguments to find a SavedPaper
+     * @example
+     * // Get one SavedPaper
+     * const savedPaper = await prisma.savedPaper.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SavedPaperFindUniqueOrThrowArgs>(args: SelectSubset<T, SavedPaperFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SavedPaperClient<$Result.GetResult<Prisma.$SavedPaperPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SavedPaper that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SavedPaperFindFirstArgs} args - Arguments to find a SavedPaper
+     * @example
+     * // Get one SavedPaper
+     * const savedPaper = await prisma.savedPaper.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SavedPaperFindFirstArgs>(args?: SelectSubset<T, SavedPaperFindFirstArgs<ExtArgs>>): Prisma__SavedPaperClient<$Result.GetResult<Prisma.$SavedPaperPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SavedPaper that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SavedPaperFindFirstOrThrowArgs} args - Arguments to find a SavedPaper
+     * @example
+     * // Get one SavedPaper
+     * const savedPaper = await prisma.savedPaper.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SavedPaperFindFirstOrThrowArgs>(args?: SelectSubset<T, SavedPaperFindFirstOrThrowArgs<ExtArgs>>): Prisma__SavedPaperClient<$Result.GetResult<Prisma.$SavedPaperPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more SavedPapers that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SavedPaperFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all SavedPapers
+     * const savedPapers = await prisma.savedPaper.findMany()
+     * 
+     * // Get first 10 SavedPapers
+     * const savedPapers = await prisma.savedPaper.findMany({ take: 10 })
+     * 
+     * // Only select the `paper_id`
+     * const savedPaperWithPaper_idOnly = await prisma.savedPaper.findMany({ select: { paper_id: true } })
+     * 
+     */
+    findMany<T extends SavedPaperFindManyArgs>(args?: SelectSubset<T, SavedPaperFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SavedPaperPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a SavedPaper.
+     * @param {SavedPaperCreateArgs} args - Arguments to create a SavedPaper.
+     * @example
+     * // Create one SavedPaper
+     * const SavedPaper = await prisma.savedPaper.create({
+     *   data: {
+     *     // ... data to create a SavedPaper
+     *   }
+     * })
+     * 
+     */
+    create<T extends SavedPaperCreateArgs>(args: SelectSubset<T, SavedPaperCreateArgs<ExtArgs>>): Prisma__SavedPaperClient<$Result.GetResult<Prisma.$SavedPaperPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many SavedPapers.
+     * @param {SavedPaperCreateManyArgs} args - Arguments to create many SavedPapers.
+     * @example
+     * // Create many SavedPapers
+     * const savedPaper = await prisma.savedPaper.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SavedPaperCreateManyArgs>(args?: SelectSubset<T, SavedPaperCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many SavedPapers and returns the data saved in the database.
+     * @param {SavedPaperCreateManyAndReturnArgs} args - Arguments to create many SavedPapers.
+     * @example
+     * // Create many SavedPapers
+     * const savedPaper = await prisma.savedPaper.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many SavedPapers and only return the `paper_id`
+     * const savedPaperWithPaper_idOnly = await prisma.savedPaper.createManyAndReturn({
+     *   select: { paper_id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SavedPaperCreateManyAndReturnArgs>(args?: SelectSubset<T, SavedPaperCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SavedPaperPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a SavedPaper.
+     * @param {SavedPaperDeleteArgs} args - Arguments to delete one SavedPaper.
+     * @example
+     * // Delete one SavedPaper
+     * const SavedPaper = await prisma.savedPaper.delete({
+     *   where: {
+     *     // ... filter to delete one SavedPaper
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SavedPaperDeleteArgs>(args: SelectSubset<T, SavedPaperDeleteArgs<ExtArgs>>): Prisma__SavedPaperClient<$Result.GetResult<Prisma.$SavedPaperPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one SavedPaper.
+     * @param {SavedPaperUpdateArgs} args - Arguments to update one SavedPaper.
+     * @example
+     * // Update one SavedPaper
+     * const savedPaper = await prisma.savedPaper.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SavedPaperUpdateArgs>(args: SelectSubset<T, SavedPaperUpdateArgs<ExtArgs>>): Prisma__SavedPaperClient<$Result.GetResult<Prisma.$SavedPaperPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more SavedPapers.
+     * @param {SavedPaperDeleteManyArgs} args - Arguments to filter SavedPapers to delete.
+     * @example
+     * // Delete a few SavedPapers
+     * const { count } = await prisma.savedPaper.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SavedPaperDeleteManyArgs>(args?: SelectSubset<T, SavedPaperDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SavedPapers.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SavedPaperUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many SavedPapers
+     * const savedPaper = await prisma.savedPaper.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SavedPaperUpdateManyArgs>(args: SelectSubset<T, SavedPaperUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SavedPapers and returns the data updated in the database.
+     * @param {SavedPaperUpdateManyAndReturnArgs} args - Arguments to update many SavedPapers.
+     * @example
+     * // Update many SavedPapers
+     * const savedPaper = await prisma.savedPaper.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more SavedPapers and only return the `paper_id`
+     * const savedPaperWithPaper_idOnly = await prisma.savedPaper.updateManyAndReturn({
+     *   select: { paper_id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends SavedPaperUpdateManyAndReturnArgs>(args: SelectSubset<T, SavedPaperUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SavedPaperPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one SavedPaper.
+     * @param {SavedPaperUpsertArgs} args - Arguments to update or create a SavedPaper.
+     * @example
+     * // Update or create a SavedPaper
+     * const savedPaper = await prisma.savedPaper.upsert({
+     *   create: {
+     *     // ... data to create a SavedPaper
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the SavedPaper we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SavedPaperUpsertArgs>(args: SelectSubset<T, SavedPaperUpsertArgs<ExtArgs>>): Prisma__SavedPaperClient<$Result.GetResult<Prisma.$SavedPaperPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of SavedPapers.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SavedPaperCountArgs} args - Arguments to filter SavedPapers to count.
+     * @example
+     * // Count the number of SavedPapers
+     * const count = await prisma.savedPaper.count({
+     *   where: {
+     *     // ... the filter for the SavedPapers we want to count
+     *   }
+     * })
+    **/
+    count<T extends SavedPaperCountArgs>(
+      args?: Subset<T, SavedPaperCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SavedPaperCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a SavedPaper.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SavedPaperAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SavedPaperAggregateArgs>(args: Subset<T, SavedPaperAggregateArgs>): Prisma.PrismaPromise<GetSavedPaperAggregateType<T>>
+
+    /**
+     * Group by SavedPaper.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SavedPaperGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SavedPaperGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SavedPaperGroupByArgs['orderBy'] }
+        : { orderBy?: SavedPaperGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SavedPaperGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSavedPaperGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the SavedPaper model
+   */
+  readonly fields: SavedPaperFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for SavedPaper.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SavedPaperClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    paper<T extends PaperDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PaperDefaultArgs<ExtArgs>>): Prisma__PaperClient<$Result.GetResult<Prisma.$PaperPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the SavedPaper model
+   */
+  interface SavedPaperFieldRefs {
+    readonly paper_id: FieldRef<"SavedPaper", 'String'>
+    readonly user_id: FieldRef<"SavedPaper", 'String'>
+    readonly created_at: FieldRef<"SavedPaper", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * SavedPaper findUnique
+   */
+  export type SavedPaperFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SavedPaper
+     */
+    select?: SavedPaperSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SavedPaper
+     */
+    omit?: SavedPaperOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SavedPaperInclude<ExtArgs> | null
+    /**
+     * Filter, which SavedPaper to fetch.
+     */
+    where: SavedPaperWhereUniqueInput
+  }
+
+  /**
+   * SavedPaper findUniqueOrThrow
+   */
+  export type SavedPaperFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SavedPaper
+     */
+    select?: SavedPaperSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SavedPaper
+     */
+    omit?: SavedPaperOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SavedPaperInclude<ExtArgs> | null
+    /**
+     * Filter, which SavedPaper to fetch.
+     */
+    where: SavedPaperWhereUniqueInput
+  }
+
+  /**
+   * SavedPaper findFirst
+   */
+  export type SavedPaperFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SavedPaper
+     */
+    select?: SavedPaperSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SavedPaper
+     */
+    omit?: SavedPaperOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SavedPaperInclude<ExtArgs> | null
+    /**
+     * Filter, which SavedPaper to fetch.
+     */
+    where?: SavedPaperWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SavedPapers to fetch.
+     */
+    orderBy?: SavedPaperOrderByWithRelationInput | SavedPaperOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SavedPapers.
+     */
+    cursor?: SavedPaperWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SavedPapers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SavedPapers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SavedPapers.
+     */
+    distinct?: SavedPaperScalarFieldEnum | SavedPaperScalarFieldEnum[]
+  }
+
+  /**
+   * SavedPaper findFirstOrThrow
+   */
+  export type SavedPaperFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SavedPaper
+     */
+    select?: SavedPaperSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SavedPaper
+     */
+    omit?: SavedPaperOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SavedPaperInclude<ExtArgs> | null
+    /**
+     * Filter, which SavedPaper to fetch.
+     */
+    where?: SavedPaperWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SavedPapers to fetch.
+     */
+    orderBy?: SavedPaperOrderByWithRelationInput | SavedPaperOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SavedPapers.
+     */
+    cursor?: SavedPaperWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SavedPapers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SavedPapers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SavedPapers.
+     */
+    distinct?: SavedPaperScalarFieldEnum | SavedPaperScalarFieldEnum[]
+  }
+
+  /**
+   * SavedPaper findMany
+   */
+  export type SavedPaperFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SavedPaper
+     */
+    select?: SavedPaperSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SavedPaper
+     */
+    omit?: SavedPaperOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SavedPaperInclude<ExtArgs> | null
+    /**
+     * Filter, which SavedPapers to fetch.
+     */
+    where?: SavedPaperWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SavedPapers to fetch.
+     */
+    orderBy?: SavedPaperOrderByWithRelationInput | SavedPaperOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing SavedPapers.
+     */
+    cursor?: SavedPaperWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SavedPapers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SavedPapers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SavedPapers.
+     */
+    distinct?: SavedPaperScalarFieldEnum | SavedPaperScalarFieldEnum[]
+  }
+
+  /**
+   * SavedPaper create
+   */
+  export type SavedPaperCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SavedPaper
+     */
+    select?: SavedPaperSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SavedPaper
+     */
+    omit?: SavedPaperOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SavedPaperInclude<ExtArgs> | null
+    /**
+     * The data needed to create a SavedPaper.
+     */
+    data: XOR<SavedPaperCreateInput, SavedPaperUncheckedCreateInput>
+  }
+
+  /**
+   * SavedPaper createMany
+   */
+  export type SavedPaperCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many SavedPapers.
+     */
+    data: SavedPaperCreateManyInput | SavedPaperCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SavedPaper createManyAndReturn
+   */
+  export type SavedPaperCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SavedPaper
+     */
+    select?: SavedPaperSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SavedPaper
+     */
+    omit?: SavedPaperOmit<ExtArgs> | null
+    /**
+     * The data used to create many SavedPapers.
+     */
+    data: SavedPaperCreateManyInput | SavedPaperCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SavedPaperIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SavedPaper update
+   */
+  export type SavedPaperUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SavedPaper
+     */
+    select?: SavedPaperSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SavedPaper
+     */
+    omit?: SavedPaperOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SavedPaperInclude<ExtArgs> | null
+    /**
+     * The data needed to update a SavedPaper.
+     */
+    data: XOR<SavedPaperUpdateInput, SavedPaperUncheckedUpdateInput>
+    /**
+     * Choose, which SavedPaper to update.
+     */
+    where: SavedPaperWhereUniqueInput
+  }
+
+  /**
+   * SavedPaper updateMany
+   */
+  export type SavedPaperUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update SavedPapers.
+     */
+    data: XOR<SavedPaperUpdateManyMutationInput, SavedPaperUncheckedUpdateManyInput>
+    /**
+     * Filter which SavedPapers to update
+     */
+    where?: SavedPaperWhereInput
+    /**
+     * Limit how many SavedPapers to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * SavedPaper updateManyAndReturn
+   */
+  export type SavedPaperUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SavedPaper
+     */
+    select?: SavedPaperSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SavedPaper
+     */
+    omit?: SavedPaperOmit<ExtArgs> | null
+    /**
+     * The data used to update SavedPapers.
+     */
+    data: XOR<SavedPaperUpdateManyMutationInput, SavedPaperUncheckedUpdateManyInput>
+    /**
+     * Filter which SavedPapers to update
+     */
+    where?: SavedPaperWhereInput
+    /**
+     * Limit how many SavedPapers to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SavedPaperIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SavedPaper upsert
+   */
+  export type SavedPaperUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SavedPaper
+     */
+    select?: SavedPaperSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SavedPaper
+     */
+    omit?: SavedPaperOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SavedPaperInclude<ExtArgs> | null
+    /**
+     * The filter to search for the SavedPaper to update in case it exists.
+     */
+    where: SavedPaperWhereUniqueInput
+    /**
+     * In case the SavedPaper found by the `where` argument doesn't exist, create a new SavedPaper with this data.
+     */
+    create: XOR<SavedPaperCreateInput, SavedPaperUncheckedCreateInput>
+    /**
+     * In case the SavedPaper was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SavedPaperUpdateInput, SavedPaperUncheckedUpdateInput>
+  }
+
+  /**
+   * SavedPaper delete
+   */
+  export type SavedPaperDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SavedPaper
+     */
+    select?: SavedPaperSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SavedPaper
+     */
+    omit?: SavedPaperOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SavedPaperInclude<ExtArgs> | null
+    /**
+     * Filter which SavedPaper to delete.
+     */
+    where: SavedPaperWhereUniqueInput
+  }
+
+  /**
+   * SavedPaper deleteMany
+   */
+  export type SavedPaperDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SavedPapers to delete
+     */
+    where?: SavedPaperWhereInput
+    /**
+     * Limit how many SavedPapers to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * SavedPaper without action
+   */
+  export type SavedPaperDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SavedPaper
+     */
+    select?: SavedPaperSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SavedPaper
+     */
+    omit?: SavedPaperOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SavedPaperInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -35222,6 +36432,15 @@ export namespace Prisma {
   export type SummaryScalarFieldEnum = (typeof SummaryScalarFieldEnum)[keyof typeof SummaryScalarFieldEnum]
 
 
+  export const SavedPaperScalarFieldEnum: {
+    paper_id: 'paper_id',
+    user_id: 'user_id',
+    created_at: 'created_at'
+  };
+
+  export type SavedPaperScalarFieldEnum = (typeof SavedPaperScalarFieldEnum)[keyof typeof SavedPaperScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -35405,6 +36624,7 @@ export namespace Prisma {
     rankings?: RankingListRelationFilter
     sotaClaims?: SotaClaimListRelationFilter
     summaries?: SummaryListRelationFilter
+    savedPapers?: SavedPaperListRelationFilter
   }
 
   export type PaperOrderByWithRelationInput = {
@@ -35461,6 +36681,7 @@ export namespace Prisma {
     rankings?: RankingOrderByRelationAggregateInput
     sotaClaims?: SotaClaimOrderByRelationAggregateInput
     summaries?: SummaryOrderByRelationAggregateInput
+    savedPapers?: SavedPaperOrderByRelationAggregateInput
   }
 
   export type PaperWhereUniqueInput = Prisma.AtLeast<{
@@ -35520,6 +36741,7 @@ export namespace Prisma {
     rankings?: RankingListRelationFilter
     sotaClaims?: SotaClaimListRelationFilter
     summaries?: SummaryListRelationFilter
+    savedPapers?: SavedPaperListRelationFilter
   }, "id" | "slug" | "arxivId">
 
   export type PaperOrderByWithAggregationInput = {
@@ -37305,6 +38527,7 @@ export namespace Prisma {
     updated_at?: DateTimeNullableFilter<"User"> | Date | string | null
     refresh_tokens?: RefreshTokenListRelationFilter
     summaries?: SummaryListRelationFilter
+    savedPapers?: SavedPaperListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -37329,6 +38552,7 @@ export namespace Prisma {
     updated_at?: SortOrderInput | SortOrder
     refresh_tokens?: RefreshTokenOrderByRelationAggregateInput
     summaries?: SummaryOrderByRelationAggregateInput
+    savedPapers?: SavedPaperOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -37356,6 +38580,7 @@ export namespace Prisma {
     updated_at?: DateTimeNullableFilter<"User"> | Date | string | null
     refresh_tokens?: RefreshTokenListRelationFilter
     summaries?: SummaryListRelationFilter
+    savedPapers?: SavedPaperListRelationFilter
   }, "id" | "username" | "email" | "auth_id">
 
   export type UserOrderByWithAggregationInput = {
@@ -37553,6 +38778,55 @@ export namespace Prisma {
     updated_at?: DateTimeNullableWithAggregatesFilter<"Summary"> | Date | string | null
   }
 
+  export type SavedPaperWhereInput = {
+    AND?: SavedPaperWhereInput | SavedPaperWhereInput[]
+    OR?: SavedPaperWhereInput[]
+    NOT?: SavedPaperWhereInput | SavedPaperWhereInput[]
+    paper_id?: StringFilter<"SavedPaper"> | string
+    user_id?: StringFilter<"SavedPaper"> | string
+    created_at?: DateTimeNullableFilter<"SavedPaper"> | Date | string | null
+    paper?: XOR<PaperScalarRelationFilter, PaperWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type SavedPaperOrderByWithRelationInput = {
+    paper_id?: SortOrder
+    user_id?: SortOrder
+    created_at?: SortOrderInput | SortOrder
+    paper?: PaperOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type SavedPaperWhereUniqueInput = Prisma.AtLeast<{
+    user_id_paper_id?: SavedPaperUser_idPaper_idCompoundUniqueInput
+    AND?: SavedPaperWhereInput | SavedPaperWhereInput[]
+    OR?: SavedPaperWhereInput[]
+    NOT?: SavedPaperWhereInput | SavedPaperWhereInput[]
+    paper_id?: StringFilter<"SavedPaper"> | string
+    user_id?: StringFilter<"SavedPaper"> | string
+    created_at?: DateTimeNullableFilter<"SavedPaper"> | Date | string | null
+    paper?: XOR<PaperScalarRelationFilter, PaperWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "user_id_paper_id">
+
+  export type SavedPaperOrderByWithAggregationInput = {
+    paper_id?: SortOrder
+    user_id?: SortOrder
+    created_at?: SortOrderInput | SortOrder
+    _count?: SavedPaperCountOrderByAggregateInput
+    _max?: SavedPaperMaxOrderByAggregateInput
+    _min?: SavedPaperMinOrderByAggregateInput
+  }
+
+  export type SavedPaperScalarWhereWithAggregatesInput = {
+    AND?: SavedPaperScalarWhereWithAggregatesInput | SavedPaperScalarWhereWithAggregatesInput[]
+    OR?: SavedPaperScalarWhereWithAggregatesInput[]
+    NOT?: SavedPaperScalarWhereWithAggregatesInput | SavedPaperScalarWhereWithAggregatesInput[]
+    paper_id?: StringWithAggregatesFilter<"SavedPaper"> | string
+    user_id?: StringWithAggregatesFilter<"SavedPaper"> | string
+    created_at?: DateTimeNullableWithAggregatesFilter<"SavedPaper"> | Date | string | null
+  }
+
   export type PaperCreateInput = {
     id?: string
     slug: string
@@ -37607,6 +38881,7 @@ export namespace Prisma {
     rankings?: RankingCreateNestedManyWithoutPaperInput
     sotaClaims?: SotaClaimCreateNestedManyWithoutPaperInput
     summaries?: SummaryCreateNestedManyWithoutPaperInput
+    savedPapers?: SavedPaperCreateNestedManyWithoutPaperInput
   }
 
   export type PaperUncheckedCreateInput = {
@@ -37663,6 +38938,7 @@ export namespace Prisma {
     rankings?: RankingUncheckedCreateNestedManyWithoutPaperInput
     sotaClaims?: SotaClaimUncheckedCreateNestedManyWithoutPaperInput
     summaries?: SummaryUncheckedCreateNestedManyWithoutPaperInput
+    savedPapers?: SavedPaperUncheckedCreateNestedManyWithoutPaperInput
   }
 
   export type PaperUpdateInput = {
@@ -37719,6 +38995,7 @@ export namespace Prisma {
     rankings?: RankingUpdateManyWithoutPaperNestedInput
     sotaClaims?: SotaClaimUpdateManyWithoutPaperNestedInput
     summaries?: SummaryUpdateManyWithoutPaperNestedInput
+    savedPapers?: SavedPaperUpdateManyWithoutPaperNestedInput
   }
 
   export type PaperUncheckedUpdateInput = {
@@ -37775,6 +39052,7 @@ export namespace Prisma {
     rankings?: RankingUncheckedUpdateManyWithoutPaperNestedInput
     sotaClaims?: SotaClaimUncheckedUpdateManyWithoutPaperNestedInput
     summaries?: SummaryUncheckedUpdateManyWithoutPaperNestedInput
+    savedPapers?: SavedPaperUncheckedUpdateManyWithoutPaperNestedInput
   }
 
   export type PaperCreateManyInput = {
@@ -39732,6 +41010,7 @@ export namespace Prisma {
     updated_at?: Date | string | null
     refresh_tokens?: RefreshTokenCreateNestedManyWithoutUsersInput
     summaries?: SummaryCreateNestedManyWithoutUserInput
+    savedPapers?: SavedPaperCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -39756,6 +41035,7 @@ export namespace Prisma {
     updated_at?: Date | string | null
     refresh_tokens?: RefreshTokenUncheckedCreateNestedManyWithoutUsersInput
     summaries?: SummaryUncheckedCreateNestedManyWithoutUserInput
+    savedPapers?: SavedPaperUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -39780,6 +41060,7 @@ export namespace Prisma {
     updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     refresh_tokens?: RefreshTokenUpdateManyWithoutUsersNestedInput
     summaries?: SummaryUpdateManyWithoutUserNestedInput
+    savedPapers?: SavedPaperUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -39804,6 +41085,7 @@ export namespace Prisma {
     updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     refresh_tokens?: RefreshTokenUncheckedUpdateManyWithoutUsersNestedInput
     summaries?: SummaryUncheckedUpdateManyWithoutUserNestedInput
+    savedPapers?: SavedPaperUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -40023,6 +41305,46 @@ export namespace Prisma {
     updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
+  export type SavedPaperCreateInput = {
+    created_at?: Date | string | null
+    paper: PaperCreateNestedOneWithoutSavedPapersInput
+    user: UserCreateNestedOneWithoutSavedPapersInput
+  }
+
+  export type SavedPaperUncheckedCreateInput = {
+    paper_id: string
+    user_id: string
+    created_at?: Date | string | null
+  }
+
+  export type SavedPaperUpdateInput = {
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paper?: PaperUpdateOneRequiredWithoutSavedPapersNestedInput
+    user?: UserUpdateOneRequiredWithoutSavedPapersNestedInput
+  }
+
+  export type SavedPaperUncheckedUpdateInput = {
+    paper_id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type SavedPaperCreateManyInput = {
+    paper_id: string
+    user_id: string
+    created_at?: Date | string | null
+  }
+
+  export type SavedPaperUpdateManyMutationInput = {
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type SavedPaperUncheckedUpdateManyInput = {
+    paper_id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -40185,6 +41507,12 @@ export namespace Prisma {
     none?: SummaryWhereInput
   }
 
+  export type SavedPaperListRelationFilter = {
+    every?: SavedPaperWhereInput
+    some?: SavedPaperWhereInput
+    none?: SavedPaperWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -40235,6 +41563,10 @@ export namespace Prisma {
   }
 
   export type SummaryOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type SavedPaperOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -41664,6 +42996,29 @@ export namespace Prisma {
     updated_at?: SortOrder
   }
 
+  export type SavedPaperUser_idPaper_idCompoundUniqueInput = {
+    user_id: string
+    paper_id: string
+  }
+
+  export type SavedPaperCountOrderByAggregateInput = {
+    paper_id?: SortOrder
+    user_id?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type SavedPaperMaxOrderByAggregateInput = {
+    paper_id?: SortOrder
+    user_id?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type SavedPaperMinOrderByAggregateInput = {
+    paper_id?: SortOrder
+    user_id?: SortOrder
+    created_at?: SortOrder
+  }
+
   export type PaperConferenceCreateNestedManyWithoutPaperInput = {
     create?: XOR<PaperConferenceCreateWithoutPaperInput, PaperConferenceUncheckedCreateWithoutPaperInput> | PaperConferenceCreateWithoutPaperInput[] | PaperConferenceUncheckedCreateWithoutPaperInput[]
     connectOrCreate?: PaperConferenceCreateOrConnectWithoutPaperInput | PaperConferenceCreateOrConnectWithoutPaperInput[]
@@ -41748,6 +43103,13 @@ export namespace Prisma {
     connect?: SummaryWhereUniqueInput | SummaryWhereUniqueInput[]
   }
 
+  export type SavedPaperCreateNestedManyWithoutPaperInput = {
+    create?: XOR<SavedPaperCreateWithoutPaperInput, SavedPaperUncheckedCreateWithoutPaperInput> | SavedPaperCreateWithoutPaperInput[] | SavedPaperUncheckedCreateWithoutPaperInput[]
+    connectOrCreate?: SavedPaperCreateOrConnectWithoutPaperInput | SavedPaperCreateOrConnectWithoutPaperInput[]
+    createMany?: SavedPaperCreateManyPaperInputEnvelope
+    connect?: SavedPaperWhereUniqueInput | SavedPaperWhereUniqueInput[]
+  }
+
   export type PaperConferenceUncheckedCreateNestedManyWithoutPaperInput = {
     create?: XOR<PaperConferenceCreateWithoutPaperInput, PaperConferenceUncheckedCreateWithoutPaperInput> | PaperConferenceCreateWithoutPaperInput[] | PaperConferenceUncheckedCreateWithoutPaperInput[]
     connectOrCreate?: PaperConferenceCreateOrConnectWithoutPaperInput | PaperConferenceCreateOrConnectWithoutPaperInput[]
@@ -41830,6 +43192,13 @@ export namespace Prisma {
     connectOrCreate?: SummaryCreateOrConnectWithoutPaperInput | SummaryCreateOrConnectWithoutPaperInput[]
     createMany?: SummaryCreateManyPaperInputEnvelope
     connect?: SummaryWhereUniqueInput | SummaryWhereUniqueInput[]
+  }
+
+  export type SavedPaperUncheckedCreateNestedManyWithoutPaperInput = {
+    create?: XOR<SavedPaperCreateWithoutPaperInput, SavedPaperUncheckedCreateWithoutPaperInput> | SavedPaperCreateWithoutPaperInput[] | SavedPaperUncheckedCreateWithoutPaperInput[]
+    connectOrCreate?: SavedPaperCreateOrConnectWithoutPaperInput | SavedPaperCreateOrConnectWithoutPaperInput[]
+    createMany?: SavedPaperCreateManyPaperInputEnvelope
+    connect?: SavedPaperWhereUniqueInput | SavedPaperWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -42044,6 +43413,20 @@ export namespace Prisma {
     deleteMany?: SummaryScalarWhereInput | SummaryScalarWhereInput[]
   }
 
+  export type SavedPaperUpdateManyWithoutPaperNestedInput = {
+    create?: XOR<SavedPaperCreateWithoutPaperInput, SavedPaperUncheckedCreateWithoutPaperInput> | SavedPaperCreateWithoutPaperInput[] | SavedPaperUncheckedCreateWithoutPaperInput[]
+    connectOrCreate?: SavedPaperCreateOrConnectWithoutPaperInput | SavedPaperCreateOrConnectWithoutPaperInput[]
+    upsert?: SavedPaperUpsertWithWhereUniqueWithoutPaperInput | SavedPaperUpsertWithWhereUniqueWithoutPaperInput[]
+    createMany?: SavedPaperCreateManyPaperInputEnvelope
+    set?: SavedPaperWhereUniqueInput | SavedPaperWhereUniqueInput[]
+    disconnect?: SavedPaperWhereUniqueInput | SavedPaperWhereUniqueInput[]
+    delete?: SavedPaperWhereUniqueInput | SavedPaperWhereUniqueInput[]
+    connect?: SavedPaperWhereUniqueInput | SavedPaperWhereUniqueInput[]
+    update?: SavedPaperUpdateWithWhereUniqueWithoutPaperInput | SavedPaperUpdateWithWhereUniqueWithoutPaperInput[]
+    updateMany?: SavedPaperUpdateManyWithWhereWithoutPaperInput | SavedPaperUpdateManyWithWhereWithoutPaperInput[]
+    deleteMany?: SavedPaperScalarWhereInput | SavedPaperScalarWhereInput[]
+  }
+
   export type PaperConferenceUncheckedUpdateManyWithoutPaperNestedInput = {
     create?: XOR<PaperConferenceCreateWithoutPaperInput, PaperConferenceUncheckedCreateWithoutPaperInput> | PaperConferenceCreateWithoutPaperInput[] | PaperConferenceUncheckedCreateWithoutPaperInput[]
     connectOrCreate?: PaperConferenceCreateOrConnectWithoutPaperInput | PaperConferenceCreateOrConnectWithoutPaperInput[]
@@ -42210,6 +43593,20 @@ export namespace Prisma {
     update?: SummaryUpdateWithWhereUniqueWithoutPaperInput | SummaryUpdateWithWhereUniqueWithoutPaperInput[]
     updateMany?: SummaryUpdateManyWithWhereWithoutPaperInput | SummaryUpdateManyWithWhereWithoutPaperInput[]
     deleteMany?: SummaryScalarWhereInput | SummaryScalarWhereInput[]
+  }
+
+  export type SavedPaperUncheckedUpdateManyWithoutPaperNestedInput = {
+    create?: XOR<SavedPaperCreateWithoutPaperInput, SavedPaperUncheckedCreateWithoutPaperInput> | SavedPaperCreateWithoutPaperInput[] | SavedPaperUncheckedCreateWithoutPaperInput[]
+    connectOrCreate?: SavedPaperCreateOrConnectWithoutPaperInput | SavedPaperCreateOrConnectWithoutPaperInput[]
+    upsert?: SavedPaperUpsertWithWhereUniqueWithoutPaperInput | SavedPaperUpsertWithWhereUniqueWithoutPaperInput[]
+    createMany?: SavedPaperCreateManyPaperInputEnvelope
+    set?: SavedPaperWhereUniqueInput | SavedPaperWhereUniqueInput[]
+    disconnect?: SavedPaperWhereUniqueInput | SavedPaperWhereUniqueInput[]
+    delete?: SavedPaperWhereUniqueInput | SavedPaperWhereUniqueInput[]
+    connect?: SavedPaperWhereUniqueInput | SavedPaperWhereUniqueInput[]
+    update?: SavedPaperUpdateWithWhereUniqueWithoutPaperInput | SavedPaperUpdateWithWhereUniqueWithoutPaperInput[]
+    updateMany?: SavedPaperUpdateManyWithWhereWithoutPaperInput | SavedPaperUpdateManyWithWhereWithoutPaperInput[]
+    deleteMany?: SavedPaperScalarWhereInput | SavedPaperScalarWhereInput[]
   }
 
   export type FloatFieldUpdateOperationsInput = {
@@ -43013,6 +44410,13 @@ export namespace Prisma {
     connect?: SummaryWhereUniqueInput | SummaryWhereUniqueInput[]
   }
 
+  export type SavedPaperCreateNestedManyWithoutUserInput = {
+    create?: XOR<SavedPaperCreateWithoutUserInput, SavedPaperUncheckedCreateWithoutUserInput> | SavedPaperCreateWithoutUserInput[] | SavedPaperUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: SavedPaperCreateOrConnectWithoutUserInput | SavedPaperCreateOrConnectWithoutUserInput[]
+    createMany?: SavedPaperCreateManyUserInputEnvelope
+    connect?: SavedPaperWhereUniqueInput | SavedPaperWhereUniqueInput[]
+  }
+
   export type RefreshTokenUncheckedCreateNestedManyWithoutUsersInput = {
     create?: XOR<RefreshTokenCreateWithoutUsersInput, RefreshTokenUncheckedCreateWithoutUsersInput> | RefreshTokenCreateWithoutUsersInput[] | RefreshTokenUncheckedCreateWithoutUsersInput[]
     connectOrCreate?: RefreshTokenCreateOrConnectWithoutUsersInput | RefreshTokenCreateOrConnectWithoutUsersInput[]
@@ -43025,6 +44429,13 @@ export namespace Prisma {
     connectOrCreate?: SummaryCreateOrConnectWithoutUserInput | SummaryCreateOrConnectWithoutUserInput[]
     createMany?: SummaryCreateManyUserInputEnvelope
     connect?: SummaryWhereUniqueInput | SummaryWhereUniqueInput[]
+  }
+
+  export type SavedPaperUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<SavedPaperCreateWithoutUserInput, SavedPaperUncheckedCreateWithoutUserInput> | SavedPaperCreateWithoutUserInput[] | SavedPaperUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: SavedPaperCreateOrConnectWithoutUserInput | SavedPaperCreateOrConnectWithoutUserInput[]
+    createMany?: SavedPaperCreateManyUserInputEnvelope
+    connect?: SavedPaperWhereUniqueInput | SavedPaperWhereUniqueInput[]
   }
 
   export type RefreshTokenUpdateManyWithoutUsersNestedInput = {
@@ -43055,6 +44466,20 @@ export namespace Prisma {
     deleteMany?: SummaryScalarWhereInput | SummaryScalarWhereInput[]
   }
 
+  export type SavedPaperUpdateManyWithoutUserNestedInput = {
+    create?: XOR<SavedPaperCreateWithoutUserInput, SavedPaperUncheckedCreateWithoutUserInput> | SavedPaperCreateWithoutUserInput[] | SavedPaperUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: SavedPaperCreateOrConnectWithoutUserInput | SavedPaperCreateOrConnectWithoutUserInput[]
+    upsert?: SavedPaperUpsertWithWhereUniqueWithoutUserInput | SavedPaperUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: SavedPaperCreateManyUserInputEnvelope
+    set?: SavedPaperWhereUniqueInput | SavedPaperWhereUniqueInput[]
+    disconnect?: SavedPaperWhereUniqueInput | SavedPaperWhereUniqueInput[]
+    delete?: SavedPaperWhereUniqueInput | SavedPaperWhereUniqueInput[]
+    connect?: SavedPaperWhereUniqueInput | SavedPaperWhereUniqueInput[]
+    update?: SavedPaperUpdateWithWhereUniqueWithoutUserInput | SavedPaperUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: SavedPaperUpdateManyWithWhereWithoutUserInput | SavedPaperUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: SavedPaperScalarWhereInput | SavedPaperScalarWhereInput[]
+  }
+
   export type RefreshTokenUncheckedUpdateManyWithoutUsersNestedInput = {
     create?: XOR<RefreshTokenCreateWithoutUsersInput, RefreshTokenUncheckedCreateWithoutUsersInput> | RefreshTokenCreateWithoutUsersInput[] | RefreshTokenUncheckedCreateWithoutUsersInput[]
     connectOrCreate?: RefreshTokenCreateOrConnectWithoutUsersInput | RefreshTokenCreateOrConnectWithoutUsersInput[]
@@ -43081,6 +44506,20 @@ export namespace Prisma {
     update?: SummaryUpdateWithWhereUniqueWithoutUserInput | SummaryUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: SummaryUpdateManyWithWhereWithoutUserInput | SummaryUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: SummaryScalarWhereInput | SummaryScalarWhereInput[]
+  }
+
+  export type SavedPaperUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<SavedPaperCreateWithoutUserInput, SavedPaperUncheckedCreateWithoutUserInput> | SavedPaperCreateWithoutUserInput[] | SavedPaperUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: SavedPaperCreateOrConnectWithoutUserInput | SavedPaperCreateOrConnectWithoutUserInput[]
+    upsert?: SavedPaperUpsertWithWhereUniqueWithoutUserInput | SavedPaperUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: SavedPaperCreateManyUserInputEnvelope
+    set?: SavedPaperWhereUniqueInput | SavedPaperWhereUniqueInput[]
+    disconnect?: SavedPaperWhereUniqueInput | SavedPaperWhereUniqueInput[]
+    delete?: SavedPaperWhereUniqueInput | SavedPaperWhereUniqueInput[]
+    connect?: SavedPaperWhereUniqueInput | SavedPaperWhereUniqueInput[]
+    update?: SavedPaperUpdateWithWhereUniqueWithoutUserInput | SavedPaperUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: SavedPaperUpdateManyWithWhereWithoutUserInput | SavedPaperUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: SavedPaperScalarWhereInput | SavedPaperScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutRefresh_tokensInput = {
@@ -43123,6 +44562,34 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutSummariesInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSummariesInput, UserUpdateWithoutSummariesInput>, UserUncheckedUpdateWithoutSummariesInput>
+  }
+
+  export type PaperCreateNestedOneWithoutSavedPapersInput = {
+    create?: XOR<PaperCreateWithoutSavedPapersInput, PaperUncheckedCreateWithoutSavedPapersInput>
+    connectOrCreate?: PaperCreateOrConnectWithoutSavedPapersInput
+    connect?: PaperWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutSavedPapersInput = {
+    create?: XOR<UserCreateWithoutSavedPapersInput, UserUncheckedCreateWithoutSavedPapersInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSavedPapersInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type PaperUpdateOneRequiredWithoutSavedPapersNestedInput = {
+    create?: XOR<PaperCreateWithoutSavedPapersInput, PaperUncheckedCreateWithoutSavedPapersInput>
+    connectOrCreate?: PaperCreateOrConnectWithoutSavedPapersInput
+    upsert?: PaperUpsertWithoutSavedPapersInput
+    connect?: PaperWhereUniqueInput
+    update?: XOR<XOR<PaperUpdateToOneWithWhereWithoutSavedPapersInput, PaperUpdateWithoutSavedPapersInput>, PaperUncheckedUpdateWithoutSavedPapersInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutSavedPapersNestedInput = {
+    create?: XOR<UserCreateWithoutSavedPapersInput, UserUncheckedCreateWithoutSavedPapersInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSavedPapersInput
+    upsert?: UserUpsertWithoutSavedPapersInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSavedPapersInput, UserUpdateWithoutSavedPapersInput>, UserUncheckedUpdateWithoutSavedPapersInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -43651,6 +45118,26 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type SavedPaperCreateWithoutPaperInput = {
+    created_at?: Date | string | null
+    user: UserCreateNestedOneWithoutSavedPapersInput
+  }
+
+  export type SavedPaperUncheckedCreateWithoutPaperInput = {
+    user_id: string
+    created_at?: Date | string | null
+  }
+
+  export type SavedPaperCreateOrConnectWithoutPaperInput = {
+    where: SavedPaperWhereUniqueInput
+    create: XOR<SavedPaperCreateWithoutPaperInput, SavedPaperUncheckedCreateWithoutPaperInput>
+  }
+
+  export type SavedPaperCreateManyPaperInputEnvelope = {
+    data: SavedPaperCreateManyPaperInput | SavedPaperCreateManyPaperInput[]
+    skipDuplicates?: boolean
+  }
+
   export type PaperConferenceUpsertWithWhereUniqueWithoutPaperInput = {
     where: PaperConferenceWhereUniqueInput
     update: XOR<PaperConferenceUpdateWithoutPaperInput, PaperConferenceUncheckedUpdateWithoutPaperInput>
@@ -43966,6 +45453,31 @@ export namespace Prisma {
     updated_at?: DateTimeNullableFilter<"Summary"> | Date | string | null
   }
 
+  export type SavedPaperUpsertWithWhereUniqueWithoutPaperInput = {
+    where: SavedPaperWhereUniqueInput
+    update: XOR<SavedPaperUpdateWithoutPaperInput, SavedPaperUncheckedUpdateWithoutPaperInput>
+    create: XOR<SavedPaperCreateWithoutPaperInput, SavedPaperUncheckedCreateWithoutPaperInput>
+  }
+
+  export type SavedPaperUpdateWithWhereUniqueWithoutPaperInput = {
+    where: SavedPaperWhereUniqueInput
+    data: XOR<SavedPaperUpdateWithoutPaperInput, SavedPaperUncheckedUpdateWithoutPaperInput>
+  }
+
+  export type SavedPaperUpdateManyWithWhereWithoutPaperInput = {
+    where: SavedPaperScalarWhereInput
+    data: XOR<SavedPaperUpdateManyMutationInput, SavedPaperUncheckedUpdateManyWithoutPaperInput>
+  }
+
+  export type SavedPaperScalarWhereInput = {
+    AND?: SavedPaperScalarWhereInput | SavedPaperScalarWhereInput[]
+    OR?: SavedPaperScalarWhereInput[]
+    NOT?: SavedPaperScalarWhereInput | SavedPaperScalarWhereInput[]
+    paper_id?: StringFilter<"SavedPaper"> | string
+    user_id?: StringFilter<"SavedPaper"> | string
+    created_at?: DateTimeNullableFilter<"SavedPaper"> | Date | string | null
+  }
+
   export type PaperTaskCreateWithoutTaskInput = {
     paper: PaperCreateNestedOneWithoutTasksInput
   }
@@ -44053,6 +45565,7 @@ export namespace Prisma {
     rankings?: RankingCreateNestedManyWithoutPaperInput
     sotaClaims?: SotaClaimCreateNestedManyWithoutPaperInput
     summaries?: SummaryCreateNestedManyWithoutPaperInput
+    savedPapers?: SavedPaperCreateNestedManyWithoutPaperInput
   }
 
   export type PaperUncheckedCreateWithoutTasksInput = {
@@ -44108,6 +45621,7 @@ export namespace Prisma {
     rankings?: RankingUncheckedCreateNestedManyWithoutPaperInput
     sotaClaims?: SotaClaimUncheckedCreateNestedManyWithoutPaperInput
     summaries?: SummaryUncheckedCreateNestedManyWithoutPaperInput
+    savedPapers?: SavedPaperUncheckedCreateNestedManyWithoutPaperInput
   }
 
   export type PaperCreateOrConnectWithoutTasksInput = {
@@ -44204,6 +45718,7 @@ export namespace Prisma {
     rankings?: RankingUpdateManyWithoutPaperNestedInput
     sotaClaims?: SotaClaimUpdateManyWithoutPaperNestedInput
     summaries?: SummaryUpdateManyWithoutPaperNestedInput
+    savedPapers?: SavedPaperUpdateManyWithoutPaperNestedInput
   }
 
   export type PaperUncheckedUpdateWithoutTasksInput = {
@@ -44259,6 +45774,7 @@ export namespace Prisma {
     rankings?: RankingUncheckedUpdateManyWithoutPaperNestedInput
     sotaClaims?: SotaClaimUncheckedUpdateManyWithoutPaperNestedInput
     summaries?: SummaryUncheckedUpdateManyWithoutPaperNestedInput
+    savedPapers?: SavedPaperUncheckedUpdateManyWithoutPaperNestedInput
   }
 
   export type TaskUpsertWithoutPapersInput = {
@@ -44404,6 +45920,7 @@ export namespace Prisma {
     rankings?: RankingCreateNestedManyWithoutPaperInput
     sotaClaims?: SotaClaimCreateNestedManyWithoutPaperInput
     summaries?: SummaryCreateNestedManyWithoutPaperInput
+    savedPapers?: SavedPaperCreateNestedManyWithoutPaperInput
   }
 
   export type PaperUncheckedCreateWithoutMethodsInput = {
@@ -44459,6 +45976,7 @@ export namespace Prisma {
     rankings?: RankingUncheckedCreateNestedManyWithoutPaperInput
     sotaClaims?: SotaClaimUncheckedCreateNestedManyWithoutPaperInput
     summaries?: SummaryUncheckedCreateNestedManyWithoutPaperInput
+    savedPapers?: SavedPaperUncheckedCreateNestedManyWithoutPaperInput
   }
 
   export type PaperCreateOrConnectWithoutMethodsInput = {
@@ -44561,6 +46079,7 @@ export namespace Prisma {
     rankings?: RankingUpdateManyWithoutPaperNestedInput
     sotaClaims?: SotaClaimUpdateManyWithoutPaperNestedInput
     summaries?: SummaryUpdateManyWithoutPaperNestedInput
+    savedPapers?: SavedPaperUpdateManyWithoutPaperNestedInput
   }
 
   export type PaperUncheckedUpdateWithoutMethodsInput = {
@@ -44616,6 +46135,7 @@ export namespace Prisma {
     rankings?: RankingUncheckedUpdateManyWithoutPaperNestedInput
     sotaClaims?: SotaClaimUncheckedUpdateManyWithoutPaperNestedInput
     summaries?: SummaryUncheckedUpdateManyWithoutPaperNestedInput
+    savedPapers?: SavedPaperUncheckedUpdateManyWithoutPaperNestedInput
   }
 
   export type RankingCreateWithoutBenchmarkInput = {
@@ -44842,6 +46362,7 @@ export namespace Prisma {
     universities?: PaperUniversityCreateNestedManyWithoutPaperInput
     rankings?: RankingCreateNestedManyWithoutPaperInput
     summaries?: SummaryCreateNestedManyWithoutPaperInput
+    savedPapers?: SavedPaperCreateNestedManyWithoutPaperInput
   }
 
   export type PaperUncheckedCreateWithoutSotaClaimsInput = {
@@ -44897,6 +46418,7 @@ export namespace Prisma {
     universities?: PaperUniversityUncheckedCreateNestedManyWithoutPaperInput
     rankings?: RankingUncheckedCreateNestedManyWithoutPaperInput
     summaries?: SummaryUncheckedCreateNestedManyWithoutPaperInput
+    savedPapers?: SavedPaperUncheckedCreateNestedManyWithoutPaperInput
   }
 
   export type PaperCreateOrConnectWithoutSotaClaimsInput = {
@@ -45037,6 +46559,7 @@ export namespace Prisma {
     universities?: PaperUniversityUpdateManyWithoutPaperNestedInput
     rankings?: RankingUpdateManyWithoutPaperNestedInput
     summaries?: SummaryUpdateManyWithoutPaperNestedInput
+    savedPapers?: SavedPaperUpdateManyWithoutPaperNestedInput
   }
 
   export type PaperUncheckedUpdateWithoutSotaClaimsInput = {
@@ -45092,6 +46615,7 @@ export namespace Prisma {
     universities?: PaperUniversityUncheckedUpdateManyWithoutPaperNestedInput
     rankings?: RankingUncheckedUpdateManyWithoutPaperNestedInput
     summaries?: SummaryUncheckedUpdateManyWithoutPaperNestedInput
+    savedPapers?: SavedPaperUncheckedUpdateManyWithoutPaperNestedInput
   }
 
   export type BenchmarkCreateWithoutRankingsInput = {
@@ -45210,6 +46734,7 @@ export namespace Prisma {
     universities?: PaperUniversityCreateNestedManyWithoutPaperInput
     sotaClaims?: SotaClaimCreateNestedManyWithoutPaperInput
     summaries?: SummaryCreateNestedManyWithoutPaperInput
+    savedPapers?: SavedPaperCreateNestedManyWithoutPaperInput
   }
 
   export type PaperUncheckedCreateWithoutRankingsInput = {
@@ -45265,6 +46790,7 @@ export namespace Prisma {
     universities?: PaperUniversityUncheckedCreateNestedManyWithoutPaperInput
     sotaClaims?: SotaClaimUncheckedCreateNestedManyWithoutPaperInput
     summaries?: SummaryUncheckedCreateNestedManyWithoutPaperInput
+    savedPapers?: SavedPaperUncheckedCreateNestedManyWithoutPaperInput
   }
 
   export type PaperCreateOrConnectWithoutRankingsInput = {
@@ -45405,6 +46931,7 @@ export namespace Prisma {
     universities?: PaperUniversityUpdateManyWithoutPaperNestedInput
     sotaClaims?: SotaClaimUpdateManyWithoutPaperNestedInput
     summaries?: SummaryUpdateManyWithoutPaperNestedInput
+    savedPapers?: SavedPaperUpdateManyWithoutPaperNestedInput
   }
 
   export type PaperUncheckedUpdateWithoutRankingsInput = {
@@ -45460,6 +46987,7 @@ export namespace Prisma {
     universities?: PaperUniversityUncheckedUpdateManyWithoutPaperNestedInput
     sotaClaims?: SotaClaimUncheckedUpdateManyWithoutPaperNestedInput
     summaries?: SummaryUncheckedUpdateManyWithoutPaperNestedInput
+    savedPapers?: SavedPaperUncheckedUpdateManyWithoutPaperNestedInput
   }
 
   export type PaperModelCreateWithoutModelInput = {
@@ -45648,6 +47176,7 @@ export namespace Prisma {
     rankings?: RankingCreateNestedManyWithoutPaperInput
     sotaClaims?: SotaClaimCreateNestedManyWithoutPaperInput
     summaries?: SummaryCreateNestedManyWithoutPaperInput
+    savedPapers?: SavedPaperCreateNestedManyWithoutPaperInput
   }
 
   export type PaperUncheckedCreateWithoutModelsInput = {
@@ -45703,6 +47232,7 @@ export namespace Prisma {
     rankings?: RankingUncheckedCreateNestedManyWithoutPaperInput
     sotaClaims?: SotaClaimUncheckedCreateNestedManyWithoutPaperInput
     summaries?: SummaryUncheckedCreateNestedManyWithoutPaperInput
+    savedPapers?: SavedPaperUncheckedCreateNestedManyWithoutPaperInput
   }
 
   export type PaperCreateOrConnectWithoutModelsInput = {
@@ -45877,6 +47407,7 @@ export namespace Prisma {
     rankings?: RankingUpdateManyWithoutPaperNestedInput
     sotaClaims?: SotaClaimUpdateManyWithoutPaperNestedInput
     summaries?: SummaryUpdateManyWithoutPaperNestedInput
+    savedPapers?: SavedPaperUpdateManyWithoutPaperNestedInput
   }
 
   export type PaperUncheckedUpdateWithoutModelsInput = {
@@ -45932,6 +47463,7 @@ export namespace Prisma {
     rankings?: RankingUncheckedUpdateManyWithoutPaperNestedInput
     sotaClaims?: SotaClaimUncheckedUpdateManyWithoutPaperNestedInput
     summaries?: SummaryUncheckedUpdateManyWithoutPaperNestedInput
+    savedPapers?: SavedPaperUncheckedUpdateManyWithoutPaperNestedInput
   }
 
   export type PaperDatasetCreateWithoutDatasetInput = {
@@ -46046,6 +47578,7 @@ export namespace Prisma {
     rankings?: RankingCreateNestedManyWithoutPaperInput
     sotaClaims?: SotaClaimCreateNestedManyWithoutPaperInput
     summaries?: SummaryCreateNestedManyWithoutPaperInput
+    savedPapers?: SavedPaperCreateNestedManyWithoutPaperInput
   }
 
   export type PaperUncheckedCreateWithoutDatasetsInput = {
@@ -46101,6 +47634,7 @@ export namespace Prisma {
     rankings?: RankingUncheckedCreateNestedManyWithoutPaperInput
     sotaClaims?: SotaClaimUncheckedCreateNestedManyWithoutPaperInput
     summaries?: SummaryUncheckedCreateNestedManyWithoutPaperInput
+    savedPapers?: SavedPaperUncheckedCreateNestedManyWithoutPaperInput
   }
 
   export type PaperCreateOrConnectWithoutDatasetsInput = {
@@ -46203,6 +47737,7 @@ export namespace Prisma {
     rankings?: RankingUpdateManyWithoutPaperNestedInput
     sotaClaims?: SotaClaimUpdateManyWithoutPaperNestedInput
     summaries?: SummaryUpdateManyWithoutPaperNestedInput
+    savedPapers?: SavedPaperUpdateManyWithoutPaperNestedInput
   }
 
   export type PaperUncheckedUpdateWithoutDatasetsInput = {
@@ -46258,6 +47793,7 @@ export namespace Prisma {
     rankings?: RankingUncheckedUpdateManyWithoutPaperNestedInput
     sotaClaims?: SotaClaimUncheckedUpdateManyWithoutPaperNestedInput
     summaries?: SummaryUncheckedUpdateManyWithoutPaperNestedInput
+    savedPapers?: SavedPaperUncheckedUpdateManyWithoutPaperNestedInput
   }
 
   export type PaperLabCreateWithoutLabInput = {
@@ -46372,6 +47908,7 @@ export namespace Prisma {
     rankings?: RankingCreateNestedManyWithoutPaperInput
     sotaClaims?: SotaClaimCreateNestedManyWithoutPaperInput
     summaries?: SummaryCreateNestedManyWithoutPaperInput
+    savedPapers?: SavedPaperCreateNestedManyWithoutPaperInput
   }
 
   export type PaperUncheckedCreateWithoutLabsInput = {
@@ -46427,6 +47964,7 @@ export namespace Prisma {
     rankings?: RankingUncheckedCreateNestedManyWithoutPaperInput
     sotaClaims?: SotaClaimUncheckedCreateNestedManyWithoutPaperInput
     summaries?: SummaryUncheckedCreateNestedManyWithoutPaperInput
+    savedPapers?: SavedPaperUncheckedCreateNestedManyWithoutPaperInput
   }
 
   export type PaperCreateOrConnectWithoutLabsInput = {
@@ -46529,6 +48067,7 @@ export namespace Prisma {
     rankings?: RankingUpdateManyWithoutPaperNestedInput
     sotaClaims?: SotaClaimUpdateManyWithoutPaperNestedInput
     summaries?: SummaryUpdateManyWithoutPaperNestedInput
+    savedPapers?: SavedPaperUpdateManyWithoutPaperNestedInput
   }
 
   export type PaperUncheckedUpdateWithoutLabsInput = {
@@ -46584,6 +48123,7 @@ export namespace Prisma {
     rankings?: RankingUncheckedUpdateManyWithoutPaperNestedInput
     sotaClaims?: SotaClaimUncheckedUpdateManyWithoutPaperNestedInput
     summaries?: SummaryUncheckedUpdateManyWithoutPaperNestedInput
+    savedPapers?: SavedPaperUncheckedUpdateManyWithoutPaperNestedInput
   }
 
   export type PaperUniversityCreateWithoutUniversityInput = {
@@ -46673,6 +48213,7 @@ export namespace Prisma {
     rankings?: RankingCreateNestedManyWithoutPaperInput
     sotaClaims?: SotaClaimCreateNestedManyWithoutPaperInput
     summaries?: SummaryCreateNestedManyWithoutPaperInput
+    savedPapers?: SavedPaperCreateNestedManyWithoutPaperInput
   }
 
   export type PaperUncheckedCreateWithoutUniversitiesInput = {
@@ -46728,6 +48269,7 @@ export namespace Prisma {
     rankings?: RankingUncheckedCreateNestedManyWithoutPaperInput
     sotaClaims?: SotaClaimUncheckedCreateNestedManyWithoutPaperInput
     summaries?: SummaryUncheckedCreateNestedManyWithoutPaperInput
+    savedPapers?: SavedPaperUncheckedCreateNestedManyWithoutPaperInput
   }
 
   export type PaperCreateOrConnectWithoutUniversitiesInput = {
@@ -46824,6 +48366,7 @@ export namespace Prisma {
     rankings?: RankingUpdateManyWithoutPaperNestedInput
     sotaClaims?: SotaClaimUpdateManyWithoutPaperNestedInput
     summaries?: SummaryUpdateManyWithoutPaperNestedInput
+    savedPapers?: SavedPaperUpdateManyWithoutPaperNestedInput
   }
 
   export type PaperUncheckedUpdateWithoutUniversitiesInput = {
@@ -46879,6 +48422,7 @@ export namespace Prisma {
     rankings?: RankingUncheckedUpdateManyWithoutPaperNestedInput
     sotaClaims?: SotaClaimUncheckedUpdateManyWithoutPaperNestedInput
     summaries?: SummaryUncheckedUpdateManyWithoutPaperNestedInput
+    savedPapers?: SavedPaperUncheckedUpdateManyWithoutPaperNestedInput
   }
 
   export type UniversityUpsertWithoutPapersInput = {
@@ -47024,6 +48568,7 @@ export namespace Prisma {
     rankings?: RankingCreateNestedManyWithoutPaperInput
     sotaClaims?: SotaClaimCreateNestedManyWithoutPaperInput
     summaries?: SummaryCreateNestedManyWithoutPaperInput
+    savedPapers?: SavedPaperCreateNestedManyWithoutPaperInput
   }
 
   export type PaperUncheckedCreateWithoutConferencesInput = {
@@ -47079,6 +48624,7 @@ export namespace Prisma {
     rankings?: RankingUncheckedCreateNestedManyWithoutPaperInput
     sotaClaims?: SotaClaimUncheckedCreateNestedManyWithoutPaperInput
     summaries?: SummaryUncheckedCreateNestedManyWithoutPaperInput
+    savedPapers?: SavedPaperUncheckedCreateNestedManyWithoutPaperInput
   }
 
   export type PaperCreateOrConnectWithoutConferencesInput = {
@@ -47181,6 +48727,7 @@ export namespace Prisma {
     rankings?: RankingUpdateManyWithoutPaperNestedInput
     sotaClaims?: SotaClaimUpdateManyWithoutPaperNestedInput
     summaries?: SummaryUpdateManyWithoutPaperNestedInput
+    savedPapers?: SavedPaperUpdateManyWithoutPaperNestedInput
   }
 
   export type PaperUncheckedUpdateWithoutConferencesInput = {
@@ -47236,6 +48783,7 @@ export namespace Prisma {
     rankings?: RankingUncheckedUpdateManyWithoutPaperNestedInput
     sotaClaims?: SotaClaimUncheckedUpdateManyWithoutPaperNestedInput
     summaries?: SummaryUncheckedUpdateManyWithoutPaperNestedInput
+    savedPapers?: SavedPaperUncheckedUpdateManyWithoutPaperNestedInput
   }
 
   export type PaperJournalCreateWithoutJournalInput = {
@@ -47350,6 +48898,7 @@ export namespace Prisma {
     rankings?: RankingCreateNestedManyWithoutPaperInput
     sotaClaims?: SotaClaimCreateNestedManyWithoutPaperInput
     summaries?: SummaryCreateNestedManyWithoutPaperInput
+    savedPapers?: SavedPaperCreateNestedManyWithoutPaperInput
   }
 
   export type PaperUncheckedCreateWithoutJournalsInput = {
@@ -47405,6 +48954,7 @@ export namespace Prisma {
     rankings?: RankingUncheckedCreateNestedManyWithoutPaperInput
     sotaClaims?: SotaClaimUncheckedCreateNestedManyWithoutPaperInput
     summaries?: SummaryUncheckedCreateNestedManyWithoutPaperInput
+    savedPapers?: SavedPaperUncheckedCreateNestedManyWithoutPaperInput
   }
 
   export type PaperCreateOrConnectWithoutJournalsInput = {
@@ -47507,6 +49057,7 @@ export namespace Prisma {
     rankings?: RankingUpdateManyWithoutPaperNestedInput
     sotaClaims?: SotaClaimUpdateManyWithoutPaperNestedInput
     summaries?: SummaryUpdateManyWithoutPaperNestedInput
+    savedPapers?: SavedPaperUpdateManyWithoutPaperNestedInput
   }
 
   export type PaperUncheckedUpdateWithoutJournalsInput = {
@@ -47562,6 +49113,7 @@ export namespace Prisma {
     rankings?: RankingUncheckedUpdateManyWithoutPaperNestedInput
     sotaClaims?: SotaClaimUncheckedUpdateManyWithoutPaperNestedInput
     summaries?: SummaryUncheckedUpdateManyWithoutPaperNestedInput
+    savedPapers?: SavedPaperUncheckedUpdateManyWithoutPaperNestedInput
   }
 
   export type PaperRepositoryCreateWithoutRepositoryInput = {
@@ -47651,6 +49203,7 @@ export namespace Prisma {
     rankings?: RankingCreateNestedManyWithoutPaperInput
     sotaClaims?: SotaClaimCreateNestedManyWithoutPaperInput
     summaries?: SummaryCreateNestedManyWithoutPaperInput
+    savedPapers?: SavedPaperCreateNestedManyWithoutPaperInput
   }
 
   export type PaperUncheckedCreateWithoutRepositoriesInput = {
@@ -47706,6 +49259,7 @@ export namespace Prisma {
     rankings?: RankingUncheckedCreateNestedManyWithoutPaperInput
     sotaClaims?: SotaClaimUncheckedCreateNestedManyWithoutPaperInput
     summaries?: SummaryUncheckedCreateNestedManyWithoutPaperInput
+    savedPapers?: SavedPaperUncheckedCreateNestedManyWithoutPaperInput
   }
 
   export type PaperCreateOrConnectWithoutRepositoriesInput = {
@@ -47804,6 +49358,7 @@ export namespace Prisma {
     rankings?: RankingUpdateManyWithoutPaperNestedInput
     sotaClaims?: SotaClaimUpdateManyWithoutPaperNestedInput
     summaries?: SummaryUpdateManyWithoutPaperNestedInput
+    savedPapers?: SavedPaperUpdateManyWithoutPaperNestedInput
   }
 
   export type PaperUncheckedUpdateWithoutRepositoriesInput = {
@@ -47859,6 +49414,7 @@ export namespace Prisma {
     rankings?: RankingUncheckedUpdateManyWithoutPaperNestedInput
     sotaClaims?: SotaClaimUncheckedUpdateManyWithoutPaperNestedInput
     summaries?: SummaryUncheckedUpdateManyWithoutPaperNestedInput
+    savedPapers?: SavedPaperUncheckedUpdateManyWithoutPaperNestedInput
   }
 
   export type RepositoryUpsertWithoutPapersInput = {
@@ -47954,6 +49510,26 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type SavedPaperCreateWithoutUserInput = {
+    created_at?: Date | string | null
+    paper: PaperCreateNestedOneWithoutSavedPapersInput
+  }
+
+  export type SavedPaperUncheckedCreateWithoutUserInput = {
+    paper_id: string
+    created_at?: Date | string | null
+  }
+
+  export type SavedPaperCreateOrConnectWithoutUserInput = {
+    where: SavedPaperWhereUniqueInput
+    create: XOR<SavedPaperCreateWithoutUserInput, SavedPaperUncheckedCreateWithoutUserInput>
+  }
+
+  export type SavedPaperCreateManyUserInputEnvelope = {
+    data: SavedPaperCreateManyUserInput | SavedPaperCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type RefreshTokenUpsertWithWhereUniqueWithoutUsersInput = {
     where: RefreshTokenWhereUniqueInput
     update: XOR<RefreshTokenUpdateWithoutUsersInput, RefreshTokenUncheckedUpdateWithoutUsersInput>
@@ -48000,6 +49576,22 @@ export namespace Prisma {
     data: XOR<SummaryUpdateManyMutationInput, SummaryUncheckedUpdateManyWithoutUserInput>
   }
 
+  export type SavedPaperUpsertWithWhereUniqueWithoutUserInput = {
+    where: SavedPaperWhereUniqueInput
+    update: XOR<SavedPaperUpdateWithoutUserInput, SavedPaperUncheckedUpdateWithoutUserInput>
+    create: XOR<SavedPaperCreateWithoutUserInput, SavedPaperUncheckedCreateWithoutUserInput>
+  }
+
+  export type SavedPaperUpdateWithWhereUniqueWithoutUserInput = {
+    where: SavedPaperWhereUniqueInput
+    data: XOR<SavedPaperUpdateWithoutUserInput, SavedPaperUncheckedUpdateWithoutUserInput>
+  }
+
+  export type SavedPaperUpdateManyWithWhereWithoutUserInput = {
+    where: SavedPaperScalarWhereInput
+    data: XOR<SavedPaperUpdateManyMutationInput, SavedPaperUncheckedUpdateManyWithoutUserInput>
+  }
+
   export type UserCreateWithoutRefresh_tokensInput = {
     id?: string
     username: string
@@ -48021,6 +49613,7 @@ export namespace Prisma {
     created_at?: Date | string | null
     updated_at?: Date | string | null
     summaries?: SummaryCreateNestedManyWithoutUserInput
+    savedPapers?: SavedPaperCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutRefresh_tokensInput = {
@@ -48044,6 +49637,7 @@ export namespace Prisma {
     created_at?: Date | string | null
     updated_at?: Date | string | null
     summaries?: SummaryUncheckedCreateNestedManyWithoutUserInput
+    savedPapers?: SavedPaperUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutRefresh_tokensInput = {
@@ -48083,6 +49677,7 @@ export namespace Prisma {
     created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     summaries?: SummaryUpdateManyWithoutUserNestedInput
+    savedPapers?: SavedPaperUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRefresh_tokensInput = {
@@ -48106,6 +49701,7 @@ export namespace Prisma {
     created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     summaries?: SummaryUncheckedUpdateManyWithoutUserNestedInput
+    savedPapers?: SavedPaperUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type PaperCreateWithoutSummariesInput = {
@@ -48161,6 +49757,7 @@ export namespace Prisma {
     universities?: PaperUniversityCreateNestedManyWithoutPaperInput
     rankings?: RankingCreateNestedManyWithoutPaperInput
     sotaClaims?: SotaClaimCreateNestedManyWithoutPaperInput
+    savedPapers?: SavedPaperCreateNestedManyWithoutPaperInput
   }
 
   export type PaperUncheckedCreateWithoutSummariesInput = {
@@ -48216,6 +49813,7 @@ export namespace Prisma {
     universities?: PaperUniversityUncheckedCreateNestedManyWithoutPaperInput
     rankings?: RankingUncheckedCreateNestedManyWithoutPaperInput
     sotaClaims?: SotaClaimUncheckedCreateNestedManyWithoutPaperInput
+    savedPapers?: SavedPaperUncheckedCreateNestedManyWithoutPaperInput
   }
 
   export type PaperCreateOrConnectWithoutSummariesInput = {
@@ -48244,6 +49842,7 @@ export namespace Prisma {
     created_at?: Date | string | null
     updated_at?: Date | string | null
     refresh_tokens?: RefreshTokenCreateNestedManyWithoutUsersInput
+    savedPapers?: SavedPaperCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSummariesInput = {
@@ -48267,6 +49866,7 @@ export namespace Prisma {
     created_at?: Date | string | null
     updated_at?: Date | string | null
     refresh_tokens?: RefreshTokenUncheckedCreateNestedManyWithoutUsersInput
+    savedPapers?: SavedPaperUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSummariesInput = {
@@ -48338,6 +49938,7 @@ export namespace Prisma {
     universities?: PaperUniversityUpdateManyWithoutPaperNestedInput
     rankings?: RankingUpdateManyWithoutPaperNestedInput
     sotaClaims?: SotaClaimUpdateManyWithoutPaperNestedInput
+    savedPapers?: SavedPaperUpdateManyWithoutPaperNestedInput
   }
 
   export type PaperUncheckedUpdateWithoutSummariesInput = {
@@ -48393,6 +49994,7 @@ export namespace Prisma {
     universities?: PaperUniversityUncheckedUpdateManyWithoutPaperNestedInput
     rankings?: RankingUncheckedUpdateManyWithoutPaperNestedInput
     sotaClaims?: SotaClaimUncheckedUpdateManyWithoutPaperNestedInput
+    savedPapers?: SavedPaperUncheckedUpdateManyWithoutPaperNestedInput
   }
 
   export type UserUpsertWithoutSummariesInput = {
@@ -48427,6 +50029,7 @@ export namespace Prisma {
     created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     refresh_tokens?: RefreshTokenUpdateManyWithoutUsersNestedInput
+    savedPapers?: SavedPaperUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSummariesInput = {
@@ -48450,6 +50053,359 @@ export namespace Prisma {
     created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     refresh_tokens?: RefreshTokenUncheckedUpdateManyWithoutUsersNestedInput
+    savedPapers?: SavedPaperUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type PaperCreateWithoutSavedPapersInput = {
+    id?: string
+    slug: string
+    title: string
+    shortTitle?: string | null
+    abstract?: string | null
+    tlDr?: string | null
+    publicationDate?: Date | string | null
+    submissionDate?: Date | string | null
+    arxivId?: string | null
+    doi?: string | null
+    paperUrl?: string | null
+    pdfUrl?: string | null
+    thumbnailUrl?: string | null
+    sourceUrl?: string | null
+    projectUrl?: string | null
+    citationCount?: number
+    referenceCount?: number
+    pageCount?: number | null
+    paperType?: string | null
+    status?: string | null
+    language?: string | null
+    license?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string | null
+    githubForks?: number | null
+    githubStars?: number | null
+    githubUrl?: string | null
+    isOfficialCode?: boolean | null
+    hfUpvotes?: number | null
+    trendingScore?: number | null
+    discoverySource?: string | null
+    authors?: string | null
+    domain?: string | null
+    task?: string | null
+    huggingface_url?: string | null
+    hf_model_url?: string | null
+    hfUrl?: string | null
+    importance_score?: number | null
+    venue?: string | null
+    organization?: string | null
+    github_hourly_increase?: number | null
+    conferences?: PaperConferenceCreateNestedManyWithoutPaperInput
+    datasets?: PaperDatasetCreateNestedManyWithoutPaperInput
+    journals?: PaperJournalCreateNestedManyWithoutPaperInput
+    labs?: PaperLabCreateNestedManyWithoutPaperInput
+    methods?: PaperMethodCreateNestedManyWithoutPaperInput
+    models?: PaperModelCreateNestedManyWithoutPaperInput
+    repositories?: PaperRepositoryCreateNestedManyWithoutPaperInput
+    tasks?: PaperTaskCreateNestedManyWithoutPaperInput
+    universities?: PaperUniversityCreateNestedManyWithoutPaperInput
+    rankings?: RankingCreateNestedManyWithoutPaperInput
+    sotaClaims?: SotaClaimCreateNestedManyWithoutPaperInput
+    summaries?: SummaryCreateNestedManyWithoutPaperInput
+  }
+
+  export type PaperUncheckedCreateWithoutSavedPapersInput = {
+    id?: string
+    slug: string
+    title: string
+    shortTitle?: string | null
+    abstract?: string | null
+    tlDr?: string | null
+    publicationDate?: Date | string | null
+    submissionDate?: Date | string | null
+    arxivId?: string | null
+    doi?: string | null
+    paperUrl?: string | null
+    pdfUrl?: string | null
+    thumbnailUrl?: string | null
+    sourceUrl?: string | null
+    projectUrl?: string | null
+    citationCount?: number
+    referenceCount?: number
+    pageCount?: number | null
+    paperType?: string | null
+    status?: string | null
+    language?: string | null
+    license?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string | null
+    githubForks?: number | null
+    githubStars?: number | null
+    githubUrl?: string | null
+    isOfficialCode?: boolean | null
+    hfUpvotes?: number | null
+    trendingScore?: number | null
+    discoverySource?: string | null
+    authors?: string | null
+    domain?: string | null
+    task?: string | null
+    huggingface_url?: string | null
+    hf_model_url?: string | null
+    hfUrl?: string | null
+    importance_score?: number | null
+    venue?: string | null
+    organization?: string | null
+    github_hourly_increase?: number | null
+    conferences?: PaperConferenceUncheckedCreateNestedManyWithoutPaperInput
+    datasets?: PaperDatasetUncheckedCreateNestedManyWithoutPaperInput
+    journals?: PaperJournalUncheckedCreateNestedManyWithoutPaperInput
+    labs?: PaperLabUncheckedCreateNestedManyWithoutPaperInput
+    methods?: PaperMethodUncheckedCreateNestedManyWithoutPaperInput
+    models?: PaperModelUncheckedCreateNestedManyWithoutPaperInput
+    repositories?: PaperRepositoryUncheckedCreateNestedManyWithoutPaperInput
+    tasks?: PaperTaskUncheckedCreateNestedManyWithoutPaperInput
+    universities?: PaperUniversityUncheckedCreateNestedManyWithoutPaperInput
+    rankings?: RankingUncheckedCreateNestedManyWithoutPaperInput
+    sotaClaims?: SotaClaimUncheckedCreateNestedManyWithoutPaperInput
+    summaries?: SummaryUncheckedCreateNestedManyWithoutPaperInput
+  }
+
+  export type PaperCreateOrConnectWithoutSavedPapersInput = {
+    where: PaperWhereUniqueInput
+    create: XOR<PaperCreateWithoutSavedPapersInput, PaperUncheckedCreateWithoutSavedPapersInput>
+  }
+
+  export type UserCreateWithoutSavedPapersInput = {
+    id?: string
+    username: string
+    email: string
+    password: string
+    displayName: string
+    avatar?: string | null
+    bio?: string | null
+    github?: string | null
+    twitter?: string | null
+    website?: string | null
+    reputationScore?: number
+    auth_id?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    linkedin?: string | null
+    display_name?: string | null
+    reputation_score?: number | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    refresh_tokens?: RefreshTokenCreateNestedManyWithoutUsersInput
+    summaries?: SummaryCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutSavedPapersInput = {
+    id?: string
+    username: string
+    email: string
+    password: string
+    displayName: string
+    avatar?: string | null
+    bio?: string | null
+    github?: string | null
+    twitter?: string | null
+    website?: string | null
+    reputationScore?: number
+    auth_id?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    linkedin?: string | null
+    display_name?: string | null
+    reputation_score?: number | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    refresh_tokens?: RefreshTokenUncheckedCreateNestedManyWithoutUsersInput
+    summaries?: SummaryUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutSavedPapersInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutSavedPapersInput, UserUncheckedCreateWithoutSavedPapersInput>
+  }
+
+  export type PaperUpsertWithoutSavedPapersInput = {
+    update: XOR<PaperUpdateWithoutSavedPapersInput, PaperUncheckedUpdateWithoutSavedPapersInput>
+    create: XOR<PaperCreateWithoutSavedPapersInput, PaperUncheckedCreateWithoutSavedPapersInput>
+    where?: PaperWhereInput
+  }
+
+  export type PaperUpdateToOneWithWhereWithoutSavedPapersInput = {
+    where?: PaperWhereInput
+    data: XOR<PaperUpdateWithoutSavedPapersInput, PaperUncheckedUpdateWithoutSavedPapersInput>
+  }
+
+  export type PaperUpdateWithoutSavedPapersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    shortTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    abstract?: NullableStringFieldUpdateOperationsInput | string | null
+    tlDr?: NullableStringFieldUpdateOperationsInput | string | null
+    publicationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    submissionDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    arxivId?: NullableStringFieldUpdateOperationsInput | string | null
+    doi?: NullableStringFieldUpdateOperationsInput | string | null
+    paperUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    thumbnailUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    projectUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    citationCount?: IntFieldUpdateOperationsInput | number
+    referenceCount?: IntFieldUpdateOperationsInput | number
+    pageCount?: NullableIntFieldUpdateOperationsInput | number | null
+    paperType?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    license?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    githubForks?: NullableIntFieldUpdateOperationsInput | number | null
+    githubStars?: NullableIntFieldUpdateOperationsInput | number | null
+    githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isOfficialCode?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    hfUpvotes?: NullableIntFieldUpdateOperationsInput | number | null
+    trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    discoverySource?: NullableStringFieldUpdateOperationsInput | string | null
+    authors?: NullableStringFieldUpdateOperationsInput | string | null
+    domain?: NullableStringFieldUpdateOperationsInput | string | null
+    task?: NullableStringFieldUpdateOperationsInput | string | null
+    huggingface_url?: NullableStringFieldUpdateOperationsInput | string | null
+    hf_model_url?: NullableStringFieldUpdateOperationsInput | string | null
+    hfUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    importance_score?: NullableFloatFieldUpdateOperationsInput | number | null
+    venue?: NullableStringFieldUpdateOperationsInput | string | null
+    organization?: NullableStringFieldUpdateOperationsInput | string | null
+    github_hourly_increase?: NullableFloatFieldUpdateOperationsInput | number | null
+    conferences?: PaperConferenceUpdateManyWithoutPaperNestedInput
+    datasets?: PaperDatasetUpdateManyWithoutPaperNestedInput
+    journals?: PaperJournalUpdateManyWithoutPaperNestedInput
+    labs?: PaperLabUpdateManyWithoutPaperNestedInput
+    methods?: PaperMethodUpdateManyWithoutPaperNestedInput
+    models?: PaperModelUpdateManyWithoutPaperNestedInput
+    repositories?: PaperRepositoryUpdateManyWithoutPaperNestedInput
+    tasks?: PaperTaskUpdateManyWithoutPaperNestedInput
+    universities?: PaperUniversityUpdateManyWithoutPaperNestedInput
+    rankings?: RankingUpdateManyWithoutPaperNestedInput
+    sotaClaims?: SotaClaimUpdateManyWithoutPaperNestedInput
+    summaries?: SummaryUpdateManyWithoutPaperNestedInput
+  }
+
+  export type PaperUncheckedUpdateWithoutSavedPapersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    shortTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    abstract?: NullableStringFieldUpdateOperationsInput | string | null
+    tlDr?: NullableStringFieldUpdateOperationsInput | string | null
+    publicationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    submissionDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    arxivId?: NullableStringFieldUpdateOperationsInput | string | null
+    doi?: NullableStringFieldUpdateOperationsInput | string | null
+    paperUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    thumbnailUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    projectUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    citationCount?: IntFieldUpdateOperationsInput | number
+    referenceCount?: IntFieldUpdateOperationsInput | number
+    pageCount?: NullableIntFieldUpdateOperationsInput | number | null
+    paperType?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    license?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    githubForks?: NullableIntFieldUpdateOperationsInput | number | null
+    githubStars?: NullableIntFieldUpdateOperationsInput | number | null
+    githubUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isOfficialCode?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    hfUpvotes?: NullableIntFieldUpdateOperationsInput | number | null
+    trendingScore?: NullableFloatFieldUpdateOperationsInput | number | null
+    discoverySource?: NullableStringFieldUpdateOperationsInput | string | null
+    authors?: NullableStringFieldUpdateOperationsInput | string | null
+    domain?: NullableStringFieldUpdateOperationsInput | string | null
+    task?: NullableStringFieldUpdateOperationsInput | string | null
+    huggingface_url?: NullableStringFieldUpdateOperationsInput | string | null
+    hf_model_url?: NullableStringFieldUpdateOperationsInput | string | null
+    hfUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    importance_score?: NullableFloatFieldUpdateOperationsInput | number | null
+    venue?: NullableStringFieldUpdateOperationsInput | string | null
+    organization?: NullableStringFieldUpdateOperationsInput | string | null
+    github_hourly_increase?: NullableFloatFieldUpdateOperationsInput | number | null
+    conferences?: PaperConferenceUncheckedUpdateManyWithoutPaperNestedInput
+    datasets?: PaperDatasetUncheckedUpdateManyWithoutPaperNestedInput
+    journals?: PaperJournalUncheckedUpdateManyWithoutPaperNestedInput
+    labs?: PaperLabUncheckedUpdateManyWithoutPaperNestedInput
+    methods?: PaperMethodUncheckedUpdateManyWithoutPaperNestedInput
+    models?: PaperModelUncheckedUpdateManyWithoutPaperNestedInput
+    repositories?: PaperRepositoryUncheckedUpdateManyWithoutPaperNestedInput
+    tasks?: PaperTaskUncheckedUpdateManyWithoutPaperNestedInput
+    universities?: PaperUniversityUncheckedUpdateManyWithoutPaperNestedInput
+    rankings?: RankingUncheckedUpdateManyWithoutPaperNestedInput
+    sotaClaims?: SotaClaimUncheckedUpdateManyWithoutPaperNestedInput
+    summaries?: SummaryUncheckedUpdateManyWithoutPaperNestedInput
+  }
+
+  export type UserUpsertWithoutSavedPapersInput = {
+    update: XOR<UserUpdateWithoutSavedPapersInput, UserUncheckedUpdateWithoutSavedPapersInput>
+    create: XOR<UserCreateWithoutSavedPapersInput, UserUncheckedCreateWithoutSavedPapersInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutSavedPapersInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutSavedPapersInput, UserUncheckedUpdateWithoutSavedPapersInput>
+  }
+
+  export type UserUpdateWithoutSavedPapersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    github?: NullableStringFieldUpdateOperationsInput | string | null
+    twitter?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    reputationScore?: IntFieldUpdateOperationsInput | number
+    auth_id?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    linkedin?: NullableStringFieldUpdateOperationsInput | string | null
+    display_name?: NullableStringFieldUpdateOperationsInput | string | null
+    reputation_score?: NullableIntFieldUpdateOperationsInput | number | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refresh_tokens?: RefreshTokenUpdateManyWithoutUsersNestedInput
+    summaries?: SummaryUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutSavedPapersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    github?: NullableStringFieldUpdateOperationsInput | string | null
+    twitter?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    reputationScore?: IntFieldUpdateOperationsInput | number
+    auth_id?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    linkedin?: NullableStringFieldUpdateOperationsInput | string | null
+    display_name?: NullableStringFieldUpdateOperationsInput | string | null
+    reputation_score?: NullableIntFieldUpdateOperationsInput | number | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refresh_tokens?: RefreshTokenUncheckedUpdateManyWithoutUsersNestedInput
+    summaries?: SummaryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type PaperConferenceCreateManyPaperInput = {
@@ -48525,6 +50481,11 @@ export namespace Prisma {
     updatedAt?: Date | string
     created_at?: Date | string | null
     updated_at?: Date | string | null
+  }
+
+  export type SavedPaperCreateManyPaperInput = {
+    user_id: string
+    created_at?: Date | string | null
   }
 
   export type PaperConferenceUpdateWithoutPaperInput = {
@@ -48750,6 +50711,21 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type SavedPaperUpdateWithoutPaperInput = {
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    user?: UserUpdateOneRequiredWithoutSavedPapersNestedInput
+  }
+
+  export type SavedPaperUncheckedUpdateWithoutPaperInput = {
+    user_id?: StringFieldUpdateOperationsInput | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type SavedPaperUncheckedUpdateManyWithoutPaperInput = {
+    user_id?: StringFieldUpdateOperationsInput | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type PaperTaskCreateManyTaskInput = {
@@ -49032,6 +51008,11 @@ export namespace Prisma {
     updated_at?: Date | string | null
   }
 
+  export type SavedPaperCreateManyUserInput = {
+    paper_id: string
+    created_at?: Date | string | null
+  }
+
   export type RefreshTokenUpdateWithoutUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
     token?: StringFieldUpdateOperationsInput | string
@@ -49090,6 +51071,21 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type SavedPaperUpdateWithoutUserInput = {
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paper?: PaperUpdateOneRequiredWithoutSavedPapersNestedInput
+  }
+
+  export type SavedPaperUncheckedUpdateWithoutUserInput = {
+    paper_id?: StringFieldUpdateOperationsInput | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type SavedPaperUncheckedUpdateManyWithoutUserInput = {
+    paper_id?: StringFieldUpdateOperationsInput | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
 

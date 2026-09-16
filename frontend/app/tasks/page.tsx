@@ -901,7 +901,7 @@ const Section = ({
   );
 
   return (
-    <section id={`section-${title}`} className="mb-12">
+    <section id={`section-${title}`} className="mb-12 scroll-mt-8">
       <div className="mb-6">
         <h2 className="text-[30px] font-bold text-[#111111]">
           {title}
