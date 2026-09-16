@@ -9,6 +9,11 @@ export async function GET(req: NextRequest) {
     return new NextResponse('Missing URL parameter', { status: 400 });
   }
 
+  // Reject disabled Cloudinary account immediately to prevent proxy delay and 401s
+  if (url.includes('cloudinary.com/xipefqle')) {
+    return new NextResponse('Asset host disabled', { status: 404 });
+  }
+
   try {
     const imageRes = await fetch(url, {
       headers: {

@@ -26,11 +26,16 @@ type GetPapersQuery = {
   cursor?: string;
 };
 
-const exposeThumbnailUrl = <T extends { thumbnailUrl?: string | null }>(
+const exposeThumbnailUrl = <T extends { thumbnailUrl?: string | null; arxivId?: string | null }>(
   paper: T,
 ) => {
   const { thumbnailUrl, ...rest } = paper;
-  const cleanUrl = thumbnailUrl === "FAILED_404" ? null : (thumbnailUrl ?? null);
+  let cleanUrl = thumbnailUrl === "FAILED_404" ? null : (thumbnailUrl ?? null);
+  if (cleanUrl && cleanUrl.includes("cloudinary.com/xipefqle")) {
+    cleanUrl = paper.arxivId
+      ? `https://pub-c9b7a41de3434a4ab7c7f137edbec13b.r2.dev/papers/real_page1_gcp/${paper.arxivId}.webp`
+      : null;
+  }
   return {
     ...rest,
     thumbnailUrl: cleanUrl,
