@@ -161,7 +161,9 @@ function mapBackendPaper(raw: Record<string, unknown>): Paper {
   const rawThumb = String(raw.thumbnail_url || raw.thumbnailUrl || raw.thumbnail || "");
   let finalThumbnail = "";
 
-  if (rawThumb && rawThumb !== "FAILED_404") {
+  const isDeadCloudinary = rawThumb.includes("cloudinary.com/xipefqle");
+
+  if (rawThumb && rawThumb !== "FAILED_404" && !isDeadCloudinary) {
     // If it's a huge base64 image from the DB, format it properly
     if (rawThumb.startsWith("/9j/") || rawThumb.startsWith("iVBORw0KGgo")) {
       finalThumbnail = `data:image/jpeg;base64,${rawThumb}`;
@@ -176,11 +178,11 @@ function mapBackendPaper(raw: Record<string, unknown>): Paper {
   const cleanArxivId = extractArxivId(raw.arxivId as string) || extractArxivId(raw.paperUrl as string) || extractArxivId(raw.pdfUrl as string) || undefined;
 
   if (!finalThumbnail) {
-    if (raw.slug) {
+    if (cleanArxivId) {
+      // Primary source: Cloudflare R2 bucket containing verified page-1 WebP renders
+      finalThumbnail = `https://pub-c9b7a41de3434a4ab7c7f137edbec13b.r2.dev/papers/real_page1_gcp/${cleanArxivId}.webp`;
+    } else if (raw.slug) {
       finalThumbnail = `/thumbnails/${raw.slug}.jpg`;
-    } else if (cleanArxivId) {
-      const hfCleanId = cleanArxivId.replace(/v\d+$/i, "");
-      finalThumbnail = `https://cdn-thumbnails.huggingface.co/social-thumbnails/papers/${hfCleanId}.png`;
     }
   }
   const computedArxivUrl = getArxivAbsUrl(cleanArxivId, raw.paperUrl as string) || undefined;

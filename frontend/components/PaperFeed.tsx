@@ -354,6 +354,7 @@ function GeneratedCover({ title }: { title: string }) {
  
 const isValidImageSrc = (src: string) => {
   if (!src || src === "null" || src === "None") return false;
+  if (src.includes("cloudinary.com/xipefqle")) return false; // Disabled Cloudinary account
   if (src.startsWith('/')) return true;
   if (src.startsWith('data:image/')) return true;
   try {
@@ -378,9 +379,14 @@ const PaperThumbnail = memo(
     const candidates = useMemo(() => {
       const list: string[] = [];
       if (isValidImageSrc(thumbnail || "")) list.push(thumbnail!);
+      if (cleanArxiv) {
+        list.push(`https://pub-c9b7a41de3434a4ab7c7f137edbec13b.r2.dev/papers/real_page1_gcp/${cleanArxiv}.webp`);
+        list.push(`https://pub-c9b7a41de3434a4ab7c7f137edbec13b.r2.dev/papers/real_page1_gcp/${cleanArxiv}v1.webp`);
+        list.push(`/thumbnails/${cleanArxiv}.jpg`);
+      }
       if (slug) list.push(`/thumbnails/${slug}.jpg`);
       if (cleanArxiv) list.push(`https://cdn-thumbnails.huggingface.co/social-thumbnails/papers/${cleanArxiv}.png`);
-      return list;
+      return Array.from(new Set(list));
     }, [thumbnail, slug, cleanArxiv]);
 
     const currentSrc = candidates[srcIndex];
