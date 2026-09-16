@@ -468,7 +468,6 @@ const Metric = memo(
 Metric.displayName = "Metric";
  
 export const PaperCard = memo(({ paper }: { paper: Paper }) => {
-  console.log("PAPER DATA:", paper.title, paper);
   const upvotesNum = parseFloat(paper.upvotes) || 0;
   const router = useRouter();
  
@@ -757,15 +756,29 @@ const PaperCardSkeleton = memo(() => {
       <div className="shrink-0 flex items-stretch xl:pl-[24px] xl:pr-[32px] border-t xl:border-t-0 xl:border-l border-[#E5E5E0] mt-auto xl:mt-0 pt-4 xl:pt-0 w-full xl:w-auto">
         <div className="flex flex-row xl:flex-col justify-around xl:justify-around items-center w-full xl:w-[64px] xl:py-2 gap-2 xl:gap-0">
           <div className="h-8 w-12 bg-[#EFEDE6] rounded" />
-          <div className="h-8 w-12 bg-[#EFEDE6] rounded" />
-          <div className="h-8 w-12 bg-[#EFEDE6] rounded" />
         </div>
       </div>
     </div>
   );
 });
 PaperCardSkeleton.displayName = "PaperCardSkeleton";
- 
+
+function getPaginationRange(currentPage: number, totalPages: number): (number | string)[] {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+
+  if (currentPage <= 4) {
+    return [1, 2, 3, 4, 5, "...", totalPages];
+  }
+
+  if (currentPage >= totalPages - 3) {
+    return [1, "...", totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+  }
+
+  return [1, "...", currentPage - 1, currentPage, currentPage + 1, "...", totalPages];
+}
+
 /* ─── List ───────────────────────────────────────────────────────────────── */
 interface PaperListProps {
   selectedTag?: string;
@@ -798,6 +811,7 @@ export default function PaperList({
   });
 
   const [page, setPage] = useState(() => initialPapers?.page ?? 1);
+  const [hasMore, setHasMore] = useState(() => initialPapers?.hasMore ?? true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(initialError ?? null);
   const [itemsPerPage, setItemsPerPage] = useState(25);
@@ -806,6 +820,7 @@ export default function PaperList({
   const cacheRef = useRef<Map<string, GetPapersResult>>(new Map());
   const inFlightRef = useRef<Map<string, Promise<GetPapersResult>>>(new Map());
   const loadingRef = useRef(false);
+  const activeRequestIdRef = useRef(0);
 
   // Stabilize onFilterDone so it doesn't cause the filter effect to re-run
   const onFilterDoneRef = useRef(onFilterDone);
@@ -938,7 +953,7 @@ export default function PaperList({
     (pageNumber: number, limit: number): Promise<GetPapersResult> => {
       const key = getCacheKey(pageNumber, limit);
       const cached = cacheRef.current.get(key);
-      if (cached) {
+      if (cached && cached.papers && cached.papers.length > 0) {
         return Promise.resolve(cached);
       }
       if (inFlightRef.current.has(key)) {
@@ -955,7 +970,9 @@ export default function PaperList({
         period,
       })
         .then((result) => {
-          cacheRef.current.set(key, result);
+          if (result.papers && result.papers.length > 0) {
+            cacheRef.current.set(key, result);
+          }
           return result;
         })
         .finally(() => {
@@ -985,89 +1002,130 @@ export default function PaperList({
   );
 
   const loadPage = useCallback(
-    async (pageNumber: number, limit: number) => {
-      if (loadingRef.current) return;
+    async (pageNumber: number, limit: number, quiet: boolean = false) => {
+      const requestId = ++activeRequestIdRef.current;
+      const key = getCacheKey(pageNumber, limit);
+
+      // Immediately set page state so pagination button turns red/active without lag
+      setPage(pageNumber);
+
+      // 1. Check in-memory cache for INSTANT 0ms render
+      const cached = cacheRef.current.get(key);
+      if (cached && cached.papers && cached.papers.length > 0) {
+        setTotalPapers(cached.total);
+        setHasMore(cached.hasMore);
+        const visibleCached = normalizedSearchQuery
+          ? cached.papers.filter(matchesSearch)
+          : cached.papers;
+        setPapers(visibleCached);
+        setLoading(false);
+        setError(null);
+        onFilterDoneRef.current?.();
+
+        if (quiet) return;
+      } else if (!quiet) {
+        setPapers([]);
+        setLoading(true);
+        setError(null);
+      }
 
       try {
         loadingRef.current = true;
-        setLoading(true);
-        setError(null);
-
         const result = await fetchPage(pageNumber, limit);
+
+        if (requestId !== activeRequestIdRef.current) {
+          return;
+        }
+
         const visiblePapers = normalizedSearchQuery
           ? result.papers.filter(matchesSearch)
           : result.papers;
 
-        setPage(result.page);
+        setPage(pageNumber);
         setTotalPapers(result.total);
+        setHasMore(result.hasMore);
         setPapers(visiblePapers);
 
         // Pre-fetch next page if possible
         if (result.hasMore) {
-          prefetchPage(result.page + 1);
+          prefetchPage(pageNumber + 1);
         }
       } catch (err) {
-        console.error(err);
+        if (requestId !== activeRequestIdRef.current) return;
+        console.error("Failed to load papers:", err);
         setError("Failed to load papers. Please try again later.");
+        setPapers([]);
       } finally {
-        loadingRef.current = false;
-        setLoading(false);
-        onFilterDoneRef.current?.();
+        if (requestId === activeRequestIdRef.current) {
+          loadingRef.current = false;
+          setLoading(false);
+          onFilterDoneRef.current?.();
+        }
       }
     },
     [
       fetchPage,
+      getCacheKey,
       matchesSearch,
       normalizedSearchQuery,
       prefetchPage,
     ],
   );
-const isInitialMount = useRef(true);
-  const isInitialTransition = useRef(true);
+  const isInitialMount = useRef(true);
   const prevParamsStr = useRef<string>("");
 
   useEffect(() => {
     const currentParamsStr = `${task ?? "all"}:${method ?? "none"}:${filterParams?.model ?? "none"}:${filterParams?.sort ?? "none"}:${period ?? "all"}:${normalizedSearchQuery}:${itemsPerPage}`;
 
-// RULE 1: Handle the very first mount (Do absolutely nothing to state, it's already perfect!)
-   if (isInitialMount.current) {
-  isInitialMount.current = false;
-  prevParamsStr.current = currentParamsStr;
+    // RULE 1: Handle the very first mount
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      prevParamsStr.current = currentParamsStr;
 
-  if (
-    initialPapers &&
-    initialPapers.papers &&
-    initialPapers.papers.length > 0 &&
-    !normalizedSearchQuery
-  ) {
-    cacheRef.current.set(getCacheKey(initialPapers.page, itemsPerPage), initialPapers);
-    setTotalPapers(initialPapers.total);
-    if (initialPapers.hasMore) {
-      prefetchPage(initialPapers.page + 1);
+      if (
+        initialPapers &&
+        initialPapers.papers &&
+        initialPapers.papers.length > 0 &&
+        !normalizedSearchQuery
+      ) {
+        cacheRef.current.set(getCacheKey(initialPapers.page, itemsPerPage), initialPapers);
+        setTotalPapers(initialPapers.total);
+        if (initialPapers.hasMore) {
+          prefetchPage(initialPapers.page + 1);
+        }
+
+        return;
+      }
+
+      // No initial papers were provided, so fetch the first page.
+      void loadPage(1, itemsPerPage);
+      return;
     }
 
-    return;
-  }
-
-  // No initial papers were provided, so fetch the first page.
-  void loadPage(1, itemsPerPage);
-  return;
-}
-
     // RULE 2: GUARD AGAINST EXTRA FETCHES
-    // If the component re-renders but filters haven't actually changed, DO NOTHING.
-    // This completely stops the double-loading flicker and prevents overriding server data.
     if (prevParamsStr.current === currentParamsStr) {
       return;
     }
 
     prevParamsStr.current = currentParamsStr;
 
-    // RULE 3: Only when filters ACTUALLY change, clear the feed and fetch fresh data
-    setPapers([]);
-    setLoading(true);
-    setPage(1);
-    void loadPage(1, itemsPerPage);
+    // RULE 3: Instant SWR cache switch on filter changes
+    const newKey = getCacheKey(1, itemsPerPage);
+    const cached = cacheRef.current.get(newKey);
+    if (cached && cached.papers.length > 0) {
+      setPage(1);
+      setTotalPapers(cached.total);
+      setHasMore(cached.hasMore);
+      const visible = normalizedSearchQuery ? cached.papers.filter(matchesSearch) : cached.papers;
+      setPapers(visible);
+      setLoading(false);
+      void loadPage(1, itemsPerPage, true);
+    } else {
+      setPapers([]);
+      setLoading(true);
+      setPage(1);
+      void loadPage(1, itemsPerPage);
+    }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -1087,6 +1145,7 @@ const isInitialMount = useRef(true);
     itemsPerPage,
   ]);
 
+  const isInitialTransition = useRef(true);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
   useEffect(() => {
@@ -1143,57 +1202,128 @@ const isInitialMount = useRef(true);
             ))
         )}
   
-        {!loading && papers.length > 0 && (
-          <div className="flex justify-center w-full col-span-full mt-8 mb-2">
-            <div className="flex items-center bg-white border border-[#E5E5E0] shadow-sm rounded-full p-1.5 h-[48px]">
-              <div className="flex items-center px-2 gap-1">
+        {(totalPapers > 0 || papers.length > 0) && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 w-full col-span-full mt-10 mb-6 pt-5 border-t border-[#E5E5E0]">
+            <div className="text-[13px] text-[#666] font-mono">
+              {totalPapers > 0 ? (
+                <span>
+                  Showing <strong className="text-[#111]">{(page - 1) * itemsPerPage + 1}</strong>–
+                  <strong className="text-[#111]">{Math.min(page * itemsPerPage, totalPapers).toLocaleString()}</strong> of{" "}
+                  <strong className="text-[#111]">{totalPapers.toLocaleString()}</strong> papers
+                </span>
+              ) : (
+                <span>Page {page}</span>
+              )}
+            </div>
+
+            <div className="flex items-center bg-white border border-[#E5E5E0] shadow-sm rounded-full p-1.5 h-[48px] max-w-full overflow-x-auto hide-scroll">
+              <div className="flex items-center px-1 gap-1">
+                {/* Previous Page Button */}
                 <button
                   onClick={() => {
-                    const newPage = Math.max(1, page - 1);
-                    void loadPage(newPage, itemsPerPage);
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    if (page > 1) {
+                      const newPage = page - 1;
+                      void loadPage(newPage, itemsPerPage);
+                      const container = document.getElementById("scroll-container");
+                      if (container) {
+                        container.scrollTo({ top: 0, behavior: "smooth" });
+                      } else {
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }
+                    }
                   }}
-                  disabled={page <= 1}
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-[#666] hover:text-[#111] hover:bg-[#F8F7F2] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  disabled={page <= 1 || loading}
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-[#666] hover:text-[#111] hover:bg-[#F8F7F2] disabled:opacity-30 disabled:cursor-not-allowed transition-colors shrink-0"
+                  aria-label="Previous page"
                 >
                   <ChevronLeft size={18} />
                 </button>
                 
-                <div className="w-8 h-8 rounded-full bg-[#F55036] text-white flex items-center justify-center text-[14px] font-medium shadow-sm">
-                  {page}
-                </div>
+                {/* Numbered Page Buttons */}
+                {getPaginationRange(page, totalPages).map((item, index) => {
+                  if (item === "...") {
+                    return (
+                      <span key={`dots-${index}`} className="w-6 h-8 flex items-center justify-center text-[#999] text-[13px] font-medium select-none shrink-0">
+                        …
+                      </span>
+                    );
+                  }
 
+                  const p = Number(item);
+                  const isActive = p === page;
+
+                  return (
+                    <button
+                      key={p}
+                      onClick={() => {
+                        if (p !== page) {
+                          void loadPage(p, itemsPerPage);
+                          const container = document.getElementById("scroll-container");
+                          if (container) {
+                            container.scrollTo({ top: 0, behavior: "smooth" });
+                          } else {
+                            window.scrollTo({ top: 0, behavior: "smooth" });
+                          }
+                        }
+                      }}
+                      className={`w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-medium transition-all shrink-0 ${
+                        isActive
+                          ? "bg-[#F55036] text-white font-bold shadow-sm"
+                          : "text-[#555] hover:text-[#111] hover:bg-[#F8F7F2]"
+                      }`}
+                      aria-label={`Page ${p}`}
+                      aria-current={isActive ? "page" : undefined}
+                    >
+                      {p}
+                    </button>
+                  );
+                })}
+
+                {/* Next Page Button */}
                 <button
                   onClick={() => {
-                    const maxPage = Math.max(1, Math.ceil((totalPapers || papers.length) / itemsPerPage));
-                    const newPage = Math.min(maxPage, page + 1);
-                    void loadPage(newPage, itemsPerPage);
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    if (page < totalPages || hasMore) {
+                      const newPage = page + 1;
+                      void loadPage(newPage, itemsPerPage);
+                      const container = document.getElementById("scroll-container");
+                      if (container) {
+                        container.scrollTo({ top: 0, behavior: "smooth" });
+                      } else {
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }
+                    }
                   }}
-                  disabled={page >= Math.max(1, Math.ceil((totalPapers || papers.length) / itemsPerPage))}
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-[#666] hover:text-[#111] hover:bg-[#F8F7F2] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  disabled={(page >= totalPages && !hasMore) || loading}
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-[#666] hover:text-[#111] hover:bg-[#F8F7F2] disabled:opacity-30 disabled:cursor-not-allowed transition-colors shrink-0"
+                  aria-label="Next page"
                 >
                   <ChevronRight size={18} />
                 </button>
               </div>
 
-              <div className="w-px h-6 bg-[#E5E5E0] mx-1"></div>
+              <div className="w-px h-6 bg-[#E5E5E0] mx-1 shrink-0"></div>
 
-              <div className="relative flex items-center px-2">
+              {/* Items Per Page Dropdown */}
+              <div className="relative flex items-center px-1 shrink-0">
                 <select
                   value={itemsPerPage}
                   onChange={(e) => {
                     const newLimit = Number(e.target.value);
                     setItemsPerPage(newLimit);
-                    setPage(1); // Reset to page 1 on limit change
+                    setPage(1);
+                    void loadPage(1, newLimit);
+                    const container = document.getElementById("scroll-container");
+                    if (container) {
+                      container.scrollTo({ top: 0, behavior: "smooth" });
+                    }
                   }}
-                  className="appearance-none bg-transparent text-[#111] text-[14px] font-medium py-1 pl-3 pr-7 rounded-full cursor-pointer hover:bg-[#F8F7F2] focus:outline-none transition-colors h-8"
+                  className="appearance-none bg-transparent text-[#111] text-[13px] font-medium py-1 pl-2.5 pr-7 rounded-full cursor-pointer hover:bg-[#F8F7F2] focus:outline-none transition-colors h-8"
                 >
                   <option value={25}>25 / page</option>
                   <option value={50}>50 / page</option>
                   <option value={100}>100 / page</option>
                 </select>
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#666]">
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#666]">
                   <ChevronDown size={14} />
                 </div>
               </div>

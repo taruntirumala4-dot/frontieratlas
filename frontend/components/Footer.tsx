@@ -31,19 +31,19 @@ export default function Footer() {
               </p>
             </div>
             <div className="flex items-center gap-5 mt-4">
-              <a href="#" aria-label="X (Twitter)" className="text-white/70 hover:text-[#F55036] transition-colors">
+              <a href="https://x.com" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)" className="text-white/70 hover:text-[#F55036] transition-colors">
                 <FaXTwitter size={20} />
               </a>
-              <a href="#" aria-label="LinkedIn" className="text-white/70 hover:text-[#F55036] transition-colors">
+              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="text-white/70 hover:text-[#F55036] transition-colors">
                 <FaLinkedinIn size={20} />
               </a>
-              <a href="#" aria-label="Instagram" className="text-white/70 hover:text-[#F55036] transition-colors">
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-white/70 hover:text-[#F55036] transition-colors">
                 <FaInstagram size={20} />
               </a>
-              <a href="#" aria-label="YouTube" className="text-white/70 hover:text-[#F55036] transition-colors">
+              <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="text-white/70 hover:text-[#F55036] transition-colors">
                 <FaYoutube size={20} />
               </a>
-              <a href="#" aria-label="Discord" className="text-white/70 hover:text-[#F55036] transition-colors">
+              <a href="https://discord.com" target="_blank" rel="noopener noreferrer" aria-label="Discord" className="text-white/70 hover:text-[#F55036] transition-colors">
                 <FaDiscord size={20} />
               </a>
             </div>
@@ -80,8 +80,8 @@ export default function Footer() {
             <ul className="flex flex-col gap-2 sm:gap-3.5">
               <li><Link href="/discussions" className="inline-block text-[11px] sm:text-[14px] leading-tight sm:leading-normal font-medium text-white/80 hover:text-white transition-colors">Discussions</Link></li>
               <li><Link href="/saved" className="inline-block text-[11px] sm:text-[14px] leading-tight sm:leading-normal font-medium text-white/80 hover:text-white transition-colors">Saved Papers</Link></li>
-              <li><Link href="/api" className="inline-block text-[11px] sm:text-[14px] leading-tight sm:leading-normal font-medium text-white/80 hover:text-white transition-colors">API</Link></li>
-              <li><Link href="#" className="inline-block text-[11px] sm:text-[14px] leading-tight sm:leading-normal font-medium text-white/80 hover:text-white transition-colors">Submit Research</Link></li>
+              <li><a href="https://github.com/AtlasFrontierOrg" target="_blank" rel="noopener noreferrer" className="inline-block text-[11px] sm:text-[14px] leading-tight sm:leading-normal font-medium text-white/80 hover:text-white transition-colors">API Docs</a></li>
+              <li><Link href="/contact" className="inline-block text-[11px] sm:text-[14px] leading-tight sm:leading-normal font-medium text-white/80 hover:text-white transition-colors">Submit Research</Link></li>
             </ul>
           </div>
 
@@ -92,8 +92,8 @@ export default function Footer() {
             <ul className="flex flex-col gap-2 sm:gap-3.5">
               <li><Link href="/about" className="inline-block text-[11px] sm:text-[14px] leading-tight sm:leading-normal font-medium text-white/80 hover:text-white transition-colors">About</Link></li>
               <li><Link href="/contact" className="inline-block text-[11px] sm:text-[14px] leading-tight sm:leading-normal font-medium text-white/80 hover:text-white transition-colors">Contact</Link></li>
-              <li><Link href="/write" className="inline-block text-[11px] sm:text-[14px] leading-tight sm:leading-normal font-medium text-white/80 hover:text-white transition-colors">Write</Link></li>
-              <li><Link href="/press" className="inline-block text-[11px] sm:text-[14px] leading-tight sm:leading-normal font-medium text-white/80 hover:text-white transition-colors">Press</Link></li>
+              <li><Link href="/contact" className="inline-block text-[11px] sm:text-[14px] leading-tight sm:leading-normal font-medium text-white/80 hover:text-white transition-colors">Write</Link></li>
+              <li><Link href="/contact" className="inline-block text-[11px] sm:text-[14px] leading-tight sm:leading-normal font-medium text-white/80 hover:text-white transition-colors">Press</Link></li>
               <li><Link href="/privacy" className="inline-block text-[11px] sm:text-[14px] leading-tight sm:leading-normal font-medium text-white/80 hover:text-white transition-colors">Privacy</Link></li>
               <li><Link href="/terms" className="inline-block text-[11px] sm:text-[14px] leading-tight sm:leading-normal font-medium text-white/80 hover:text-white transition-colors">Terms</Link></li>
             </ul>

@@ -32,11 +32,24 @@ const nextConfig = {
     ],
   },
 
+  async redirects() {
+    return [
+      {
+        source: '/benchmark/:slug*',
+        destination: '/benchmarks/:slug*',
+        permanent: true,
+      },
+    ];
+  },
+
   async rewrites() {
+    const devBackend = "http://127.0.0.1:8787";
+    const prodBackend = "https://frontieratlas-backend.morningsignal-india.workers.dev";
+    const target = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === "development" ? devBackend : prodBackend);
     return [
       {
         source: "/api/:path*",
-        destination: `${process.env.NEXT_PUBLIC_API_URL || "https://frontieratlas-backend.morningsignal-india.workers.dev"}/api/:path*`,
+        destination: `${target}/api/:path*`,
       },
     ];
   },

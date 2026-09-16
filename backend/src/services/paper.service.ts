@@ -306,7 +306,7 @@ export const getPapers = async (
       }
       : queryOrLimit;
 
-  const limit = Math.min(Math.max(Number(query.limit) || 20, 1), 50);
+  const limit = Math.min(Math.max(Number(query.limit) || 20, 1), 100);
   const page = Math.max(Number(query.page) || 1, 1);
   const skip = Number(query.skip) || (page - 1) * limit;
   const sort = query.sort || "trending";
@@ -410,46 +410,42 @@ export const getPapers = async (
     },
   );
 
+  let activeWhere = where;
   // ADDED: Cascading fallback to guarantee papers are always shown while keeping new papers (2026) first
   if (papers.length === 0 && skip === 0) {
     if (period !== "all") {
-      // Fallback 1: Expand date window progressively (e.g. 7 days -> 30 days -> 90 days) while preserving date filter
+      // Fallback 1: Expand date window progressively while preserving date filter
       const fallbackCutoff = new Date(baseDate);
       const lookbackDays = period === "today" ? 7 : period === "week" ? 30 : 90;
       fallbackCutoff.setDate(fallbackCutoff.getDate() - lookbackDays);
 
-      const fallbackWhere = { ...where, publicationDate: { gte: fallbackCutoff } };
-
-      papers = await queryRouter.routeQuery<any>(
-        async (prisma: PrismaClient) => {
-          return prisma.paper.findMany({
-            where: fallbackWhere,
-            orderBy,
-            take: limit + 1,
-            skip,
-            select: paperSelect,
-          });
-        },
-      );
+      activeWhere = { ...where, publicationDate: { gte: fallbackCutoff } };
     } else {
       // Fallback for period === "all"
-      const fallbackWhere = { ...where, publicationDate: { not: null } };
-      papers = await queryRouter.routeQuery<any>(
-        async (prisma: PrismaClient) => {
-          return prisma.paper.findMany({
-            where: fallbackWhere,
-            orderBy,
-            take: limit + 1,
-            skip,
-            select: paperSelect,
-          });
-        },
-      );
+      activeWhere = { ...where, publicationDate: { not: null } };
     }
+
+    papers = await queryRouter.routeQuery<any>(
+      async (prisma: PrismaClient) => {
+        return prisma.paper.findMany({
+          where: activeWhere,
+          orderBy,
+          take: limit + 1,
+          skip,
+          select: paperSelect,
+        });
+      },
+    );
   }
 
   const hasMore = papers.length > limit;
   const pagePapers = hasMore ? papers.slice(0, limit) : papers;
+
+  const totalCount = await queryRouter.routeQuery<number>(
+    async (prisma: PrismaClient) => {
+      return prisma.paper.count({ where: activeWhere });
+    },
+  ).catch(() => (hasMore ? skip + limit + 1 : skip + pagePapers.length));
 
   return {
     papers: pagePapers.map((paper: any) => ({
@@ -463,7 +459,7 @@ export const getPapers = async (
       methods: paper.methods.map(({ method }: any) => method),
 
     })),
-    total: pagePapers.length, // Let the frontend use hasMore rather than a fake total
+    total: typeof totalCount === "number" && totalCount > 0 ? totalCount : (hasMore ? skip + limit + 1 : skip + pagePapers.length),
     page,
     hasMore,
     nextCursor: null, // Legacy cursor unused now

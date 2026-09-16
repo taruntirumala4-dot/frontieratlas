@@ -226,11 +226,38 @@ function getCacheKey(params: GetPapersParams): string {
 const memoryCache = new Map<string, { data: any; timestamp: number }>();
 const inFlightMap = new Map<string, Promise<GetPapersResult>>();
 
+// Immediate purge of any stale or poisoned empty paper caches from previous sessions
+if (typeof window !== "undefined") {
+  try {
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith("papers:")) {
+        const item = localStorage.getItem(k);
+        if (item) {
+          try {
+            const parsed = JSON.parse(item);
+            if (!parsed?.data?.papers || parsed.data.papers.length === 0) {
+              localStorage.removeItem(k);
+            }
+          } catch {
+            localStorage.removeItem(k);
+          }
+        }
+      }
+    }
+  } catch {}
+}
+
 function readCache<T>(key: string): { data: T; timestamp: number } | null {
   // Check in-memory first (instant)
   const mem = memoryCache.get(key);
   if (mem && Date.now() - mem.timestamp < CACHE_TTL) {
-    return mem as { data: T; timestamp: number };
+    const papersData = (mem.data as any)?.papers;
+    if (Array.isArray(papersData) && papersData.length === 0) {
+      memoryCache.delete(key);
+    } else {
+      return mem as { data: T; timestamp: number };
+    }
   }
   // Fallback to localStorage
   try {
@@ -239,6 +266,11 @@ function readCache<T>(key: string): { data: T; timestamp: number } | null {
     const parsed = JSON.parse(raw) as { data: T; timestamp: number };
     // Warm memory cache from localStorage hit
     if (parsed && Date.now() - parsed.timestamp < CACHE_TTL) {
+      const papersData = (parsed.data as any)?.papers;
+      if (Array.isArray(papersData) && papersData.length === 0) {
+        localStorage.removeItem(key);
+        return null;
+      }
       memoryCache.set(key, parsed);
       return parsed;
     }
@@ -329,6 +361,11 @@ export function getPapersSync(params: GetPapersParams = {}): GetPapersResult | n
 }
 
 export function writeCache<T>(key: string, data: T): void {
+  // Never cache empty paper results
+  const papersData = (data as any)?.papers;
+  if (Array.isArray(papersData) && papersData.length === 0) {
+    return;
+  }
   const entry = { data, timestamp: Date.now() };
   // Write to memory (instant)
   memoryCache.set(key, entry);
@@ -345,7 +382,7 @@ export async function getPapers(params: GetPapersParams = {}): Promise<GetPapers
 
   // 1. Check exact cache (0ms)
   const cached = readCache<GetPapersResult>(cacheKey);
-  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+  if (cached && cached.data?.papers?.length > 0 && Date.now() - cached.timestamp < CACHE_TTL) {
     return cached.data;
   }
 
@@ -379,10 +416,12 @@ export async function getPapers(params: GetPapersParams = {}): Promise<GetPapers
         const freshResult: GetPapersResult = {
           papers: validPapers,
           total: response.data.total,
-          page: response.data.page,
+          page: response.data.page ?? params.page ?? 1,
           hasMore: response.data.hasMore,
         };
-        writeCache(cacheKey, freshResult);
+        if (validPapers.length > 0) {
+          writeCache(cacheKey, freshResult);
+        }
         return freshResult;
       } catch {
         return fuzzy;
@@ -415,7 +454,7 @@ export async function getPapers(params: GetPapersParams = {}): Promise<GetPapers
       );
 
       const mapStart = performance.now();
-      const mappedPapers = response.data.papers.map(mapBackendPaper);
+      const mappedPapers = (response.data?.papers || []).map(mapBackendPaper);
       const mapDuration = performance.now() - mapStart;
       const totalDuration = performance.now() - start;
 
@@ -425,12 +464,14 @@ export async function getPapers(params: GetPapersParams = {}): Promise<GetPapers
 
       const result: GetPapersResult = {
         papers: validPapers,
-        total: response.data.total,
-        page: response.data.page,
-        hasMore: response.data.hasMore,
+        total: response.data?.total ?? 0,
+        page: response.data?.page ?? params.page ?? 1,
+        hasMore: response.data?.hasMore ?? (validPapers.length >= (params.limit ?? 25)),
       };
 
-      writeCache(cacheKey, result);
+      if (validPapers.length > 0) {
+        writeCache(cacheKey, result);
+      }
 
       return result;
     } catch (error) {

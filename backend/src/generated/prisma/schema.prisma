@@ -66,6 +66,7 @@ model Paper {
   rankings               Ranking[]
   sotaClaims             SotaClaim[]
   summaries              Summary[]
+  savedPapers            SavedPaper[]
 
   @@map("papers")
 }
@@ -439,6 +440,7 @@ model User {
   updated_at       DateTime?      @default(now()) @db.Timestamp(6)
   refresh_tokens   RefreshToken[]
   summaries        Summary[]
+  savedPapers      SavedPaper[]
 
   @@map("users")
 }
@@ -470,4 +472,47 @@ model Summary {
   user       User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("summaries")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model benchmarks_import {
+  id                String?
+  name              String?
+  slug              String?
+  createdat         DateTime? @db.Timestamp(6)
+  updatedat         DateTime? @db.Timestamp(6)
+  description       String?
+  domain            String?
+  task              String?
+  category          String?
+  metric            String?
+  status            String?
+  year              Int?
+  results_count     Int?
+  models_count      Int?
+  top_models        String[]
+  paper_title       String?
+  paper_url         String?
+  repo_url          String?
+  dataset_url       String?
+  is_popular        Boolean?
+  is_trending       Boolean?
+  is_recently_added Boolean?
+  modality          String?
+  benchmark_url     String?
+  aliases           String[]
+
+  @@ignore
+}
+
+model SavedPaper {
+  paper_id   String
+  user_id    String
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+
+  paper Paper @relation(fields: [paper_id], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@id([user_id, paper_id])
+  @@map("saved_papers")
 }
