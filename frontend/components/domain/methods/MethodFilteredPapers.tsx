@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { TrendingUp, Clock, Star } from "lucide-react";
@@ -103,12 +103,65 @@ const PLACEHOLDER_COLORS = [
 ];
 
 function PaperThumbnail({ paper }: { paper: Paper }) {
-  // Try arxiv thumbnail first
-  const arxivThumb = paper.arxivId
-    ? `https://arxiv.org/html/${paper.arxivId}/thumbnail.png`
-    : null;
+  const [srcIndex, setSrcIndex] = useState(0);
+  const imgRef = useRef<HTMLImageElement>(null);
 
-  const [imgFailed, setImgFailed] = useState(false);
+  const rawArxiv = useMemo(() => {
+    if (!paper.arxivId) return null;
+    const match = paper.arxivId.match(/(?:arxiv\.org\/(?:abs|pdf)\/|arxiv:\s*|^)([a-z\-]+(?:\.[a-z\-]+)?\/\d+|\d{4}\.\d{4,5}(?:v\d+)?)/i);
+    return match && match[1] ? match[1].replace(/\.pdf$/i, "") : paper.arxivId.replace(/^arxiv:/i, "");
+  }, [paper.arxivId]);
+
+  const cleanArxiv = useMemo(() => {
+    return rawArxiv ? rawArxiv.replace(/v\d+$/i, "") : null;
+  }, [rawArxiv]);
+
+  const candidates = useMemo(() => {
+    const list: string[] = [];
+    if (paper.thumbnailUrl && !paper.thumbnailUrl.includes("cloudinary.com/xipefqle") && paper.thumbnailUrl !== "FAILED_404") {
+      list.push(paper.thumbnailUrl);
+    }
+    if (cleanArxiv) {
+      list.push(`https://pub-c9b7a41de3434a4ab7c7f137edbec13b.r2.dev/papers/real_page1_gcp/${cleanArxiv}.webp`);
+      list.push(`https://pub-c9b7a41de3434a4ab7c7f137edbec13b.r2.dev/papers/real_page1_gcp/${cleanArxiv}v1.webp`);
+    }
+    if (rawArxiv && rawArxiv !== cleanArxiv) {
+      list.push(`https://pub-c9b7a41de3434a4ab7c7f137edbec13b.r2.dev/papers/real_page1_gcp/${rawArxiv}.webp`);
+    }
+    if (paper.slug) list.push(`/thumbnails/${paper.slug}.jpg`);
+    if (cleanArxiv) list.push(`/thumbnails/${cleanArxiv}.jpg`);
+    if (cleanArxiv) list.push(`https://cdn-thumbnails.huggingface.co/social-thumbnails/papers/${cleanArxiv}.png`);
+    return Array.from(new Set(list));
+  }, [paper.thumbnailUrl, cleanArxiv, rawArxiv, paper.slug]);
+
+  const currentSrc = candidates[srcIndex];
+  const isExternal = currentSrc && currentSrc.startsWith("http");
+  const isR2 = currentSrc && currentSrc.includes("r2.dev");
+  const imageSource = isExternal && !isR2 ? `/api/proxy-image?url=${encodeURIComponent(currentSrc)}` : currentSrc;
+
+  const handleImgError = useCallback(() => {
+    setSrcIndex(prev => (prev + 1 < candidates.length ? prev + 1 : candidates.length));
+  }, [candidates.length]);
+
+  useEffect(() => {
+    if (imgRef.current && imgRef.current.complete && imgRef.current.naturalWidth === 0) {
+      handleImgError();
+    }
+  }, [imageSource, handleImgError]);
+
+  if (currentSrc && srcIndex < candidates.length) {
+    return (
+      <img
+        ref={imgRef}
+        key={imageSource}
+        src={imageSource}
+        alt={paper.title}
+        loading="lazy"
+        className="w-full h-full object-cover"
+        onError={handleImgError}
+      />
+    );
+  }
 
   // Deterministic color pick from first char of title
   const colorIdx = (paper.title?.charCodeAt(0) ?? 0) % PLACEHOLDER_COLORS.length;
@@ -126,19 +179,6 @@ function PaperThumbnail({ paper }: { paper: Paper }) {
   const year = paper.publicationDate
     ? new Date(paper.publicationDate).getFullYear()
     : "";
-
-  if ((paper.thumbnailUrl || arxivThumb) && !imgFailed) {
-    return (
-      <Image
-        src={paper.thumbnailUrl ?? arxivThumb!}
-        alt={paper.title}
-        width={96}
-        height={128}
-        className="w-full h-full object-cover"
-        onError={() => setImgFailed(true)}
-      />
-    );
-  }
 
   // Beautiful generated placeholder
   return (

@@ -586,12 +586,18 @@ export const getPaperBySlug = async (
 
       if (!paperData) return null;
 
-      const thumbnailUrl = paperData.thumbnailUrl === "FAILED_404" ? null : paperData.thumbnailUrl;
+      let resolvedThumb = paperData.thumbnailUrl === "FAILED_404" ? null : paperData.thumbnailUrl;
+      if (resolvedThumb && resolvedThumb.includes("cloudinary.com/xipefqle")) {
+        resolvedThumb = paperData.arxivId
+          ? `https://pub-c9b7a41de3434a4ab7c7f137edbec13b.r2.dev/papers/real_page1_gcp/${paperData.arxivId}.webp`
+          : null;
+      }
 
       // Use data already fetched by findUnique — no extra DB queries needed
       return {
         ...paperData,
-        thumbnailUrl,
+        thumbnailUrl: resolvedThumb,
+        thumbnail_url: resolvedThumb,
         authors: parseAuthors(paperData.authors),
         models: paperData.models.map((r: any) => ({
           role: r.role,
