@@ -5,6 +5,7 @@ import { fetchPapers } from '../src/ingestion/scheduler/fetch';
 import { processPapers } from '../src/ingestion/scheduler/process';
 import { syncPapers } from '../src/ingestion/scheduler/sync';
 import { defaultHttpClient } from '../src/ingestion/http/client';
+import { generateMissingThumbnails } from './generate-all-missing-thumbnails.js';
 
 
 async function runDailySync(customStartTime?: Date, customEndTime?: Date) {
@@ -40,6 +41,15 @@ async function runDailySync(customStartTime?: Date, customEndTime?: Date) {
       Existing Papers Skipped (No New Data): ${stats.skipped}
       Failed: ${stats.failed}
     `);
+
+    if (stats.inserted > 0) {
+      logger.info(`--- GENERATING THUMBNAILS FOR NEW PAPERS ---`);
+      try {
+        await generateMissingThumbnails({ limit: stats.inserted * 2, checkR2: true });
+      } catch (thumbErr) {
+        logger.warn('Thumbnail generation encountered an error:', thumbErr);
+      }
+    }
 
     if (stats.total > 0 && (stats.failed / stats.total) > 0.25) {
       throw new Error(`More than 25% of papers failed to persist (${stats.failed}/${stats.total} failed).`);
