@@ -368,13 +368,17 @@ const isValidImageSrc = (src: string) => {
 const PaperThumbnail = memo(
   ({ title, thumbnail, slug, arxivId }: { title: string; thumbnail?: string; slug?: string; arxivId?: string }) => {
     const [srcIndex, setSrcIndex] = useState(0);
+    const imgRef = useRef<HTMLImageElement>(null);
 
-    const cleanArxiv = useMemo(() => {
+    const rawArxiv = useMemo(() => {
       if (!arxivId) return null;
       const match = arxivId.match(/(?:arxiv\.org\/(?:abs|pdf)\/|arxiv:\s*|^)([a-z\-]+(?:\.[a-z\-]+)?\/\d+|\d{4}\.\d{4,5}(?:v\d+)?)/i);
-      const rawId = match && match[1] ? match[1].replace(/\.pdf$/i, "") : arxivId.replace(/^arxiv:/i, "");
-      return rawId.replace(/v\d+$/i, "");
+      return match && match[1] ? match[1].replace(/\.pdf$/i, "") : arxivId.replace(/^arxiv:/i, "");
     }, [arxivId]);
+
+    const cleanArxiv = useMemo(() => {
+      return rawArxiv ? rawArxiv.replace(/v\d+$/i, "") : null;
+    }, [rawArxiv]);
 
     const candidates = useMemo(() => {
       const list: string[] = [];
@@ -382,24 +386,32 @@ const PaperThumbnail = memo(
       if (cleanArxiv) {
         list.push(`https://pub-c9b7a41de3434a4ab7c7f137edbec13b.r2.dev/papers/real_page1_gcp/${cleanArxiv}.webp`);
         list.push(`https://pub-c9b7a41de3434a4ab7c7f137edbec13b.r2.dev/papers/real_page1_gcp/${cleanArxiv}v1.webp`);
-        list.push(`/thumbnails/${cleanArxiv}.jpg`);
+      }
+      if (rawArxiv && rawArxiv !== cleanArxiv) {
+        list.push(`https://pub-c9b7a41de3434a4ab7c7f137edbec13b.r2.dev/papers/real_page1_gcp/${rawArxiv}.webp`);
       }
       if (slug) list.push(`/thumbnails/${slug}.jpg`);
+      if (cleanArxiv) list.push(`/thumbnails/${cleanArxiv}.jpg`);
       if (cleanArxiv) list.push(`https://cdn-thumbnails.huggingface.co/social-thumbnails/papers/${cleanArxiv}.png`);
       return Array.from(new Set(list));
-    }, [thumbnail, slug, cleanArxiv]);
+    }, [thumbnail, slug, cleanArxiv, rawArxiv]);
 
     const currentSrc = candidates[srcIndex];
     const isExternal = currentSrc && currentSrc.startsWith("http");
-    const imageSource = isExternal ? `/api/proxy-image?url=${encodeURIComponent(currentSrc)}` : currentSrc;
+    const isR2 = currentSrc && currentSrc.includes("r2.dev");
+    // Direct load for R2 storage (already CDN hosted); only proxy external endpoints that may need CORS
+    const imageSource = isExternal && !isR2 ? `/api/proxy-image?url=${encodeURIComponent(currentSrc)}` : currentSrc;
 
-    const handleImgError = () => {
-      if (srcIndex + 1 < candidates.length) {
-        setSrcIndex(prev => prev + 1);
-      } else {
-        setSrcIndex(candidates.length);
+    const handleImgError = useCallback(() => {
+      setSrcIndex(prev => (prev + 1 < candidates.length ? prev + 1 : candidates.length));
+    }, [candidates.length]);
+
+    // Check if the image already failed before React hydration completed
+    useEffect(() => {
+      if (imgRef.current && imgRef.current.complete && imgRef.current.naturalWidth === 0) {
+        handleImgError();
       }
-    };
+    }, [imageSource, handleImgError]);
 
     const showImg = currentSrc && srcIndex < candidates.length;
 
@@ -407,6 +419,7 @@ const PaperThumbnail = memo(
       <div className="w-[150px] sm:w-[180px] xl:w-[200px] aspect-[4/5] xl:aspect-auto xl:h-full shrink-0 bg-white border border-[#E5E5E0] shadow-sm relative mx-auto xl:mx-0 overflow-hidden">
         {showImg ? (
           <img
+            ref={imgRef}
             key={imageSource}
             src={imageSource}
             alt={title || "Paper thumbnail"}

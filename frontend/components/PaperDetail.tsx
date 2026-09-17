@@ -18,7 +18,7 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState, useCallback, useEffect, type ReactNode } from "react";
+import { useState, useCallback, useEffect, useMemo, useRef, type ReactNode } from "react";
 import type { PaperDetail as PaperDetailType, PaperRanking, PaperSotaClaim } from "@/lib/papers";
 import { getPapers, getArxivAbsUrl, getArxivPdfUrl, type Paper } from "@/lib/paperApi";
 import { atlasUiFont } from "@/lib/fonts";
@@ -628,10 +628,169 @@ function BenchmarksSection({
   );
 }
 
-export function RelatedPaperCard({ paper }: { paper: Paper }) {
-  const [thumbnailFailed, setThumbnailFailed] = useState(false);
-  const showThumbnail = !!paper.thumbnail && !thumbnailFailed;
+function PaperDetailCover({
+  thumbnailUrl,
+  arxivId,
+  slug,
+  title,
+}: {
+  thumbnailUrl?: string | null;
+  arxivId?: string | null;
+  slug?: string;
+  title: string;
+}) {
+  const [srcIndex, setSrcIndex] = useState(0);
+  const imgRef = useRef<HTMLImageElement>(null);
 
+  const rawArxiv = useMemo(() => {
+    if (!arxivId) return null;
+    const match = arxivId.match(/(?:arxiv\.org\/(?:abs|pdf)\/|arxiv:\s*|^)([a-z\-]+(?:\.[a-z\-]+)?\/\d+|\d{4}\.\d{4,5}(?:v\d+)?)/i);
+    return match && match[1] ? match[1].replace(/\.pdf$/i, "") : arxivId.replace(/^arxiv:/i, "");
+  }, [arxivId]);
+
+  const cleanArxiv = useMemo(() => {
+    return rawArxiv ? rawArxiv.replace(/v\d+$/i, "") : null;
+  }, [rawArxiv]);
+
+  const candidates = useMemo(() => {
+    const list: string[] = [];
+    if (thumbnailUrl && !thumbnailUrl.includes("cloudinary.com/xipefqle") && thumbnailUrl !== "FAILED_404") {
+      list.push(thumbnailUrl);
+    }
+    if (cleanArxiv) {
+      list.push(`https://pub-c9b7a41de3434a4ab7c7f137edbec13b.r2.dev/papers/real_page1_gcp/${cleanArxiv}.webp`);
+      list.push(`https://pub-c9b7a41de3434a4ab7c7f137edbec13b.r2.dev/papers/real_page1_gcp/${cleanArxiv}v1.webp`);
+    }
+    if (rawArxiv && rawArxiv !== cleanArxiv) {
+      list.push(`https://pub-c9b7a41de3434a4ab7c7f137edbec13b.r2.dev/papers/real_page1_gcp/${rawArxiv}.webp`);
+    }
+    if (slug) list.push(`/thumbnails/${slug}.jpg`);
+    if (cleanArxiv) list.push(`/thumbnails/${cleanArxiv}.jpg`);
+    if (cleanArxiv) list.push(`https://cdn-thumbnails.huggingface.co/social-thumbnails/papers/${cleanArxiv}.png`);
+    return Array.from(new Set(list));
+  }, [thumbnailUrl, cleanArxiv, rawArxiv, slug]);
+
+  const currentSrc = candidates[srcIndex];
+  const isExternal = currentSrc && currentSrc.startsWith("http");
+  const isR2 = currentSrc && currentSrc.includes("r2.dev");
+  const imageSource = isExternal && !isR2 ? `/api/proxy-image?url=${encodeURIComponent(currentSrc)}` : currentSrc;
+
+  const handleImgError = useCallback(() => {
+    setSrcIndex(prev => (prev + 1 < candidates.length ? prev + 1 : candidates.length));
+  }, [candidates.length]);
+
+  useEffect(() => {
+    if (imgRef.current && imgRef.current.complete && imgRef.current.naturalWidth === 0) {
+      handleImgError();
+    }
+  }, [imageSource, handleImgError]);
+
+  if (currentSrc && srcIndex < candidates.length) {
+    return (
+      <img
+        ref={imgRef}
+        key={imageSource}
+        src={imageSource}
+        alt={`Preview of ${title}`}
+        loading="eager"
+        className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-400"
+        onError={handleImgError}
+      />
+    );
+  }
+
+  return (
+    <div className="preview-page flex flex-col h-full p-5 pb-3.5">
+      <div className="h-[3px] rounded mb-3 bg-black/5 w-2/5" />
+      <div className="h-[6px] rounded mb-1.5 bg-black/7 w-[85%]" />
+      <div className="h-[6px] rounded mb-1.5 bg-black/7 w-[60%]" />
+      <div className="mt-2.5 space-y-1.5">
+        <div className="h-1 rounded bg-black/5 w-[92%]" />
+        <div className="h-1 rounded bg-black/5 w-[78%]" />
+        <div className="h-1 rounded bg-black/5 w-[92%]" />
+        <div className="h-1 rounded bg-black/5 w-[60%]" />
+      </div>
+      <div className="mt-auto pt-2.5 flex items-center gap-1.5">
+        <div className="w-3.5 h-3.5 rounded-full bg-black/5" />
+        <div className="h-1 w-[60px] rounded bg-black/5" />
+      </div>
+    </div>
+  );
+}
+
+function RelatedPaperThumbnail({ paper }: { paper: Paper }) {
+  const [srcIndex, setSrcIndex] = useState(0);
+  const imgRef = useRef<HTMLImageElement>(null);
+
+  const rawArxiv = useMemo(() => {
+    if (!paper.arxivId) return null;
+    const match = paper.arxivId.match(/(?:arxiv\.org\/(?:abs|pdf)\/|arxiv:\s*|^)([a-z\-]+(?:\.[a-z\-]+)?\/\d+|\d{4}\.\d{4,5}(?:v\d+)?)/i);
+    return match && match[1] ? match[1].replace(/\.pdf$/i, "") : paper.arxivId.replace(/^arxiv:/i, "");
+  }, [paper.arxivId]);
+
+  const cleanArxiv = useMemo(() => {
+    return rawArxiv ? rawArxiv.replace(/v\d+$/i, "") : null;
+  }, [rawArxiv]);
+
+  const candidates = useMemo(() => {
+    const list: string[] = [];
+    const thumb = paper.thumbnail || (paper as any).thumbnailUrl;
+    if (thumb && !thumb.includes("cloudinary.com/xipefqle") && thumb !== "FAILED_404") {
+      list.push(thumb);
+    }
+    if (cleanArxiv) {
+      list.push(`https://pub-c9b7a41de3434a4ab7c7f137edbec13b.r2.dev/papers/real_page1_gcp/${cleanArxiv}.webp`);
+      list.push(`https://pub-c9b7a41de3434a4ab7c7f137edbec13b.r2.dev/papers/real_page1_gcp/${cleanArxiv}v1.webp`);
+    }
+    if (rawArxiv && rawArxiv !== cleanArxiv) {
+      list.push(`https://pub-c9b7a41de3434a4ab7c7f137edbec13b.r2.dev/papers/real_page1_gcp/${rawArxiv}.webp`);
+    }
+    if (paper.slug) list.push(`/thumbnails/${paper.slug}.jpg`);
+    if (cleanArxiv) list.push(`/thumbnails/${cleanArxiv}.jpg`);
+    if (cleanArxiv) list.push(`https://cdn-thumbnails.huggingface.co/social-thumbnails/papers/${cleanArxiv}.png`);
+    return Array.from(new Set(list));
+  }, [paper.thumbnail, (paper as any).thumbnailUrl, cleanArxiv, rawArxiv, paper.slug]);
+
+  const currentSrc = candidates[srcIndex];
+  const isExternal = currentSrc && currentSrc.startsWith("http");
+  const isR2 = currentSrc && currentSrc.includes("r2.dev");
+  const imageSource = isExternal && !isR2 ? `/api/proxy-image?url=${encodeURIComponent(currentSrc)}` : currentSrc;
+
+  const handleImgError = useCallback(() => {
+    setSrcIndex(prev => (prev + 1 < candidates.length ? prev + 1 : candidates.length));
+  }, [candidates.length]);
+
+  useEffect(() => {
+    if (imgRef.current && imgRef.current.complete && imgRef.current.naturalWidth === 0) {
+      handleImgError();
+    }
+  }, [imageSource, handleImgError]);
+
+  if (currentSrc && srcIndex < candidates.length) {
+    return (
+      <img
+        ref={imgRef}
+        key={imageSource}
+        src={imageSource}
+        alt={`Preview of ${paper.title}`}
+        loading="lazy"
+        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+        onError={handleImgError}
+      />
+    );
+  }
+
+  return (
+    <div className="w-full p-5 flex flex-col gap-2">
+      <div className="h-[3px] rounded bg-black/5 w-2/5" />
+      <div className="h-[5px] rounded bg-black/6 w-full" />
+      <div className="h-[5px] rounded bg-black/6 w-4/5" />
+      <div className="h-[3px] rounded bg-black/4 w-3/5 mt-1" />
+    </div>
+  );
+}
+
+export function RelatedPaperCard({ paper }: { paper: Paper }) {
   const displayAuthors = (() => {
     if (!Array.isArray(paper.authors) || paper.authors.length === 0) return "";
     const names = paper.authors.map((a) => a.name);
@@ -648,24 +807,7 @@ export function RelatedPaperCard({ paper }: { paper: Paper }) {
       className="group flex flex-col border border-[#EDE8DF] bg-white no-underline overflow-hidden transition-all hover:border-[rgba(255,90,31,0.25)] hover:shadow-[0_2px_12px_rgba(0,0,0,0.04)]"
     >
       <div className="w-full aspect-[3/2] bg-[#F3F1EC] overflow-hidden flex items-center justify-center relative">
-        {showThumbnail ? (
-          <Image
-            src={paper.thumbnail}
-            alt={`Preview of ${paper.title}`}
-            width={320}
-            height={213}
-            unoptimized
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-            onError={() => setThumbnailFailed(true)}
-          />
-        ) : (
-          <div className="w-full p-5 flex flex-col gap-2">
-            <div className="h-[3px] rounded bg-black/5 w-2/5" />
-            <div className="h-[5px] rounded bg-black/6 w-full" />
-            <div className="h-[5px] rounded bg-black/6 w-4/5" />
-            <div className="h-[3px] rounded bg-black/4 w-3/5 mt-1" />
-          </div>
-        )}
+        <RelatedPaperThumbnail paper={paper} />
       </div>
       <div className="flex-1 min-w-0 p-3.5 flex flex-col gap-2">
         <h4 className="text-[13px] font-semibold leading-[1.4] text-[#171717] m-0 line-clamp-2 transition-colors group-hover:text-[#FF5A1F]">
@@ -1124,36 +1266,12 @@ const { addRecentPaper } = useRecentPapers();
                     className="relative"
                     style={{ aspectRatio: '3/4', background: '#EFECE6', transition: 'transform 0.4s ease' }}
                   >
-                    {paper.thumbnailUrl ? (
-                      <Image
-                        src={paper.thumbnailUrl}
-                        alt={`Preview of ${paper.title}`}
-                        width={220}
-                        height={293}
-                        unoptimized
-                        className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-400"
-                        onError={(e) => {
-                          const target = e.currentTarget;
-                          target.style.display = 'none';
-                        }}
-                      />
-                    ) : (
-                      <div className="preview-page flex flex-col h-full p-5 pb-3.5">
-                        <div className="h-[3px] rounded mb-3 bg-black/5 w-2/5" />
-                        <div className="h-[6px] rounded mb-1.5 bg-black/7 w-[85%]" />
-                        <div className="h-[6px] rounded mb-1.5 bg-black/7 w-[60%]" />
-                        <div className="mt-2.5 space-y-1.5">
-                          <div className="h-1 rounded bg-black/5 w-[92%]" />
-                          <div className="h-1 rounded bg-black/5 w-[78%]" />
-                          <div className="h-1 rounded bg-black/5 w-[92%]" />
-                          <div className="h-1 rounded bg-black/5 w-[60%]" />
-                        </div>
-                        <div className="mt-auto pt-2.5 flex items-center gap-1.5">
-                          <div className="w-3.5 h-3.5 rounded-full bg-black/5" />
-                          <div className="h-1 w-[60px] rounded bg-black/5" />
-                        </div>
-                      </div>
-                    )}
+                    <PaperDetailCover
+                      thumbnailUrl={paper.thumbnailUrl}
+                      arxivId={paper.arxivId}
+                      slug={paper.slug}
+                      title={paper.title}
+                    />
                   </div>
                 </a>
               </div>
