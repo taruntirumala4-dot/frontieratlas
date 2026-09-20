@@ -1,8 +1,8 @@
 import Navbar from "@/components/Navbar";
 
 export const metadata = {
-  title: "Privacy Policy | Frontier Atlas",
-  description: "Frontier Atlas Privacy Policy and information practices.",
+  title: "Privacy Policy | FrontierAtlas",
+  description: "FrontierAtlas Privacy Policy and information practices.",
 };
 
 export default function PrivacyPage() {
@@ -17,7 +17,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-lg font-bold text-[#111111] mb-2">1. Information We Collect</h2>
             <p>
-              Frontier Atlas indexes publicly accessible scientific literature, code repositories (e.g., GitHub), and public model registries (e.g., Hugging Face). For registered users, we collect account identifiers (such as email) strictly to maintain personal libraries, saved papers, and discussion comments.
+              FrontierAtlas indexes publicly accessible scientific literature, code repositories (e.g., GitHub), and public model registries (e.g., Hugging Face). For registered users, we collect account identifiers (such as email) strictly to maintain personal libraries, saved papers, and discussion comments.
             </p>
           </section>
 

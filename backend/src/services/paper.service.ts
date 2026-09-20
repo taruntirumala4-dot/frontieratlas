@@ -483,6 +483,7 @@ export const getPaperBySlug = async (
           id: true,
           slug: true,
           title: true,
+          shortTitle: true,
           abstract: true,
           tlDr: true,
           publicationDate: true,
@@ -501,6 +502,7 @@ export const getPaperBySlug = async (
           status: true,
           language: true,
           license: true,
+          createdAt: true,
           updatedAt: true,
           githubForks: true,
           githubStars: true,
@@ -509,6 +511,7 @@ export const getPaperBySlug = async (
           hfUrl: true,
           isOfficialCode: true,
           discoverySource: true,
+          trendingScore: true,
           authors: true,
           models: {
             include: {
@@ -600,8 +603,9 @@ export const getPaperBySlug = async (
         thumbnail_url: resolvedThumb,
         authors: parseAuthors(paperData.authors),
         models: paperData.models.map((r: any) => ({
-          role: r.role,
-          model: r.model,
+          id: r.model.id,
+          name: r.model.name,
+          slug: r.model.slug,
         })),
         datasets: paperData.datasets.map((r: any) => r.dataset),
         tasks: paperData.tasks.map((r: any) => r.task),

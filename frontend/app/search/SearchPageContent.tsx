@@ -24,7 +24,7 @@ export default function SearchPageContent() {
             Search
           </h1>
           <p className="text-[#555555] text-[14px] md:text-[15px]">
-            Find papers, authors, methods, tasks, models, and datasets across Frontier Atlas.
+            Find papers, authors, methods, tasks, models, and datasets across FrontierAtlas.
           </p>
         </div>
 

@@ -76,7 +76,7 @@ export default function SavedPapersPage() {
             </div>
             <h2 className="text-lg font-bold text-[#171717] mb-2">No saved papers yet</h2>
             <p className="text-[#666666] text-[14px] leading-relaxed mb-6">
-              When exploring research on Frontier Atlas, click the bookmark icon on any paper card or detail page to save it to your personal reading library.
+              When exploring research on FrontierAtlas, click the bookmark icon on any paper card or detail page to save it to your personal reading library.
             </p>
             <Link
               href="/"

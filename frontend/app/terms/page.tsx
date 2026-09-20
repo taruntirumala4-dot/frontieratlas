@@ -1,8 +1,8 @@
 import Navbar from "@/components/Navbar";
 
 export const metadata = {
-  title: "Terms of Service | Frontier Atlas",
-  description: "Frontier Atlas Terms of Service and acceptable use conditions.",
+  title: "Terms of Service | FrontierAtlas",
+  description: "FrontierAtlas Terms of Service and acceptable use conditions.",
 };
 
 export default function TermsPage() {
@@ -17,7 +17,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-lg font-bold text-[#111111] mb-2">1. Acceptance of Terms</h2>
             <p>
-              By accessing or utilizing Frontier Atlas, you agree to comply with and be bound by these Terms of Service. If you do not agree, please discontinue use of the platform.
+              By accessing or utilizing FrontierAtlas, you agree to comply with and be bound by these Terms of Service. If you do not agree, please discontinue use of the platform.
             </p>
           </section>
 
@@ -38,7 +38,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-lg font-bold text-[#111111] mb-2">4. Disclaimers</h2>
             <p>
-              Frontier Atlas provides all benchmark scores and research links &quot;as is&quot; without warranty of any kind. We make reasonable efforts to verify benchmark claims but do not independently guarantee model performance replication.
+              FrontierAtlas provides all benchmark scores and research links &quot;as is&quot; without warranty of any kind. We make reasonable efforts to verify benchmark claims but do not independently guarantee model performance replication.
             </p>
           </section>
         </div>

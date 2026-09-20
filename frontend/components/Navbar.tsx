@@ -234,7 +234,7 @@ export default function Navbar({
               </div>
               <div className="flex flex-col">
                 <span className="font-serif text-[18px] font-bold tracking-tight text-[#111111] dark:text-white leading-tight">
-                  Frontier Atlas
+                  FrontierAtlas
                 </span>
                 <span className="text-[10.5px] text-[#71717A] dark:text-[#A1A1AA] font-normal tracking-wide leading-none mt-0.5">
                   Map the frontier of AI
@@ -313,7 +313,7 @@ export default function Navbar({
         {/* Drawer Header */}
         <div className="h-[56px] border-b border-[#E4E4E7] dark:border-[#27272A] flex items-center justify-between px-4 shrink-0">
           <span className="font-serif font-bold text-[17px] text-[#111111] dark:text-white">
-            Frontier Atlas
+            FrontierAtlas
           </span>
           <button
             onClick={() => setIsMenuOpen(false)}

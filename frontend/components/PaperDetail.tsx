@@ -839,6 +839,16 @@ export function RelatedPaperCard({ paper }: { paper: Paper }) {
   );
 }
 
+function normalizeModels(models: any[]): { id: string; name: string; slug: string }[] {
+  if (!models || models.length === 0) return [];
+  return models.map((m: any) => {
+    if (m.model && typeof m.model === "object" && m.model.id) {
+      return { id: m.model.id, name: m.model.name, slug: m.model.slug };
+    }
+    return { id: m.id, name: m.name, slug: m.slug };
+  });
+}
+
 export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
   const [citationCopied, setCitationCopied] = useState<CitationFormat | null>(null);
   const [selectedCitationFormat, setSelectedCitationFormat] = useState<CitationFormat>("bibtex");
@@ -850,6 +860,7 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
   const router = useRouter();
   const [isSaved, setIsSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const normalizedModels = useMemo(() => normalizeModels(paper.models || []), [paper.models]);
   const defaultApiUrl = "https://frontieratlas-backend.morningsignal-india.workers.dev";
   const API_BASE = (process.env.NEXT_PUBLIC_API_URL || defaultApiUrl).replace(/\/$/, "");
 
@@ -960,7 +971,7 @@ const { addRecentPaper } = useRecentPapers();
     async function loadRelated() {
       const taskSlugs = [...new Set((paper.tasks || []).map((t) => t.slug))];
       const methodSlugs = [...new Set((paper.methods || []).map((m) => m.slug))];
-      const modelSlugs = [...new Set((paper.models || []).map((m) => m.slug))];
+      const modelSlugs = [...new Set((normalizedModels || []).map((m) => m.slug))];
 
       if (taskSlugs.length === 0 && methodSlugs.length === 0 && modelSlugs.length === 0) {
         setRelatedLoading(false);
@@ -1022,7 +1033,7 @@ const { addRecentPaper } = useRecentPapers();
     }
 
     loadRelated();
-  }, [paper.id, paper.tasks, paper.methods, paper.models]);
+  }, [paper.id, paper.tasks, paper.methods, normalizedModels]);
 
   // Defer non-critical sections until after first paint
   useEffect(() => {
@@ -1350,9 +1361,9 @@ const { addRecentPaper } = useRecentPapers();
               {/* MODELS */}
               <section className="flex flex-col gap-3">
                 <h3 className="text-[11px] font-black uppercase tracking-[0.1em] text-[#8B8B8B] m-0">MODELS</h3>
-                {(paper.models || []).length > 0 ? (
+                {(normalizedModels || []).length > 0 ? (
                   <div className="flex flex-wrap gap-1.5">
-                    {(paper.models || []).map((m, i) => (
+                    {(normalizedModels || []).map((m, i) => (
   <Link
     key={m.id || m.slug || i}
                         href={`/models/${m.slug}`}
@@ -1393,7 +1404,7 @@ const { addRecentPaper } = useRecentPapers();
               {deferred ? (
                 <BenchmarksSection
                   rankings={paper.rankings}
-                  models={paper.models}
+                  models={normalizedModels}
                   sotaClaims={paper.sotaClaims}
                 />
               ) : (

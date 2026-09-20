@@ -20,7 +20,7 @@ export default function Footer() {
           {/* Brand Column */}
           <div className="col-span-12 lg:col-span-4 flex flex-col gap-6">
             <Link href="/" className="relative block w-[240px] sm:w-[280px] h-12 sm:h-14 -ml-1">
-              <Image src="/logo.png" alt="Frontier Atlas" fill className="object-contain object-left brightness-0 invert" sizes="(max-width: 640px) 240px, 280px" />
+              <Image src="/logo.png" alt="FrontierAtlas" fill className="object-contain object-left brightness-0 invert" sizes="(max-width: 640px) 240px, 280px" />
             </Link>
             <div className="flex flex-col gap-2 mt-2">
               <p className="text-[15px] text-white font-medium">

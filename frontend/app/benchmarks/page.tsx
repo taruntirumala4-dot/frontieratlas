@@ -1150,7 +1150,7 @@ function BenchmarksContent() {
                       Missing a benchmark?
                     </h3>
                     <p className="text-sm text-gray-500 leading-relaxed">
-                      Submit a benchmark or contribute evaluation results to help keep Frontier Atlas up to date.
+                      Submit a benchmark or contribute evaluation results to help keep FrontierAtlas up to date.
                     </p>
                     <div className="pt-2 flex items-center justify-center gap-3">
                       <button

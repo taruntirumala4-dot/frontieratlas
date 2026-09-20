@@ -169,13 +169,13 @@ export default function OrganizationsPage() {
         <section className="border-b border-[#DEDAD1] pb-9">
           <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[#FF5A1F]">
             <Sparkles size={13} />
-            Frontier Atlas directory
+            FrontierAtlas directory
           </div>
           <h1 className="mt-4 text-[38px] font-semibold tracking-[-0.045em] text-[#171717] sm:text-[50px]">
             AI <span className="text-[#FF5A1F]">Organizations</span>
           </h1>
           <p className="mt-3 max-w-2xl text-[15px] leading-6 text-[#625E57]">
-            Explore the labs, companies, and research groups building the models tracked across Frontier Atlas.
+            Explore the labs, companies, and research groups building the models tracked across FrontierAtlas.
           </p>
         </section>
 

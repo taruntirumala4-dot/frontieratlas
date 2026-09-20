@@ -507,31 +507,28 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
   }, [router, paper.slug]);
   
   return (
-    <div
+    <Link
+      href={`/papers/${paper.slug}`}
       className="block"
       onMouseEnter={handlePrefetch}
       onTouchStart={handlePrefetch}
     >
       <div className="group flex flex-col xl:flex-row gap-3 sm:gap-4 xl:gap-5 p-3 sm:p-4 xl:pt-2 xl:pb-2 bg-white dark:bg-[#161B22] xl:bg-transparent xl:dark:bg-transparent border xl:border-none border-[#E5E5E0] dark:border-[#22272E] rounded-none hover:shadow-lg xl:hover:bg-white xl:dark:hover:bg-[#161B22] xl:hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] dark:xl:hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] transition-all duration-300 ease-out">
         {/* PDF thumbnail */}
-        <div className="order-first xl:order-last shrink-0 w-full xl:w-auto mx-auto xl:mx-0 xl:self-stretch border-b xl:border-b-0 border-[#E5E5E0] dark:border-[#22272E] pb-3 xl:pb-0 mb-1 xl:mb-0">
-          <Link href={`/papers/${paper.slug}`} className="block h-full group/thumb cursor-pointer">
+        <div className="order-first xl:order-last shrink-0 w-full xl:w-auto mx-auto xl:mx-0 xl:self-stretch border-b xl:border-b-0 border-[#E5E5E0] dark:border-[#22272E] pb-3 xl:pb-0 mb-1 xl:mb-0 cursor-pointer">
             <PaperThumbnail 
               title={paper.title} 
               thumbnail={paper.thumbnail || (paper as any).thumbnailUrl || (paper as any).imageUrl || (paper as any).image_url || (paper as any).image || ""} 
               slug={paper.slug}
               arxivId={paper.arxivId}
             />
-          </Link>
         </div>
  
         {/* Content */}
         <div className="flex-1 min-w-0 flex flex-col">
           {/* Title */}
-          <h3 className="text-[15px] sm:text-[17px] xl:text-[20px] font-serif font-medium text-[#111111] dark:text-[#F0F6FC] leading-snug xl:leading-[1.3] mb-1 xl:mb-1.5 transition-colors line-clamp-2">
-            <Link href={`/papers/${paper.slug}`} className="hover:text-[#F55036] dark:hover:text-[#FF5A1F]">
+          <h3 className="text-[15px] sm:text-[17px] xl:text-[20px] font-serif font-medium text-[#111111] dark:text-[#F0F6FC] leading-snug xl:leading-[1.3] mb-1 xl:mb-1.5 transition-colors line-clamp-2 hover:text-[#F55036] dark:hover:text-[#FF5A1F] cursor-pointer">
               {paper.title}
-            </Link>
           </h3>
  
           {/* Authors + Date + Citations */}
@@ -741,7 +738,7 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 });
 PaperCard.displayName = "PaperCard";

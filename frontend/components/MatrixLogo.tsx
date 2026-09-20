@@ -210,7 +210,7 @@ export default function MatrixLogo() {
 
   return (
     <section
-      aria-label="Frontier Atlas LED display"
+      aria-label="FrontierAtlas LED display"
       className="w-full bg-[#F8F7F2] border-b border-[#E5E5E0] overflow-hidden cursor-crosshair"
       style={{ aspectRatio: "8 / 1", minHeight: "60px", maxHeight: "200px" }}
     >

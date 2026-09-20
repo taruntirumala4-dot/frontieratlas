@@ -3,8 +3,8 @@ import { Sparkles, Compass, BookOpen, Layers, BarChart3, Users, Globe2, ShieldCh
 import Link from "next/link";
 
 export const metadata = {
-  title: "About | Frontier Atlas",
-  description: "Learn about Frontier Atlas, our mission to map the global AI research ecosystem, and our open methodology.",
+  title: "About | FrontierAtlas",
+  description: "Learn about FrontierAtlas, our mission to map the global AI research ecosystem, and our open methodology.",
 };
 
 export default function AboutPage() {
