@@ -151,10 +151,7 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
             <Sidebar onItemSelect={handleSidebarSelect} initialActive={label} />
           </div>
           <main className="flex-1 min-w-0 xl:max-w-[1380px]">
-            <PaperTabs
-              selectedPeriod={selectedPeriod}
-              onPeriodSelect={setSelectedPeriod}
-            />
+            <PaperTabs />
             <PaperList
               selectedTag={selectedTag}
               filterParams={filterParams}

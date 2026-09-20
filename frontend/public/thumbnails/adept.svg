@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" width="100%" height="100%">
+  <rect width="400" height="200" fill="#F8FAFC"/>
+  <text x="200" y="24" font-family="system-ui, sans-serif" font-size="11" font-weight="700" text-anchor="middle" fill="#1E293B">ADEPT: Accelerating Dexterity via Pre-Training and Post-Training</text>
+  <text x="200" y="38" font-family="system-ui, sans-serif" font-size="7" fill="#64748B" text-anchor="middle">Kevin Black, Noah Brown, Lucy Xia, Dorsa Sadigh</text>
+
+  <!-- Robot arms and hands rendering -->
+  <g transform="translate(40, 55)">
+    <!-- Base 1 -->
+    <rect x="10" y="75" width="30" height="15" rx="3" fill="#334155"/>
+    <circle cx="25" cy="70" r="8" fill="#64748B"/>
+    <line x1="25" y1="70" x2="45" y2="35" stroke="#475569" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="45" cy="35" r="6" fill="#334155"/>
+    <line x1="45" y1="35" x2="75" y2="40" stroke="#64748B" stroke-width="5" stroke-linecap="round"/>
+    <!-- Gripper -->
+    <circle cx="75" cy="40" r="5" fill="#0F172A"/>
+    <path d="M 75 35 L 88 30 L 92 36" stroke="#0F172A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M 75 45 L 88 50 L 92 44" stroke="#0F172A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  </g>
+
+  <g transform="translate(160, 55)">
+    <!-- Robot Hand 2: Dexterous multi-finger -->
+    <rect x="25" y="75" width="30" height="15" rx="3" fill="#334155"/>
+    <circle cx="40" cy="70" r="8" fill="#64748B"/>
+    <line x1="40" y1="70" x2="45" y2="30" stroke="#475569" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="45" cy="30" r="6" fill="#334155"/>
+    <!-- Fingers grasping cube -->
+    <rect x="70" y="22" width="18" height="18" rx="2" fill="#EF4444"/>
+    <path d="M 48 24 L 68 18 L 74 24" stroke="#1E293B" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M 49 30 L 69 28 L 74 32" stroke="#1E293B" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M 48 36 L 68 40 L 73 35" stroke="#1E293B" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  </g>
+
+  <g transform="translate(280, 55)">
+    <!-- Robot Hand 3: Fine manipulation -->
+    <rect x="20" y="75" width="30" height="15" rx="3" fill="#334155"/>
+    <circle cx="35" cy="70" r="8" fill="#64748B"/>
+    <line x1="35" y1="70" x2="55" y2="45" stroke="#475569" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="55" cy="45" r="6" fill="#334155"/>
+    <line x1="55" y1="45" x2="80" y2="35" stroke="#64748B" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="80" cy="35" r="4" fill="#0F172A"/>
+    <circle cx="92" cy="33" r="6" fill="#10B981"/>
+  </g>
+</svg>

@@ -27,8 +27,8 @@ export async function fetchApi<T>(endpoint: string, options: RequestInit = {}): 
       },
     } as any);
   } catch (fetchErr) {
-    // Only fallback if NOT in development and on localhost
-    if (process.env.NODE_ENV === "production" && (base.includes("localhost") || base.includes("127.0.0.1"))) {
+    // If local backend (127.0.0.1:8787) is not running, fall back to the live deployed API
+    if (base.includes("localhost") || base.includes("127.0.0.1")) {
       url = `https://frontieratlas-backend.morningsignal-india.workers.dev${path}`;
 
       response = await fetch(url, {

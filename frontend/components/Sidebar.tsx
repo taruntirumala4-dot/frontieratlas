@@ -1,34 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { getPapers } from "@/lib/paperApi";
 import {
   Flame,
   Clock,
   Star,
+  MessageSquare,
   Bot,
   Brain,
-  MessageSquare,
-  Code2,
-  Monitor,
-  Globe,
-  Cpu,
-  Zap,
-  Link as LinkIcon,
-  RefreshCw,
+  Image,
   Layers,
-  FileText,
-  ImageIcon,
-  Video,
+  Globe,
   Volume2,
-  BarChart2,
-  Target,
-  Plug,
+  Cpu,
+  FileText,
+  Zap,
   Search,
+  Plug,
+  Link2,
+  Target,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 interface SidebarProps {
   onItemClick?: () => void;
@@ -36,253 +28,204 @@ interface SidebarProps {
   initialActive?: string;
 }
 
-// ============ Sub-Components ============
-const SectionLabel = ({ title }: { title: string }) => {
-  return (
-    <div className="px-3 mb-0.5 mt-3 first:mt-0">
-      <p className="text-[11px] font-bold italic text-[#8B8B8B] uppercase tracking-wider">
-        {title}
-      </p>
-    </div>
-  );
-};
-
-const NavItem = ({
-  icon,
-  label,
-  isActive = false,
-  onClick,
-  href,
-  onMouseEnter,
-}: {
-  icon?: React.ReactNode;
-  label: string;
-  isActive?: boolean;
-  onClick: () => void;
-  href?: string;
-  onMouseEnter?: () => void;
-}) => {
-  const content = (
-    <div
-      onClick={onClick}
-      onMouseEnter={onMouseEnter}
-      className={cn(
-        "flex items-center gap-2.5 px-3 py-1 mx-1 cursor-pointer transition-colors rounded-md text-[13px] font-medium leading-snug",
-        isActive
-          ? "text-[#F55036]"
-          : "text-[#555555] hover:text-[#111111]"
-      )}
-    >
-      {icon && (
-        <span
-          className={cn(
-            "flex items-center justify-center shrink-0 w-4 h-4 transition-colors",
-            isActive ? "text-[#F55036]" : "text-[#8B8B8B]"
-          )}
-        >
-          {icon}
-        </span>
-      )}
-      <span className="whitespace-normal leading-tight">{label}</span>
-    </div>
-  );
-
-  if (href) {
-    return (
-      <Link href={href} className="block no-underline">
-        {content}
-      </Link>
-    );
-  }
-
-  return content;
-};
-
-// ============ Main Component ============
 export default function Sidebar({
   onItemClick,
   onItemSelect,
   initialActive = "Trending Papers",
 }: SidebarProps) {
-  const [activeItem, setActiveItem] = useState(initialActive);
   const pathname = usePathname();
   const router = useRouter();
 
-  // Navigation Items
-  const discover = [
+  const discoverItems = [
     {
       label: "Trending Papers",
-      slug: "trending",
-      icon: (
-        <Flame
-          size={16}
-          className={
-            activeItem === "Trending Papers"
-              ? "text-[#F55036] fill-[#F55036]"
-              : ""
-          }
-        />
-      ),
+      icon: Flame,
+      href: "/",
     },
-    { label: "Latest Papers", icon: <Clock size={16} />, slug: "latest" },
-    { label: "Most GitHub Stars", icon: <Star size={16} />, slug: "github-stars" },
+    {
+      label: "Latest Papers",
+      icon: Clock,
+      href: "/",
+    },
+    {
+      label: "Most GitHub Stars",
+      icon: Star,
+      href: "/",
+    },
   ];
 
-  const tasks = [
-    { label: "Large Language Models", icon: <MessageSquare size={16} />, slug: "large-language-models" },
-    { label: "Agents", icon: <Bot size={16} />, slug: "agents" },
-{ label: "Reasoning", icon: <Brain size={16} />, slug: "reasoning-models" },
-    { label: "Vision-Language Models", icon: <ImageIcon size={16} />, slug: "vision-language-models" },
-    { label: "Multimodal Models", icon: <Layers size={16} />, slug: "multimodal-models" },
-    { label: "World Models", icon: <Globe size={16} />, slug: "world-models" },
-    { label: "Image Generation", icon: <ImageIcon size={16} />, slug: "image-generation" },
-    { label: "Automatic Speech Recognition", icon: <Volume2 size={16} />, slug: "automatic-speech-recognition" },
-    { label: "Robotics", icon: <Cpu size={16} />, slug: "robotics" },
-    { label: "All Tasks", icon: <FileText size={16} />, slug: "" },
+  const taskItems = [
+    { label: "Large Language Models", icon: MessageSquare, href: "/tasks/large-language-models" },
+    { label: "Agents", icon: Bot, href: "/tasks/agents" },
+    { label: "Reasoning", icon: Brain, href: "/tasks/reasoning-models" },
+    { label: "Vision-Language Models", icon: Image, href: "/tasks/vision-language-models" },
+    { label: "Multimodal Models", icon: Layers, href: "/tasks/multimodal-models" },
+    { label: "World Models", icon: Globe, href: "/tasks/world-models" },
+    { label: "Image Generation", icon: Image, href: "/tasks/image-generation" },
+    { label: "Automatic Speech Recognition", icon: Volume2, href: "/tasks/automatic-speech-recognition" },
+    { label: "Robotics", icon: Cpu, href: "/tasks/robotics" },
+    { label: "All Tasks", icon: FileText, href: "/tasks" },
   ];
 
-  const methods = [
-    { label: "Transformers", icon: <Zap size={16} />, slug: "transformer" },
-    { label: "Diffusion Models", icon: <ImageIcon size={16} />, slug: "diffusion-models" },
-    { label: "Mixture of Experts", icon: <Layers size={16} />, slug: "mixture-of-experts" },
-    { label: "Reinforcement Learning", icon: <BarChart2 size={16} />, slug: "policy-learning" },
-    { label: "Chain-of-Thought", icon: <LinkIcon size={16} />, slug: "chain-of-thought" },
-    { label: "RAG", icon: <Search size={16} />, slug: "retrieval-augmented-generation" },
-    { label: "Model Context Protocol", icon: <Plug size={16} />, slug: "mcp" },
-    { label: "LoRA", icon: <Layers size={16} />, slug: "lora" },
-    { label: "RLHF", icon: <Target size={16} />, slug: "rlhf" },
-    { label: "All Methods", icon: <FileText size={16} />, slug: "" },
+  const methodItems = [
+    { label: "Transformers", icon: Zap, href: "/methods/transformer" },
+    { label: "Diffusion Models", icon: Image, href: "/methods/diffusion-models" },
+    { label: "Mixture of Experts", icon: Layers, href: "/methods/mixture-of-experts" },
+    { label: "Reinforcement Learning", icon: Target, href: "/methods/policy-learning" },
+    { label: "Chain-of-Thought", icon: Link2, href: "/methods/chain-of-thought" },
+    { label: "RAG", icon: Search, href: "/methods/retrieval-augmented-generation" },
+    { label: "Model Context Protocol", icon: Plug, href: "/methods/mcp" },
+    { label: "LoRA", icon: Layers, href: "/methods/lora" },
+    { label: "RLHF", icon: Target, href: "/methods/rlhf" },
+    { label: "All Methods", icon: FileText, href: "/methods" },
   ];
 
-  useEffect(() => {
-    if (pathname.startsWith("/tasks/")) {
-      const taskSlug = pathname.replace("/tasks/", "");
-      const matched = tasks.find((t) => t.slug === taskSlug);
-      if (matched) {
-        setActiveItem(matched.label);
-        return;
-      }
-    } else if (pathname === "/tasks") {
-      setActiveItem("All Tasks");
-      return;
-    } else if (pathname.startsWith("/methods/")) {
-      const methodSlug = pathname.replace("/methods/", "");
-      const matched = methods.find((m) => m.slug === methodSlug);
-      if (matched) {
-        setActiveItem(matched.label);
-        return;
-      }
-    } else if (pathname === "/methods") {
-      setActiveItem("All Methods");
-      return;
-    } else if (pathname.startsWith("/category/")) {
-      const catSlug = pathname.replace("/category/", "");
-      const matched = discover.find((d) => d.slug === catSlug);
-      if (matched) {
-        setActiveItem(matched.label);
-        return;
-      }
-    } else if (pathname === "/" || pathname === "/papers") {
-      if (initialActive) {
-        setActiveItem(initialActive);
-      } else {
-        setActiveItem("Trending Papers");
-      }
-      return;
-    }
-  }, [pathname, initialActive]);
-
-  // Aggressively prefetch ALL sidebar routes on mount for instant navigation
-  useEffect(() => {
-    const routes = [
-      "/", "/category/latest", "/category/github-stars",
-      // Tasks
-      "/tasks/large-language-models", "/tasks/agents", "/tasks/reasoning-models",
-      "/tasks/vision-language-models", "/tasks/multimodal-models",
-      "/tasks/world-models", "/tasks/image-generation",
-      "/tasks/automatic-speech-recognition", "/tasks/robotics", "/tasks",
-      // Methods
-      "/methods/transformer", "/methods/diffusion-models",
-      "/methods/mixture-of-experts", "/methods/policy-learning",
-      "/methods/chain-of-thought", "/methods/retrieval-augmented-generation", "/methods/model-context-protocol-mcp",
-      "/methods/lora", "/methods/rlhf", "/methods",
-    ];
-    routes.forEach((route) => router.prefetch(route));
-  }, [router]);
-
-  const handleItemClick = (label: string) => {
-    setActiveItem(label);
-    onItemSelect?.(label);
-    onItemClick?.();
-  };
+  const SectionLabel = ({ children }: { children: React.ReactNode }) => (
+    <div className="px-3 mb-0.5 mt-4 first:mt-0">
+      <p className="text-[11px] font-bold italic text-[#8B8B8B] uppercase tracking-wider">
+        {children}
+      </p>
+    </div>
+  );
 
   return (
-    <aside className="flex flex-col w-full bg-transparent h-full border-r border-[#E5E5E0]">
-      <div className="flex-1 px-2 pt-1 pb-2 space-y-3">
-        {/* DISCOVER Section */}
+    <aside className="flex flex-col w-full bg-transparent h-full border-r border-[#E5E5E0] dark:border-[#27272A] select-none font-sans">
+      <div className="flex-1 px-2 pt-1 pb-2 space-y-1 overflow-y-auto">
+        {/* DISCOVER */}
         <div>
-          <SectionLabel title="Discover" />
+          <SectionLabel>Discover</SectionLabel>
           <div className="flex flex-col gap-0">
-            {discover.map((item) => (
-              <NavItem
-                key={item.label}
-                icon={item.icon}
-                label={item.label}
-                isActive={activeItem === item.label}
-                onClick={() => handleItemClick(item.label)}
-                href={pathname === "/" ? undefined : (item.slug === "trending" ? "/" : `/category/${item.slug}`)}
-              />
-            ))}
+            {discoverItems.map((item) => {
+              const isItemActive = initialActive === item.label;
+              const Icon = item.icon;
+              const isTrending = item.label === "Trending Papers";
+              const isStars = item.label === "Most GitHub Stars";
+
+              return (
+                <div
+                  key={item.label}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onItemSelect?.(item.label);
+                    onItemClick?.();
+                    if (pathname !== "/") {
+                      router.push("/");
+                    }
+                  }}
+                  className={`flex items-center gap-2.5 px-3 py-1 mx-1 cursor-pointer transition-colors rounded-md text-[13px] font-medium leading-snug ${
+                    isItemActive
+                      ? "text-[#F55036] font-semibold"
+                      : "text-[#555555] hover:text-[#111111] dark:text-[#A1A1AA] dark:hover:text-white"
+                  }`}
+                >
+                  <span
+                    className={`flex items-center justify-center shrink-0 w-4 h-4 transition-colors ${
+                      isItemActive ? "text-[#F55036]" : "text-[#8B8B8B]"
+                    }`}
+                  >
+                    <Icon
+                      width={16}
+                      height={16}
+                      className={
+                        isItemActive
+                          ? isTrending || isStars
+                            ? "text-[#F55036] fill-[#F55036]"
+                            : "text-[#F55036]"
+                          : undefined
+                      }
+                    />
+                  </span>
+                  <span className="whitespace-normal leading-tight">
+                    {item.label}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </div>
 
-        {/* TASKS Section */}
+        {/* TASKS */}
         <div>
-          <SectionLabel title="Tasks" />
+          <SectionLabel>Tasks</SectionLabel>
           <div className="flex flex-col gap-0">
-            {tasks.map((item) => (
-  <NavItem
-    key={item.label}
-    icon={item.icon}
-    label={item.label}
-    isActive={activeItem === item.label}
-    onClick={() => handleItemClick(item.label)}
-    onMouseEnter={() => {
-      if (item.slug) {
-        void getPapers({
-          page: 1,
-          task: item.slug,
-          sort: "popular",
-        });
-      }
-    }}
-    href={item.slug ? `/tasks/${item.slug}` : `/tasks`}
-  />
-))}
+            {taskItems.map((item) => {
+              const active = pathname === item.href;
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className="block no-underline"
+                  onClick={() => {
+                    onItemSelect?.(item.label);
+                    onItemClick?.();
+                  }}
+                >
+                  <div
+                    className={`flex items-center gap-2.5 px-3 py-1 mx-1 cursor-pointer transition-colors rounded-md text-[13px] font-medium leading-snug ${
+                      active
+                        ? "text-[#F55036] font-semibold"
+                        : "text-[#555555] hover:text-[#111111] dark:text-[#A1A1AA] dark:hover:text-white"
+                    }`}
+                  >
+                    <span
+                      className={`flex items-center justify-center shrink-0 w-4 h-4 transition-colors ${
+                        active ? "text-[#F55036]" : "text-[#8B8B8B]"
+                      }`}
+                    >
+                      <Icon width={16} height={16} />
+                    </span>
+                    <span className="whitespace-normal leading-tight">
+                      {item.label}
+                    </span>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </div>
 
-        {/* METHODS Section */}
+        {/* METHODS */}
         <div>
-          <SectionLabel title="Methods" />
+          <SectionLabel>Methods</SectionLabel>
           <div className="flex flex-col gap-0">
-            {methods.map((item) => (
-              <NavItem
-                key={item.label}
-                icon={item.icon}
-                label={item.label}
-                isActive={activeItem === item.label}
-                onClick={() => handleItemClick(item.label)}
-                href={item.slug ? `/methods/${item.slug}` : `/methods`}
-              />
-            ))}
-
-
+            {methodItems.map((item) => {
+              const active = pathname === item.href;
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className="block no-underline"
+                  onClick={() => {
+                    onItemSelect?.(item.label);
+                    onItemClick?.();
+                  }}
+                >
+                  <div
+                    className={`flex items-center gap-2.5 px-3 py-1 mx-1 cursor-pointer transition-colors rounded-md text-[13px] font-medium leading-snug ${
+                      active
+                        ? "text-[#F55036] font-semibold"
+                        : "text-[#555555] hover:text-[#111111] dark:text-[#A1A1AA] dark:hover:text-white"
+                    }`}
+                  >
+                    <span
+                      className={`flex items-center justify-center shrink-0 w-4 h-4 transition-colors ${
+                        active ? "text-[#F55036]" : "text-[#8B8B8B]"
+                      }`}
+                    >
+                      <Icon width={16} height={16} />
+                    </span>
+                    <span className="whitespace-normal leading-tight">
+                      {item.label}
+                    </span>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </div>
-
-
     </aside>
   );
 }

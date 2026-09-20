@@ -577,10 +577,7 @@ const [logoError, setLogoError] = useState(false);
   onSortChange={setPaperSort}
 />
 
-<PaperTabs
-  selectedPeriod={period}
-  onPeriodSelect={setPeriod}
-/>
+<PaperTabs />
 
 <PaperList
   filterParams={{

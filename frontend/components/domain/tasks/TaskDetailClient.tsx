@@ -31,7 +31,7 @@ export default function TaskDetailClient({ slug, initialPapers }: Props) {
         selectedSort={sort}
         onSortChange={setSort}
       />
-      <PaperTabs selectedPeriod={period} onPeriodSelect={setPeriod} />
+      <PaperTabs />
 
       <PaperList
         filterParams={{

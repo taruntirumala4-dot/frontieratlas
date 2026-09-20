@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" width="100%" height="100%">
+  <rect width="400" height="200" fill="#F8FAFC"/>
+  <text x="200" y="24" font-family="system-ui, sans-serif" font-size="11" font-weight="700" text-anchor="middle" fill="#1E293B">MM-Interleave: Unified Multi-Modal Understanding and Generation</text>
+  <text x="200" y="38" font-family="system-ui, sans-serif" font-size="7" fill="#64748B" text-anchor="middle">Jialin Wu, Sihan Tan, Chenhan Lin, Mengchen Liu</text>
+
+  <!-- Left Inputs -->
+  <g transform="translate(30, 60)">
+    <!-- Image token 1 -->
+    <rect x="0" y="0" width="36" height="30" rx="3" fill="#E0E7FF" stroke="#6366F1"/>
+    <circle cx="12" cy="10" r="4" fill="#F59E0B"/>
+    <path d="M 4 24 L 14 16 L 24 24 Z" fill="#10B981"/>
+    
+    <!-- Text token -->
+    <rect x="42" y="5" width="28" height="20" rx="3" fill="#FEF3C7" stroke="#F59E0B"/>
+    <text x="56" y="18" font-family="monospace" font-size="7" text-anchor="middle" fill="#92400E">&lt;txt&gt;</text>
+
+    <!-- Image token 2 -->
+    <rect x="76" y="0" width="36" height="30" rx="3" fill="#E0E7FF" stroke="#6366F1"/>
+    <circle cx="94" cy="15" r="8" fill="#EC4899"/>
+  </g>
+
+  <!-- Middle: Unified MM Model 'M' -->
+  <g transform="translate(165, 50)">
+    <rect x="0" y="0" width="70" height="85" rx="8" fill="#F1F5F9" stroke="#94A3B8" stroke-width="2"/>
+    <text x="35" y="55" font-family="serif" font-size="34" font-weight="bold" text-anchor="middle" fill="#475569">M</text>
+  </g>
+
+  <!-- Right Outputs: Interleaved generation -->
+  <g transform="translate(255, 60)">
+    <rect x="0" y="0" width="36" height="30" rx="3" fill="#E0E7FF" stroke="#6366F1"/>
+    <circle cx="18" cy="15" r="7" fill="#8B5CF6"/>
+
+    <rect x="42" y="5" width="28" height="20" rx="3" fill="#FEF3C7" stroke="#F59E0B"/>
+    <text x="56" y="18" font-family="monospace" font-size="7" text-anchor="middle" fill="#92400E">&lt;txt&gt;</text>
+
+    <rect x="76" y="0" width="36" height="30" rx="3" fill="#E0E7FF" stroke="#6366F1"/>
+    <rect x="82" y="6" width="24" height="18" fill="#065F46" rx="2"/>
+  </g>
+
+  <!-- Flow arrows -->
+  <path d="M 148 75 L 160 75" stroke="#64748B" stroke-width="1.5"/>
+  <path d="M 238 75 L 250 75" stroke="#64748B" stroke-width="1.5"/>
+</svg>

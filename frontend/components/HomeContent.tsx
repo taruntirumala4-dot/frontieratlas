@@ -1,118 +1,166 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
-import PaperList from "@/components/PaperFeed";
 import PaperTabs from "@/components/PaperTabs";
-import HeroSection from "@/components/HeroSection";
-import type { GetPapersResult } from "@/lib/paperApi";
-import { getPapers } from "@/lib/paperApi";
-import { prefetchMethods } from "@/lib/methodCache";
+import PaperGridCard from "@/components/PaperGridCard";
+import PaperList from "@/components/PaperFeed";
+import type { GetPapersResult, Paper } from "@/lib/paperApi";
+import { FEATURED_PAPERS } from "@/lib/mockPapers";
 
 export default function HomeContent({
   initialPapers,
   initialError,
-  initialPeriod = "Today",
+  initialPeriod = "all",
 }: {
   initialPapers: GetPapersResult | null;
   initialError?: string;
   initialPeriod?: string;
 }) {
-  const [selectedTag, setSelectedTag] = useState<string | undefined>(undefined);
-  const [activeSort, setActiveSort] = useState<string>("Trending Papers");
-  const [selectedPeriod, setSelectedPeriod] = useState<string>(initialPeriod);
-  const [isFilterChanging, setIsFilterChanging] = useState(false);
+  const [activeNav, setActiveNav] = useState<string>("Trending Papers");
+  const [selectedTopic, setSelectedTopic] = useState<string>("All Topics");
+  const [selectedSort, setSelectedSort] = useState<string>("Trending");
 
-  // Idle prefetch for the most common alternate views so tab switching is instantaneous
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      getPapers({ page: 1, sort: "trending", period: "week" }).catch(() => {});
-      getPapers({ page: 1, sort: "trending", period: "all" }).catch(() => {});
-      prefetchMethods();
-    }, 1500);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
-    return () => clearTimeout(timer);
-  }, []);
-
-  // --- FILTER HANDLERS ---
- const handleSidebarSelect = (label: string) => {
-  if (
-    label === "Trending Papers" ||
-    label === "Latest Papers" ||
-    label === "Most GitHub Stars"
-  ) {
-    setIsFilterChanging(true);
-    setActiveSort(label);
-  }
-};
-
-  const handlePeriodSelect = (period: string) => {
-    setIsFilterChanging(true);
-    setSelectedPeriod(period);
-  };
-
-  // Custom handler to ensure `isFilterChanging` triggers when a pill is clicked
-  const handleTagSelect = (tag: string | undefined | ((prev: string | undefined) => string | undefined)) => {
-    setIsFilterChanging(true);
-    setSelectedTag(tag);
-  };
-
-  // Map the UI tab to API parameters
-  const apiPeriod =
-    selectedPeriod === "Today" ? "today" :
-      selectedPeriod === "This Week" ? "week" :
-        selectedPeriod === "This Month" ? "month" : "all";
-
-  const apiSort = activeSort === "Trending Papers" ? "trending" : activeSort === "Most GitHub Stars" ? "stars" : "latest";
-
-  // Distinguish methods from tasks and ensure case-insensitivity
- const isMethod =
-  selectedTag?.toLowerCase() === "model-context-protocol-mcp";
-  const dynamicFilterParams: Record<string, string> = { sort: apiSort };
-
-  if (selectedTag) {
-    if (isMethod) {
-      dynamicFilterParams.method = selectedTag.toLowerCase();
+  const handleNavSelect = (label: string) => {
+    setActiveNav(label);
+    if (label === "Trending Papers") {
+      setSelectedSort("Trending");
+      setSelectedTopic("All Topics");
+    } else if (label === "Latest Papers") {
+      setSelectedSort("Latest");
+      setSelectedTopic("All Topics");
+    } else if (label === "Most GitHub Stars") {
+      setSelectedSort("Most GitHub Stars");
+      setSelectedTopic("All Topics");
     } else {
-      dynamicFilterParams.task = selectedTag.toLowerCase(); 
+      setSelectedTopic(label);
     }
-  }
+  };
+
+  // Combine featured papers with any dynamically loaded papers
+  const allPapers: Paper[] = useMemo(() => {
+    const fetched = initialPapers?.papers || [];
+    if (fetched.length === 0) {
+      return FEATURED_PAPERS;
+    }
+
+    // Merge featured papers at the front if not already present
+    const map = new Map<string, Paper>();
+    FEATURED_PAPERS.forEach((p) => map.set(p.slug, p));
+    fetched.forEach((p) => {
+      if (!map.has(p.slug)) map.set(p.slug, p);
+    });
+    return Array.from(map.values());
+  }, [initialPapers]);
+
+  // Filter papers based on selected topic
+  const filteredPapers = useMemo(() => {
+    if (!selectedTopic || selectedTopic === "All Topics") {
+      return allPapers;
+    }
+
+    const topicQuery = selectedTopic.toLowerCase();
+    return allPapers.filter((paper) => {
+      const matchTags = (paper.tags || []).some((t) =>
+        t.toLowerCase().includes(topicQuery)
+      );
+      const matchAdditional = (paper.additionalTags || []).some((t) =>
+        t.toLowerCase().includes(topicQuery)
+      );
+      const matchTitle = paper.title.toLowerCase().includes(topicQuery);
+      const matchDesc = paper.description.toLowerCase().includes(topicQuery);
+
+      return matchTags || matchAdditional || matchTitle || matchDesc;
+    });
+  }, [allPapers, selectedTopic]);
+
+  // Sort papers based on selected sort
+  const sortedPapers = useMemo(() => {
+    const papers = [...filteredPapers];
+    if (selectedSort === "Most GitHub Stars") {
+      return papers.sort(
+        (a, b) => (parseInt(b.repo || "0", 10) || 0) - (parseInt(a.repo || "0", 10) || 0)
+      );
+    }
+    if (selectedSort === "Trending") {
+      return papers.sort(
+        (a, b) =>
+          ((b.github_hourly_increase || 0) * 100 + (parseInt(b.upvotes || "0", 10) || 0)) -
+          ((a.github_hourly_increase || 0) * 100 + (parseInt(a.upvotes || "0", 10) || 0))
+      );
+    }
+    if (selectedSort === "Citations") {
+      return papers.sort((a, b) => (b.citations || 0) - (a.citations || 0));
+    }
+    // Default: Latest
+    return papers;
+  }, [filteredPapers, selectedSort]);
+
+  const totalCount = 124532;
+  const totalPages = 4152;
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-[#F8F7F2] text-[#111111]">
-      <Navbar activeSort={activeSort} onItemSelect={handleSidebarSelect} />
-      <div
-        id="scroll-container"
-        className="flex-1 overflow-y-auto overflow-x-hidden hide-scroll flex flex-col"
-      >
-        {/* Hero Section Container */}
-        <div className="w-full max-w-[1600px] mx-auto px-4 md:px-8 xl:px-10 pt-3">
-          <HeroSection
-            selectedTag={selectedTag}
-            setSelectedTag={handleTagSelect as any}
+    <div className="flex flex-col min-h-screen bg-[#FAFAFA] dark:bg-[#0F1115] text-[#111111] dark:text-[#EDEDED] transition-colors duration-200">
+      {/* Top Navigation Bar */}
+      <Navbar
+        activeSort={activeNav}
+        onItemSelect={handleNavSelect}
+      />
+
+      {/* Main Container */}
+      <div className="w-full max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-start gap-6 lg:gap-8 flex-1">
+        {/* Left Sticky Sidebar */}
+        <aside className="hidden lg:block w-[220px] shrink-0 sticky top-[80px] max-h-[calc(100vh-100px)] overflow-y-auto hide-scroll">
+          <Sidebar
+            initialActive={activeNav}
+            onItemSelect={handleNavSelect}
           />
-        </div>
+        </aside>
 
-        {/* 3-Column Layout */}
-        <div className="w-full max-w-[1600px] mx-auto px-4 md:px-8 xl:px-10 pt-4 pb-2 flex items-start gap-5 lg:gap-8 xl:gap-10">
-          <div className="hidden lg:block w-[240px] shrink-0 sticky top-3 h-[calc(100vh-80px)]">
-            <Sidebar initialActive={activeSort} onItemSelect={handleSidebarSelect} />
-          </div>
+        {/* Main Content Area */}
+        <main className="flex-1 min-w-0">
+          {/* Subheader: Topic Filter Pills + Sort Dropdown + View Mode + Counts */}
+          <PaperTabs
+            selectedTopic={selectedTopic}
+            onTopicSelect={(topic) => setSelectedTopic(topic)}
+            selectedSort={selectedSort}
+            onSortSelect={(sort) => {
+              setSelectedSort(sort);
+              if (sort === "Trending") setActiveNav("Trending Papers");
+              else if (sort === "Latest") setActiveNav("Latest Papers");
+              else if (sort === "Most GitHub Stars") setActiveNav("Most GitHub Stars");
+            }}
+            viewMode={viewMode}
+            onViewModeChange={(mode) => setViewMode(mode)}
+            totalPapers={totalCount}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
 
-          <main className="flex-1 min-w-0 max-w-[1380px]">
-            <PaperTabs selectedPeriod={selectedPeriod} onPeriodSelect={handlePeriodSelect} />
-            <PaperList
-              selectedTag={isMethod ? undefined : selectedTag}
-              period={apiPeriod}
-              filterParams={dynamicFilterParams}
-              initialPapers={initialPapers}
-              initialError={initialError}
-              isFilterChanging={isFilterChanging}
-              onFilterDone={() => setIsFilterChanging(false)}
-            />
-          </main>
-        </div>
+          {/* Cards Display */}
+          {viewMode === "grid" ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-4.5 items-stretch">
+              {sortedPapers.map((paper) => (
+                <div key={paper.slug || paper.id} className="h-full">
+                  <PaperGridCard paper={paper} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col gap-4">
+              <PaperList
+                filterParams={{ sort: selectedSort.toLowerCase() }}
+                initialPapers={initialPapers}
+                initialError={initialError}
+              />
+            </div>
+          )}
+        </main>
       </div>
     </div>
   );

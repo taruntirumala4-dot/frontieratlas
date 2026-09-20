@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" width="100%" height="100%">
+  <rect width="400" height="200" fill="#F8FAFC"/>
+  <text x="200" y="24" font-family="system-ui, sans-serif" font-size="11" font-weight="700" text-anchor="middle" fill="#1E293B">PartialBiGrasp: Inferring Hidden Local Geometry for Bimanual Grasping</text>
+  <text x="200" y="38" font-family="system-ui, sans-serif" font-size="7" fill="#64748B" text-anchor="middle">Tianyu Li, Rui Chen, Akash Sharma, Chelsea Finn</text>
+
+  <!-- Left: Partial observation -->
+  <rect x="25" y="55" width="70" height="95" rx="4" fill="#F1F5F9" stroke="#CBD5E1"/>
+  <text x="60" y="70" font-family="system-ui" font-size="7.5" font-weight="600" text-anchor="middle" fill="#475569">Partial Point Cloud</text>
+  <circle cx="45" cy="95" r="2" fill="#64748B"/>
+  <circle cx="55" cy="90" r="2.5" fill="#475569"/>
+  <circle cx="68" cy="98" r="2" fill="#64748B"/>
+  <circle cx="75" cy="115" r="3" fill="#334155"/>
+  <circle cx="50" cy="120" r="2" fill="#475569"/>
+
+  <!-- Center: Inferred 3D Mesh (Blue) -->
+  <g transform="translate(140, 50)">
+    <rect x="0" y="0" width="110" height="105" rx="4" fill="#EFF6FF" stroke="#93C5FD"/>
+    <text x="55" y="16" font-family="system-ui" font-size="7.5" font-weight="600" text-anchor="middle" fill="#1D4ED8">Reconstructed 3D Shape</text>
+    <!-- 3D Organic mesh shape -->
+    <path d="M 25 65 Q 55 25 85 55 Q 105 85 75 95 Q 35 105 25 65 Z" fill="#3B82F6" opacity="0.85" stroke="#1D4ED8" stroke-width="1.5"/>
+    <!-- Wireframe details -->
+    <path d="M 35 55 Q 55 45 75 65" stroke="#93C5FD" stroke-width="1" fill="none"/>
+    <path d="M 30 75 Q 60 70 85 80" stroke="#93C5FD" stroke-width="1" fill="none"/>
+    <path d="M 55 35 Q 55 70 65 95" stroke="#93C5FD" stroke-width="1" fill="none"/>
+  </g>
+
+  <!-- Right: Bimanual Grippers -->
+  <g transform="translate(285, 55)">
+    <rect x="0" y="0" width="95" height="95" rx="4" fill="#F8FAFC" stroke="#E2E8F0"/>
+    <text x="47" y="16" font-family="system-ui" font-size="7.5" font-weight="600" text-anchor="middle" fill="#334155">Bimanual Exec</text>
+    <!-- Left gripper -->
+    <rect x="15" y="45" width="8" height="25" rx="2" fill="#64748B"/>
+    <rect x="23" y="38" width="16" height="6" rx="2" fill="#475569"/>
+    <rect x="23" y="70" width="16" height="6" rx="2" fill="#475569"/>
+    <!-- Target object -->
+    <circle cx="50" cy="58" r="14" fill="#F59E0B" opacity="0.9"/>
+    <!-- Right gripper -->
+    <rect x="75" y="45" width="8" height="25" rx="2" fill="#64748B"/>
+    <rect x="59" y="38" width="16" height="6" rx="2" fill="#475569"/>
+    <rect x="59" y="70" width="16" height="6" rx="2" fill="#475569"/>
+  </g>
+</svg>

@@ -512,9 +512,9 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
       onMouseEnter={handlePrefetch}
       onTouchStart={handlePrefetch}
     >
-      <div className="group flex flex-col xl:flex-row gap-3 sm:gap-4 xl:gap-5 p-3 sm:p-4 xl:pt-2 xl:pb-2 bg-white xl:bg-transparent border xl:border-none border-[#E5E5E0] rounded-none hover:shadow-lg xl:hover:bg-white xl:hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all duration-300 ease-out">
+      <div className="group flex flex-col xl:flex-row gap-3 sm:gap-4 xl:gap-5 p-3 sm:p-4 xl:pt-2 xl:pb-2 bg-white dark:bg-[#161B22] xl:bg-transparent xl:dark:bg-transparent border xl:border-none border-[#E5E5E0] dark:border-[#22272E] rounded-none hover:shadow-lg xl:hover:bg-white xl:dark:hover:bg-[#161B22] xl:hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] dark:xl:hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] transition-all duration-300 ease-out">
         {/* PDF thumbnail */}
-        <div className="order-first xl:order-last shrink-0 w-full xl:w-auto mx-auto xl:mx-0 xl:self-stretch border-b xl:border-b-0 border-[#E5E5E0] pb-3 xl:pb-0 mb-1 xl:mb-0">
+        <div className="order-first xl:order-last shrink-0 w-full xl:w-auto mx-auto xl:mx-0 xl:self-stretch border-b xl:border-b-0 border-[#E5E5E0] dark:border-[#22272E] pb-3 xl:pb-0 mb-1 xl:mb-0">
           <Link href={`/papers/${paper.slug}`} className="block h-full group/thumb cursor-pointer">
             <PaperThumbnail 
               title={paper.title} 
@@ -528,20 +528,20 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
         {/* Content */}
         <div className="flex-1 min-w-0 flex flex-col">
           {/* Title */}
-          <h3 className="text-[15px] sm:text-[17px] xl:text-[20px] font-serif font-medium text-[#111111] leading-snug xl:leading-[1.3] mb-1 xl:mb-1.5 transition-colors line-clamp-2">
-            <Link href={`/papers/${paper.slug}`} className="hover:text-[#F55036]">
+          <h3 className="text-[15px] sm:text-[17px] xl:text-[20px] font-serif font-medium text-[#111111] dark:text-[#F0F6FC] leading-snug xl:leading-[1.3] mb-1 xl:mb-1.5 transition-colors line-clamp-2">
+            <Link href={`/papers/${paper.slug}`} className="hover:text-[#F55036] dark:hover:text-[#FF5A1F]">
               {paper.title}
             </Link>
           </h3>
  
           {/* Authors + Date + Citations */}
-          <div className="flex flex-wrap items-center gap-x-2 text-[13px] text-[#666666] mb-3">
+          <div className="flex flex-wrap items-center gap-x-2 text-[13px] text-[#666666] dark:text-[#8B949E] mb-3">
             <div className="flex flex-wrap items-center">
               {visibleAuthors.length > 0 ? (
                 visibleAuthors.map((a, i) => (
                   <span key={a.slug || i}>
                     {i > 0 && <span>, </span>}
-                    <span className="hover:text-[#F55036] transition-colors">
+                    <span className="hover:text-[#F55036] dark:hover:text-[#FF5A1F] transition-colors">
                       {a.name}
                     </span>
                   </span>
@@ -551,11 +551,11 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
               )}
               {remaining > 0 && <span>, +{remaining} {remaining === 1 ? 'author' : 'authors'}</span>}
             </div>
-            <span className="text-[#CCCCCC]">•</span>
+            <span className="text-[#CCCCCC] dark:text-[#484F58]">•</span>
  
             <span>{paper.date}</span>
  
-            <span className="text-[#CCCCCC]">•</span>
+            <span className="text-[#CCCCCC] dark:text-[#484F58]">•</span>
  
             <span>{paper.citations || 0} citations</span>
  
@@ -564,7 +564,7 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
  
  
           {/* Description */}
-          <p className="text-[13px] sm:text-[13.5px] xl:text-[14px] text-[#444444] leading-[1.6] mb-3 line-clamp-3">
+          <p className="text-[13px] sm:text-[13.5px] xl:text-[14px] text-[#444444] dark:text-[#A1A1A6] leading-[1.6] mb-3 line-clamp-3">
             {paper.description}
           </p>
  
@@ -597,12 +597,12 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
                 const url = paper.arxivUrl || getArxivAbsUrl(paper.arxivId, paper.paperUrl) || "https://arxiv.org";
                 window.open(url, "_blank");
               }}
-              className="flex-none md:flex-1 flex items-center justify-center lg:justify-between xl:justify-center px-0.5 min-[375px]:px-1 md:px-2 lg:px-4 xl:px-2 h-[24px] md:h-[28px] lg:h-[58px] xl:h-[28px] bg-white text-[#b31b1b] border-[1.5px] border-[#b31b1b]/40 hover:border-[#b31b1b] hover:bg-[#b31b1b]/5 rounded-[6px] transition-all duration-300"
+              className="flex-none md:flex-1 flex items-center justify-center lg:justify-between xl:justify-center px-0.5 min-[375px]:px-1 md:px-2 lg:px-4 xl:px-2 h-[24px] md:h-[28px] lg:h-[58px] xl:h-[28px] bg-white dark:bg-[#1C2128] text-[#b31b1b] dark:text-[#F85149] border-[1.5px] border-[#b31b1b]/40 dark:border-[#F85149]/40 hover:border-[#b31b1b] dark:hover:border-[#F85149] hover:bg-[#b31b1b]/5 dark:hover:bg-[#F85149]/10 rounded-[6px] transition-all duration-300"
             >
               <div className="flex items-center gap-0.5 min-[375px]:gap-1 md:gap-1.5 lg:gap-3 xl:gap-1.5">
                 <div className="w-[12px] h-[12px] min-[375px]:w-[14px] min-[375px]:h-[14px] md:w-[20px] md:h-[20px] lg:w-8 lg:h-8 xl:w-[20px] xl:h-[20px] rounded-[4px] md:rounded-[6px] lg:rounded-[10px] xl:rounded-[6px] bg-transparent flex items-center justify-center">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="https://cdn.simpleicons.org/arxiv/b31b1b" alt="arXiv" className="w-[9px] h-[9px] min-[375px]:w-[10px] min-[375px]:h-[10px] md:w-[12px] md:h-[12px] lg:w-4 lg:h-4 xl:w-[12px] xl:h-[12px]" />
+                  <img src="https://cdn.simpleicons.org/arxiv/b31b1b" alt="arXiv" className="w-[9px] h-[9px] min-[375px]:w-[10px] min-[375px]:h-[10px] md:w-[12px] md:h-[12px] lg:w-4 lg:h-4 xl:w-[12px] xl:h-[12px] dark:brightness-125" />
                 </div>
                 <div className="flex flex-col items-start">
                   <span className="font-medium lg:font-semibold xl:font-medium text-[7.5px] min-[375px]:text-[8.5px] sm:text-[9.5px] md:text-[11.5px] lg:text-[15px] xl:text-[11.5px] whitespace-nowrap tracking-tighter min-[375px]:tracking-tight">arXiv</span>
@@ -619,11 +619,11 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
                 const url = paper.pdfUrl || getArxivPdfUrl((paper as any).pdfUrl, paper.paperUrl, paper.arxivId) || "https://arxiv.org";
                 window.open(url, "_blank");
               }}
-              className="flex-none md:flex-1 flex items-center justify-center lg:justify-between xl:justify-center px-0.5 min-[375px]:px-1 md:px-2 lg:px-4 xl:px-2 h-[24px] md:h-[28px] lg:h-[58px] xl:h-[28px] bg-white text-[#E54D59] border-[1.5px] border-[#E54D59]/40 hover:border-[#E54D59] hover:bg-[#E54D59]/5 rounded-[6px] transition-all duration-300"
+              className="flex-none md:flex-1 flex items-center justify-center lg:justify-between xl:justify-center px-0.5 min-[375px]:px-1 md:px-2 lg:px-4 xl:px-2 h-[24px] md:h-[28px] lg:h-[58px] xl:h-[28px] bg-white dark:bg-[#1C2128] text-[#E54D59] dark:text-[#FF7B72] border-[1.5px] border-[#E54D59]/40 dark:border-[#FF7B72]/40 hover:border-[#E54D59] dark:hover:border-[#FF7B72] hover:bg-[#E54D59]/5 dark:hover:bg-[#FF7B72]/10 rounded-[6px] transition-all duration-300"
             >
               <div className="flex items-center gap-0.5 min-[375px]:gap-1 md:gap-1.5 lg:gap-3 xl:gap-1.5">
                 <div className="w-[12px] h-[12px] min-[375px]:w-[14px] min-[375px]:h-[14px] md:w-[20px] md:h-[20px] lg:w-8 lg:h-8 xl:w-[20px] xl:h-[20px] rounded-[4px] md:rounded-[6px] lg:rounded-[10px] xl:rounded-[6px] bg-transparent flex items-center justify-center">
-                  <FileText className="text-[#E54D59] w-[9px] h-[9px] min-[375px]:w-[10px] min-[375px]:h-[10px] md:w-[12px] md:h-[12px] lg:w-4 lg:h-4 xl:w-[12px] xl:h-[12px]" />
+                  <FileText className="text-[#E54D59] dark:text-[#FF7B72] w-[9px] h-[9px] min-[375px]:w-[10px] min-[375px]:h-[10px] md:w-[12px] md:h-[12px] lg:w-4 lg:h-4 xl:w-[12px] xl:h-[12px]" />
                 </div>
                 <div className="flex flex-col items-start">
                   <span className="font-medium lg:font-semibold xl:font-medium text-[7.5px] min-[375px]:text-[8.5px] sm:text-[9.5px] md:text-[11.5px] lg:text-[15px] xl:text-[11.5px] whitespace-nowrap tracking-tighter min-[375px]:tracking-tight">PDF</span>
@@ -647,12 +647,12 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
                   window.open("https://github.com", "_blank");
                 }
               }}
-              className="flex-none md:flex-1 flex items-center justify-center lg:justify-between xl:justify-center px-0.5 min-[375px]:px-1 md:px-2 lg:px-4 xl:px-2 h-[24px] md:h-[28px] lg:h-[58px] xl:h-[28px] bg-white text-[#24292f] border-[1.5px] border-[#24292f]/30 hover:border-[#24292f] hover:bg-[#24292f]/5 rounded-[6px] transition-all duration-300"
+              className="flex-none md:flex-1 flex items-center justify-center lg:justify-between xl:justify-center px-0.5 min-[375px]:px-1 md:px-2 lg:px-4 xl:px-2 h-[24px] md:h-[28px] lg:h-[58px] xl:h-[28px] bg-white dark:bg-[#1C2128] text-[#24292f] dark:text-[#C9D1D9] border-[1.5px] border-[#24292f]/30 dark:border-[#30363D] hover:border-[#24292f] dark:hover:border-[#8B949E] hover:bg-[#24292f]/5 dark:hover:bg-[#30363D]/50 rounded-[6px] transition-all duration-300"
             >
               <div className="flex items-center gap-0.5 min-[375px]:gap-1 md:gap-1.5 lg:gap-3 xl:gap-1.5">
                 <div className="w-[12px] h-[12px] min-[375px]:w-[14px] min-[375px]:h-[14px] md:w-[20px] md:h-[20px] lg:w-8 lg:h-8 xl:w-[20px] xl:h-[20px] rounded-[4px] md:rounded-[6px] lg:rounded-[10px] xl:rounded-[6px] bg-transparent flex items-center justify-center">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="https://cdn.simpleicons.org/github/24292f" alt="GitHub" className="w-[9px] h-[9px] min-[375px]:w-[10px] min-[375px]:h-[10px] md:w-[12px] md:h-[12px] lg:w-4 lg:h-4 xl:w-[12px] xl:h-[12px]" />
+                  <img src="https://cdn.simpleicons.org/github/24292f" alt="GitHub" className="w-[9px] h-[9px] min-[375px]:w-[10px] min-[375px]:h-[10px] md:w-[12px] md:h-[12px] lg:w-4 lg:h-4 xl:w-[12px] xl:h-[12px] dark:invert" />
                 </div>
                 <div className="flex flex-col items-start">
                   <span className="font-medium lg:font-semibold xl:font-medium text-[7.5px] min-[375px]:text-[8.5px] sm:text-[9.5px] md:text-[11.5px] lg:text-[15px] xl:text-[11.5px] whitespace-nowrap tracking-tighter min-[375px]:tracking-tight">Code</span>
@@ -680,7 +680,7 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
                   alert("Hugging Face model will be available soon.");
                 }
               }}
-              className="relative overflow-hidden flex-none md:flex-1 flex items-center justify-center lg:justify-between xl:justify-center px-0.5 min-[375px]:px-1 md:px-2 lg:px-4 xl:px-2 h-[24px] md:h-[28px] lg:h-[58px] xl:h-[28px] bg-white text-[#B7791F] border-[1.5px] border-[#eab308]/50 hover:border-[#eab308] hover:bg-[#eab308]/10 rounded-[6px] transition-all duration-300"
+              className="relative overflow-hidden flex-none md:flex-1 flex items-center justify-center lg:justify-between xl:justify-center px-0.5 min-[375px]:px-1 md:px-2 lg:px-4 xl:px-2 h-[24px] md:h-[28px] lg:h-[58px] xl:h-[28px] bg-white dark:bg-[#1C2128] text-[#B7791F] dark:text-[#E3B341] border-[1.5px] border-[#eab308]/50 dark:border-[#E3B341]/40 hover:border-[#eab308] dark:hover:border-[#E3B341] hover:bg-[#eab308]/10 dark:hover:bg-[#E3B341]/10 rounded-[6px] transition-all duration-300"
             >
               {/* Mobile Content */}
               <div className="absolute inset-0 flex sm:hidden items-center justify-center pointer-events-none">
@@ -715,7 +715,7 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
                   window.open(ghUrl, "_blank");
                 }
               }}
-              className="relative overflow-hidden flex-none md:flex-1 flex items-center justify-center lg:justify-between xl:justify-center px-0.5 min-[375px]:px-1 md:px-2 lg:px-4 xl:px-2 h-[24px] md:h-[28px] lg:h-[58px] xl:h-[28px] bg-white text-[#24292f] border-[1.5px] border-[#24292f]/30 hover:border-[#24292f] hover:bg-[#24292f]/5 rounded-[6px] transition-all duration-300"
+              className="relative overflow-hidden flex-none md:flex-1 flex items-center justify-center lg:justify-between xl:justify-center px-0.5 min-[375px]:px-1 md:px-2 lg:px-4 xl:px-2 h-[24px] md:h-[28px] lg:h-[58px] xl:h-[28px] bg-white dark:bg-[#1C2128] text-[#24292f] dark:text-[#C9D1D9] border-[1.5px] border-[#24292f]/30 dark:border-[#30363D] hover:border-[#24292f] dark:hover:border-[#8B949E] hover:bg-[#24292f]/5 dark:hover:bg-[#30363D]/50 rounded-[6px] transition-all duration-300"
             >
               {/* Mobile Content */}
               <div className="absolute inset-0 flex sm:hidden items-center justify-center pointer-events-none">
@@ -729,9 +729,9 @@ export const PaperCard = memo(({ paper }: { paper: Paper }) => {
               <div className="hidden sm:flex items-center gap-1.5 lg:gap-3 xl:gap-1.5">
                 <div className="w-[20px] h-[20px] lg:w-8 lg:h-8 xl:w-[20px] xl:h-[20px] rounded-[6px] lg:rounded-[10px] xl:rounded-[6px] bg-transparent flex items-center justify-center">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="https://cdn.simpleicons.org/github/24292f" alt="GitHub" className="w-[12px] h-[12px] lg:w-4 lg:h-4 xl:w-[12px] xl:h-[12px]" />
+                  <img src="https://cdn.simpleicons.org/github/24292f" alt="GitHub" className="w-[12px] h-[12px] lg:w-4 lg:h-4 xl:w-[12px] xl:h-[12px] dark:invert" />
                 </div>
-                <ArrowUp className="w-[12px] h-[12px] lg:w-4 lg:h-4 xl:w-[12px] xl:h-[12px] text-[#24292f]" strokeWidth={2.5} />
+                <ArrowUp className="w-[12px] h-[12px] lg:w-4 lg:h-4 xl:w-[12px] xl:h-[12px] text-[#24292f] dark:text-[#C9D1D9]" strokeWidth={2.5} />
                 <span className="font-semibold xl:font-medium text-[9.5px] md:text-[11.5px] lg:text-[15px] xl:text-[11.5px] whitespace-nowrap tracking-tight">
                   {paper.github_hourly_increase?.toFixed(2) ?? "0.00"} stars / hour
                 </span>

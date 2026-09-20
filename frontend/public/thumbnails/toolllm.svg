@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" width="100%" height="100%">
+  <rect width="400" height="200" fill="#F8FAFC"/>
+  <text x="200" y="24" font-family="system-ui, sans-serif" font-size="11" font-weight="700" text-anchor="middle" fill="#1E293B">ToolLLM: Facilitating Large Language Models to Master 16000+ Real-world APIs</text>
+  <text x="200" y="38" font-family="system-ui, sans-serif" font-size="7" fill="#64748B" text-anchor="middle">Hao Nguyen, Pranav Verma, Ishita Das, Graham Neubig</text>
+
+  <!-- Left: Mobile/Tool icon -->
+  <rect x="25" y="60" width="30" height="55" rx="5" fill="#1E293B" stroke="#94A3B8" stroke-width="1.5"/>
+  <rect x="28" y="66" width="24" height="42" rx="2" fill="#38BDF8"/>
+  <circle cx="40" cy="112" r="1.5" fill="#FFFFFF"/>
+
+  <path d="M 62 88 L 88 88" stroke="#64748B" stroke-width="1.5" stroke-dasharray="3,2"/>
+
+  <!-- Middle: Tree / API hierarchy -->
+  <g transform="translate(95, 55)">
+    <rect x="0" y="25" width="45" height="18" rx="3" fill="#EFF6FF" stroke="#3B82F6"/>
+    <text x="22" y="37" font-family="monospace" font-size="6.5" font-weight="bold" text-anchor="middle" fill="#1D4ED8">User Query</text>
+
+    <line x1="45" y1="34" x2="65" y2="15" stroke="#94A3B8"/>
+    <line x1="45" y1="34" x2="65" y2="34" stroke="#94A3B8"/>
+    <line x1="45" y1="34" x2="65" y2="53" stroke="#94A3B8"/>
+
+    <rect x="65" y="6" width="42" height="16" rx="2" fill="#F0FDF4" stroke="#22C55E"/>
+    <text x="86" y="17" font-family="monospace" font-size="6" text-anchor="middle" fill="#15803D">API: Search</text>
+
+    <rect x="65" y="26" width="42" height="16" rx="2" fill="#FEF3C7" stroke="#F59E0B"/>
+    <text x="86" y="37" font-family="monospace" font-size="6" text-anchor="middle" fill="#B45309">API: Weather</text>
+
+    <rect x="65" y="46" width="42" height="16" rx="2" fill="#FEE2E2" stroke="#EF4444"/>
+    <text x="86" y="57" font-family="monospace" font-size="6" text-anchor="middle" fill="#B91C1C">API: Booking</text>
+  </g>
+
+  <!-- Right: Execution flow -->
+  <g transform="translate(235, 55)">
+    <rect x="0" y="5" width="145" height="75" rx="4" fill="#FFFFFF" stroke="#CBD5E1"/>
+    <rect x="10" y="15" width="125" height="14" rx="2" fill="#F1F5F9"/>
+    <text x="15" y="25" font-family="monospace" font-size="6" fill="#0F172A">&gt; tool_call("weather", {city: "NYC"})</text>
+    <rect x="10" y="34" width="125" height="14" rx="2" fill="#F8FAFC"/>
+    <text x="15" y="44" font-family="monospace" font-size="6" fill="#10B981">&gt; 200 OK: {temp: 72, condition: "Sunny"}</text>
+    <rect x="10" y="53" width="125" height="16" rx="2" fill="#EFF6FF"/>
+    <text x="15" y="64" font-family="monospace" font-size="6.5" font-weight="600" fill="#2563EB">ToolLLM: Final Answer Synthesized</text>
+  </g>
+</svg>

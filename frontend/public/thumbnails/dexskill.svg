@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" width="100%" height="100%">
+  <rect width="400" height="200" fill="#F8FAFC"/>
+  <text x="200" y="24" font-family="system-ui, sans-serif" font-size="11" font-weight="700" text-anchor="middle" fill="#1E293B">DexSkill: Learning Real-World Dexterous Manipulation from Human Videos</text>
+  <text x="200" y="38" font-family="system-ui, sans-serif" font-size="7" fill="#64748B" text-anchor="middle">Ziwen Wang, Kuan Fang, Yuke Zhu</text>
+
+  <!-- Left: Human video frame -->
+  <g transform="translate(30, 55)">
+    <rect x="0" y="0" width="90" height="70" rx="4" fill="#0F172A"/>
+    <text x="45" y="14" font-family="system-ui" font-size="6.5" fill="#94A3B8" text-anchor="middle">Human Demo Video</text>
+    <!-- Hand drawing -->
+    <path d="M 25 55 Q 35 30 50 35 Q 65 40 70 55" stroke="#E2E8F0" stroke-width="2" fill="none"/>
+    <circle cx="48" cy="36" r="3" fill="#F59E0B"/>
+    <circle cx="58" cy="42" r="3" fill="#F59E0B"/>
+  </g>
+
+  <!-- Arrow -->
+  <path d="M 130 90 L 155 90" stroke="#64748B" stroke-width="2"/>
+  <polygon points="155,86 163,90 155,94" fill="#64748B"/>
+
+  <!-- Center: Skill extraction policy -->
+  <g transform="translate(170, 52)">
+    <rect x="0" y="0" width="85" height="76" rx="4" fill="#FEF2F2" stroke="#F87171"/>
+    <text x="42" y="22" font-family="system-ui" font-size="7.5" font-weight="bold" fill="#B91C1C" text-anchor="middle">Dexterous Skill</text>
+    <text x="42" y="34" font-family="system-ui" font-size="6.5" fill="#DC2626" text-anchor="middle">Representation</text>
+    <rect x="15" y="44" width="55" height="18" rx="3" fill="#FFFFFF" stroke="#FECACA"/>
+    <text x="42" y="56" font-family="monospace" font-size="6.5" fill="#991B1B" text-anchor="middle">&pi;(a|s, human_traj)</text>
+  </g>
+
+  <!-- Right: Robot manipulation -->
+  <g transform="translate(265, 55)">
+    <rect x="0" y="0" width="105" height="70" rx="4" fill="#F0FDF4" stroke="#86EFAC"/>
+    <!-- Dexterous Robot Hand -->
+    <circle cx="25" cy="50" r="10" fill="#334155"/>
+    <line x1="25" y1="50" x2="60" y2="35" stroke="#475569" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="60" cy="35" r="5" fill="#1E293B"/>
+    <path d="M 60 32 L 80 25 L 85 32" stroke="#1E293B" stroke-width="2" fill="none"/>
+    <path d="M 60 38 L 80 45 L 85 38" stroke="#1E293B" stroke-width="2" fill="none"/>
+    <rect x="80" y="28" width="14" height="14" rx="2" fill="#3B82F6"/>
+  </g>
+</svg>

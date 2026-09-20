@@ -185,10 +185,10 @@ setSuggestions(results);
           layoutId={layoutIdPrefix ? `${layoutIdPrefix}-container` : undefined}
           transition={{ type: "spring", stiffness: 250, damping: 25 }}
           onSubmit={handleSubmit}
-          className={`relative flex items-center px-3 md:px-5 bg-white border border-[#E5E5E0] h-10 md:h-12
-  shadow-[0_8px_30px_rgb(0,0,0,0.06)]
+          className={`relative flex items-center px-3 md:px-5 bg-white dark:bg-[#161B22] border border-[#E5E5E0] dark:border-[#30363D] h-10 md:h-12
+  shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)]
   hover:shadow-[0_12px_32px_rgb(0,0,0,0.10)]
-  focus-within:border-[#FF5A1F]/40
+  focus-within:border-[#FF5A1F]/40 dark:focus-within:border-[#FF5A1F]/60
   focus-within:shadow-[0_0_0_3px_rgba(255,90,31,0.08)]
   transition-all duration-200
   rounded-full`}
@@ -196,7 +196,7 @@ setSuggestions(results);
           <motion.div
             layoutId={layoutIdPrefix ? `${layoutIdPrefix}-icon` : undefined}
             transition={{ type: "spring", stiffness: 250, damping: 25 }}
-            className={`flex items-center text-[#737373] shrink-0 ${
+            className={`flex items-center text-[#737373] dark:text-[#8B949E] shrink-0 ${
               isHomepagePresentation ? "mr-2 md:mr-3" : "mr-2 md:mr-3"
             }`}
           >
@@ -215,7 +215,7 @@ setSuggestions(results);
           onFocus={() => setShowSuggestions(true)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className={`bg-transparent outline-none flex-1 text-[#111111] placeholder:text-[#737373] min-w-0 pr-10 text-left h-full ${
+          className={`bg-transparent outline-none flex-1 text-[#111111] dark:text-[#F0F6FC] placeholder:text-[#737373] dark:placeholder:text-[#8B949E] min-w-0 pr-10 text-left h-full ${
            variant === "compact"
   ? "text-[12px] md:text-[13px]"
   : isHomepagePresentation ? "text-[12px] md:text-[14px] truncate mr-2" : "text-[13px] md:text-[15px]"
@@ -294,7 +294,7 @@ overflow-y-auto
                 <Link
                   href={href}
                   onClick={() => setShowSuggestions(false)}
-                  className={`flex items-start gap-3 cursor-pointer transition-colors block w-full h-full ${
+                  className={`flex items-start gap-3 cursor-pointer transition-colors w-full h-full ${
                     isHomepagePresentation ? "px-4 md:px-5 py-3" : "px-4 py-3"
                   }`}
                 >
