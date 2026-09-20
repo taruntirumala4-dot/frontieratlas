@@ -40,12 +40,14 @@ app.use(
   "*",
   cors({
     origin: (origin) => {
-  // Allow local development, production, and Cloudflare Pages previews
+  // Allow local development, production, Cloudflare Pages previews, and Vercel previews
   if (
     !origin ||
     origin.includes("localhost") ||
     origin.includes("127.0.0.1") ||
     origin === "https://frontieratlas.co" ||
+    origin.includes("vercel.app") ||
+    origin.includes("vercel.io") ||
     /^https:\/\/[a-z0-9-]+\.frontieratlas\.pages\.dev$/.test(origin)
   ) {
     return origin;

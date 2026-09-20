@@ -20,10 +20,9 @@ export default function SignInForm() {
     setLoading(true);
 
     try {
-      const defaultApiUrl = "https://frontieratlas-backend.morningsignal-india.workers.dev";
       const API_BASE = process.env.NODE_ENV === "development"
-        ? ""
-        : (process.env.NEXT_PUBLIC_API_URL || defaultApiUrl).replace(/\/$/, "");
+        ? (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8787").replace(/\/$/, "")
+        : "";
 
       const res = await fetch(`${API_BASE}/api/v1/auth/login`, {
         method: "POST",

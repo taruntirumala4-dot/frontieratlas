@@ -861,8 +861,9 @@ export default function PaperDetail({ paper }: { paper: PaperDetailType }) {
   const [isSaved, setIsSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const normalizedModels = useMemo(() => normalizeModels(paper.models || []), [paper.models]);
-  const defaultApiUrl = "https://frontieratlas-backend.morningsignal-india.workers.dev";
-  const API_BASE = (process.env.NEXT_PUBLIC_API_URL || defaultApiUrl).replace(/\/$/, "");
+  const API_BASE = process.env.NODE_ENV === "development"
+    ? (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8787").replace(/\/$/, "")
+    : "";
 
   // 1. Check if the paper is saved when the page loads
   useEffect(() => {

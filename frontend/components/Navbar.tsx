@@ -12,11 +12,9 @@ type CurrentUser = {
   email: string;
 };
 
-const defaultApiUrl = "https://frontieratlas-backend.morningsignal-india.workers.dev";
-const API_BASE =
-  process.env.NODE_ENV === "development"
-    ? ""
-    : (process.env.NEXT_PUBLIC_API_URL || defaultApiUrl).replace(/\/$/, "");
+const API_BASE = process.env.NODE_ENV === "development"
+    ? (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8787").replace(/\/$/, "")
+    : "";
 
 export default function Navbar({
   activeSort,

@@ -16,10 +16,9 @@ export default function SignUpForm() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const defaultApiUrl = "https://frontieratlas-backend.morningsignal-india.workers.dev";
   const API_BASE = process.env.NODE_ENV === "development"
-    ? ""
-    : (process.env.NEXT_PUBLIC_API_URL || defaultApiUrl).replace(/\/$/, "");
+    ? (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8787").replace(/\/$/, "")
+    : "";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

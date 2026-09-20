@@ -3,10 +3,14 @@
 import { Github } from "lucide-react";
 
 export default function SocialButtons() {
+  const apiBase = process.env.NODE_ENV === "development"
+    ? (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8787").replace(/\/$/, "")
+    : "";
+
   return (
     <div className="grid grid-cols-2 gap-3">
       <a
-        href={process.env.NODE_ENV === "development" ? "http://localhost:8787/api/v1/auth/google" : "https://frontieratlas-backend.morningsignal-india.workers.dev/api/v1/auth/google"}
+        href={`${apiBase}/api/v1/auth/google`}
         className="h-11 rounded-xl border border-[#DDD8CE] bg-white hover:bg-[#FAFAFA] transition flex items-center justify-center gap-2 font-semibold text-[#111]"
       >
         <img
@@ -19,7 +23,7 @@ export default function SocialButtons() {
       </a>
 
       <a
-        href={process.env.NODE_ENV === "development" ? "http://localhost:8787/api/v1/auth/github" : "https://frontieratlas-backend.morningsignal-india.workers.dev/api/v1/auth/github"}
+        href={`${apiBase}/api/v1/auth/github`}
         className="h-11 rounded-xl border border-[#DDD8CE] bg-white hover:bg-[#FAFAFA] transition flex items-center justify-center gap-2 font-semibold text-[#111]"
       >
         <Github size={18} />
