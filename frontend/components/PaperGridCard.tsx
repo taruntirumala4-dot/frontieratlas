@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Paper } from "@/lib/paperApi";
-import { Star, FileText, Code2, Bookmark, Github } from "lucide-react";
+import { Paper, getArxivAbsUrl, getArxivPdfUrl } from "@/lib/paperApi";
+import { Star, FileText, Code2, Bookmark, Github, ArrowUpRight, ArrowUp } from "lucide-react";
 
 export default function PaperGridCard({ paper }: { paper: Paper }) {
   const [isSaved, setIsSaved] = useState(false);
@@ -11,6 +11,14 @@ export default function PaperGridCard({ paper }: { paper: Paper }) {
   const starCount = paper.upvotes ? parseInt(paper.upvotes, 10) : 128;
   const citationCount = paper.citations ?? 12;
   const githubStars = paper.repo ? parseInt(paper.repo, 10) : 86;
+
+  const githubRepo = paper.repositories?.find(
+    (repo: any) => repo.url?.includes("github.com")
+  );
+  const huggingFaceRepo = paper.repositories?.find(
+    (repo: any) => repo.url?.includes("huggingface.co")
+  );
+  const upvotesNum = parseFloat(paper.upvotes) || 0;
 
   // Authors display string
   const authorsText = paper.authors && paper.authors.length > 0
@@ -93,6 +101,140 @@ export default function PaperGridCard({ paper }: { paper: Paper }) {
             </span>
           ))}
         </div>
+
+        {/* Action Buttons */}
+        <div className="grid grid-cols-5 gap-1 mt-3.5">
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const url = paper.arxivUrl || getArxivAbsUrl(paper.arxivId, paper.paperUrl) || "https://arxiv.org";
+              window.open(url, "_blank");
+            }}
+            className="flex-none flex items-center justify-center px-0.5 h-[24px] sm:h-[26px] bg-white dark:bg-[#1C2128] text-[#b31b1b] dark:text-[#F85149] border-[1.5px] border-[#b31b1b]/40 dark:border-[#F85149]/40 hover:border-[#b31b1b] dark:hover:border-[#F85149] hover:bg-[#b31b1b]/5 dark:hover:bg-[#F85149]/10 rounded-[6px] transition-all duration-300"
+          >
+            <div className="flex items-center gap-0.5 sm:gap-1">
+              <div className="w-[12px] h-[12px] sm:w-[14px] sm:h-[14px] rounded-[4px] bg-transparent flex items-center justify-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="https://cdn.simpleicons.org/arxiv/b31b1b" alt="arXiv" className="w-[9px] h-[9px] sm:w-[10px] sm:h-[10px] dark:brightness-125" />
+              </div>
+              <span className="font-semibold text-[8px] sm:text-[9.5px] whitespace-nowrap tracking-tighter">arXiv</span>
+            </div>
+          </button>
+
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const url = paper.pdfUrl || getArxivPdfUrl((paper as any).pdfUrl, paper.paperUrl, paper.arxivId) || "https://arxiv.org";
+              window.open(url, "_blank");
+            }}
+            className="flex-none flex items-center justify-center px-0.5 h-[24px] sm:h-[26px] bg-white dark:bg-[#1C2128] text-[#E54D59] dark:text-[#FF7B72] border-[1.5px] border-[#E54D59]/40 dark:border-[#FF7B72]/40 hover:border-[#E54D59] dark:hover:border-[#FF7B72] hover:bg-[#E54D59]/5 dark:hover:bg-[#FF7B72]/10 rounded-[6px] transition-all duration-300"
+          >
+            <div className="flex items-center gap-0.5 sm:gap-1">
+              <div className="w-[12px] h-[12px] sm:w-[14px] sm:h-[14px] rounded-[4px] bg-transparent flex items-center justify-center">
+                <FileText className="text-[#E54D59] dark:text-[#FF7B72] w-[9px] h-[9px] sm:w-[10px] sm:h-[10px]" />
+              </div>
+              <span className="font-semibold text-[8px] sm:text-[9.5px] whitespace-nowrap tracking-tighter">PDF</span>
+            </div>
+          </button>
+
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const ghUrl =
+                paper.githubUrl ||
+                githubRepo?.url ||
+                (paper.repositories?.find((repo: any) => repo.url?.includes("github.com"))?.url);
+              if (ghUrl) {
+                window.open(ghUrl, "_blank");
+              } else {
+                window.open("https://github.com", "_blank");
+              }
+            }}
+            className="flex-none flex items-center justify-center px-0.5 h-[24px] sm:h-[26px] bg-white dark:bg-[#1C2128] text-[#24292f] dark:text-[#C9D1D9] border-[1.5px] border-[#24292f]/30 dark:border-[#30363D] hover:border-[#24292f] dark:hover:border-[#8B949E] hover:bg-[#24292f]/5 dark:hover:bg-[#30363D]/50 rounded-[6px] transition-all duration-300"
+          >
+            <div className="flex items-center gap-0.5 sm:gap-1">
+              <div className="w-[12px] h-[12px] sm:w-[14px] sm:h-[14px] rounded-[4px] bg-transparent flex items-center justify-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="https://cdn.simpleicons.org/github/24292f" alt="GitHub" className="w-[9px] h-[9px] sm:w-[10px] sm:h-[10px] dark:invert" />
+              </div>
+              <span className="font-semibold text-[8px] sm:text-[9.5px] whitespace-nowrap tracking-tighter">Code</span>
+            </div>
+          </button>
+
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const hfUrl =
+                huggingFaceRepo?.url ||
+                (paper as any).hfUrl ||
+                (paper as any).huggingface_url ||
+                (paper.arxivId ? `https://huggingface.co/papers/${paper.arxivId}` : null);
+              if (hfUrl) {
+                window.open(hfUrl, "_blank");
+              } else {
+                window.open("https://huggingface.co", "_blank");
+              }
+            }}
+            className="relative overflow-hidden flex-none flex items-center justify-center px-0.5 h-[24px] sm:h-[26px] bg-white dark:bg-[#1C2128] text-[#B7791F] dark:text-[#E3B341] border-[1.5px] border-[#eab308]/50 dark:border-[#E3B341]/40 hover:border-[#eab308] dark:hover:border-[#E3B341] hover:bg-[#eab308]/10 dark:hover:bg-[#E3B341]/10 rounded-[6px] transition-all duration-300"
+          >
+            {/* Mobile/Compact Content */}
+            <div className="absolute inset-0 flex min-[420px]:hidden items-center justify-center pointer-events-none">
+              <div className="flex items-center transform scale-[0.70] whitespace-nowrap">
+                <img src="https://cdn.simpleicons.org/huggingface" alt="Hugging Face" className="w-[10px] h-[10px]" />
+              </div>
+            </div>
+
+            {/* Desktop Content */}
+            <div className="hidden min-[420px]:flex items-center gap-0.5 sm:gap-1">
+              <div className="w-[12px] h-[12px] sm:w-[14px] sm:h-[14px] rounded-[4px] bg-transparent flex items-center justify-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="https://cdn.simpleicons.org/huggingface" alt="Hugging Face" className="w-[9px] h-[9px] sm:w-[10px] sm:h-[10px]" />
+              </div>
+              <span className="font-semibold text-[8px] sm:text-[9.5px] whitespace-nowrap tracking-tighter">
+                HF
+              </span>
+            </div>
+          </button>
+
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const ghUrl =
+                paper.githubUrl ||
+                githubRepo?.url ||
+                (paper.repositories?.find((repo: any) => repo.url?.includes("github.com"))?.url);
+              if (ghUrl) {
+                window.open(ghUrl, "_blank");
+              }
+            }}
+            className="relative overflow-hidden flex-none flex items-center justify-center px-0.5 h-[24px] sm:h-[26px] bg-white dark:bg-[#1C2128] text-[#24292f] dark:text-[#C9D1D9] border-[1.5px] border-[#24292f]/30 dark:border-[#30363D] hover:border-[#24292f] dark:hover:border-[#8B949E] hover:bg-[#24292f]/5 dark:hover:bg-[#30363D]/50 rounded-[6px] transition-all duration-300"
+          >
+            {/* Mobile/Compact Content */}
+            <div className="absolute inset-0 flex min-[420px]:hidden items-center justify-center pointer-events-none">
+              <div className="flex items-center gap-0.5 transform scale-[0.70] whitespace-nowrap">
+                <ArrowUp className="w-[10px] h-[10px] text-[#24292f] dark:text-[#C9D1D9]" strokeWidth={2.5} />
+                <span className="font-medium text-[10px] tracking-tight">{(paper.github_hourly_increase ?? 1.00).toFixed(1)}/h</span>
+              </div>
+            </div>
+
+            {/* Desktop Content */}
+            <div className="hidden min-[420px]:flex items-center gap-0.5">
+              <div className="w-[12px] h-[12px] sm:w-[14px] sm:h-[14px] rounded-[4px] bg-transparent flex items-center justify-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="https://cdn.simpleicons.org/github/24292f" alt="GitHub" className="w-[9px] h-[9px] sm:w-[10px] sm:h-[10px] dark:invert" />
+              </div>
+              <ArrowUp className="w-[10px] h-[10px] text-[#24292f] dark:text-[#C9D1D9]" strokeWidth={2.5} />
+              <span className="font-semibold text-[8px] sm:text-[9.5px] whitespace-nowrap tracking-tighter">
+                {(paper.github_hourly_increase ?? 1.00).toFixed(1)}/h
+              </span>
+            </div>
+          </button>
+        </div>
       </div>
 
       {/* Footer Metrics & Actions */}
@@ -120,26 +262,6 @@ export default function PaperGridCard({ paper }: { paper: Paper }) {
 
         {/* Right Action Links */}
         <div className="flex items-center gap-2 sm:gap-2.5">
-          <a
-            href={pdfUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 text-[#52525B] dark:text-[#A1A1AA] hover:text-[#F55036] dark:hover:text-[#FF6A42] transition-colors no-underline cursor-pointer"
-          >
-            <FileText size={12} />
-            <span>PDF</span>
-          </a>
-
-          <a
-            href={codeUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 text-[#52525B] dark:text-[#A1A1AA] hover:text-[#F55036] dark:hover:text-[#FF6A42] transition-colors no-underline cursor-pointer"
-          >
-            <Code2 size={12} />
-            <span>Code</span>
-          </a>
-
           <button
             type="button"
             onClick={() => setIsSaved(!isSaved)}
