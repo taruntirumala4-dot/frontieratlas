@@ -214,30 +214,23 @@ export default function Navbar({
               <Menu size={20} />
             </button>
 
-            <Link href="/" className="flex items-center gap-2.5 group no-underline shrink-0">
-              {/* 8-Point Star */}
-              <div className="relative w-8 h-8 flex items-center justify-center">
-                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" className="transition-transform group-hover:scale-105 duration-200">
-                  <path d="M12 2L13.8 8.8L21 11L13.8 13.2L12 20L10.2 13.2L3 11L10.2 8.8L12 2Z" fill="url(#sg1)" />
-                  <path d="M5.8 5.8L9.5 9.8L5.5 11L9.5 12.2L5.8 16.2L10.2 12.5L11 16.5L11.8 12.5L16.2 16.2L12.5 12.2L16.5 11L12.5 9.8L16.2 5.8L11.8 9.5L11 5.5L10.2 9.5L5.8 5.8Z" fill="url(#sg2)" opacity="0.9" />
-                  <defs>
-                    <linearGradient id="sg1" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
-                      <stop stopColor="#FB923C" /><stop offset="1" stopColor="#EA580C" />
-                    </linearGradient>
-                    <linearGradient id="sg2" x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse">
-                      <stop stopColor="#F97316" /><stop offset="1" stopColor="#C2410C" />
-                    </linearGradient>
-                  </defs>
+            <Link href="/" className="flex items-center gap-2 group no-underline shrink-0">
+              {/* Fern / leaf icon */}
+              <div className="relative w-7 h-7 flex items-center justify-center transition-transform group-hover:scale-105 duration-200">
+                <svg width="28" height="28" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  {/* Main stem */}
+                  <path d="M32 56 C32 56 32 20 32 8" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="text-[#111111] dark:text-white" />
+                  {/* Left fronds */}
+                  <path d="M32 44 C22 40 14 32 16 22 C20 28 26 36 32 38" fill="currentColor" className="text-[#111111] dark:text-white" />
+                  <path d="M32 34 C20 28 12 18 16 8 C20 16 26 26 32 28" fill="currentColor" className="text-[#111111] dark:text-white" />
+                  {/* Right fronds */}
+                  <path d="M32 44 C42 40 50 32 48 22 C44 28 38 36 32 38" fill="currentColor" className="text-[#111111] dark:text-white" />
+                  <path d="M32 34 C44 28 52 18 48 8 C44 16 38 26 32 28" fill="currentColor" className="text-[#111111] dark:text-white" />
                 </svg>
               </div>
-              <div className="flex flex-col">
-                <span className="font-serif text-[18px] font-bold tracking-tight text-[#111111] dark:text-white leading-tight">
-                  FrontierAtlas
-                </span>
-                <span className="text-[10.5px] text-[#71717A] dark:text-[#A1A1AA] font-normal tracking-wide leading-none mt-0.5">
-                  Map the frontier of AI
-                </span>
-              </div>
+              <span className="font-sans text-[17px] font-bold tracking-tight text-[#111111] dark:text-white leading-none">
+                FrontierAtlas
+              </span>
             </Link>
           </div>
 
@@ -310,9 +303,18 @@ export default function Navbar({
       >
         {/* Drawer Header */}
         <div className="h-[56px] border-b border-[#E4E4E7] dark:border-[#27272A] flex items-center justify-between px-4 shrink-0">
-          <span className="font-serif font-bold text-[17px] text-[#111111] dark:text-white">
-            FrontierAtlas
-          </span>
+          <div className="flex items-center gap-2">
+            <svg width="22" height="22" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#111111] dark:text-white">
+              <path d="M32 56 C32 56 32 20 32 8" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+              <path d="M32 44 C22 40 14 32 16 22 C20 28 26 36 32 38" fill="currentColor" />
+              <path d="M32 34 C20 28 12 18 16 8 C20 16 26 26 32 28" fill="currentColor" />
+              <path d="M32 44 C42 40 50 32 48 22 C44 28 38 36 32 38" fill="currentColor" />
+              <path d="M32 34 C44 28 52 18 48 8 C44 16 38 26 32 28" fill="currentColor" />
+            </svg>
+            <span className="font-sans font-bold text-[17px] text-[#111111] dark:text-white">
+              FrontierAtlas
+            </span>
+          </div>
           <button
             onClick={() => setIsMenuOpen(false)}
             aria-label="Close menu"
