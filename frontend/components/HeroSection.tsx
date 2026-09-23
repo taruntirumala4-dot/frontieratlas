@@ -1,12 +1,10 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Search, Bot, Brain, Eye, Code2, Cpu, Plug, Loader2, ChevronDown, ChevronUp } from "lucide-react";
-import { searchPapers, getPapers, type Paper, type PaperAuthor } from "@/lib/paperApi";
-import { motion } from "framer-motion";
+import { Search, Bot, Brain, Eye, Code2, Cpu, Plug, Loader2 } from "lucide-react";
+import { searchPapers, type Paper, type PaperAuthor } from "@/lib/paperApi";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useScrollThreshold } from "@/lib/useScroll";
 
 const formatAuthors = (authors: PaperAuthor[]) => {
   if (!Array.isArray(authors) || authors.length === 0) return "";
@@ -17,13 +15,17 @@ const formatAuthors = (authors: PaperAuthor[]) => {
   return names.join(", ");
 };
 
+interface HeroSectionProps {
+  selectedTag?: string;
+  setSelectedTag?: React.Dispatch<React.SetStateAction<string | undefined>>;
+  onTagSelect?: (tag: string) => void;
+}
+
 export default function HeroSection({
   selectedTag,
   setSelectedTag,
-}: {
-  selectedTag?: string;
-  setSelectedTag: React.Dispatch<React.SetStateAction<string | undefined>>;
-}) {
+  onTagSelect,
+}: HeroSectionProps) {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
@@ -31,7 +33,6 @@ export default function HeroSection({
   const [isSearching, setIsSearching] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
-  const isScrolled = useScrollThreshold(50);
 
   // Global Cmd+K / Ctrl+K keyboard shortcut
   useEffect(() => {
@@ -42,12 +43,6 @@ export default function HeroSection({
         if (heroInput) {
           heroInput.focus();
           heroInput.select();
-        } else {
-          const navbarInput = document.querySelector('nav input[aria-label="Search"]') as HTMLInputElement | null;
-          if (navbarInput) {
-            navbarInput.focus();
-            navbarInput.select();
-          }
         }
       }
     };
@@ -92,41 +87,33 @@ export default function HeroSection({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
   const tags = [
-  { label: "Agents", slug: "agents", icon: Bot },
-  { label: "Reasoning", slug: "reasoning-models", icon: Brain },
-    { label: "Vision", slug: "vision-language-models", icon: Eye },
-    { label: "Coding", slug: "coding-agents", icon: Code2 },
-    { label: "Robotics", slug: "robotics", icon: Cpu },
-    { label: "MCP", slug: "model-context-protocol-mcp", icon: Plug },
+    { label: "Agents", icon: Bot },
+    { label: "Reasoning", icon: Brain },
+    { label: "Vision", icon: Eye },
+    { label: "Coding", icon: Code2 },
+    { label: "Robotics", icon: Cpu },
+    { label: "MCP", icon: Plug },
   ];
 
-  const handleChipHover = (slug: string) => {
-    const isMethod = slug === "model-context-protocol-mcp";
-    const item = isMethod ? { method: slug } : { task: slug };
-    getPapers({ page: 1, sort: "trending", period: "today", ...item }).catch(() => {});
-    getPapers({ page: 1, sort: "trending", period: "all", ...item }).catch(() => {});
-    getPapers({ page: 1, sort: "latest", period: "today", ...item }).catch(() => {});
-  };
-
   return (
-    <div className="w-full flex flex-col items-center justify-center pt-2 md:pt-6 pb-1 md:pb-4 relative shrink-0 text-center">
-      <div className="w-full flex flex-col items-center z-10">
-        <h1 className="text-[17px] min-[375px]:text-[19px] sm:text-[24px] md:text-[32px] lg:text-[36px] font-extrabold leading-[1.2] md:leading-[1.05] tracking-tight text-[#111111] mb-4 md:mb-6 whitespace-nowrap">
-          Discover what&apos;s next in <span className="text-[#F55036]">AI research.</span>
+    <section className="w-full flex flex-col items-center justify-center pt-8 md:pt-12 pb-6 md:pb-8 relative shrink-0 text-center font-sans">
+      <div className="w-full max-w-[1200px] px-4 flex flex-col items-center z-10">
+        {/* Title */}
+        <h1 className="text-[28px] sm:text-[36px] md:text-[44px] font-black leading-[1.1] tracking-[-0.03em] text-[#111111] dark:text-white mb-5 sm:mb-6 text-center">
+          Discover what&apos;s next in <span className="text-[#F55036] dark:text-[#FF6A42]">AI research.</span>
         </h1>
 
-
         {/* Search Bar */}
-        {!isScrolled && (
-          <motion.div 
-            ref={searchRef} 
-            className="w-full max-w-[640px] relative shadow-[0_8px_30px_rgb(0,0,0,0.06)] rounded-full bg-white border border-[#E5E5E0] flex items-center px-3 md:px-5 h-10 md:h-12 mb-3 md:mb-4 hover:shadow-[0_12px_32px_rgb(0,0,0,0.10)] focus-within:border-[#FF5A1F]/40 focus-within:shadow-[0_0_0_3px_rgba(255,90,31,0.08)] transition-all duration-200 mx-auto origin-top z-50"
-          >
-          <motion.div className="flex items-center text-[#737373] mr-2 md:mr-3 shrink-0">
-            <Search className="w-[16px] h-[16px] md:w-[20px] md:h-[20px]" />
-          </motion.div>
-          <motion.input
+        <div 
+          ref={searchRef} 
+          className="w-full max-w-[680px] relative shadow-[0_4px_20px_rgba(0,0,0,0.04)] rounded-full bg-white dark:bg-[#18181B] border border-[#E5E5E0] dark:border-[#27272A] flex items-center px-4 sm:px-5 h-12 mb-4 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] focus-within:border-[#F55036]/50 focus-within:ring-2 focus-within:ring-[#F55036]/10 transition-all duration-200 mx-auto z-40"
+        >
+          <div className="flex items-center text-[#737373] dark:text-[#A1A1AA] mr-3 shrink-0">
+            <Search className="w-[18px] h-[18px]" />
+          </div>
+          <input
             type="text"
             value={query}
             onChange={(e) => {
@@ -142,37 +129,37 @@ export default function HeroSection({
               }
             }}
             placeholder="Search papers, authors, topics, methods"
-            className="bg-transparent outline-none flex-1 text-[#111111] placeholder:text-[#737373] text-[13px] md:text-[15px] truncate mr-2 text-left w-full h-full"
+            className="bg-transparent outline-none flex-1 text-[#111111] dark:text-white placeholder:text-[#8B8B8B] dark:placeholder:text-[#71717A] text-[14px] sm:text-[15px] truncate mr-2 text-left w-full h-full"
           />
           {isSearching ? (
             <Loader2 size={16} className="text-[#F55036] animate-spin shrink-0" />
           ) : (
-            <div className="hidden md:flex items-center justify-center px-2 h-6 rounded-md bg-[#F8F7F2] border border-[#E5E5E0]/80 text-[10px] font-semibold text-[#8B8B8B] shrink-0 gap-0.5 tracking-wide">
+            <div className="flex items-center justify-center px-2 py-0.5 rounded-md bg-[#F4F4F5] dark:bg-[#27272A] border border-[#E4E4E7] dark:border-[#3F3F46] text-[11px] font-medium text-[#71717A] dark:text-[#A1A1AA] shrink-0 gap-0.5 tracking-wide">
               <span>⌘</span><span>K</span>
             </div>
           )}
 
           {/* Dropdown Results */}
           {showDropdown && (debouncedQuery.trim().length > 0 || isSearching) && (
-            <div className="absolute top-[calc(100%+8px)] left-0 w-full bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[#E5E5E0] py-2 z-50 max-h-[400px] overflow-y-auto">
+            <div className="absolute top-[calc(100%+8px)] left-0 w-full bg-white dark:bg-[#18181B] rounded-2xl shadow-[0_12px_36px_rgba(0,0,0,0.15)] border border-[#E5E5E0] dark:border-[#27272A] py-2 z-50 max-h-[400px] overflow-y-auto">
               {isSearching ? (
-                <div className="flex items-center justify-center py-8 text-[#8B8B8B] gap-2">
-                  <Loader2 size={16} className="animate-spin" />
+                <div className="flex items-center justify-center py-8 text-[#8B8B8B] dark:text-[#A1A1AA] gap-2">
+                  <Loader2 size={16} className="animate-spin text-[#F55036]" />
                   <span className="text-[14px]">Searching...</span>
                 </div>
               ) : results.length > 0 ? (
                 <div className="flex flex-col">
                   {results.map((paper) => (
                     <Link
-                      key={paper.id}
+                      key={paper.id || paper.slug}
                       href={`/papers/${encodeURIComponent(paper.slug || String(paper.id))}`}
                       onClick={() => setShowDropdown(false)}
-                      className="px-4 md:px-5 py-3 hover:bg-[#F8F7F2] cursor-pointer transition-colors border-b border-[#E5E5E0] last:border-0 flex flex-col gap-1 text-left"
+                      className="px-4 sm:px-5 py-3 hover:bg-[#F8F7F2] dark:hover:bg-[#202024] cursor-pointer transition-colors border-b border-[#F0F0EE] dark:border-[#27272A] last:border-0 flex flex-col gap-1 text-left"
                     >
-                      <h4 className="text-[14px] font-semibold text-[#111111] leading-snug line-clamp-2">
+                      <h4 className="text-[14px] font-semibold text-[#111111] dark:text-white leading-snug line-clamp-2">
                         {paper.title}
                       </h4>
-                      <div className="flex items-center gap-2 text-[12px] text-[#737373]">
+                      <div className="flex items-center gap-2 text-[12px] text-[#737373] dark:text-[#A1A1AA]">
                         <span className="truncate max-w-[200px]">{formatAuthors(paper.authors)}</span>
                         {Number(paper.upvotes) > 0 && (
                           <>
@@ -183,11 +170,11 @@ export default function HeroSection({
                       </div>
                     </Link>
                   ))}
-                  <div className="pt-2 px-4 pb-1 border-t border-[#E5E5E0] mt-1">
+                  <div className="pt-2 px-4 pb-1 border-t border-[#F0F0EE] dark:border-[#27272A] mt-1">
                     <Link
                       href={`/search?q=${encodeURIComponent(debouncedQuery.trim())}`}
                       onClick={() => setShowDropdown(false)}
-                      className="text-[12px] font-medium text-[#F55036] hover:underline flex items-center justify-between"
+                      className="text-[12px] font-medium text-[#F55036] dark:text-[#FF6A42] hover:underline flex items-center justify-between"
                     >
                       <span>View all results for &quot;{debouncedQuery}&quot;</span>
                       <span>→</span>
@@ -195,89 +182,47 @@ export default function HeroSection({
                   </div>
                 </div>
               ) : (
-                <div className="py-8 text-center text-[#737373] text-[14px]">
+                <div className="py-8 text-center text-[#737373] dark:text-[#A1A1AA] text-[14px]">
                   No results found for &quot;{debouncedQuery}&quot;
                 </div>
               )}
             </div>
           )}
-        </motion.div>
-        )}
+        </div>
 
-        {/* Tags - Multi-row responsive layout */}
-        <div className="w-full max-w-[900px] px-2 pb-2 md:pb-0">
-          {/* Desktop: Always show all tags in a wrapped flex */}
-          <div className="hidden md:flex flex-wrap items-center justify-center gap-2">
-            {tags.map((tag) => (
+        {/* Tags Row */}
+        <div className="flex flex-wrap items-center justify-center gap-2 max-w-full px-2">
+          {tags.map((tag) => {
+            const isSelected = selectedTag === tag.label;
+            return (
               <button
-                key={tag.slug}
-                onMouseEnter={() => handleChipHover(tag.slug)}
-                onTouchStart={() => handleChipHover(tag.slug)}
-                onClick={() =>
-                  setSelectedTag(
-                    selectedTag === tag.slug ? undefined : tag.slug
-                  )
-                }
-                className={`flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 min-h-[24px] transition-all duration-200 ease-out cursor-pointer select-none
-                  ${
-                    selectedTag === tag.slug
-                      ? "bg-[#F55036] text-white border border-[#F55036] scale-[1.04] shadow-[0_2px_8px_rgba(245,80,54,0.30)]"
-                      : "bg-white border border-[#E5E5E0] hover:border-[#FF5A1F]/50 hover:bg-[#FFF7F3] hover:scale-[1.03] hover:shadow-sm active:scale-95"
-                  }`}
+                key={tag.label}
+                type="button"
+                onClick={() => {
+                  if (onTagSelect) {
+                    onTagSelect(isSelected ? "All Topics" : tag.label);
+                  }
+                  if (setSelectedTag) {
+                    setSelectedTag(isSelected ? undefined : tag.label);
+                  }
+                }}
+                className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 min-h-[28px] transition-all duration-200 cursor-pointer select-none text-[12px] font-semibold border ${
+                  isSelected
+                    ? "bg-[#FFF0EB] text-[#F55036] border-[#F55036] dark:bg-[#2A1612] dark:text-[#FF6A42] dark:border-[#FF6A42] shadow-xs scale-[1.02]"
+                    : "bg-white dark:bg-[#18181B] border-[#E5E5E0] dark:border-[#27272A] text-[#111111] dark:text-[#E4E4E7] hover:border-[#D4D4D8] dark:hover:border-[#3F3F46] hover:bg-[#FBFBFA] dark:hover:bg-[#202024]"
+                }`}
               >
                 <tag.icon
-                  className={`w-[11px] h-[11px] transition-transform duration-200 ${
-                    selectedTag === tag.slug ? "text-white" : "text-[#F55036]"
+                  className={`w-3.5 h-3.5 ${
+                    isSelected ? "text-[#F55036] dark:text-[#FF6A42]" : "text-[#F55036]"
                   }`}
                 />
-                <span
-                  className={`text-[10.5px] font-semibold ${
-                    selectedTag === tag.slug ? "text-white" : "text-[#111111]"
-                  }`}
-                >
-                  {tag.label}
-                </span>
+                <span>{tag.label}</span>
               </button>
-            ))}
-          </div>
-
-          {/* Mobile: Squeeze all tags into one single line */}
-          <div className="flex md:hidden w-full items-center justify-center gap-0.5 min-[375px]:gap-1 mt-1 px-1">
-            {tags.map((tag) => (
-              <button
-                key={tag.slug}
-                onMouseEnter={() => handleChipHover(tag.slug)}
-                onTouchStart={() => handleChipHover(tag.slug)}
-                onClick={() =>
-                  setSelectedTag(
-                    selectedTag === tag.slug ? undefined : tag.slug
-                  )
-                }
-                className={`flex shrink items-center justify-center gap-0.5 rounded-full px-1 py-1 transition-all duration-200 ease-out cursor-pointer select-none
-                  ${
-                    selectedTag === tag.slug
-                      ? "bg-[#F55036] text-white border border-[#F55036] shadow-sm"
-                      : "bg-white border border-[#E5E5E0]"
-                  }`}
-              >
-                <tag.icon
-                  className={`w-2 h-2 shrink-0 transition-transform duration-200 ${
-                    selectedTag === tag.slug ? "text-white" : "text-[#F55036]"
-                  }`}
-                />
-                <span
-                  className={`text-[7px] min-[375px]:text-[7.5px] font-bold tracking-tighter whitespace-nowrap ${
-                    selectedTag === tag.slug ? "text-white" : "text-[#111111]"
-                  }`}
-                  style={{ lineHeight: 1 }}
-                >
-                  {tag.label}
-                </span>
-              </button>
-            ))}
-          </div>  
+            );
+          })}
         </div>
       </div>
-    </div>
+    </section>
   );
 }

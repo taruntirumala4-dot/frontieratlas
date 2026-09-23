@@ -1,16 +1,41 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Paper, getArxivAbsUrl, getArxivPdfUrl } from "@/lib/paperApi";
-import { Star, FileText, Code2, Bookmark, Github, ArrowUpRight, ArrowUp } from "lucide-react";
+import { FileText, Bookmark, ArrowUp } from "lucide-react";
 
 export default function PaperGridCard({ paper }: { paper: Paper }) {
   const [isSaved, setIsSaved] = useState(false);
 
-  const starCount = paper.upvotes ? parseInt(paper.upvotes, 10) : 128;
-  const citationCount = paper.citations ?? 12;
-  const githubStars = paper.repo ? parseInt(paper.repo, 10) : 86;
+  useEffect(() => {
+    try {
+      const savedList = JSON.parse(localStorage.getItem("frontieratlas_saved_papers") || "[]");
+      if (savedList.includes(paper.id || paper.slug)) {
+        setIsSaved(true);
+      }
+    } catch (e) {}
+  }, [paper.id, paper.slug]);
+
+  const handleToggleSave = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const nextSaved = !isSaved;
+    setIsSaved(nextSaved);
+    try {
+      const key = "frontieratlas_saved_papers";
+      const savedList: string[] = JSON.parse(localStorage.getItem(key) || "[]");
+      const paperKey = String(paper.id || paper.slug);
+      if (nextSaved) {
+        if (!savedList.includes(paperKey)) savedList.push(paperKey);
+      } else {
+        const filtered = savedList.filter((k) => k !== paperKey);
+        localStorage.setItem(key, JSON.stringify(filtered));
+        return;
+      }
+      localStorage.setItem(key, JSON.stringify(savedList));
+    } catch (e) {}
+  };
 
   const githubRepo = paper.repositories?.find(
     (repo: any) => repo.url?.includes("github.com")
@@ -237,44 +262,24 @@ export default function PaperGridCard({ paper }: { paper: Paper }) {
         </div>
       </div>
 
-      {/* Footer Metrics & Actions */}
-      <div className="flex items-center justify-between text-[11.5px] text-[#71717A] dark:text-[#A1A1AA] pt-3 border-t border-[#F0F0EE] dark:border-[#27272A] mt-3">
-        {/* Left Metrics */}
-        <div className="flex items-center gap-2 sm:gap-2.5">
-          {/* Star rating */}
-          <span className="flex items-center gap-1 text-[#EA580C] dark:text-[#F97316] font-medium">
-            <Star size={12} className="fill-[#EA580C] dark:fill-[#F97316]" />
-            <span>{isNaN(starCount) ? 128 : starCount}</span>
-          </span>
+      {/* Footer / Save Action */}
+      <div className="flex items-center justify-between text-[11.5px] text-[#71717A] dark:text-[#A1A1AA] pt-2.5 border-t border-[#F0F0EE] dark:border-[#27272A] mt-3">
+        <span className="text-[11.5px] text-[#71717A] dark:text-[#A1A1AA] font-normal truncate max-w-[160px]">
+          {paper.date || "Recent"}
+        </span>
 
-          {/* Citations */}
-          <span className="flex items-center gap-0.5 text-[#52525B] dark:text-[#A1A1AA]">
-            <span className="font-serif font-bold text-[13px] leading-none">❞</span>
-            <span>{citationCount}</span>
-          </span>
-
-          {/* GitHub stars */}
-          <span className="flex items-center gap-1 text-[#52525B] dark:text-[#A1A1AA]">
-            <Github size={12} />
-            <span>{isNaN(githubStars) ? 86 : githubStars}</span>
-          </span>
-        </div>
-
-        {/* Right Action Links */}
-        <div className="flex items-center gap-2 sm:gap-2.5">
-          <button
-            type="button"
-            onClick={() => setIsSaved(!isSaved)}
-            className={`flex items-center gap-1 transition-colors cursor-pointer ${
-              isSaved
-                ? "text-[#F55036] dark:text-[#FF6A42] font-semibold"
-                : "text-[#52525B] dark:text-[#A1A1AA] hover:text-[#F55036] dark:hover:text-[#FF6A42]"
-            }`}
-          >
-            <Bookmark size={12} className={isSaved ? "fill-current" : ""} />
-            <span>Save</span>
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={handleToggleSave}
+          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11.5px] font-medium transition-all cursor-pointer ${
+            isSaved
+              ? "bg-[#FFF0EB] text-[#F55036] dark:bg-[#2A1612] dark:text-[#FF6A42] font-semibold"
+              : "text-[#52525B] dark:text-[#A1A1AA] hover:bg-[#F4F4F5] dark:hover:bg-[#27272A] hover:text-[#111111] dark:hover:text-white"
+          }`}
+        >
+          <Bookmark size={12} className={isSaved ? "fill-[#F55036] dark:fill-[#FF6A42] text-[#F55036] dark:text-[#FF6A42]" : ""} />
+          <span>{isSaved ? "Saved" : "Save"}</span>
+        </button>
       </div>
     </div>
   );

@@ -120,27 +120,11 @@ export default function Navbar({
 
   // ── Nav links ───────────────────────────────────────────────────────────────
   const navLinks = [
-    { label: "Discover", href: "/", active: isDiscover },
-    {
-      label: "Trending Papers",
-      href: "/category/trending",
-      active: !isDiscover && isTrending,
-      onClick: () => onItemSelect?.("Trending Papers"),
-    },
-    {
-      label: "Latest Papers",
-      href: "/category/latest",
-      active: isLatest,
-      onClick: () => onItemSelect?.("Latest Papers"),
-    },
-    {
-      label: "Most GitHub Stars",
-      href: "/category/github-stars",
-      active: isStars,
-      onClick: () => onItemSelect?.("Most GitHub Stars"),
-    },
-    { label: "Leaderboards", href: "/benchmarks", active: isLeaderboards },
-    { label: "Resources", href: "/methods", active: isResources },
+    { label: "Tasks", href: "/tasks", active: pathname.startsWith("/tasks") },
+    { label: "Methods", href: "/methods", active: pathname.startsWith("/methods") },
+    { label: "Benchmarks", href: "/benchmarks", active: pathname.startsWith("/benchmarks") || pathname.startsWith("/leaderboards") },
+    { label: "Models", href: "/models", active: pathname.startsWith("/models") },
+    { label: "Organizations", href: "/organizations", active: pathname.startsWith("/organizations") },
   ];
 
   // ── Profile control ─────────────────────────────────────────────────────────
@@ -215,17 +199,13 @@ export default function Navbar({
             </button>
 
             <Link href="/" className="flex items-center gap-2 group no-underline shrink-0">
-              {/* Fern / leaf icon */}
+              {/* Asterisk / starburst icon */}
               <div className="relative w-7 h-7 flex items-center justify-center transition-transform group-hover:scale-105 duration-200">
-                <svg width="28" height="28" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  {/* Main stem */}
-                  <path d="M32 56 C32 56 32 20 32 8" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="text-[#111111] dark:text-white" />
-                  {/* Left fronds */}
-                  <path d="M32 44 C22 40 14 32 16 22 C20 28 26 36 32 38" fill="currentColor" className="text-[#111111] dark:text-white" />
-                  <path d="M32 34 C20 28 12 18 16 8 C20 16 26 26 32 28" fill="currentColor" className="text-[#111111] dark:text-white" />
-                  {/* Right fronds */}
-                  <path d="M32 44 C42 40 50 32 48 22 C44 28 38 36 32 38" fill="currentColor" className="text-[#111111] dark:text-white" />
-                  <path d="M32 34 C44 28 52 18 48 8 C44 16 38 26 32 28" fill="currentColor" className="text-[#111111] dark:text-white" />
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  {/* 6-arm asterisk: center + 6 thick arms at 0°, 60°, 120°, 180°, 240°, 300° */}
+                  <path d="M12 2 L12 22" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" className="text-[#111111] dark:text-white" />
+                  <path d="M2.7 7 L21.3 17" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" className="text-[#111111] dark:text-white" />
+                  <path d="M2.7 17 L21.3 7" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" className="text-[#111111] dark:text-white" />
                 </svg>
               </div>
               <span className="font-sans text-[17px] font-bold tracking-tight text-[#111111] dark:text-white leading-none">
@@ -234,52 +214,35 @@ export default function Navbar({
             </Link>
           </div>
 
-          {/* ── Center: Nav Links (Desktop) ── */}
-          <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1 h-full">
-            {navLinks.map((tab) => (
-              <Link
-                key={tab.label}
-                href={tab.href}
-                onClick={tab.onClick}
-                className={`relative px-3 py-2 text-[13px] font-medium transition-colors no-underline flex items-center h-full ${
-                  tab.active
-                    ? "text-[#F55036] dark:text-[#FF6A42] font-semibold"
-                    : "text-[#52525B] dark:text-[#A1A1AA] hover:text-[#111111] dark:hover:text-white"
-                }`}
-              >
-                {tab.label}
-                {tab.active && (
-                  <span className="absolute bottom-0 left-2 right-2 h-[2.5px] bg-[#F55036] dark:bg-[#FF6A42] rounded-t-full" />
-                )}
-              </Link>
-            ))}
-          </nav>
+          {/* ── Right: Nav Links + Divider + Theme Mode Toggle + Profile ── */}
+          <div className="flex items-center gap-3 sm:gap-4 md:gap-5">
+            {/* Desktop Navigation Links */}
+            <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
+              {navLinks.map((tab) => (
+                <Link
+                  key={tab.label}
+                  href={tab.href}
+                  className={`text-[14px] font-medium transition-colors no-underline ${
+                    tab.active
+                      ? "text-[#F55036] dark:text-[#FF6A42] font-semibold"
+                      : "text-[#444444] dark:text-[#A1A1AA] hover:text-[#111111] dark:hover:text-white"
+                  }`}
+                >
+                  {tab.label}
+                </Link>
+              ))}
+            </nav>
 
-          {/* ── Right: Search + Bookmark + Theme + Profile ── */}
-          <div className="flex items-center gap-2 sm:gap-2.5">
-            {/* Search (desktop) — full autocomplete SearchBar */}
-            <div className="hidden md:block w-[220px] lg:w-[280px] xl:w-[340px]">
-              <SearchBar
-                variant="compact"
-                placeholder="Search papers, authors, topics..."
-                initialQuery=""
-              />
+            {/* Vertical separator */}
+            <div className="hidden lg:block w-[1px] h-5 bg-[#E4E4E7] dark:bg-[#27272A] mx-0.5" />
+
+            <div className="flex items-center gap-2 sm:gap-2.5">
+              {/* Theme Toggle - Mode Changing Button */}
+              <ThemeToggle />
+
+              {/* Profile / Login */}
+              <ProfileControl />
             </div>
-
-            {/* Saved / Bookmark */}
-            <Link
-              href="/saved"
-              aria-label="Saved papers"
-              className="p-2 rounded-lg text-[#52525B] dark:text-[#A1A1AA] hover:text-[#111111] dark:hover:text-white hover:bg-[#F4F4F5] dark:hover:bg-[#1E1E22] transition-colors"
-            >
-              <Bookmark size={17} />
-            </Link>
-
-            {/* Theme Toggle */}
-            <ThemeToggle />
-
-            {/* Profile / Login */}
-            <ProfileControl />
           </div>
         </div>
       </header>
@@ -304,12 +267,10 @@ export default function Navbar({
         {/* Drawer Header */}
         <div className="h-[56px] border-b border-[#E4E4E7] dark:border-[#27272A] flex items-center justify-between px-4 shrink-0">
           <div className="flex items-center gap-2">
-            <svg width="22" height="22" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#111111] dark:text-white">
-              <path d="M32 56 C32 56 32 20 32 8" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-              <path d="M32 44 C22 40 14 32 16 22 C20 28 26 36 32 38" fill="currentColor" />
-              <path d="M32 34 C20 28 12 18 16 8 C20 16 26 26 32 28" fill="currentColor" />
-              <path d="M32 44 C42 40 50 32 48 22 C44 28 38 36 32 38" fill="currentColor" />
-              <path d="M32 34 C44 28 52 18 48 8 C44 16 38 26 32 28" fill="currentColor" />
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#111111] dark:text-white">
+              <path d="M12 2 L12 22" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" />
+              <path d="M2.7 7 L21.3 17" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" />
+              <path d="M2.7 17 L21.3 7" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" />
             </svg>
             <span className="font-sans font-bold text-[17px] text-[#111111] dark:text-white">
               FrontierAtlas

@@ -6,6 +6,7 @@ import Sidebar from "@/components/Sidebar";
 import PaperTabs from "@/components/PaperTabs";
 import PaperGridCard from "@/components/PaperGridCard";
 import PaperList from "@/components/PaperFeed";
+import HeroSection from "@/components/HeroSection";
 import type { GetPapersResult, Paper } from "@/lib/paperApi";
 import { FEATURED_PAPERS } from "@/lib/mockPapers";
 
@@ -21,6 +22,7 @@ export default function HomeContent({
   const [activeNav, setActiveNav] = useState<string>("Trending Papers");
   const [selectedTopic, setSelectedTopic] = useState<string>("All Topics");
   const [selectedSort, setSelectedSort] = useState<string>("Trending");
+  const [selectedPeriod, setSelectedPeriod] = useState<string>("today");
 
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -111,6 +113,12 @@ export default function HomeContent({
         onItemSelect={handleNavSelect}
       />
 
+      {/* Hero Section */}
+      <HeroSection
+        selectedTag={selectedTopic === "All Topics" ? undefined : selectedTopic}
+        onTagSelect={(tag) => setSelectedTopic(tag)}
+      />
+
       {/* Main Container */}
       <div className="w-full max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-start gap-6 lg:gap-8 flex-1">
         {/* Left Sticky Sidebar */}
@@ -123,10 +131,10 @@ export default function HomeContent({
 
         {/* Main Content Area */}
         <main className="flex-1 min-w-0">
-          {/* Subheader: Topic Filter Pills + Sort Dropdown + View Mode + Counts */}
+          {/* Subheader: Period Tabs (Today, This Week, This Month, All time) + Sort Dropdown + Counts */}
           <PaperTabs
-            selectedTopic={selectedTopic}
-            onTopicSelect={(topic) => setSelectedTopic(topic)}
+            selectedPeriod={selectedPeriod}
+            onPeriodSelect={(period) => setSelectedPeriod(period)}
             selectedSort={selectedSort}
             onSortSelect={(sort) => {
               setSelectedSort(sort);
@@ -134,8 +142,6 @@ export default function HomeContent({
               else if (sort === "Latest") setActiveNav("Latest Papers");
               else if (sort === "Most GitHub Stars") setActiveNav("Most GitHub Stars");
             }}
-            viewMode={viewMode}
-            onViewModeChange={(mode) => setViewMode(mode)}
             totalPapers={totalCount}
             currentPage={currentPage}
             totalPages={totalPages}
